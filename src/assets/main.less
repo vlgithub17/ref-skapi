@@ -1,0 +1,66 @@
+@import './base.less';
+
+.material-symbols-outlined {
+    vertical-align: middle;
+
+    // &.big {
+    //     font-variation-settings:
+    //         'FILL' 1,
+    //         'wght' 400,
+    //         'GRAD' 0,
+    //         'opsz' 32;
+    //     font-size: 32px;
+    // }
+
+    // &.mid {
+    //     font-variation-settings:
+    //         'FILL' 1,
+    //         'wght' 400,
+    //         'GRAD' 0,
+    //         'opsz' 24;
+    //     font-size: 24px;
+    // }
+
+    // &.sml {
+    //     font-variation-settings:
+    //         'FILL' 1,
+    //         'wght' 400,
+    //         'GRAD' 0,
+    //         'opsz' 20;
+    //     font-size: 20px;
+    // }
+
+    &.fill {
+        font-variation-settings:
+            'FILL' 1,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 20;
+    }
+    
+    &.empty {
+        font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 20;
+    }
+}
+
+.clickable {
+    cursor: pointer;
+    color: var(--secondary-text);
+}
+.nonClickable {
+    cursor: default !important;
+    opacity: 0.6 !important;
+    pointer-events: none !important;
+}
+
+.infoBox {
+    position: relative;
+    background-color: #fafafa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10));
+}
