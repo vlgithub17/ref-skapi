@@ -1,5 +1,6 @@
 <template lang="pug">
 #users
+    .infoBox
 </template>
 
 <script setup lang="ts">

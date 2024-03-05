@@ -2,12 +2,13 @@
 header#navBar 
     .left 
         router-link(to="/") logo
-    .right(:class="{'flex' : route.params.service && currentService}")
-        router-link.service(v-if="route.params.service && currentService" :to="`/my-services/${currentService.service}`") {{ currentService.service }}
-        .routeWrap
-            a(href="https://docs.skapi.com" target="_blank") Documentation
-            router-link(to="/my-services") My Services
-            .prof F
+    .right
+        .inner(:class="{'flex' : route.params.service && currentService}")
+            router-link.service(v-if="route.params.service && currentService" :to="`/my-services/${currentService.service}`") {{ currentService.service }}
+            .routeWrap
+                a.doc(href="https://docs.skapi.com" target="_blank") Documentation
+                router-link.ser(to="/my-services") My Services
+                .prof F
 </template>
 
 <script setup lang="ts">
@@ -22,7 +23,6 @@ const route = useRoute();
 #navBar {
     position: relative;
     height: 60px;
-    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -45,21 +45,27 @@ const route = useRoute();
         }
     }
     .left {
-        width: 240px;
+        width: 11rem;
+        padding-left: 20px;
     }
     .right {
-        width: calc(100vw - 240px);
+        flex-grow: 1;
         text-align: right;
+        padding: 0 20px;
 
-        &.flex {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .inner {
+            &.flex {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
         }
     }
     a {
         text-decoration: none;
         color: var(--secondary-text);
+        display: inline-block;
+        font-weight: 700;
     }
 }
 .service {
@@ -68,11 +74,30 @@ const route = useRoute();
     color: var(--main-color) !important;
 }
 .routeWrap {
-    a {
-        margin-right: 1rem;
+    .ser {
+        padding: 0 1rem;
     }
     .prof {
         display: inline-block;
+    }
+}
+
+@media (max-width:1023px) {
+    #navBar {
+        .left {
+            width: 2.5rem;
+        }
+    }
+}
+
+@media (max-width:767px) {
+    .routeWrap {
+        .doc, .prof {
+            display: none !important;
+        }
+        .ser {
+            padding-right: 0;
+        }
     }
 }
 </style>

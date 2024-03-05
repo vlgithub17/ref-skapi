@@ -26,7 +26,7 @@ br
         router-link.router(:to="`/my-services/${currentService.service}/hosting`" :class="{'active': route.name == 'hosting'}")
             span.material-symbols-outlined.icon.fill language
             span.name Hosting
-    .right 
+    main.right 
         router-view
 </template>
 
@@ -52,15 +52,18 @@ if(currentService.value !== route.path.split('/')[2] || currentService.value == 
     display: flex;
     flex-wrap: nowrap;
     box-sizing: border-box;
-    padding: 0 20px;
+    // padding: 0 20px;
 
     .left {
-        width: 240px;
+        // width: 240px;
         box-sizing: border-box;
-        padding-right: 20px;
+        // padding-right: 20px;
+        padding-left: 20px;
     }
     .right {
-        width: calc(100vw - 240px);
+        flex-grow: 1;
+        padding: 0 20px;
+        // width: calc(100vw - 240px);
         // width: 100%;
     }
 }
@@ -84,17 +87,33 @@ if(currentService.value !== route.path.split('/')[2] || currentService.value == 
         vertical-align: middle;
     }
     .back {
-        font-size: 24px;
+        font-size: 1rem;
         margin-left: 9px;
     }
     .icon {
-        font-size: 32px;
+        font-size: 1.5rem;
     }
     .name {
-        font-size: 20px;
+        font-size: 1rem;
         font-weight: 500;
         margin-left: 13px;
-        // padding-right: 60px;
+        padding-right: 60px;
+    }
+}
+
+@media (max-width:1023px) {
+    .router {
+        .name {
+            display: none;
+        }
+    }
+}
+
+@media (max-width:767px) {
+    #serviceMain {
+        .left {
+            display: none;
+        }
     }
 }
 </style>

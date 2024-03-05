@@ -1,5 +1,6 @@
 <template lang="pug">
 #hosing
+    .infoBox
 </template>
 
 <script setup lang="ts">

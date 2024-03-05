@@ -1,8 +1,49 @@
 @import './base.less';
 
+button {
+    height: 44px;
+    border-radius: 8px;
+    padding: 0 1.4rem;
+    background-color: unset;
+    color: var(--main-color);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+
+    &.noLine {
+        border: 0;
+        padding-left: 0;
+    }
+
+    &.unFinished {
+        border: 2px solid var(--main-color);
+    }
+
+    &.final {
+        border: 0;
+        background-color: var(--main-color) !important;
+        color: #fff !important;
+    }
+
+    &.warning {
+        border: 2px solid #F04E4E;
+        color: #F04E4E !important;
+    }
+
+    &.disabled {
+        border: 0;
+        background-color: rgba(0,0,0,0.2);
+        color: rgba(0,0,0,0.2);
+        user-select: none;
+        cursor: default;
+    }
+}
+
 .material-symbols-outlined {
     vertical-align: middle;
-
+    & + * {
+        vertical-align: middle;
+    }
     // &.big {
     //     font-variation-settings:
     //         'FILL' 1,
@@ -51,10 +92,20 @@
     cursor: pointer;
     color: var(--secondary-text);
 }
+
 .nonClickable {
     cursor: default !important;
     opacity: 0.6 !important;
     pointer-events: none !important;
+}
+
+.smallTitle {
+    font-size: 0.9rem;
+    color: #0006;
+}
+.smallValue {
+    font-size: 0.9rem;
+    color: var(--secondary-text);
 }
 
 .infoBox {
@@ -63,4 +114,39 @@
     padding: 1.5rem;
     border-radius: 8px;
     filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10));
+
+    .infoTitle {
+        display: inline-block;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+}
+
+.cardBox {
+    position: relative;
+    background-color: #fafafa;
+    border-radius: 8px;
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10));
+
+    .header {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,.15);
+
+        .material-symbols-outlined {
+            margin-right: 8px;
+        }
+        span {
+            font-weight: 500;
+        }
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+    }
+    .content {
+        padding: 1.5rem;
+    }
 }
