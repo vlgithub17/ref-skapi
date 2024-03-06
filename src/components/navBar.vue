@@ -3,12 +3,9 @@ header#navBar
     .left 
         router-link(to="/") logo
     .right
-        .inner(:class="{'flex' : route.params.service && currentService}")
-            router-link.service(v-if="route.params.service && currentService" :to="`/my-services/${currentService.service}`") {{ currentService.service }}
-            .routeWrap
-                a.doc(href="https://docs.skapi.com" target="_blank") Documentation
-                router-link.ser(to="/my-services") My Services
-                .prof F
+        a.doc(href="https://docs.skapi.com" target="_blank") Documentation
+        router-link.ser(to="/my-services") My Services
+        .prof F
 </template>
 
 <script setup lang="ts">
@@ -49,16 +46,13 @@ const route = useRoute();
         padding-left: 20px;
     }
     .right {
-        flex-grow: 1;
-        text-align: right;
         padding: 0 20px;
 
-        .inner {
-            &.flex {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
+        .ser {
+            padding: 0 1rem;
+        }
+        .prof {
+            display: inline-block;
         }
     }
     a {
@@ -73,14 +67,6 @@ const route = useRoute();
     font-weight: 700;
     color: var(--main-color) !important;
 }
-.routeWrap {
-    .ser {
-        padding: 0 1rem;
-    }
-    .prof {
-        display: inline-block;
-    }
-}
 
 @media (max-width:1023px) {
     #navBar {
@@ -91,12 +77,14 @@ const route = useRoute();
 }
 
 @media (max-width:767px) {
-    .routeWrap {
-        .doc, .prof {
-            display: none !important;
-        }
-        .ser {
-            padding-right: 0;
+    #navBar {
+        .right {
+            .doc, .prof {
+                display: none !important;
+            }
+            .ser {
+                padding-right: 0;
+            }
         }
     }
 }

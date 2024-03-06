@@ -7,9 +7,18 @@
                     tr
                         td.smallTitle Service Name
                         td.value
-                            .currentValue
+                            form.modifyInputForm(v-if="modifyServiceName" @submit.stop="modifyServiceName = false;" style="display:inline-block; width:unset")
+                                .customInput
+                                    input#modifyServiceName(type="text" placeholder="Service name" :value='inputServiceName' @input="(e) => inputServiceName = e.target.value" required)
+                                //- template(v-if="serviceFetching")
+                                //-     img.loading(src="@/assets/img/loading.png")
+                                //- template(v-else)
+                                input#submitInp(type="submit" hidden)
+                                label.material-symbols-outlined.big.save(for='submitInp') done
+                                .material-symbols-outlined.cancel(@click="modifyServiceName = false;") close
+                            .currentValue(v-else)
                                 span {{ currentService.service }}
-                                span.material-symbols-outlined.fill.clickable.edit edit
+                                span.material-symbols-outlined.fill.clickable.edit(@click="inputServiceName = currentService.service;modifyServiceName = true;") edit
                     tr
                         td.smallTitle Service ID
                         td.value kjskdflaskfjlskjflksdjfsk
@@ -57,10 +66,11 @@
                             span No Key
                             span.material-symbols-outlined.fill.clickable.edit edit
             .right
-                label.smallTitle Client Secret Key
-                .addBtn
-                    .material-symbols-outlined.sml add 
-                    span Add Secret Key
+                .titleWrap
+                    label.smallTitle Client Secret Key
+                    .addBtn
+                        .material-symbols-outlined.sml add 
+                        span Add Secret Key
                 .keyWrap
     
     br
@@ -115,9 +125,6 @@
                     .smallTitle Creating User
                     .smallValue ======
 
-    br
-
-    .cardWrap
         .cardBox
             .header 
                 .title 
@@ -154,9 +161,13 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { currentService } from '@/data.js';
+import { ref } from 'vue';
 
 const router = useRouter();
 const route = useRoute();
+
+let modifyServiceName = ref(false);
+let inputServiceName = '';
 </script>
 
 <style lang="less" scoped>
@@ -171,9 +182,11 @@ const route = useRoute();
 }
 .serviceInfoTable {
     display: inline-table;
-    border-spacing: 0 1rem;
+    border-spacing: 0;
+    margin-bottom: 0.5rem;
 
     td {
+        height: 44px;
         white-space: nowrap;
     }
     // .name {
@@ -201,6 +214,7 @@ const route = useRoute();
     display: inline-block;
     opacity: 1;
     margin-bottom: 1rem;
+
     &.locked {
         opacity: 0.4;
     }
@@ -315,17 +329,23 @@ const route = useRoute();
 .settingWrap {
     display: flex;
     flex-wrap: wrap;
+    gap: 1rem;
 
     .left, .right {
         flex-grow: 1;
     }
     .right {
-        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+    }
+    .titleWrap {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
     }
     .addBtn {
-        position: absolute;
-        top: 0.2rem;
-        right: 0;
+        flex-shrink: 1;
         cursor: pointer;
         font-size: 0.7rem;
         color: var(--main-color);
@@ -347,6 +367,7 @@ const route = useRoute();
         }
     }
     .keyWrap {
+        flex-grow: 1;
         margin-top: 0.5rem;
         border-radius: 8px;
         border: 1px solid rgba(0, 0, 0, 0.10);
@@ -363,15 +384,14 @@ const route = useRoute();
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    .cardBox {
-        width: calc(50% - 0.5rem);
-        // min-width: 350px;
-        // flex-grow: 1;
-        margin-right: 1rem;
+    gap: 1rem;
 
-        &:last-child {
-            margin-right: 0;
-        }
+    .cardBox {
+        // width: calc(50% - 0.5rem);
+        // min-width: 350px;
+        width: 48%;
+        flex-grow: 1;
+
         .content {
             display: flex;
             align-items: center;
@@ -384,20 +404,15 @@ const route = useRoute();
     .settingWrap {
         .right {
             width: 100%;
-            margin-top: 1rem;
         }
     }    
+}
 
+@media (max-width:767px) {
     .cardWrap {
         .cardBox {
             width: 100%;
-            margin-right: 0;
-            margin-bottom: 1rem;
-
-            &:last-child {
-                margin-bottom: 0;
-            }
         }
-    }
+    }    
 }
 </style>
