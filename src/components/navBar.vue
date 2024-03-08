@@ -23,7 +23,6 @@ const route = useRoute();
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-sizing: border-box;
     left: unset;
     top: unset;
     background-color: unset;

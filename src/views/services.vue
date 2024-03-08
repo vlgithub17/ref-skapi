@@ -1,7 +1,7 @@
 <template lang="pug">
 #services
     h1 my-services
-    router-link.service(:to="`/my-services/abcdefg`") abcdefg
+    router-link.service(:to="`/my-services/abcdefghijklmnopqrstuvwxyz`") abcdefghijklmnopqrstuvwxyz
     router-link.service(:to="`/my-services/hijklmn`") hijklmn
 </template>
 

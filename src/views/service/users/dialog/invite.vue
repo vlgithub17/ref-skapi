@@ -1,11 +1,13 @@
 <template lang="pug">
-dialog.cardBox(ref='dialog')
+dialog(ref='dialog')
     .header 
-        h4 Invite User
+        h3 Invite User
     .content 
         p Invitation Email includes a temporary password and the acception link. User must accept the invitation within 7 days.
         p For more information, refer:&nbsp;
             a(href="https://docs.skapi.com/email/email-templates.html" target="_blank" style='white-space: nowrap') E-Mail Templates
+
+        br
 
         input(hidden name="service" :value="currentService.service")
 
@@ -38,11 +40,17 @@ dialog.cardBox(ref='dialog')
                 type='url'
             )
 
+        br
+
         .error(v-if="error")
             .material-symbols-outlined.mid error
             span {{ error }}
 
-        button.noLine(@click="emits('close')") cancel
+        br
+
+        .buttonWrap
+            button.noLine(@click="emits('close')") Cancel 
+            button.final(@click="emits('close')") Create User
 </template>
 
 <script setup lang="ts">

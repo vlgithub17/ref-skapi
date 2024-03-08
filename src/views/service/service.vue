@@ -1,39 +1,41 @@
 <template lang="pug">
 #service
-    .infoBox
+    section.infoBox
         .serviceState
             table.serviceInfoTable
                 tbody
                     tr
                         td.smallTitle Service Name
-                        td.value
-                            form.modifyInputForm(v-if="modifyServiceName" @submit.stop="modifyServiceName = false;" style="display:inline-block; width:unset")
+                        td.smallValue
+                            form.modifyInputForm(v-if="modifyServiceName" @submit.prevent="modifyServiceName = false;" style="display:inline-block;")
                                 .customInput
-                                    input#modifyServiceName(type="text" placeholder="Service name" :value='inputServiceName' @input="(e) => inputServiceName = e.target.value" required)
-                                //- template(v-if="serviceFetching")
-                                //-     img.loading(src="@/assets/img/loading.png")
-                                //- template(v-else)
-                                input#submitInp(type="submit" hidden)
-                                label.material-symbols-outlined.big.save(for='submitInp') done
-                                .material-symbols-outlined.cancel(@click="modifyServiceName = false;") close
-                            .currentValue(v-else)
-                                span {{ currentService.service }}
-                                span.material-symbols-outlined.fill.clickable.edit(@click="inputServiceName = currentService.service;modifyServiceName = true;") edit
+                                    input#modifyServiceName(type="text" placeholder="Service name" max-length="30" :value='inputServiceName' @input="(e) => inputServiceName = e.target.value" required)
+                                template(v-if="serviceFetching")
+                                    img.loading(src="@/assets/img/loading.png")
+                                template(v-else)
+                                    input#submitInp(type="submit" hidden)
+                                    label.material-symbols-outlined.big.save(for='submitInp') done
+                                    .material-symbols-outlined.cancel(@click="modifyServiceName = false;") close
+                            template(v-else)
+                                span.ellipsis.strong {{ currentService.service }}
+                                span.material-symbols-outlined.fill.clickable.edit(@click="editServiceName") edit
                     tr
                         td.smallTitle Service ID
-                        td.value kjskdflaskfjlskjflksdjfsk
+                        td.smallValue
+                            .ellipsis ap226E8TXhYtbcXRgi5D
                     tr
                         td.smallTitle Date Created
-                        td.value 0000.00.00
+                        td.smallValue 0000.00.00
             .toggleWrap.active
                 span.smallTitle Disable/Enable
                 .toggleBg
                     .toggleBtn(@click="enableDisableToggle")
         .codeWrap
-            pre.codeInner.
-                #[span(style="color:#33adff") &nbsp;&nbsp;&nbsp;&nbsp;const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.service }}"], #[span(style="color:#FFED91") "dsalfkjsldkfjalsdkfjalskdfjlkdfjlaskfjlskjfalsf"]);
-            .copy.clickable(@click="copy")
-                .material-symbols-outlined.fill file_copy
+            .scrollWrap
+                pre.scrollInner.
+                    #[span(style="color:#33adff") &nbsp;&nbsp;&nbsp;&nbsp;const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.service }}"], #[span(style="color:#FFED91") "dsalfkjsldkfjalsdkfjalskdfjlkdfjlaskfjlskjfalsf"]);&nbsp;&nbsp;&nbsp;&nbsp;
+                
+            .copy.clickable.material-symbols-outlined.fill(@click="copy") file_copy
         br
         a.question(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
             .material-symbols-outlined.empty help 
@@ -41,7 +43,7 @@
 
     br
 
-    .infoBox
+    section.infoBox
         .infoTitle Security Setting
         a.question.help(href='https://docs.skapi.com/security/security-settings.html' target="_blank")
             .material-symbols-outlined.empty help 
@@ -54,17 +56,24 @@
             .left
                 .setting    
                     label.smallTitle Cors 
-                    .smallValue
-                        .currentValue
-                            span *
-                            span.material-symbols-outlined.fill.clickable.edit edit
+                    form.modifyInputForm(v-if="modifyCors" style="margin-top: 8px" @submit.prevent="changeCors")
+                        .customInput
+                            input#modifyCors(:disabled="promiseRunningCors || null" type="text" placeholder='https://your.domain.com' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
+                        template(v-if="promiseRunningCors")
+                            img.loading(src="@/assets/img/loading.png")
+                        template(v-else)
+                            input#submitInp(type="submit" hidden)
+                            label.material-symbols-outlined.big.save(for='submitInp') done
+                            .material-symbols-outlined.sml.cancel(@click="modifyCors = false;") close
+                    .smallValue(v-else)
+                        span.ellipsis ******************************************
+                        span.material-symbols-outlined.fill.clickable.edit(@click="editCors") edit
                 br
                 .setting
                     label.smallTitle Secret Key
                     .smallValue
-                        .currentValue
-                            span No Key
-                            span.material-symbols-outlined.fill.clickable.edit edit
+                        span.ellipsis ******************************************
+                        span.material-symbols-outlined.fill.clickable.edit edit
             .right
                 .titleWrap
                     label.smallTitle Client Secret Key
@@ -75,7 +84,7 @@
     
     br
 
-    .infoBox
+    section.infoBox
         .infoTitle Subsription Plan
 
         br
@@ -96,7 +105,7 @@
 
     br
 
-    .cardWrap
+    section.cardWrap
         .cardBox
             .header 
                 .title 
@@ -166,15 +175,36 @@ import { ref } from 'vue';
 const router = useRouter();
 const route = useRoute();
 
+let serviceFetching = ref(false);
 let modifyServiceName = ref(false);
 let inputServiceName = '';
+let modifyCors = ref(false);
+let promiseRunningCors = ref(false);
+let inputCors = ref('');
+
+let editServiceName = () => {
+    // if (account.value?.email_verified) {
+    //     inputServiceName = currentService.value.name;
+    //     modifyServiceName.value = true;
+    // } else {
+    //     return false;
+    // }
+
+    inputServiceName = currentService.value.name;
+    modifyServiceName.value = true;
+}
+let editCors = () => {
+    // if (account.value?.email_verified) {
+    //     inputCors.value = currentService.value.cors === '*' ? '' : currentService.value.cors; modifyCors.value = true;
+    // } else {
+    //     return false;
+    // }
+
+    inputCors.value = currentService.value.cors === '*' ? '' : currentService.value.cors; modifyCors.value = true;
+}
 </script>
 
 <style lang="less" scoped>
-#service {
-    max-width: 1200px;
-    margin: 0 auto;
-}
 .serviceState {
     display: flex;
     flex-wrap: wrap;
@@ -185,29 +215,23 @@ let inputServiceName = '';
     border-spacing: 0;
     margin-bottom: 0.5rem;
 
-    td {
-        height: 44px;
+    .smallTitle {
+        padding-right: 1rem;
         white-space: nowrap;
     }
-    // .name {
-    //     font-size: 20px;
-    //     color: #0006;
-    // }
-    .value {
-        padding-left: 1rem;
-        font-size: 1rem;
+    .smallValue {
+        position: relative;
+        width: 100%;
+        height: 44px;
+        padding: 0;
+    }
+    .strong {
+        font-weight: 700;
+        color: var(--main-color);
+    }
+    .edit {
+        margin-left: 8px;
         color: var(--secondary-text);
-
-        .currentValue {
-            span {
-                font-weight: 700;
-                color: var(--main-color);
-            }
-            .edit {
-                margin-left: 8px;
-                color: var(--secondary-text);
-            }
-        }
     }
 }
 .toggleWrap {
@@ -263,19 +287,23 @@ let inputServiceName = '';
 }   
 .codeWrap {
     position: relative;
-    background: rgba(0,0,0,0.8);
-    border-radius: 8px;
-    box-shadow: 3px 9px 6px 0px rgba(0, 0, 0, 0.15);
-    color: #FFF;
-    overflow-x: auto;
 
-    .codeInner {
-        // width: 100%;
-        // overflow-x: auto;
-        font-size: 20px;
-        // padding: 1rem 0;
-        max-width: 0;
-        font-size: 1rem;
+    .scrollWrap {
+        // position: relative;
+        background: rgba(0,0,0,0.8);
+        border-radius: 8px;
+        box-shadow: 3px 9px 6px 0px rgba(0, 0, 0, 0.15);
+        color: #FFF;
+        overflow-x: auto;
+    
+        .scrollInner {
+            // width: 100%;
+            // overflow-x: auto;
+            font-size: 20px;
+            // padding: 1rem 0;
+            max-width: 0;
+            font-size: 1rem;
+        }
     }
     .copy {
         position: absolute;
@@ -331,13 +359,16 @@ let inputServiceName = '';
     flex-wrap: wrap;
     gap: 1rem;
 
-    .left, .right {
+    .left {
+        width: 48%;
         flex-grow: 1;
     }
     .right {
+        width: 48%;
         display: flex;
         flex-wrap: wrap;
         flex-direction: column;
+        flex-grow: 1;
     }
     .titleWrap {
         display: flex;
@@ -351,22 +382,21 @@ let inputServiceName = '';
         color: var(--main-color);
     } 
     .smallValue {
+        position: relative;
+        width: 100%;
         height: 44px;
         display: flex;
         align-items: center;
         
-        .currentValue {
-            // width: 100%;
-            // display: flex;
-            // align-items: center;
-            // justify-content: space-between;
-
-            .edit {
-                margin-left: 8px;
-            }
+        .edit {
+            margin-left: 8px;
+        }
+        .ellipsis {
+            width: 100%;
         }
     }
     .keyWrap {
+        min-height: 100px;
         flex-grow: 1;
         margin-top: 0.5rem;
         border-radius: 8px;
@@ -379,6 +409,7 @@ let inputServiceName = '';
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    gap: 1rem;
 }
 .cardWrap {
     display: flex;
@@ -409,6 +440,16 @@ let inputServiceName = '';
 }
 
 @media (max-width:767px) {
+    .ellipsis {
+        width: calc(100vw - 250px);
+    }
+    .settingWrap {
+        .smallValue {
+            .ellipsis {
+                width: calc(100vw - 120px);
+            } 
+        }
+    }
     .cardWrap {
         .cardBox {
             width: 100%;
