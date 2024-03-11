@@ -1,35 +1,39 @@
 <template lang="pug">
 #service
     section.infoBox
-        .serviceState
-            table.serviceInfoTable
-                tbody
-                    tr
-                        td.smallTitle Service Name
-                        td.smallValue
-                            form.modifyInputForm(v-if="modifyServiceName" @submit.prevent="modifyServiceName = false;" style="display:inline-block;")
-                                .customInput
-                                    input#modifyServiceName(type="text" placeholder="Service name" max-length="30" :value='inputServiceName' @input="(e) => inputServiceName = e.target.value" required)
-                                template(v-if="serviceFetching")
-                                    img.loading(src="@/assets/img/loading.png")
-                                template(v-else)
-                                    input#submitInp(type="submit" hidden)
-                                    label.material-symbols-outlined.big.save(for='submitInp') done
-                                    .material-symbols-outlined.cancel(@click="modifyServiceName = false;") close
+        .flexInfo
+            .serviceState
+                .state 
+                    .smallTitle(style="width: 150px;") Service Name
+                    .smallValue
+                        form.modifyInputForm(v-if="modifyServiceName" @submit.prevent="modifyServiceName = false;")
+                            .customInput
+                                input#modifyServiceName(type="text" placeholder="Service name" max-length="30" :value='inputServiceName' @input="(e) => inputServiceName = e.target.value" required)
+                            template(v-if="serviceFetching")
+                                img.loading(src="@/assets/img/loading.png")
                             template(v-else)
-                                span.ellipsis.strong {{ currentService.service }}
-                                span.material-symbols-outlined.fill.clickable.edit(@click="editServiceName") edit
-                    tr
-                        td.smallTitle Service ID
-                        td.smallValue
-                            .ellipsis ap226E8TXhYtbcXRgi5D
-                    tr
-                        td.smallTitle Date Created
-                        td.smallValue 0000.00.00
+                                input#submitInp(type="submit" hidden)
+                                label.material-symbols-outlined.big.save(for='submitInp') done
+                                .material-symbols-outlined.cancel(@click="modifyServiceName = false;") close
+                        template(v-else)
+                            span.ellipsis.pencil.strong {{ currentService.service }}
+                            span.material-symbols-outlined.fill.clickable.edit(@click="editServiceName") edit
+
+                .state 
+                    .smallTitle(style="width: 150px;") Service ID
+                    .smallValue
+                        .ellipsis ap226E8TXhYtbcXRgi5D
+
+                .state 
+                    .smallTitle(style="width: 150px;") Date Created
+                    .smallValue 0000.00.00
+
             .toggleWrap.active
-                span.smallTitle Disable/Enable
+                span.smallTitle(style="width: 150px;") Disable/Enable
                 .toggleBg
                     .toggleBtn(@click="enableDisableToggle")
+
+        br
         .codeWrap
             .scrollWrap
                 pre.scrollInner.
@@ -52,11 +56,11 @@
         br
         br
 
-        .settingWrap 
-            .left
-                .setting    
-                    label.smallTitle Cors 
-                    form.modifyInputForm(v-if="modifyCors" style="margin-top: 8px" @submit.prevent="changeCors")
+        .serviceState.security
+            .state    
+                label.smallTitle(style="width: 170px;") Cors 
+                .smallValue(style="padding:0")
+                    form.modifyInputForm(v-if="modifyCors" @submit.prevent="changeCors")
                         .customInput
                             input#modifyCors(:disabled="promiseRunningCors || null" type="text" placeholder='https://your.domain.com' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
                         template(v-if="promiseRunningCors")
@@ -65,112 +69,139 @@
                             input#submitInp(type="submit" hidden)
                             label.material-symbols-outlined.big.save(for='submitInp') done
                             .material-symbols-outlined.sml.cancel(@click="modifyCors = false;") close
-                    .smallValue(v-else)
-                        span.ellipsis ******************************************
+                    template(v-else)
+                        span.ellipsis.pencil https://expamle.domain.com
                         span.material-symbols-outlined.fill.clickable.edit(@click="editCors") edit
-                br
-                .setting
-                    label.smallTitle Secret Key
-                    .smallValue
-                        span.ellipsis ******************************************
-                        span.material-symbols-outlined.fill.clickable.edit edit
-            .right
-                .titleWrap
-                    label.smallTitle Client Secret Key
-                    .addBtn
-                        .material-symbols-outlined.sml add 
-                        span Add Secret Key
+            .state
+                label.smallTitle(style="width: 170px;") Secret Key
+                .smallValue
+                    form.modifyInputForm(v-if="modifyKey" @submit.prevent="setSecretKey")
+                        .customInput
+                            input#modifyKey(:disabled="promiseRunningSecKey || null" type="text" placeholder="Secret key for external request" :value='inputKey' @input="(e) => inputKey = e.target.value")
+                        template(v-if="promiseRunningSecKey")
+                            img.loading(src="@/assets/img/loading.png")
+                        template(v-else)
+                            input#submitInp(type="submit" hidden)
+                            label.material-symbols-outlined.big.save(for='submitInp') done
+                            .material-symbols-outlined.sml.cancel(@click="modifyKey = false;") close
+                    template(v-else)
+                        span.ellipsis.pencil dlfsl2sldkfjf48475skd
+                        span.material-symbols-outlined.fill.clickable.edit(@click="editKey") edit
+            .state
+                label.smallTitle(style="width: 170px;") Client Secret Key
+                .material-symbols-outlined.fill.clickable(@click="addSecretKey") add_box
                 .keyWrap
+                    .key
+                        .inputWrap
+                            //- .material-symbols-outlined.sml.minus do_not_disturb_on
+                            input#keyName(type="text" name='keyName' placeholder="Key name" required)
+                            input#secretKey(type="text" name='secretKey' placeholder="Secret Key" required)
+                        .buttonWrap
+                            template(v-if="promiseRunning")
+                                img.loading(style='padding:0;width:18px;height:18px;' src="@/assets/img/loading.png")
+                            template(v-else)
+                                input#submitInp(type="submit" hidden)
+                                label.material-symbols-outlined.mid.save(for='submitInp') check
+                                .material-symbols-outlined.mid.cancel(@click="checkKeyInp(index)") close
+
     
     br
 
-    section.infoBox
-        .infoTitle Subsription Plan
+    //- section.infoBox
+    //-     .infoTitle Subsription Plan
 
-        br
-        br
+    //-     br
+    //-     br
 
-        .subsWrap 
-            .subs 
-                .smallTitle Currnet Plan
-                .smallValue ======
-            .subs 
-                .smallTitle State
-                .smallValue ======
-            .subs 
-                .smallTitle Renew Date
-                .smallValue ======
-            .subs 
-                button.final Manage Subscription
+    //-     .subsWrap 
+    //-         .subs 
+    //-             .smallTitle Currnet Plan
+    //-             .smallValue ======
+    //-         .subs 
+    //-             .smallTitle State
+    //-             .smallValue ======
+    //-         .subs 
+    //-             .smallTitle Renew Date
+    //-             .smallValue ======
+    //-         .subs 
+    //-             button.final Manage Subscription
 
+    //- br
+
+    //- section.cardWrap
+    //-     .cardBox
+    //-         .header 
+    //-             .title 
+    //-                 .material-symbols-outlined.fill(style="font-size: 1.5rem") group
+    //-                 span Users
+    //-             router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/users`' style="font-size: 1.5rem") arrow_forward_ios
+    //-         .content
+    //-             .cont
+    //-                 .smallTitle # of Users
+    //-                 .smallValue ======
+    //-             .cont 
+    //-                 .smallTitle Creating User
+    //-                 .smallValue ======
+
+    //-     .cardBox
+    //-         .header 
+    //-             .title 
+    //-                 .material-symbols-outlined.fill(style="font-size: 1.5rem") database
+    //-                 span Database
+    //-             router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
+    //-         .content
+    //-             .cont
+    //-                 .smallTitle # of Users
+    //-                 .smallValue ======
+    //-             .cont 
+    //-                 .smallTitle Creating User
+    //-                 .smallValue ======
+
+    //-     .cardBox
+    //-         .header 
+    //-             .title 
+    //-                 .material-symbols-outlined.fill(style="font-size: 1.5rem") mail
+    //-                 span Mail
+    //-             router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/mail`' style="font-size: 1.5rem") arrow_forward_ios
+    //-         .content
+    //-             .cont
+    //-                 .smallTitle # Subscribers
+    //-                 .smallValue ======
+    //-             .cont 
+    //-                 .smallTitle Mail storage used
+    //-                 .smallValue ======
+
+    //-     .cardBox
+    //-         .header 
+    //-             .title 
+    //-                 .material-symbols-outlined.fill(style="font-size: 1.5rem") language
+    //-                 span Hosting
+    //-             router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
+    //-         .content
+    //-             .cont
+    //-                 .smallTitle Registered Subdomain
+    //-                 .smallValue ======
+    //-             .cont 
+    //-                 .smallTitle Host storage used
+    //-                 .smallValue ======
+
+    //- br
+
+    //- section.deleteWrap 
+        h3 Delete Service
+        ul.deleteDesc
+            li Deleting the service will permanently erase all data. Recovery is not possible. The service plan will also be immediately canceled, and the remaining days will be prorated and refunded.
+        div(style="display:block; text-align:right;")
+            button.unFinished.warning Delete Service
+    
     br
-
-    section.cardWrap
-        .cardBox
-            .header 
-                .title 
-                    .material-symbols-outlined.fill(style="font-size: 1.5rem") group
-                    span Users
-                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/users`' style="font-size: 1.5rem") arrow_forward_ios
-            .content
-                .cont
-                    .smallTitle # of Users
-                    .smallValue ======
-                .cont 
-                    .smallTitle Creating User
-                    .smallValue ======
-
-        .cardBox
-            .header 
-                .title 
-                    .material-symbols-outlined.fill(style="font-size: 1.5rem") database
-                    span Database
-                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
-            .content
-                .cont
-                    .smallTitle # of Users
-                    .smallValue ======
-                .cont 
-                    .smallTitle Creating User
-                    .smallValue ======
-
-        .cardBox
-            .header 
-                .title 
-                    .material-symbols-outlined.fill(style="font-size: 1.5rem") mail
-                    span Mail
-                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/mail`' style="font-size: 1.5rem") arrow_forward_ios
-            .content
-                .cont
-                    .smallTitle # Subscribers
-                    .smallValue ======
-                .cont 
-                    .smallTitle Mail storage used
-                    .smallValue ======
-
-        .cardBox
-            .header 
-                .title 
-                    .material-symbols-outlined.fill(style="font-size: 1.5rem") language
-                    span Hosting
-                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
-            .content
-                .cont
-                    .smallTitle Registered Subdomain
-                    .smallValue ======
-                .cont 
-                    .smallTitle Host storage used
-                    .smallValue ======
-
     br
-
-
 </template>
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { currentService } from '@/data.js';
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -181,63 +212,106 @@ let inputServiceName = '';
 let modifyCors = ref(false);
 let promiseRunningCors = ref(false);
 let inputCors = ref('');
+let modifyKey = ref(false);
+let promiseRunningSecKey = ref(false);
+let inputKey = '';
+let clientSecretState =ref([]);
+let secretKeyAdd = ref(false);
+let secretKeyEdit = ref(false);
+let promiseRunning = ref(false);
 
 let editServiceName = () => {
-    // if (account.value?.email_verified) {
-    //     inputServiceName = currentService.value.name;
-    //     modifyServiceName.value = true;
-    // } else {
-    //     return false;
-    // }
-
     inputServiceName = currentService.value.name;
     modifyServiceName.value = true;
 }
 let editCors = () => {
-    // if (account.value?.email_verified) {
-    //     inputCors.value = currentService.value.cors === '*' ? '' : currentService.value.cors; modifyCors.value = true;
-    // } else {
-    //     return false;
-    // }
-
     inputCors.value = currentService.value.cors === '*' ? '' : currentService.value.cors; modifyCors.value = true;
 }
+let editKey = () => {
+    inputKey = currentService.value.api_key;
+    modifyKey.value = true;
+}
+let addSecretKey = () => {
+    clientSecretState.value.unshift({ key: '', value: '', keyEdit: false, keyAdd: true });
+    secretKeyAdd.value = true;
+    nextTick(() => {
+        document.getElementById('keyName').focus();
+    });
+}
+
 </script>
 
 <style lang="less" scoped>
-.serviceState {
+.flexInfo {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
 }
-.serviceInfoTable {
-    display: inline-table;
-    border-spacing: 0;
-    margin-bottom: 0.5rem;
+.serviceState {
+    display: inline-block;
+    flex-grow: 1;
+
+    &.security {
+        width: 100%;
+    }
+
+    .state {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        
+        &:first-child {
+            .smallValue {
+                padding-right: 1rem;
+            }
+        }
+    }
+
+    .ellipsis {
+        width: 250px;
+    }
 
     .smallTitle {
-        padding-right: 1rem;
-        white-space: nowrap;
+        padding: 12.5px 0;
     }
+
     .smallValue {
-        position: relative;
-        width: 100%;
+        margin: 0;
+        flex-grow: 1;
         height: 44px;
-        padding: 0;
+        line-height: 44px;
     }
-    .strong {
-        font-weight: 700;
-        color: var(--main-color);
-    }
-    .edit {
-        margin-left: 8px;
-        color: var(--secondary-text);
+
+    .keyWrap {
+        width: 100%;
+        height: 100px;
+        flex-grow: 1;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.10);
+        overflow-y: auto;
+        padding: 8px 16px;
+
+        .empty {
+            line-height: 80px;
+            color: rgba(0, 0, 0, 0.4);
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .key {
+            display: flex;
+            flex-wrap: wrap;
+        }
     }
 }
 .toggleWrap {
-    display: inline-block;
+    height: 44px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
     opacity: 1;
-    margin-bottom: 1rem;
 
     &.locked {
         opacity: 0.4;
@@ -254,13 +328,16 @@ let editCors = () => {
         }
     }
 
+    .smallTitle {
+        width: 150px;
+    }
+
     .toggleBg {
         position: relative;
         display: inline-block;
         vertical-align: middle;
         width: 63px;
         height: 32px;
-        margin-left: 1rem;
         border-radius: 16px;
         background-color: rgba(0, 0, 0, 0.6);
         transition: all 0.3s;
@@ -354,57 +431,6 @@ let editCors = () => {
 .smallValue {
     margin-top: 8px;
 }
-.settingWrap {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-
-    .left {
-        width: 48%;
-        flex-grow: 1;
-    }
-    .right {
-        width: 48%;
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
-        flex-grow: 1;
-    }
-    .titleWrap {
-        display: flex;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-    }
-    .addBtn {
-        flex-shrink: 1;
-        cursor: pointer;
-        font-size: 0.7rem;
-        color: var(--main-color);
-    } 
-    .smallValue {
-        position: relative;
-        width: 100%;
-        height: 44px;
-        display: flex;
-        align-items: center;
-        
-        .edit {
-            margin-left: 8px;
-        }
-        .ellipsis {
-            width: 100%;
-        }
-    }
-    .keyWrap {
-        min-height: 100px;
-        flex-grow: 1;
-        margin-top: 0.5rem;
-        border-radius: 8px;
-        border: 1px solid rgba(0, 0, 0, 0.10);
-        overflow-y: auto;
-        padding: 8px 16px;
-    }
-}
 .subsWrap {
     display: flex;
     flex-wrap: wrap;
@@ -418,8 +444,6 @@ let editCors = () => {
     gap: 1rem;
 
     .cardBox {
-        // width: calc(50% - 0.5rem);
-        // min-width: 350px;
         width: 48%;
         flex-grow: 1;
 
@@ -429,6 +453,10 @@ let editCors = () => {
             justify-content: space-between;
         }
     }
+}
+.deleteDesc li {
+    color: var(--secondary-text);
+    line-height: 1.5rem;
 }
 
 @media (max-width:1023px) {
@@ -440,15 +468,22 @@ let editCors = () => {
 }
 
 @media (max-width:767px) {
-    .ellipsis {
-        width: calc(100vw - 250px);
-    }
-    .settingWrap {
+    .serviceState {
         .smallValue {
-            .ellipsis {
-                width: calc(100vw - 120px);
-            } 
+            width: 100%;
+            padding-right: 0 !important;
         }
+    }
+    .ellipsis {
+        width: calc(100vw - 40px - 3rem) !important;
+
+        &.pencil {
+            width: calc(100vw - 40px - 3rem - 24px) !important;
+        }
+    }
+    .toggleWrap {
+        width: 100%;
+        height: unset;
     }
     .cardWrap {
         .cardBox {
