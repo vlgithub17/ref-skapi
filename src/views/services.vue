@@ -8,14 +8,14 @@ br
 
 main#services
     .sentenceButton(@click="createService")
-        .material-symbols-outlined.mid add
-        span Create new service
+        .material-symbols-outlined add
+        span &nbsp;Create new service
 
     .tableWrap
         table#resizeMe.table
             thead
                 tr
-                    th.th.center(style="width:150px;")
+                    th.th.center(style="width:150px; padding-left: 0;")
                     th.th.center(style="width:128px;")
                         | Name of Service
                         .resizer(@mousedown="mousedown")
@@ -39,63 +39,51 @@ main#services
                         .resizer(@mousedown="mousedown")
                     th.th(style="width:240px;")
                         | Datebase
-                        .resizer(@mousedown="mousedown")
+                        .resizer(@mousedown="mousedown" style="display:none")
             tbody
                 template(v-if="services.length" v-for="(service, index) in services")
-                    tr(ref="tr" :class="{'active' : showInfo}" @click="(e) => goServiceDashboard(e, service)")
+                    tr(ref="tr" @click="(e) => goServiceDashboard(e, service)")
                         td(style="display:flex;align-items:center;")
-                            .material-symbols-outlined.mid.upArrow.hide(ref="upArrow" @click.stop="(e) => showServiceInfo(e, index)") arrow_forward_ios
-                            .material-symbols-outlined.mid.downArrow(ref="downArrow" @click.stop="(e) => showServiceInfo(e, index)") arrow_forward_ios
+                            .material-symbols-outlined.hover.upArrow(:class="{ hide: currentServiceIndex !== index }" @click.stop="(e) => toggleServiceInfo(e, index)") arrow_forward_ios
+                            .material-symbols-outlined.hover.downArrow(:class="{ hide: currentServiceIndex === index }" @click.stop="(e) => toggleServiceInfo(e, index)") arrow_forward_ios
                             .serviceActive(:class="{'active': service.active == 1 }")
-                                .material-symbols-outlined.sml.power power_settings_new
+                                .material-symbols-outlined.power power_settings_new
                         td
-                            .overflow {{ service.service.name }}
+                            .overflow {{ service.name }}
                         td
-                            .overflow {{ service.service.cors }}
-                        td.center {{ typeof service.service.timestamp === 'string' ? service.service.timestamp : new Date(service.service.timestamp).toDateString() }}
+                            .overflow {{ service.cors }}
+                        td.center {{ typeof service.timestamp === 'string' ? service.timestamp : new Date(service.timestamp).toDateString() }}
                         td.center
-                            template(v-if="service.service.group == 1") Trial
-                            template(v-else-if="service.service.group == 2") Standard
-                            template(v-else-if="service.service.group == 3") Premium
-                            template(v-else-if="service.service.group == 50") Unlimited
-                            template(v-else-if="service.service.group == 51") Free Standard
+                            template(v-if="service.group == 1") Trial
+                            template(v-else-if="service.group == 2") Standard
+                            template(v-else-if="service.group == 3") Premium
+                            template(v-else-if="service.group == 50") Unlimited
+                            template(v-else-if="service.group == 51") Free Standard
                             template(v-else) ...
                         td.center
                             template(v-if="service?.subscription") 
-                                template(v-if="service?.subscription?.cancel_at_period_end") 
-                                    .state(style="color:var(--caution-color)") Canceled
-                                template(v-else-if="new Date().getTime() < service?.subscription?.canceled_at") 
-                                    .state(style="color:#FCA642") Suspended
-                                template(v-else style="color:#52D687") 
-                                    .state(style="color:#52D687") Running
+                                .state(v-if="service?.subscription?.cancel_at_period_end" style="color:var(--caution-color)") Canceled
+                                .state(v-else-if="new Date().getTime() < service?.subscription?.canceled_at" style="color:#FCA642") Suspended
+                                .state(v-else style="color:#52D687") Running
                             template(v-else)
                                 .state(style="color:#52D687") Running
                         td.center
-                            template(v-if="service.service.group == 50")
-                                .percent.purple Unlimited
-                            template(v-else-if="service.service.group !== 50 && Math.ceil(service.service.users/10000*100)")
-                                .percent(:class='{"green": 0 <= Math.ceil(service.service.users/10000*100) && Math.ceil(service.service.users/10000*100) < 51, "orange": 51 <= Math.ceil(service.service.users/10000*100) && Math.ceil(service.service.users/10000*100) < 81, "red": 81 <= Math.ceil(service.service.users/10000*100) && Math.ceil(service.service.users/10000*100) < 101}') {{ Math.ceil(service.service.users/10000*100) + '%' }}
-                            template(v-else)
-                                .percent.green 0%
+                            .percent.purple(v-if="service.group == 50") Unlimited
+                            .percent(v-else-if="service.group !== 50 && Math.ceil(service.users/10000*100)" :class='{"green": 0 <= Math.ceil(service.users/10000*100) && Math.ceil(service.users/10000*100) < 51, "orange": 51 <= Math.ceil(service.users/10000*100) && Math.ceil(service.users/10000*100) < 81, "red": 81 <= Math.ceil(service.users/10000*100) && Math.ceil(service.users/10000*100) < 101}') {{ Math.ceil(service.users/10000*100) + '%' }}
+                            .percent.green(v-else) 0%
                         td.center
-                            template(v-if="service.group == 50")
-                                .percent.purple Unlimited
-                            //- template(v-else-if="service.group !== 50 && Math.ceil(storageInfo?.[service.service]?.cloud/53687091200*100)")
-                                .percent(:class='{"green": 0 <= Math.ceil(storageInfo?.[service.service]?.cloud/53687091200*100) && Math.ceil(storageInfo?.[service.service]?.cloud/53687091200*100) < 51, "orange": 51 <= Math.ceil(storageInfo?.[service.service]?.cloud/53687091200*100) && Math.ceil(storageInfo?.[service.service]?.cloud/53687091200*100) < 81, "red": 81 <= Math.ceil(storageInfo?.[service.service]?.cloud/53687091200*100)}') {{ Math.ceil(storageInfo?.[service.service]?.cloud/53687091200*100) + '%' }}
-                            template(v-else)
-                                .percent.green 0%
+                            .percent.purple(v-if="service.group == 50") Unlimited
+                            //- .percent(v-else-if="service.group !== 50 && Math.ceil(storageInfo?.[service]?.cloud/53687091200*100)" :class='{"green": 0 <= Math.ceil(storageInfo?.[service]?.cloud/53687091200*100) && Math.ceil(storageInfo?.[service]?.cloud/53687091200*100) < 51, "orange": 51 <= Math.ceil(storageInfo?.[service]?.cloud/53687091200*100) && Math.ceil(storageInfo?.[service]?.cloud/53687091200*100) < 81, "red": 81 <= Math.ceil(storageInfo?.[service]?.cloud/53687091200*100)}') {{ Math.ceil(storageInfo?.[service]?.cloud/53687091200*100) + '%' }}
+                            .percent.green(v-else) 0%
                         td(style="padding-left:40px;")
-                            template(v-if="service.group == 50")
-                                .percent.purple Unlimited
-                            //- template(v-else-if="service.group !== 50 && Math.ceil(storageInfo?.[service.service]?.database/4294967296*100)")
-                                .percent(:class='{"green": 0 <= Math.ceil(storageInfo?.[service.service]?.database/4294967296*100) && Math.ceil(storageInfo?.[service.service]?.database/4294967296*100) < 51, "orange": 51 <= Math.ceil(storageInfo?.[service.service]?.database/4294967296*100) && Math.ceil(storageInfo?.[service.service]?.database/4294967296*100) < 81, "red": 81 <= Math.ceil(storageInfo?.[service.service]?.database/4294967296*100)}') {{ Math.ceil(storageInfo?.[service.service]?.database/4294967296*100) + '%' }}
-                            template(v-else)
-                                .percent.green 0%
-                    tr.cont(ref="trCont" :class="{'active' : showInfo}")
+                            .percent.purple(v-if="service.group == 50") Unlimited
+                            //- .percent(v-else-if="service.group !== 50 && Math.ceil(storageInfo?.[service]?.database/4294967296*100)" :class='{"green": 0 <= Math.ceil(storageInfo?.[service]?.database/4294967296*100) && Math.ceil(storageInfo?.[service]?.database/4294967296*100) < 51, "orange": 51 <= Math.ceil(storageInfo?.[service]?.database/4294967296*100) && Math.ceil(storageInfo?.[service]?.database/4294967296*100) < 81, "red": 81 <= Math.ceil(storageInfo?.[service]?.database/4294967296*100)}') {{ Math.ceil(storageInfo?.[service]?.database/4294967296*100) + '%' }}
+                            .percent.green(v-else) 0%
+                    tr.cont(ref="trCont" :class="{ active: currentServiceIndex === index }")
                         td(colspan="9")
                             .info
                                 .title Name
-                                .value(style="color:var(--primary-text);font-weight:700") {{ service.name }}
+                                .value(style="color:var(--black-8);font-weight:700") {{ service.name }}
                             .info 
                                 .title Service ID 
                                 .value {{ service.service }}
@@ -108,7 +96,7 @@ main#services
                                 .value {{ service.users }}
                             .info.inline 
                                 .title Database Used
-                                //- .value {{ convertToMb(storageInfo?.[service.service]?.database) + '/4000MB' }}
+                                .value -
                             .info.inline 
                                 .title Subscription Plan
                                 router-link(:to="`/subscription/${service.service}`" style="color:var(--main-color);font-weight:700;")
@@ -120,40 +108,44 @@ main#services
                                     template(v-else) ...
                             .info.inline 
                                 .title Hosting Strorage
-                                template(v-if="service?.subdomain")
-                                    //- .value {{ convertToMb(storageInfo?.[service.service]?.host) + '/50000MB' }}
-                                template(v-else)
-                                    .value -
+                                .value -
                             br
                             br
                             .info.inline 
                                 .title Locale
-                                //- .value {{ regions?.[service.region] || service.region }}
+                                .value -
                             .info.inline 
                                 .title Cloud Storage Used
-                                //- .value {{ convertToMb(storageInfo?.[service.service]?.cloud) + '/50000MB' }}
+                                .value -
                             .info.inline 
                                 .title Date Created
                                 .value {{ typeof service.timestamp === 'string' ? service.timestamp : new Date(service.timestamp).toDateString() }}
                             .info.inline 
                                 .title Subdomain
-                                template(v-if="service?.subdomain")
-                                    .value {{ service.subdomain }}
-                                template(v-else)
-                                    .value -
+                                .value(v-if="service?.subdomain") {{ service.subdomain }}
+                                .value(v-else) -
                 tr.noServices(v-else)
                     td(colspan="9" style="text-align:center; padding-top:20px;")
-                        h3 No Services
                         br
-                        p Get started by creating a new service.
+                        br
+                        .title No Services
+                        br
+                        .desc Get started by creating a new service.
 
+    .loadingWrap(v-if="serviceFetching")
+        img.loading(src="@/assets/img/loading.png")
+
+    br
+
+    .plus(v-if="!serviceFetching")
+        .material-symbols-outlined.hover.fill(@click="createService" style="") add_circle
 </template>
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { services } from '@/data.js'
-import { tableSetting, mouseMoveHandler, mousedown } from '@/assets/js/table.js'
+import { onBeforeUnmount, onMounted, ref, nextTick } from 'vue';
+
+const router = useRouter();
 
 onMounted(() => {
     document.querySelector('body').classList.add('fa');
@@ -162,21 +154,69 @@ onBeforeUnmount(() => {
     document.querySelector('body').classList.remove('fa');
 })
 
-tableSetting();
+let prevX, prevW, nextW = 0;
+let prevCol, nextCol = null;
+let widthSum = 0;
+
+nextTick(() => {
+    let ths = document.getElementsByTagName('th');
+    let thsArr = Array.from(ths);
+
+    thsArr.forEach((e) => {
+        let widthStyle = window.getComputedStyle(e).width;
+        e.style.width = widthStyle;
+        widthSum += widthStyle;
+    });
+})
+
+let mouseMoveHandler = function (e) {
+    let dx = e.clientX - prevX;
+    let ths = document.getElementsByTagName('th');
+    let thsArr = Array.from(ths);
+
+    thsArr.forEach((e) => {
+        widthSum += e.offsetWidth;
+    });
+
+    if ((widthSum < window.innerWidth || dx < 0) && (prevW + dx > 100 && nextW - dx > 100)) {
+        prevCol.style.width = `${prevW + dx}px`;
+        nextCol.style.width = `${nextW - dx}px`;
+    }
+};
+
+let mousedown = function (e) {
+    console.log(e)
+    prevCol = e.target.parentNode;
+    nextCol = prevCol.nextSibling;
+
+    let prevStyles = window.getComputedStyle(e.target.parentNode);
+    let nextStyles = window.getComputedStyle(prevCol.nextSibling);
+
+    prevX = e.clientX;
+    prevW = parseInt(prevStyles.width, 10);
+    nextW = parseInt(nextStyles.width, 10);
+    document.addEventListener('mousemove', mouseMoveHandler);
+};
 
 document.addEventListener('mouseup', function () {
     document.removeEventListener('mousemove', mouseMoveHandler);
 });
 
-const router = useRouter();
-let showInfo = ref(false);
-let showMore = ref(false);
-let downArrow = ref(null);
-let upArrow = ref(null);
-let trCont = ref(null);
-let currentServiceIndex = null;
+let services = [
+    {
+        active: 1,
+        name: 'service name',
+        cors: 'service cors',
+        timestamp: 1709102706561,
+        group: 1,
+        service: 'ap226E8TXhYtbcXRgi5D',
+        users: 10
+    }
+];
+let serviceFetching = ref(false);
+let currentServiceIndex = ref(null);
 
-let goServiceDashboard = (e:Event, service:object) => {
+let goServiceDashboard = (e:any, service:Object) => {
     e.currentTarget.classList.add('active');
 
     setTimeout(() => {
@@ -184,30 +224,12 @@ let goServiceDashboard = (e:Event, service:object) => {
     }, 500);
 }
 
-let showServiceInfo = (e:Event, index:number) => {
-    if(currentServiceIndex == index) {
-        downArrow.value[index].classList.remove('hide');
-        upArrow.value[index].classList.add('hide');
-        trCont.value[index].classList.remove('active');
-        currentServiceIndex = null;
-        showMore.value = false;
-
-        return;
-    } else if(e.target.classList.contains('upArrow')) {
-        downArrow.value[index].classList.remove('hide');
-        upArrow.value[index].classList.add('hide');
-        trCont.value[index].classList.remove('active');
-        currentServiceIndex = null;
-        showMore.value = false;
-
-        return;
+let toggleServiceInfo = (e:any, index:number) => {
+    if (currentServiceIndex.value === index || e.target.classList.contains('upArrow')) {
+        currentServiceIndex.value = null;
+    } else {
+        currentServiceIndex.value = index;
     }
-
-    currentServiceIndex = index;
-    downArrow.value[index].classList.add('hide');
-    upArrow.value[index].classList.remove('hide');
-    trCont.value[index].classList.add('active');
-    showMore.value = false;
 }
 
 </script>
@@ -219,7 +241,7 @@ let showServiceInfo = (e:Event, index:number) => {
 .service {
     display: block;
     text-decoration: none;
-    color: #000;
+    color: var(--black-8);
     padding: 10px 0;
 }
 .tableWrap {
@@ -228,19 +250,16 @@ let showServiceInfo = (e:Event, index:number) => {
     overflow-x: auto;
 
     .noServices {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
         text-align: center;
 
-        h3 {
+        .title {
             color: rgba(0, 0, 0, 0.40);
+            font-weight: 700;
+            font-size: 1rem;
         }
 
-        p {
+        .desc {
             color: rgba(0, 0, 0, 0.40);
-            font-weight: 500;
         }
     }
 
@@ -250,67 +269,38 @@ let showServiceInfo = (e:Event, index:number) => {
         table-layout: fixed;
 
         thead {
-            position: sticky;
-            top: 0px;
-            background-color: #fafafa;
-            z-index: 10;
             text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
 
             tr {
                 height: 60px;
+            }
+            th {
+                position: relative;
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: var(--black-4);
+                padding-left: 40px;
+                user-select: none;
 
-                th {
-                    position: relative;
-                    color: rgba(0, 0, 0, 0.40);
-                    font-size: 0.7rem;
-                    font-weight: 500;
-                    padding-left: 40px;
+                &.center {
+                    padding: 0;
+                    text-align: center;
+                }
 
-                    &::after {
-                        position: absolute;
-                        content: '';
-                        width: 100%;
-                        height: 1px;
-                        left: 0;
-                        bottom: 0;
-                        background: rgba(0, 0, 0, 0.1);
-                        box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
-                    }
+                .resizer {
+                    position: absolute;
+                    top: 50%;
+                    right: 0px;
+                    transform: translateY(-50%);
+                    width: 4px;
+                    height: 20px;
+                    background-color: rgba(0, 0, 0, 0.1);
+                    cursor: col-resize;
 
-                    &:first-child {
-                        padding-left: 0;
-                    }
-
-                    &:last-child {
-                        .resizer {
-                            display: none;
-                        }
-                    }
-
-                    &.center {
-                        padding: 0;
-                        text-align: center;
-                    }
-
-                    .resizer {
-                        position: absolute;
-                        top: 50%;
-                        right: 0px;
-                        transform: translateY(-50%);
-                        width: 4px;
-                        height: 20px;
-                        background-color: rgba(0, 0, 0, 0.1);
-                        cursor: col-resize;
-
-                        &.contrast {
-                            background-color: #fff !important;
-                        }
-                    }
-
-                    .resizable {
-                        height: 100px;
-                        width: 100px;
-                        position: relative;
+                    &.contrast {
+                        background-color: #fff !important;
                     }
                 }
             }
@@ -321,26 +311,30 @@ let showServiceInfo = (e:Event, index:number) => {
             font-weight: 400;
 
             tr {
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
+
                 &:not(.cont, .active, .noServices):hover {
                     background-color: rgba(41,63,230,0.05);
                     cursor: pointer;
+                }
+                &.noServices {
+                    border: 0;
+                    box-shadow: unset;
                 }
                 &.active {
                     background-color: rgba(41, 63, 230, 0.10);
                 }
                 &.cont {
-                    height: 305px;
-                    background-color: rgba(0, 0, 0, 0.02);
+                    background-color: rgba(0,0,0,0.02);
                     display: none;
-
+                    
                     &.active {
                         display: table-row;
                     }
-
                     td {
-                        padding: 0 75px;
+                        padding: 1rem 75px;
                     }
-
                     .info {
                         display: block;
                         margin-bottom: 10px;
@@ -356,20 +350,12 @@ let showServiceInfo = (e:Event, index:number) => {
                         }
                         .title {
                             display: inline-block;
-                            font-weight: 400;
-                            color: rgba(0, 0, 0, 0.40);
+                            color: var(--black-4);
                             margin-right: 10px;
                         }
                         .value {
                             display: inline-block;
-                            color: rgba(0, 0, 0, 0.60);
-                        }
-                    }
-                }
-                &.noServices {
-                    td {
-                        &::after {
-                            display: none !important;
+                            color: var(--black-6);
                         }
                     }
                 }
@@ -381,47 +367,11 @@ let showServiceInfo = (e:Event, index:number) => {
                 padding: 0 20px;
                 font-size: 0.8rem;
 
-                &::after {
-                    position: absolute;
-                    content: '';
-                    width: 100%;
-                    height: 1px;
-                    left: 0;
-                    bottom: 0;
-                    background: rgba(0, 0, 0, 0.1);
-                    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
-                }
-
                 &.center {
                     padding: 0;
                     text-align: center;
-                    font-size: 0.8rem;
                 }
-
-                .percent {
-                    display: inline-block;
-                    padding: 3px 12px;
-                    border-radius: 4px;
-                    box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, 0.15) inset;
-                    color: #fff;
-
-                    &.green {
-                        background-color: #52D687;
-                    }
-                    &.orange {
-                        background-color: #FCA642;
-                    }
-                    &.red {
-                        background-color: var(--caution-color);
-                    }
-                    &.purple {
-                        background-color: #B881FF;
-                    }
-                }
-
                 .upArrow, .downArrow {
-                    display: inline-block;
-                    vertical-align: middle;
                     padding: 10px;
                     border-radius: 50%;
                     font-size: 24px;
@@ -429,51 +379,20 @@ let showServiceInfo = (e:Event, index:number) => {
                     cursor: pointer;
 
                     &:hover {
-                        background-color: rgba(41, 63, 230, 0.10);
+                        // background-color: rgba(41, 63, 230, 0.10);
                     }
                     &.hide {
                         display: none;
                     }
                 }
-
                 .upArrow {
                     rotate: 270deg;
                 }
-
                 .downArrow {
                     rotate: 90deg;
                 }
-
-                .menu {
-                    position: absolute;
-                    right: 28px;
-                    top: 50%;
-                    padding: 10px;
-                    text-align: center;
-                    padding-top: 8px;
-                    border-radius: 50%;
-                    transform: translateY(-50%);
-                    z-index: 1;
-
-                    &:hover {
-                        background-color: rgba(41, 63, 230, 0.10);
-                    }
-
-                }
-                #moreVert {
-                    &.hide {
-                        display: none;
-                    }
-
-                    &.show {
-                        display: block;
-                    }
-                }
-
                 .serviceActive {
                     position: relative;
-                    display: inline-block;
-                    vertical-align: middle;
                     width: 20px;
                     height: 20px;
                     margin: 0 auto;
@@ -490,25 +409,29 @@ let showServiceInfo = (e:Event, index:number) => {
                         top: 50%;
                         transform: translate(-50%, -50%);
                         color: #fff;
+                        font-size: 1rem;
                     }
                 }
-
-                > div:not(.material-symbols-outlined) {
-                    font-size: 0.8rem;
+                .percent {
+                    display: inline-block;
+                    padding: 3px 12px;
+                    border-radius: 4px;
+                    box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, 0.15) inset;
+                    color: #fff;
+                    
+                    &.green {
+                        background-color: #52D687;
+                    }
+                    &.orange {
+                        background-color: #FCA642;
+                    }
+                    &.red {
+                        background-color: var(--caution-color);
+                    }
+                    &.purple {
+                        background-color: #B881FF;
+                    }
                 }
-
-                .block {
-                    color: rgba(0, 0, 0, 0.4);
-                }
-
-                .enable {
-                    color: rgba(90, 216, 88, 1);
-                }
-
-                .disable {
-                    color: rgba(240, 78, 78, 1);
-                }
-
                 .overflow {
                     position: relative;
                     width: 100%;
@@ -522,6 +445,22 @@ let showServiceInfo = (e:Event, index:number) => {
                 }
             }
         }
+    }
+}
+.loadingWrap {
+    text-align: center;
+    padding-top: 1rem;
+}
+.plus {
+    display: block;
+    text-align: center;
+    padding-bottom: 2rem;
+
+    .material-symbols-outlined {
+        font-size: 1.6rem;
+        padding: 4px;
+        color: var(--main-color);
+        cursor: pointer;
     }
 }
 </style>

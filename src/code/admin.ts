@@ -85,7 +85,6 @@ export async function requestNewsletterSender(serviceId: string, params: { group
     return skapi.request(await getEndpointUrl('request-newsletter-sender'), { service: serviceId, group_numb: params.groupNum }, { auth: true });
 }
 
-
 export async function deleteNewsletter(
     params: {
         message_id: string;

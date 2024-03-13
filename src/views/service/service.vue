@@ -94,8 +94,8 @@
                     template(v-if="showKeyAdd")
                         form.keyWrap(@submit.prevent="saveSecretKey(index)")
                             .key
+                                .material-symbols-outlined.fill.clickable do_not_disturb_on
                                 .inputWrap
-                                    .material-symbols-outlined.fill.clickable do_not_disturb_on
                                     input#keyName(type="text" name='keyName' placeholder="Key name" required)
                                     input#secretKey(type="text" name='secretKey' placeholder="Secret Key" required)
                                 .buttonWrap
@@ -192,7 +192,7 @@
 
     br
 
-    //- section.deleteWrap 
+    section.deleteWrap 
         h3 Delete Service
         ul.deleteDesc
             li Deleting the service will permanently erase all data. Recovery is not possible. The service plan will also be immediately canceled, and the remaining days will be prorated and refunded.
@@ -324,8 +324,10 @@ let addSecretKey = () => {
     }
     .key {
         position: relative;
+        height: 30px;
         display: flex;
         flex-wrap: wrap;
+        align-items: center;
         justify-content: space-between;
 
         div {
@@ -335,13 +337,25 @@ let addSecretKey = () => {
             gap: 10px;
         }
         .inputWrap {
-            width: calc(100% - 70px);
+            position: relative;
+            width: calc(100% - 94px);
+
+            #keyName {
+                width: 200px;
+            }
+            #secretKey {
+                flex-grow: 1;
+            }
         }
         input {
-            background-color: unset;
             border: 0;
+            background-color: unset;
             border-bottom: 1px solid #000;
-            flex-grow: 1;
+            height: 36px;
+            // background-color: rgba(0,0,0,0.05);
+            // border-radius: 8px;
+            // font-size: 16px;
+            // padding: 0 12px;
         }
     }
 }
@@ -477,7 +491,7 @@ let addSecretKey = () => {
     }
 }
 .deleteDesc li {
-    color: var(--secondary-text);
+    color: var(--black-6);
     line-height: 1.5rem;
 }
 
