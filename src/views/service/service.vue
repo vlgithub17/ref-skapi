@@ -48,7 +48,7 @@
     br
 
     section.infoBox
-        .infoTitle Security Setting
+        .infoTitle(style="margin-right: 1rem;") Security Setting
         a.question.help(href='https://docs.skapi.com/security/security-settings.html' target="_blank")
             .material-symbols-outlined.empty help 
             span Help
@@ -87,105 +87,110 @@
                     template(v-else)
                         span.ellipsis.pencil dlfsl2sldkfjf48475skd
                         span.material-symbols-outlined.fill.clickable.edit(@click="editKey") edit
-            .state
+            .state(style="flex-grow:1")
                 label.smallTitle(style="width: 170px;") Client Secret Key
-                .material-symbols-outlined.fill.clickable(@click="addSecretKey") add_box
-                .keyWrap
-                    .key
-                        .inputWrap
-                            //- .material-symbols-outlined.sml.minus do_not_disturb_on
-                            input#keyName(type="text" name='keyName' placeholder="Key name" required)
-                            input#secretKey(type="text" name='secretKey' placeholder="Secret Key" required)
-                        .buttonWrap
-                            template(v-if="promiseRunning")
-                                img.loading(style='padding:0;width:18px;height:18px;' src="@/assets/img/loading.png")
-                            template(v-else)
-                                input#submitInp(type="submit" hidden)
-                                label.material-symbols-outlined.mid.save(for='submitInp') check
-                                .material-symbols-outlined.mid.cancel(@click="checkKeyInp(index)") close
+                .material-symbols-outlined.fill.clickable(:class="{'nonClickable' : showKeyAdd}" style="padding: 12.5px 0" @click="showKeyAdd = !showKeyAdd") add_box
+                .smallValue.keyBox
+                    template(v-if="showKeyAdd")
+                        form.keyWrap(@submit.prevent="saveSecretKey(index)")
+                            .key
+                                .inputWrap
+                                    .material-symbols-outlined.fill.clickable do_not_disturb_on
+                                    input#keyName(type="text" name='keyName' placeholder="Key name" required)
+                                    input#secretKey(type="text" name='secretKey' placeholder="Secret Key" required)
+                                .buttonWrap
+                                    template(v-if="promiseRunning")
+                                        img.loading(style='padding:0;width:18px;height:18px;' src="@/assets/img/loading.png")
+                                    template(v-else)
+                                        input#submitInp(type="submit" hidden)
+                                        label.material-symbols-outlined.clickable.save(for='submitInp') check
+                                        .material-symbols-outlined.clickable.cancel(@click="showKeyAdd = false") close
+                    .empty(v-else) No Secret Key
 
+    br
+    
+    section.infoBox
+        .infoTitle Subsription Plan
+
+        br
+        br
+
+        .flexInfo
+            .subs 
+                .smallTitle(style="width: 150px;") Currnet Plan
+                .smallValue ======
+            .subs 
+                .smallTitle(style="width: 150px;") State
+                .smallValue ======
+            .subs 
+                .smallTitle(style="width: 150px;") Renew Date
+                .smallValue ======
+        
+        br
+
+        div(style="display:block; text-align:right") 
+            button.final Manage Subscription
     
     br
 
-    //- section.infoBox
-    //-     .infoTitle Subsription Plan
+    .flexInfo
+        section.cardBox
+            .header 
+                .title 
+                    .material-symbols-outlined.fill(style="font-size: 1.5rem") group
+                    span Users
+                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/users`' style="font-size: 1.5rem") arrow_forward_ios
+            .content
+                .cont
+                    .smallTitle # of Users
+                    .smallValue ======
+                .cont 
+                    .smallTitle Creating User
+                    .smallValue ======
 
-    //-     br
-    //-     br
+        section.cardBox
+            .header 
+                .title 
+                    .material-symbols-outlined.fill(style="font-size: 1.5rem") database
+                    span Database
+                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
+            .content
+                .cont
+                    .smallTitle # of Users
+                    .smallValue ======
+                .cont 
+                    .smallTitle Creating User
+                    .smallValue ======
 
-    //-     .subsWrap 
-    //-         .subs 
-    //-             .smallTitle Currnet Plan
-    //-             .smallValue ======
-    //-         .subs 
-    //-             .smallTitle State
-    //-             .smallValue ======
-    //-         .subs 
-    //-             .smallTitle Renew Date
-    //-             .smallValue ======
-    //-         .subs 
-    //-             button.final Manage Subscription
+        section.cardBox
+            .header 
+                .title 
+                    .material-symbols-outlined.fill(style="font-size: 1.5rem") mail
+                    span Mail
+                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/mail`' style="font-size: 1.5rem") arrow_forward_ios
+            .content
+                .cont
+                    .smallTitle # Subscribers
+                    .smallValue ======
+                .cont 
+                    .smallTitle Mail storage used
+                    .smallValue ======
 
-    //- br
+        section.cardBox
+            .header 
+                .title 
+                    .material-symbols-outlined.fill(style="font-size: 1.5rem") language
+                    span Hosting
+                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
+            .content
+                .cont
+                    .smallTitle Registered Subdomain
+                    .smallValue ======
+                .cont 
+                    .smallTitle Host storage used
+                    .smallValue ======
 
-    //- section.cardWrap
-    //-     .cardBox
-    //-         .header 
-    //-             .title 
-    //-                 .material-symbols-outlined.fill(style="font-size: 1.5rem") group
-    //-                 span Users
-    //-             router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/users`' style="font-size: 1.5rem") arrow_forward_ios
-    //-         .content
-    //-             .cont
-    //-                 .smallTitle # of Users
-    //-                 .smallValue ======
-    //-             .cont 
-    //-                 .smallTitle Creating User
-    //-                 .smallValue ======
-
-    //-     .cardBox
-    //-         .header 
-    //-             .title 
-    //-                 .material-symbols-outlined.fill(style="font-size: 1.5rem") database
-    //-                 span Database
-    //-             router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
-    //-         .content
-    //-             .cont
-    //-                 .smallTitle # of Users
-    //-                 .smallValue ======
-    //-             .cont 
-    //-                 .smallTitle Creating User
-    //-                 .smallValue ======
-
-    //-     .cardBox
-    //-         .header 
-    //-             .title 
-    //-                 .material-symbols-outlined.fill(style="font-size: 1.5rem") mail
-    //-                 span Mail
-    //-             router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/mail`' style="font-size: 1.5rem") arrow_forward_ios
-    //-         .content
-    //-             .cont
-    //-                 .smallTitle # Subscribers
-    //-                 .smallValue ======
-    //-             .cont 
-    //-                 .smallTitle Mail storage used
-    //-                 .smallValue ======
-
-    //-     .cardBox
-    //-         .header 
-    //-             .title 
-    //-                 .material-symbols-outlined.fill(style="font-size: 1.5rem") language
-    //-                 span Hosting
-    //-             router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
-    //-         .content
-    //-             .cont
-    //-                 .smallTitle Registered Subdomain
-    //-                 .smallValue ======
-    //-             .cont 
-    //-                 .smallTitle Host storage used
-    //-                 .smallValue ======
-
-    //- br
+    br
 
     //- section.deleteWrap 
         h3 Delete Service
@@ -219,6 +224,7 @@ let clientSecretState =ref([]);
 let secretKeyAdd = ref(false);
 let secretKeyEdit = ref(false);
 let promiseRunning = ref(false);
+let showKeyAdd = ref(false);
 
 let editServiceName = () => {
     inputServiceName = currentService.value.name;
@@ -242,10 +248,20 @@ let addSecretKey = () => {
 </script>
 
 <style lang="less" scoped>
+.smallTitle {
+    width: 150px;
+    padding: 12.5px 0;
+}
+.smallValue {
+    height: 44px;
+    line-height: 44px;
+    margin-top: 8px;
+}
 .flexInfo {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    gap: 1rem;
 }
 .serviceState {
     display: inline-block;
@@ -255,53 +271,77 @@ let addSecretKey = () => {
         width: 100%;
     }
 
+    &.subs {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
     .state {
         display: flex;
         flex-wrap: wrap;
-        align-items: center;
-        
-        &:first-child {
-            .smallValue {
-                padding-right: 1rem;
-            }
-        }
+        justify-content: space-between;
+        flex-grow: 1;
     }
 
     .ellipsis {
         width: 250px;
     }
 
-    .smallTitle {
-        padding: 12.5px 0;
-    }
-
     .smallValue {
         margin: 0;
         flex-grow: 1;
-        height: 44px;
-        line-height: 44px;
     }
+}
+.keyBox {
+    width: 100%;
+    line-height: unset;
+    height: 180px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    overflow-y: auto;
+    padding: 8px 16px;
 
-    .keyWrap {
-        width: 100%;
-        height: 100px;
-        flex-grow: 1;
-        border-radius: 8px;
-        border: 1px solid rgba(0, 0, 0, 0.10);
-        overflow-y: auto;
-        padding: 8px 16px;
-
-        .empty {
-            line-height: 80px;
-            color: rgba(0, 0, 0, 0.4);
-            font-size: 0.9rem;
-            font-weight: 400;
-            text-align: center;
+    .add {
+        display: block;
+        background-color: #293fe60d;
+        border-radius: 4px;
+        text-align: center;
+        padding: 6px 0;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        
+        * {
+            color: var(--main-color);
         }
+    }
+    .empty {
+        line-height: 160px;
+        color: rgba(0, 0, 0, 0.4);
+        font-size: 0.9rem;
+        font-weight: 400;
+        text-align: center;
+    }
+    .key {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
 
-        .key {
+        div {
             display: flex;
             flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .inputWrap {
+            width: calc(100% - 70px);
+        }
+        input {
+            background-color: unset;
+            border: 0;
+            border-bottom: 1px solid #000;
+            flex-grow: 1;
         }
     }
 }
@@ -326,10 +366,6 @@ let addSecretKey = () => {
                 transition: all 0.3s;
             }
         }
-    }
-
-    .smallTitle {
-        width: 150px;
     }
 
     .toggleBg {
@@ -366,7 +402,6 @@ let addSecretKey = () => {
     position: relative;
 
     .scrollWrap {
-        // position: relative;
         background: rgba(0,0,0,0.8);
         border-radius: 8px;
         box-shadow: 3px 9px 6px 0px rgba(0, 0, 0, 0.15);
@@ -374,10 +409,7 @@ let addSecretKey = () => {
         overflow-x: auto;
     
         .scrollInner {
-            // width: 100%;
-            // overflow-x: auto;
             font-size: 20px;
-            // padding: 1rem 0;
             max-width: 0;
             font-size: 1rem;
         }
@@ -420,7 +452,6 @@ let addSecretKey = () => {
 
     &.help {
         display: inline-block;
-        margin-left: 1rem;
         color: rgba(0, 0, 0, 0.40);
     }
 
@@ -428,30 +459,21 @@ let addSecretKey = () => {
         margin-left: 5px;
     }
 }
-.smallValue {
-    margin-top: 8px;
+.subs {
+    flex-grow: 1;
 }
-.subsWrap {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 1rem;
-}
-.cardWrap {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 1rem;
+.cardBox {
+    width: 48%;
+    flex-grow: 1;
 
-    .cardBox {
-        width: 48%;
-        flex-grow: 1;
-
-        .content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    .smallTitle {
+        padding: 0;
+    }
+    .content {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
     }
 }
 .deleteDesc li {
@@ -460,6 +482,9 @@ let addSecretKey = () => {
 }
 
 @media (max-width:1023px) {
+    .infoBox {
+        width: 100% !important;
+    }
     .settingWrap {
         .right {
             width: 100%;
@@ -468,10 +493,14 @@ let addSecretKey = () => {
 }
 
 @media (max-width:767px) {
+    .flexInfo {
+        &:first-child {
+            gap: unset;
+        }
+    }
     .serviceState {
         .smallValue {
             width: 100%;
-            padding-right: 0 !important;
         }
     }
     .ellipsis {
@@ -485,10 +514,15 @@ let addSecretKey = () => {
         width: 100%;
         height: unset;
     }
-    .cardWrap {
-        .cardBox {
-            width: 100%;
-        }
-    }    
+    // .keyBox {
+    //     .key {
+    //         .inputWrap {
+    //             width: 100%;
+    //         }
+    //     }
+    // }
+    .cardBox {
+        width: 100%;
+    }
 }
 </style>
