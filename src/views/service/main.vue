@@ -51,20 +51,18 @@ if(currentService.value !== route.path.split('/')[2] || currentService.value == 
 #serviceMain {
     display: flex;
     flex-wrap: nowrap;
-    box-sizing: border-box;
-    // padding: 0 20px;
 
     .left {
-        // width: 240px;
-        box-sizing: border-box;
-        // padding-right: 20px;
         padding-left: 20px;
     }
     .right {
         flex-grow: 1;
         padding: 0 20px;
-        // width: calc(100vw - 240px);
-        // width: 100%;
+
+        > div {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
     }
 }
 .router {

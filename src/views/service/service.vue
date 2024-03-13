@@ -1,30 +1,45 @@
 <template lang="pug">
 #service
-    .infoBox
-        .serviceState
-            table.serviceInfoTable
-                tbody
-                    tr
-                        td.smallTitle Service Name
-                        td.value
-                            .currentValue
-                                span {{ currentService.service }}
-                                span.material-symbols-outlined.fill.clickable.edit edit
-                    tr
-                        td.smallTitle Service ID
-                        td.value kjskdflaskfjlskjflksdjfsk
-                    tr
-                        td.smallTitle Date Created
-                        td.value 0000.00.00
+    section.infoBox
+        .flexInfo
+            .serviceState
+                .state 
+                    .smallTitle(style="width: 150px;") Service Name
+                    .smallValue
+                        form.modifyInputForm(v-if="modifyServiceName" @submit.prevent="modifyServiceName = false;")
+                            .customInput
+                                input#modifyServiceName(type="text" placeholder="Service name" max-length="30" :value='inputServiceName' @input="(e) => inputServiceName = e.target.value" required)
+                            template(v-if="serviceFetching")
+                                img.loading(src="@/assets/img/loading.png")
+                            template(v-else)
+                                input#submitInp(type="submit" hidden)
+                                label.material-symbols-outlined.big.save(for='submitInp') done
+                                .material-symbols-outlined.cancel(@click="modifyServiceName = false;") close
+                        template(v-else)
+                            span.ellipsis.pencil.strong {{ currentService.service }}
+                            span.material-symbols-outlined.fill.clickable.edit(@click="editServiceName") edit
+
+                .state 
+                    .smallTitle(style="width: 150px;") Service ID
+                    .smallValue
+                        .ellipsis ap226E8TXhYtbcXRgi5D
+
+                .state 
+                    .smallTitle(style="width: 150px;") Date Created
+                    .smallValue 0000.00.00
+
             .toggleWrap.active
-                span.smallTitle Disable/Enable
+                span.smallTitle(style="width: 150px;") Disable/Enable
                 .toggleBg
                     .toggleBtn(@click="enableDisableToggle")
+
+        br
         .codeWrap
-            pre.codeInner.
-                #[span(style="color:#33adff") &nbsp;&nbsp;&nbsp;&nbsp;const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.service }}"], #[span(style="color:#FFED91") "dsalfkjsldkfjalsdkfjalskdfjlkdfjlaskfjlskjfalsf"]);
-            .copy.clickable(@click="copy")
-                .material-symbols-outlined.fill file_copy
+            .scrollWrap
+                pre.scrollInner.
+                    #[span(style="color:#33adff") &nbsp;&nbsp;&nbsp;&nbsp;const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.service }}"], #[span(style="color:#FFED91") "dsalfkjsldkfjalsdkfjalskdfjlkdfjlaskfjlskjfalsf"]);&nbsp;&nbsp;&nbsp;&nbsp;
+                
+            .copy.clickable.material-symbols-outlined.fill(@click="copy") file_copy
         br
         a.question(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
             .material-symbols-outlined.empty help 
@@ -32,8 +47,8 @@
 
     br
 
-    .infoBox
-        .infoTitle Security Setting
+    section.infoBox
+        .infoTitle(style="margin-right: 1rem;") Security Setting
         a.question.help(href='https://docs.skapi.com/security/security-settings.html' target="_blank")
             .material-symbols-outlined.empty help 
             span Help
@@ -41,53 +56,85 @@
         br
         br
 
-        .settingWrap 
-            .left
-                .setting    
-                    label.smallTitle Cors 
-                    .smallValue
-                        .currentValue
-                            span *
-                            span.material-symbols-outlined.fill.clickable.edit edit
-                br
-                .setting
-                    label.smallTitle Secret Key
-                    .smallValue
-                        .currentValue
-                            span No Key
-                            span.material-symbols-outlined.fill.clickable.edit edit
-            .right
-                label.smallTitle Client Secret Key
-                .addBtn
-                    .material-symbols-outlined.sml add 
-                    span Add Secret Key
-                .keyWrap
-    
-    br
+        .serviceState.security
+            .state    
+                label.smallTitle(style="width: 170px;") Cors 
+                .smallValue(style="padding:0")
+                    form.modifyInputForm(v-if="modifyCors" @submit.prevent="changeCors")
+                        .customInput
+                            input#modifyCors(:disabled="promiseRunningCors || null" type="text" placeholder='https://your.domain.com' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
+                        template(v-if="promiseRunningCors")
+                            img.loading(src="@/assets/img/loading.png")
+                        template(v-else)
+                            input#submitInp(type="submit" hidden)
+                            label.material-symbols-outlined.big.save(for='submitInp') done
+                            .material-symbols-outlined.sml.cancel(@click="modifyCors = false;") close
+                    template(v-else)
+                        span.ellipsis.pencil https://expamle.domain.com
+                        span.material-symbols-outlined.fill.clickable.edit(@click="editCors") edit
+            .state
+                label.smallTitle(style="width: 170px;") Secret Key
+                .smallValue
+                    form.modifyInputForm(v-if="modifyKey" @submit.prevent="setSecretKey")
+                        .customInput
+                            input#modifyKey(:disabled="promiseRunningSecKey || null" type="text" placeholder="Secret key for external request" :value='inputKey' @input="(e) => inputKey = e.target.value")
+                        template(v-if="promiseRunningSecKey")
+                            img.loading(src="@/assets/img/loading.png")
+                        template(v-else)
+                            input#submitInp(type="submit" hidden)
+                            label.material-symbols-outlined.big.save(for='submitInp') done
+                            .material-symbols-outlined.sml.cancel(@click="modifyKey = false;") close
+                    template(v-else)
+                        span.ellipsis.pencil dlfsl2sldkfjf48475skd
+                        span.material-symbols-outlined.fill.clickable.edit(@click="editKey") edit
+            .state(style="flex-grow:1")
+                label.smallTitle(style="width: 170px;") Client Secret Key
+                .material-symbols-outlined.fill.clickable(:class="{'nonClickable' : showKeyAdd}" style="padding: 12.5px 0" @click="showKeyAdd = !showKeyAdd") add_box
+                .smallValue.keyBox
+                    template(v-if="showKeyAdd")
+                        form.keyWrap(@submit.prevent="saveSecretKey(index)")
+                            .key
+                                .inputWrap
+                                    .material-symbols-outlined.fill.clickable do_not_disturb_on
+                                    input#keyName(type="text" name='keyName' placeholder="Key name" required)
+                                    input#secretKey(type="text" name='secretKey' placeholder="Secret Key" required)
+                                .buttonWrap
+                                    template(v-if="promiseRunning")
+                                        img.loading(style='padding:0;width:18px;height:18px;' src="@/assets/img/loading.png")
+                                    template(v-else)
+                                        input#submitInp(type="submit" hidden)
+                                        label.material-symbols-outlined.clickable.save(for='submitInp') check
+                                        .material-symbols-outlined.clickable.cancel(@click="showKeyAdd = false") close
+                    .empty(v-else) No Secret Key
 
-    .infoBox
+    br
+    
+    section.infoBox
         .infoTitle Subsription Plan
 
         br
         br
 
-        .subsWrap 
+        .flexInfo
             .subs 
-                .smallTitle Currnet Plan
+                .smallTitle(style="width: 150px;") Currnet Plan
                 .smallValue ======
             .subs 
-                .smallTitle State
+                .smallTitle(style="width: 150px;") State
                 .smallValue ======
             .subs 
-                .smallTitle Renew Date
+                .smallTitle(style="width: 150px;") Renew Date
                 .smallValue ======
-            .subs 
-                button.final Manage Subscription
+        
+        br
 
+        div(style="display:block; text-align:right") 
+            button.final Manage Subscription
+    
     br
 
-    .cardWrap
-        .cardBox
+    .flexInfo
+        section.cardBox
             .header 
                 .title 
                     .material-symbols-outlined.fill(style="font-size: 1.5rem") group
@@ -101,7 +148,7 @@
                     .smallTitle Creating User
                     .smallValue ======
 
-        .cardBox
+        section.cardBox
             .header 
                 .title 
                     .material-symbols-outlined.fill(style="font-size: 1.5rem") database
@@ -115,10 +162,7 @@
                     .smallTitle Creating User
                     .smallValue ======
 
-    br
-
-    .cardWrap
-        .cardBox
+        section.cardBox
             .header 
                 .title 
                     .material-symbols-outlined.fill(style="font-size: 1.5rem") mail
@@ -132,7 +176,7 @@
                     .smallTitle Mail storage used
                     .smallValue ======
 
-        .cardBox
+        section.cardBox
             .header 
                 .title 
                     .material-symbols-outlined.fill(style="font-size: 1.5rem") language
@@ -148,59 +192,167 @@
 
     br
 
-
+    //- section.deleteWrap 
+        h3 Delete Service
+        ul.deleteDesc
+            li Deleting the service will permanently erase all data. Recovery is not possible. The service plan will also be immediately canceled, and the remaining days will be prorated and refunded.
+        div(style="display:block; text-align:right;")
+            button.unFinished.warning Delete Service
+    
+    br
+    br
 </template>
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { currentService } from '@/data.js';
+import { ref, nextTick } from 'vue';
 
 const router = useRouter();
 const route = useRoute();
+
+let serviceFetching = ref(false);
+let modifyServiceName = ref(false);
+let inputServiceName = '';
+let modifyCors = ref(false);
+let promiseRunningCors = ref(false);
+let inputCors = ref('');
+let modifyKey = ref(false);
+let promiseRunningSecKey = ref(false);
+let inputKey = '';
+let clientSecretState =ref([]);
+let secretKeyAdd = ref(false);
+let secretKeyEdit = ref(false);
+let promiseRunning = ref(false);
+let showKeyAdd = ref(false);
+
+let editServiceName = () => {
+    inputServiceName = currentService.value.name;
+    modifyServiceName.value = true;
+}
+let editCors = () => {
+    inputCors.value = currentService.value.cors === '*' ? '' : currentService.value.cors; modifyCors.value = true;
+}
+let editKey = () => {
+    inputKey = currentService.value.api_key;
+    modifyKey.value = true;
+}
+let addSecretKey = () => {
+    clientSecretState.value.unshift({ key: '', value: '', keyEdit: false, keyAdd: true });
+    secretKeyAdd.value = true;
+    nextTick(() => {
+        document.getElementById('keyName').focus();
+    });
+}
+
 </script>
 
 <style lang="less" scoped>
-#service {
-    max-width: 1200px;
-    margin: 0 auto;
+.smallTitle {
+    width: 150px;
+    padding: 12.5px 0;
 }
-.serviceState {
+.smallValue {
+    height: 44px;
+    line-height: 44px;
+    margin-top: 8px;
+}
+.flexInfo {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    gap: 1rem;
 }
-.serviceInfoTable {
-    display: inline-table;
-    border-spacing: 0 1rem;
+.serviceState {
+    display: inline-block;
+    flex-grow: 1;
 
-    td {
-        white-space: nowrap;
+    &.security {
+        width: 100%;
     }
-    // .name {
-    //     font-size: 20px;
-    //     color: #0006;
-    // }
-    .value {
-        padding-left: 1rem;
-        font-size: 1rem;
-        color: var(--secondary-text);
 
-        .currentValue {
-            span {
-                font-weight: 700;
-                color: var(--main-color);
-            }
-            .edit {
-                margin-left: 8px;
-                color: var(--secondary-text);
-            }
+    &.subs {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .state {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        flex-grow: 1;
+    }
+
+    .ellipsis {
+        width: 250px;
+    }
+
+    .smallValue {
+        margin: 0;
+        flex-grow: 1;
+    }
+}
+.keyBox {
+    width: 100%;
+    line-height: unset;
+    height: 180px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    overflow-y: auto;
+    padding: 8px 16px;
+
+    .add {
+        display: block;
+        background-color: #293fe60d;
+        border-radius: 4px;
+        text-align: center;
+        padding: 6px 0;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        
+        * {
+            color: var(--main-color);
+        }
+    }
+    .empty {
+        line-height: 160px;
+        color: rgba(0, 0, 0, 0.4);
+        font-size: 0.9rem;
+        font-weight: 400;
+        text-align: center;
+    }
+    .key {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        div {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .inputWrap {
+            width: calc(100% - 70px);
+        }
+        input {
+            background-color: unset;
+            border: 0;
+            border-bottom: 1px solid #000;
+            flex-grow: 1;
         }
     }
 }
 .toggleWrap {
-    display: inline-block;
+    height: 44px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
     opacity: 1;
-    margin-bottom: 1rem;
+
     &.locked {
         opacity: 0.4;
     }
@@ -222,7 +374,6 @@ const route = useRoute();
         vertical-align: middle;
         width: 63px;
         height: 32px;
-        margin-left: 1rem;
         border-radius: 16px;
         background-color: rgba(0, 0, 0, 0.6);
         transition: all 0.3s;
@@ -249,19 +400,19 @@ const route = useRoute();
 }   
 .codeWrap {
     position: relative;
-    background: rgba(0,0,0,0.8);
-    border-radius: 8px;
-    box-shadow: 3px 9px 6px 0px rgba(0, 0, 0, 0.15);
-    color: #FFF;
-    overflow-x: auto;
 
-    .codeInner {
-        // width: 100%;
-        // overflow-x: auto;
-        font-size: 20px;
-        // padding: 1rem 0;
-        max-width: 0;
-        font-size: 1rem;
+    .scrollWrap {
+        background: rgba(0,0,0,0.8);
+        border-radius: 8px;
+        box-shadow: 3px 9px 6px 0px rgba(0, 0, 0, 0.15);
+        color: #FFF;
+        overflow-x: auto;
+    
+        .scrollInner {
+            font-size: 20px;
+            max-width: 0;
+            font-size: 1rem;
+        }
     }
     .copy {
         position: absolute;
@@ -301,7 +452,6 @@ const route = useRoute();
 
     &.help {
         display: inline-block;
-        margin-left: 1rem;
         color: rgba(0, 0, 0, 0.40);
     }
 
@@ -309,95 +459,70 @@ const route = useRoute();
         margin-left: 5px;
     }
 }
-.smallValue {
-    margin-top: 8px;
+.subs {
+    flex-grow: 1;
 }
-.settingWrap {
-    display: flex;
-    flex-wrap: wrap;
+.cardBox {
+    width: 48%;
+    flex-grow: 1;
 
-    .left, .right {
-        flex-grow: 1;
+    .smallTitle {
+        padding: 0;
     }
-    .right {
-        position: relative;
-    }
-    .addBtn {
-        position: absolute;
-        top: 0.2rem;
-        right: 0;
-        cursor: pointer;
-        font-size: 0.7rem;
-        color: var(--main-color);
-    } 
-    .smallValue {
-        height: 44px;
+    .content {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        
-        .currentValue {
-            // width: 100%;
-            // display: flex;
-            // align-items: center;
-            // justify-content: space-between;
-
-            .edit {
-                margin-left: 8px;
-            }
-        }
-    }
-    .keyWrap {
-        margin-top: 0.5rem;
-        border-radius: 8px;
-        border: 1px solid rgba(0, 0, 0, 0.10);
-        overflow-y: auto;
-        padding: 8px 16px;
+        justify-content: space-between;
     }
 }
-.subsWrap {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-.cardWrap {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    .cardBox {
-        width: calc(50% - 0.5rem);
-        // min-width: 350px;
-        // flex-grow: 1;
-        margin-right: 1rem;
-
-        &:last-child {
-            margin-right: 0;
-        }
-        .content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-    }
+.deleteDesc li {
+    color: var(--secondary-text);
+    line-height: 1.5rem;
 }
 
 @media (max-width:1023px) {
+    .infoBox {
+        width: 100% !important;
+    }
     .settingWrap {
         .right {
             width: 100%;
-            margin-top: 1rem;
         }
     }    
+}
 
-    .cardWrap {
-        .cardBox {
-            width: 100%;
-            margin-right: 0;
-            margin-bottom: 1rem;
-
-            &:last-child {
-                margin-bottom: 0;
-            }
+@media (max-width:767px) {
+    .flexInfo {
+        &:first-child {
+            gap: unset;
         }
+    }
+    .serviceState {
+        .smallValue {
+            width: 100%;
+        }
+    }
+    .ellipsis {
+        width: calc(100vw - 40px - 3rem) !important;
+
+        &.pencil {
+            width: calc(100vw - 40px - 3rem - 24px) !important;
+        }
+    }
+    .toggleWrap {
+        width: 100%;
+        height: unset;
+    }
+    // .keyBox {
+    //     .key {
+    //         .inputWrap {
+    //             width: 100%;
+    //         }
+    //     }
+    // }
+    .cardBox {
+        width: 100%;
     }
 }
 </style>
