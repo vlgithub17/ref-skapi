@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Main from '@/views/main.vue'
 import LandingPage from '@/views/landing.vue'
+import Subscription from '@/views/service/subscription/subscription.vue'
 import MyServices from '@/views/services.vue'
 import ServiceMain from '@/views/service/main.vue'
 import Service from '@/views/service/service.vue'
@@ -25,6 +26,11 @@ const router = createRouter({
           path: '/',
           name: 'home',
           component: LandingPage
+        },
+        {
+          path: '/subscription/:service',
+          name: 'subscription',
+          component: Subscription
         },
         {
           path: 'my-services',
