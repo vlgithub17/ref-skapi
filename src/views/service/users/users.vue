@@ -1,6 +1,41 @@
 <template lang="pug">
 #users
     section.infoBox
+        //- form(@submit.prevent="searchUsers")
+        //- .selectBar
+        //-     .customSelect
+        //-         select(:value="searchFor" @change="searchForChange")
+        //-             option(value="timestamp") Date Created
+        //-             option(value="user_id") User ID
+        //-             option(value="email") Email
+        //-             option(value="phone_number") Phone
+        //-             option(value="address") Address
+        //-             option(value="gender") Gender
+        //-             option(value="name") Name
+        //-             option(value="locale") Locale
+        //-             option(value="birthdate") Birth Date
+        //-         .material-symbols-outlined.mid.search.selectArrowDown arrow_drop_down
+        //- .searchBar
+        //-     .material-symbols-outlined.mid.search search
+        //-     input#searchInput(v-if="searchFor === 'timestamp'" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
+            //- input#searchInput(
+            //-     v-else-if="searchFor === 'user_id'" 
+            //-     placeholder="Search Users" 
+            //-     v-model="searchText"
+            //-     @input="e=>{e.target.setCustomValidity('');}"
+            //-     pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+            //- )
+            //- input#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchText")
+            //- input#searchInput(v-else-if="searchFor === 'phone_number'" placeholder="eg+821234567890" v-model="searchText")
+            //- input#searchInput(v-else-if="searchFor === 'address'" placeholder="Address" v-model="searchText")
+            //- input#searchInput(v-else-if="searchFor === 'gender'" placeholder="Gender" v-model="searchText")
+            //- input#searchInput(v-else-if="searchFor === 'name'" placeholder="Name" v-model="searchText")
+            //- input#searchInput(v-else-if="searchFor === 'locale'" placeholder="2 digit country code e.g. KR" v-model="searchText")
+            //- input#searchInput(v-else-if="searchFor === 'birthdate'" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
+            //- input(hidden type='submit')
+            //- .material-symbols-outlined.delete(v-if="searchText" @click="e=>{searchText = ''; if(fetchParams.searchFor !== 'timestamp') { fetchParams = defaultFetchParams; refresh(); }}") close
+            //- .material-symbols-outlined.modalIcon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate') && !searchText" @click.stop="showCalendar = !showCalendar") calendar_today
+            //- .material-symbols-outlined.modalIcon(v-if="searchFor === 'locale' && !searchText" @click.stop="showLocale = !showLocale") arrow_drop_down
 
     br
 
@@ -26,6 +61,7 @@
             .pagenator
                 .material-symbols-outlined.clickable.prevPage(style="font-size:1rem") arrow_back_ios
                 .material-symbols-outlined.clickable.nextPage(style="font-size:1rem") arrow_forward_ios
+
 
 Invite(ref="inviteDialog" @close="inviteDialog.close();" @load="(e)=>inviteDialog = e")
 </template>
