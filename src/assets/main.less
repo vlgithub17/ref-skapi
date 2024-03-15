@@ -75,6 +75,20 @@ dialog {
     }
 }
 
+input {
+    &:not(.lineInput):focus {
+        outline: 2px solid var(--main-color);
+        border-radius: 8px;
+    }
+    &.lineInput {
+        outline: none;
+
+        &:focus {
+            border-bottom: 2px solid var(--main-color) !important;
+        }
+    }
+}
+
 button {
     height: 44px;
     border-radius: 8px;
@@ -327,7 +341,7 @@ button {
     }
 }
 
-#moreVert {
+.moreVert {
     position: absolute;
     left: var(--moreVert-left);
     right: var(--moreVert-right);

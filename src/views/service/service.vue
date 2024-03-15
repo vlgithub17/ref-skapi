@@ -96,8 +96,8 @@
                             .key
                                 .material-symbols-outlined.fill.clickable do_not_disturb_on
                                 .inputWrap
-                                    input#keyName(type="text" name='keyName' placeholder="Key name" required)
-                                    input#secretKey(type="text" name='secretKey' placeholder="Secret Key" required)
+                                    input#keyName.lineInput(type="text" name='keyName' placeholder="Key name" required)
+                                    input#secretKey.lineInput(type="text" name='secretKey' placeholder="Secret Key" required)
                                 .buttonWrap
                                     template(v-if="promiseRunning")
                                         img.loading(style='padding:0;width:18px;height:18px;' src="@/assets/img/loading.png")

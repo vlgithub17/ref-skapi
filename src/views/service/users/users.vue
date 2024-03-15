@@ -15,6 +15,11 @@
                         option(value="locale") Locale
                         option(value="birthdate") Birth Date
                     .material-symbols-outlined.mid.search.selectArrowDown arrow_drop_down
+                //- .dropDown.clickable(style="height:44px;line-height:44px")
+                //-     span {{ searchFor }}
+                //-     .material-symbols-outlined.mid arrow_drop_down
+                //-     .moreVert(style="--moreVert-left: 0")
+                //-         .inner
             .searchBar
                 .material-symbols-outlined.mid.search search
                 input#searchInput(v-if="searchFor === 'timestamp'" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
@@ -42,10 +47,10 @@
     section.infoBox
         .tableHeader 
             .actions
-                .dropDown.clickable(@click.stop="showFilter = !showFilter")
+                .dropDown.clickable(@click="showDropDown")
                     span Headers
                     .material-symbols-outlined.mid arrow_drop_down
-                    #moreVert(v-if="showFilter" @click.stop style="--moreVert-left: 0")
+                    .moreVert(@click.stop hidden style="--moreVert-left: 0")
                         .inner
                             .filter 
                                 .customCheckBox
@@ -106,7 +111,7 @@
                 .material-symbols-outlined.clickable.fill.create(@click="createDialog.showModal();") person_add
                 .menu(@click.stop="showUserSetting = !showUserSetting")
                     .material-symbols-outlined.mid.clickable more_vert
-                    #moreVert(v-if="showUserSetting" @click.stop style="--moreVert-left: 0")
+                    .moreVert(v-if="showUserSetting" @click.stop style="--moreVert-left: 0")
                         .inner
                             .more(@click="()=>{stateText='Block'; showBlockUser=true; showUserSetting=false;}")
                                 .material-symbols-outlined.fill.nohover account_circle_off
@@ -159,7 +164,7 @@
                 tbody
                     template(v-if="users && users.length")
                         tr(v-for="(user, index) in users" :key="index" @click="userCheckConfirm(user)")
-                            td(style="min-width:20px; padding:0")
+                            td(style="min-width:20px;")
                                 .customCheckBox
                                     input(type="checkbox" name="user" :id="user.user_id" @change='trackSelectedUsers' :value="user.user_id")
                                     label(:for="user.user_id")
@@ -198,7 +203,6 @@
 
 <script setup lang="ts">
 import { onMounted, ref, nextTick } from 'vue';
-
 import Calendar from '@/components/calendar.vue';
 import Invite from '@/views/service/users/dialog/invite.vue'
 import Create from '@/views/service/users/dialog/create.vue'
@@ -242,6 +246,10 @@ let filterOptions = ref({
     locale: false,
     timestamp: false
 });
+
+let showDropDown = (e) => {
+    console.log(e.currentTarget)
+}
 
 let searchForChange = (e) => {
     searchFor.value = e.target.value;
@@ -432,6 +440,13 @@ document.addEventListener('mouseup', function () {
         }
     }
 }
+.dropDown {
+    position: relative;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-right: 0.5rem;
+    color: rgba(0, 0, 0, 0.6);
+}
 .tableHeader {
     display: flex;
     flex-wrap: wrap;
@@ -441,13 +456,6 @@ document.addEventListener('mouseup', function () {
         display: flex;
         flex-wrap: wrap;
 
-        .dropDown {
-            position: relative;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-right: 0.5rem;
-            color: rgba(0, 0, 0, 0.6);
-        }
         .refresh {
             margin-right: 0.5rem;
         }
@@ -462,6 +470,14 @@ document.addEventListener('mouseup', function () {
     }
     .pagenator {
         font-size: 1rem !important;
+    }
+}
+
+@media (max-width:767px) {
+    #searchForm {
+        .selectBar {
+            width: 100%;
+        }
     }
 }
 </style>

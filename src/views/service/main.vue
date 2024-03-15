@@ -49,6 +49,8 @@ if(currentService.value !== route.path.split('/')[2] || currentService.value == 
 
 <style lang="less" scoped>
 #serviceMain {
+    position: relative;
+    max-width: 100%;
     display: flex;
     flex-wrap: nowrap;
 
@@ -56,6 +58,7 @@ if(currentService.value !== route.path.split('/')[2] || currentService.value == 
         padding-left: 20px;
     }
     .right {
+        width: 100%;
         flex-grow: 1;
         padding: 0 20px;
 
