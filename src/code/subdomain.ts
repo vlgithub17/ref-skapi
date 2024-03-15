@@ -1,9 +1,10 @@
 import { skapi, getEndpointUrl } from './admin';
-
+import { SkapiError } from 'skapi-js'
 
 export async function refreshCDN(
-    serviceId: string,
     params?: {
+        service: string,
+        subdomain: string,
         // when true, returns the status of the cdn refresh without running the cdn refresh
         // if callback are given, calls for cdn refresh, then callbacks the cdn refresh status in 3 seconds interval
         checkStatus: boolean | ((status: 'IN_QUEUE' | 'COMPLETE' | 'IN_PROCESS') => void);
@@ -16,12 +17,11 @@ export async function refreshCDN(
 > {
     let { checkStatus = false } = params || {};
 
-    if (!serviceId) throw 'Service ID is required';
-
     try {
-        let res = await skapi.request(await getEndpointUrl('refresh-cdn'), {
-            service: serviceId,
-            subdomain: service.subdomain,
+        let res = await skapi.util.request(await getEndpointUrl('refresh-cdn'), {
+            service: params.service,
+            owner: skapi.user.user_id,
+            subdomain: params.subdomain,
             exec: typeof checkStatus === 'boolean' && checkStatus ? 'status' : 'refresh'
         }, {
             auth: true,
@@ -33,7 +33,6 @@ export async function refreshCDN(
         }
 
         return 'IS_QUEUED';
-
     }
     catch (err) {
         if ((err as SkapiError).message === 'previous cdn refresh is still in queue.') {
@@ -48,9 +47,9 @@ export async function refreshCDN(
     }
     finally {
         if (typeof checkStatus === 'function') {
-            let callbackInterval = (serviceId, cb, time = 30000) => {
+            let callbackInterval = (serviceId: string, cb: any, time = 30000) => {
                 setTimeout(() => {
-                    this.refreshCDN(serviceId, { checkStatus: true }).then(res => {
+                    refreshCDN({ service: serviceId, subdomain: params.subdomain, checkStatus: true }).then(res => {
                         if (res === 'COMPLETE') {
                             return cb(res);
                         }
@@ -58,44 +57,140 @@ export async function refreshCDN(
                     });
                 }, time);
             };
-            callbackInterval(serviceId, checkStatus);
+            callbackInterval(params.service, checkStatus);
         }
     }
 }
 
 export async function set404(
     params: {
-        serviceId: string,
+        service: string,
         path: string; // Set path to file of 404 page. ex) folder/file.html
     }
 ): Promise<'SUCCESS'> {
-    await this.require(Required.ADMIN);
-    let serviceId = params.serviceId;
-    if (!this.services[serviceId].subdomain) {
-        throw 'subdomain does not exists.';
-    }
-    await this.request(await this.getEndpointUrl('set-404'), { service: serviceId, page404: params.path }, { auth: true });
+    await skapi.util.request(await getEndpointUrl('set-404'), { service: params.service, owner: skapi.user.user_id, page404: params.path }, { auth: true });
     return 'SUCCESS';
 }
 
 export async function uploadHostFiles(
-    formData: FormData,
+    fileList: FormData,
     params: {
-        nestKey: string;
-        serviceId: string;
-        progress: (p) => void;
+        dir: string; // dir without subdomain. ex) folder/subfolder
+        service: string;
+        progress: (p: any) => void;
     }
 ): Promise<{ completed: File[]; failed: File[]; }> {
-    return this.hostFiles(formData, ({
-        service: params.serviceId,
-        dir: params.nestKey,
-        progress: params?.progress
-    } as any));
+
+    let { service, dir = '', progress } = params;
+
+    if (dir) {
+        dir = dir.replace(/^\//, '').replace(/\/$/, '') + '/'; // remove leading and trailing slashes and add trailing slash
+    }
+
+    if (!service) {
+        throw new SkapiError('invalid service.', { code: 'INVALID_PARAMETER' });
+    }
+
+    if (!(fileList instanceof FormData)) {
+        throw new SkapiError('"fileList" should be a FormData or HTMLFormElement.', { code: 'INVALID_PARAMETER' });
+    }
+
+    let getSignedParams: Record<string, any> = {
+        reserved_key: skapi.util.generateRandom(),
+        service,
+        request: 'host'
+    };
+
+    let xhr: XMLHttpRequest;
+    let fetchProgress = (
+        url: string,
+        body: FormData,
+        progressCallback: (p: ProgressEvent) => void
+    ) => {
+        return new Promise((res, rej) => {
+            xhr = new XMLHttpRequest();
+            xhr.open('POST', url);
+            xhr.onload = () => {
+                let result = xhr.responseText;
+                try {
+                    result = JSON.parse(result);
+                }
+                catch (err) { }
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    res(result);
+                } else {
+                    rej(result);
+                }
+            };
+            xhr.onerror = () => rej('Network error');
+            xhr.onabort = () => rej('Aborted');
+            xhr.ontimeout = () => rej('Timeout');
+
+            if (xhr.upload && typeof progressCallback === 'function') {
+                xhr.upload.onprogress = progressCallback;
+            }
+            xhr.send(body);
+        });
+    };
+
+    let completed = [];
+    let failed = [];
+    let bin_endpoints = [];
+
+    for (let [key, f] of (fileList as any).entries()) {
+        if (!(f instanceof File)) {
+            continue;
+        }
+
+        let signedParams = Object.assign({
+            service,
+            owner: skapi.user.user_id,
+            key: dir + f.name,
+            sizeKey: skapi.util.toBase62(f.size),
+            contentType: f.type || null
+        }, getSignedParams);
+
+        let { fields = null, url, cdn } = await skapi.util.request('get-signed-url', signedParams, { auth: true });
+
+        bin_endpoints.push(cdn);
+
+        let form = new FormData();
+
+        for (let name in fields) {
+            form.append(name, fields[name]);
+        }
+
+        form.append('file', f);
+
+        try {
+            await fetchProgress(
+                url,
+                form,
+                typeof progress === 'function' ? (p: ProgressEvent) => progress(
+                    {
+                        status: 'upload',
+                        progress: p.loaded / p.total * 100,
+                        currentFile: f,
+                        completed,
+                        failed,
+                        loaded: p.loaded,
+                        total: p.total,
+                        abort: () => xhr.abort()
+                    }
+                ) : null
+            );
+            completed.push(f);
+        } catch (err) {
+            failed.push(f);
+        }
+    }
+
+    return { completed, failed };
 }
 
 export async function deleteHostFiles(
-    serviceId: string,
     params: {
+        service: string,
         subdomain: string,
         paths: string[]; // path without subdomain ex) folder/file.html
     }
@@ -113,8 +208,8 @@ export async function deleteHostFiles(
         pathsArr.push(params.subdomain + '/' + params.paths[i]);
     }
 
-    return skapi.request('del-files', {
-        service: serviceId,
+    return skapi.util.request('del-files', {
+        service: params.service,
         endpoints: pathsArr,
         storage: 'host'
     }, { auth: true, method: 'post' });
@@ -124,7 +219,11 @@ export async function listHostDirectory(
     params: {
         dir: string; // unix style dir with subdomain. ex) subdomain/folder/subfolder
     },
-    fetchOptions: FetchOptions
+    fetchOptions: {
+        limit: number;
+        fetchMore: boolean;
+        ascending: boolean;
+    }
 ): Promise<{
     [key: string]: any;
     list: {
@@ -135,9 +234,7 @@ export async function listHostDirectory(
         cnt: number;
     }
 }> {
-    this.require(Required.ADMIN);
-
-    return this.request(await this.getEndpointUrl('list-host-directory', false), Object.assign(params), {
+    return skapi.util.request(await getEndpointUrl('list-host-directory', false), params, {
         fetchOptions,
         method: 'post'
     });
