@@ -10,7 +10,6 @@ header#navBar
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { currentService } from '@/data.js';
 
 const router = useRouter();
 const route = useRoute();
@@ -26,7 +25,7 @@ const route = useRoute();
     left: unset;
     top: unset;
     background-color: unset;
-    color: var(--secondary-text);
+    color: var(--black-6);
     
     &.home {
         position: fixed;
@@ -56,7 +55,7 @@ const route = useRoute();
     }
     a {
         text-decoration: none;
-        color: var(--secondary-text);
+        color: var(--black-6);
         display: inline-block;
         font-weight: 700;
     }
