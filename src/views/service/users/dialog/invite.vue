@@ -1,5 +1,5 @@
 <template lang="pug">
-dialog(ref='dialog')
+dialog#modalBox(ref='dialog')
     .header 
         h4 Invite User
     .content 

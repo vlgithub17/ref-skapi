@@ -1,6 +1,6 @@
 @import './base.less';
 
-dialog {
+#modalBox {
     max-width: 478px;
     border: 0;
     padding: 0;
@@ -70,8 +70,31 @@ dialog {
     }
 }
 @media (max-width:640px) {
-    dialog {
+    #modalBox {
         width: calc(100% - 40px) !important;
+    }
+}
+
+.dropBox {
+    border: 0;
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);
+
+    &::backdrop {
+        background-color: transparent;
+    }
+
+    .inner {
+        padding: 0 1rem;
+    }
+    
+    ul {
+        padding: 0;
+
+        li {
+            list-style: none;
+        }
     }
 }
 
@@ -213,28 +236,59 @@ button {
     }
 }
 
-.customSelect {
-    position: relative;
+// .customSelect {
+//     position: relative;
 
-    select {
+//     .select {
+//         display: flex;
+//         align-items: center;
+//         justify-content: space-between;
+//         border-radius: 8px;
+//         padding: 0 0.5rem 0 1rem;
+//     }
+
+//     select {
+//         border: 0;
+//         border-radius: 8px;
+//         appearance: none;
+//         background-color: unset;
+//         padding: 0;
+//         color: var(--black-8);
+//         font-size: 0.8rem;
+//         font-weight: 500;
+//     }
+// }
+
+.customSelect {
+    cursor: pointer;
+    
+    button {
         width: 100%;
         border: 0;
         border-radius: 8px;
-        appearance: none;
-        background-color: unset;
-        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 0.5rem 0 1rem;
+        color: var(--black-8);
+        font-weight: 500;
     }
-    
-    .selectArrowDown {
-        position: absolute;
-        right: 13px;
-        top: 50%;
-        transform: translateY(-50%);
-        border-radius: 0;
-        user-select: none;
-        /* z-index: -1; <- this makes the arrow dissappear in the records page */
-        pointer-events: none;
-    }
+
+    // .dropDown {
+    //     position: absolute;
+    //     list-style: none;
+    //     width: 100%;
+    //     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    //     background-color: #fff;
+    //     border: 1px solid #caced1;
+    //     border-radius: 4px;
+    //     padding: 10px;
+    //     margin-top: 10px;
+    //     max-height: 200px;
+    //     overflow-y: auto;
+    //     opacity: 0;
+    //     // visibility: hidden;
+    // }
 }
 
 .customInput {
@@ -341,12 +395,22 @@ button {
     }
 }
 
+// .dropDown {
+//     position: relative;
+//     font-size: 0.8rem;
+//     font-weight: 500;
+//     margin-right: 0.5rem;
+//     color: rgba(0, 0, 0, 0.6);
+//     user-select: none;
+//     z-index: 1;
+// }
+
 .moreVert {
     position: absolute;
     left: var(--moreVert-left);
     right: var(--moreVert-right);
     top: 40px;
-    z-index: 10;
+    z-index: 99;
 
     .inner {
         padding: 1rem;

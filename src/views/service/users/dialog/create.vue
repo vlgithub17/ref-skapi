@@ -1,5 +1,5 @@
 <template lang="pug">
-dialog(ref='dialog' style="width:478px")
+dialog#modalBox(ref='dialog' style="width:478px")
     .header 
         h4 Create User
     .content 

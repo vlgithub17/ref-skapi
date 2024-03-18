@@ -3,23 +3,47 @@
     section.infoBox
         form#searchForm(@submit.prevent="searchUsers")
             .selectBar
-                .customSelect
-                    select(:value="searchFor" @change="searchForChange")
-                        option(value="timestamp") Date Created
-                        option(value="user_id") User ID
-                        option(value="email") Email
-                        option(value="phone_number") Phone
-                        option(value="address") Address
-                        option(value="gender") Gender
-                        option(value="name") Name
-                        option(value="locale") Locale
-                        option(value="birthdate") Birth Date
-                    .material-symbols-outlined.mid.search.selectArrowDown arrow_drop_down
-                //- .dropDown.clickable(style="height:44px;line-height:44px")
-                //-     span {{ searchFor }}
-                //-     .material-symbols-outlined.mid arrow_drop_down
-                //-     .moreVert(style="--moreVert-left: 0")
-                //-         .inner
+                .customSelect(@click="(e) => {searchDropDown.showModal();}")
+                    button
+                        span {{ searchFor }}
+                        span.material-symbols-outlined arrow_drop_down
+                    //- ul.dropDown(role="listbox")
+                    //-     li(role="option" value="timestamp") Date Created
+                    //-     li(role="option" value="user_id") User ID
+                    //-     li(role="option" value="email") Email
+                    //-     li(role="option" value="phone_number") Phone
+                    //-     li(role="option" value="address") Address
+                    //-     li(role="option" value="gender") Gender
+                    //-     li(role="option" value="name") Name
+                    //-     li(role="option" value="locale") Locale
+                    //-     li(role="option" value="birthdate") Birth Date
+                //- .customSelect
+                    .select(style="background: rgba(0, 0, 0, 0.05);")
+                        select(:value="searchFor" @change="searchForChange" style="height: 44px;")
+                            option(value="timestamp") Date Created
+                            option(value="user_id") User ID
+                            option(value="email") Email
+                            option(value="phone_number") Phone
+                            option(value="address") Address
+                            option(value="gender") Gender
+                            option(value="name") Name
+                            option(value="locale") Locale
+                            option(value="birthdate") Birth Date
+                        .material-symbols-outlined arrow_drop_down
+                //- .dropDown.clickable(@click.stop="showDropDown" style="height:44px;line-height:44px;")
+                    span {{ searchFor }}
+                    .material-symbols-outlined.mid arrow_drop_down
+                    .moreVert(style="--moreVert-left:0;display:none")
+                        .inner
+                            .more(value="timestamp") Date Created
+                            .more(value="user_id") User ID
+                            .more(value="email") Email
+                            .more(value="phone_number") Phone
+                            .more(value="address") Address
+                            .more(value="gender") Gender
+                            .more(value="name") Name
+                            .more(value="locale") Locale
+                            .more(value="birthdate") Birth Date
             .searchBar
                 .material-symbols-outlined.mid.search search
                 input#searchInput(v-if="searchFor === 'timestamp'" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
@@ -47,65 +71,14 @@
     section.infoBox
         .tableHeader 
             .actions
-                .dropDown.clickable(@click="showDropDown")
-                    span Headers
-                    .material-symbols-outlined.mid arrow_drop_down
-                    .moreVert(@click.stop hidden style="--moreVert-left: 0")
+                .customSelect(@click="(e) => {checkDropDown.showModal();}")
+                    button(style="height:unset")
+                        span Headers
+                        .material-symbols-outlined.mid arrow_drop_down
+                    //- .moreVert(@click.stop style="--moreVert-left: 0; display:none")
                         .inner
-                            .filter 
-                                .customCheckBox
-                                    input#userID(type="checkbox" :checked="filterOptions.userID" @change="filterOptions.userID = !filterOptions.userID")
-                                    label(for="userID")
-                                        .material-symbols-outlined.mid.check check
-                                        span User ID
-                            .filter 
-                                .customCheckBox
-                                    input#name(type="checkbox" :checked="filterOptions.name" @change="filterOptions.name = !filterOptions.name")
-                                    label(for="name")
-                                        .material-symbols-outlined.mid.check check
-                                        span Name
-                            .filter 
-                                .customCheckBox
-                                    input#block(type="checkbox" :checked="filterOptions.block" @change="filterOptions.block = !filterOptions.block")
-                                    label(for="block")
-                                        .material-symbols-outlined.mid.check check
-                                        span Block/Unblock
-                            .filter 
-                                .customCheckBox
-                                    input#status(type="checkbox" :checked="filterOptions.status" @change="filterOptions.status = !filterOptions.status")
-                                    label(for="status")
-                                        .material-symbols-outlined.mid.check check
-                                        span Status
-                            .filter 
-                                .customCheckBox
-                                    input#email(type="checkbox" :checked="filterOptions.email" @change="filterOptions.email = !filterOptions.email")
-                                    label(for="email")
-                                        .material-symbols-outlined.mid.check check
-                                        span Email
-                            .filter 
-                                .customCheckBox
-                                    input#address(type="checkbox" :checked="filterOptions.address" @change="filterOptions.address = !filterOptions.address")
-                                    label(for="address")
-                                        .material-symbols-outlined.mid.check check
-                                        span Address
-                            .filter 
-                                .customCheckBox
-                                    input#gender(type="checkbox" :checked="filterOptions.gender" @change="filterOptions.gender = !filterOptions.gender")
-                                    label(for="gender")
-                                        .material-symbols-outlined.mid.check check
-                                        span Gender
-                            .filter 
-                                .customCheckBox
-                                    input#locale(type="checkbox" :checked="filterOptions.locale" @change="filterOptions.locale = !filterOptions.locale")
-                                    label(for="locale")
-                                        .material-symbols-outlined.mid.check check
-                                        span Locale
-                            .filter 
-                                .customCheckBox
-                                    input#timestamp(type="checkbox" :checked="filterOptions.timestamp" @change="filterOptions.timestamp = !filterOptions.timestamp")
-                                    label(for="timestamp")
-                                        .material-symbols-outlined.mid.check check
-                                        span Date Created
+
+
                 .material-symbols-outlined.clickable.refresh cached
                 .material-symbols-outlined.clickable.fill.create(@click="inviteDialog.showModal();") mail
                 .material-symbols-outlined.clickable.fill.create(@click="createDialog.showModal();") person_add
@@ -196,6 +169,76 @@
                             br
                             p There are no users matching your search terms.
 
+    dialog.dropBox(@click.stop ref="searchDropDown")
+        .inner
+            ul(role="listbox")
+                li(role="option" value="timestamp") Date Created
+                li(role="option" value="user_id") User ID
+                li(role="option" value="email") Email
+                li(role="option" value="phone_number") Phone
+                li(role="option" value="address") Address
+                li(role="option" value="gender") Gender
+                li(role="option" value="name") Name
+                li(role="option" value="locale") Locale
+                li(role="option" value="birthdate") Birth Date
+    dialog.dropBox(@click.stop ref="checkDropDown")
+        .inner 
+            ul(role="listbox")
+                li
+                    .customCheckBox
+                        input#userID(type="checkbox" :checked="filterOptions.userID" @change="filterOptions.userID = !filterOptions.userID")
+                        label(for="userID")
+                            .material-symbols-outlined.mid.check check
+                            span User ID
+                li
+                    .customCheckBox
+                        input#name(type="checkbox" :checked="filterOptions.name" @change="filterOptions.name = !filterOptions.name")
+                        label(for="name")
+                            .material-symbols-outlined.mid.check check
+                            span Name
+                li
+                    .customCheckBox
+                        input#block(type="checkbox" :checked="filterOptions.block" @change="filterOptions.block = !filterOptions.block")
+                        label(for="block")
+                            .material-symbols-outlined.mid.check check
+                            span Block/Unblock
+                li
+                    .customCheckBox
+                        input#status(type="checkbox" :checked="filterOptions.status" @change="filterOptions.status = !filterOptions.status")
+                        label(for="status")
+                            .material-symbols-outlined.mid.check check
+                            span Status
+                li
+                    .customCheckBox
+                        input#email(type="checkbox" :checked="filterOptions.email" @change="filterOptions.email = !filterOptions.email")
+                        label(for="email")
+                            .material-symbols-outlined.mid.check check
+                            span Email
+                li
+                    .customCheckBox
+                        input#address(type="checkbox" :checked="filterOptions.address" @change="filterOptions.address = !filterOptions.address")
+                        label(for="address")
+                            .material-symbols-outlined.mid.check check
+                            span Address
+                li
+                    .customCheckBox
+                        input#gender(type="checkbox" :checked="filterOptions.gender" @change="filterOptions.gender = !filterOptions.gender")
+                        label(for="gender")
+                            .material-symbols-outlined.mid.check check
+                            span Gender
+                li
+                    .customCheckBox
+                        input#locale(type="checkbox" :checked="filterOptions.locale" @change="filterOptions.locale = !filterOptions.locale")
+                        label(for="locale")
+                            .material-symbols-outlined.mid.check check
+                            span Locale
+                li
+                    .customCheckBox
+                        input#timestamp(type="checkbox" :checked="filterOptions.timestamp" @change="filterOptions.timestamp = !filterOptions.timestamp")
+                        label(for="timestamp")
+                            .material-symbols-outlined.mid.check check
+                            span Date Created
+
     Calendar(v-if="showCalendar" @dateClicked="handledateClick" alwaysEmit='true')
     Invite(ref="inviteDialog" @close="inviteDialog.close();" @load="(e)=>inviteDialog = e")
     Create(ref="createDialog" @close="createDialog.close();" @load="(e)=>createDialog = e")
@@ -218,6 +261,8 @@ let fetchParams = defaultFetchParams;
 let searchText = ref('');
 let showCalendar = ref(false);
 let showFilter = ref(false);
+let searchDropDown = ref(null);
+let checkDropDown = ref(null);
 let inviteDialog = ref(null);
 let createDialog = ref(null);
 let showUserSetting = ref(false);
@@ -247,8 +292,33 @@ let filterOptions = ref({
     timestamp: false
 });
 
+let openSelectBox = (e) => {
+    let s = getComputedStyle(e.currentTarget)
+    console.log(s)
+}
+
+let dialogPosition = (e) => {
+    let s = getComputedStyle(e.currentTarget)
+    console.log(s)
+    // const mouseX = e.clientX;
+    // const mouseY = e.clientY;
+    
+    // // 모달 요소 가져오기
+    // const modal = document.getElementsByClassName('dropBox');
+    // console.log(modal)
+
+    // // 모달 위치 설정
+    // modal.style.position = 'fixed';
+    // modal.style.left = mouseX + 'px';
+    // modal.style.top = mouseY + 'px';
+}
+
 let showDropDown = (e) => {
-    console.log(e.currentTarget)
+    if (e.currentTarget.lastChild.style.display === 'none') {
+        e.currentTarget.lastChild.style.display = 'block';
+    } else {
+        e.currentTarget.lastChild.style.display = 'none'
+    }
 }
 
 let searchForChange = (e) => {
@@ -391,16 +461,6 @@ document.addEventListener('mouseup', function () {
 
     .selectBar {
         width: 200px;
-
-        select {
-            height: 44px;
-            background: rgba(0, 0, 0, 0.05);
-            font-size: 0.8rem;
-            padding: 0 20px;
-            font-weight: 500;
-            color: rgba(0, 0, 0, 0.80);
-            cursor: pointer;
-        }
     }
     .searchBar {
         position: relative;
@@ -440,12 +500,9 @@ document.addEventListener('mouseup', function () {
         }
     }
 }
-.dropDown {
+.infoBox {
     position: relative;
-    font-size: 0.8rem;
-    font-weight: 500;
-    margin-right: 0.5rem;
-    color: rgba(0, 0, 0, 0.6);
+    z-index: 2;    
 }
 .tableHeader {
     display: flex;
