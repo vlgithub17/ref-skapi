@@ -395,21 +395,21 @@ button {
     }
 }
 
-// .dropDown {
-//     position: relative;
-//     font-size: 0.8rem;
-//     font-weight: 500;
-//     margin-right: 0.5rem;
-//     color: rgba(0, 0, 0, 0.6);
-//     user-select: none;
-//     z-index: 1;
-// }
+.dropDown {
+    position: relative;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-right: 0.5rem;
+    color: rgba(0, 0, 0, 0.6);
+    user-select: none;
+    z-index: 99;
+}
 
 .moreVert {
     position: absolute;
     left: var(--moreVert-left);
     right: var(--moreVert-right);
-    top: 40px;
+    top: var(--moreVert-top);
     z-index: 99;
 
     .inner {
@@ -854,7 +854,7 @@ button {
     background-color: #fafafa;
     padding: 1.5rem;
     border-radius: 8px;
-    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10));
+    // filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10));
 
     .infoTitle {
         display: inline-block;

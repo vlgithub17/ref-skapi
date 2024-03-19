@@ -3,37 +3,11 @@
     section.infoBox
         form#searchForm(@submit.prevent="searchUsers")
             .selectBar
-                .customSelect(@click="(e) => {searchDropDown.showModal();}")
+                .customSelect(@click.stop="showDropDown")
                     button
                         span {{ searchFor }}
                         span.material-symbols-outlined arrow_drop_down
-                    //- ul.dropDown(role="listbox")
-                    //-     li(role="option" value="timestamp") Date Created
-                    //-     li(role="option" value="user_id") User ID
-                    //-     li(role="option" value="email") Email
-                    //-     li(role="option" value="phone_number") Phone
-                    //-     li(role="option" value="address") Address
-                    //-     li(role="option" value="gender") Gender
-                    //-     li(role="option" value="name") Name
-                    //-     li(role="option" value="locale") Locale
-                    //-     li(role="option" value="birthdate") Birth Date
-                //- .customSelect
-                    .select(style="background: rgba(0, 0, 0, 0.05);")
-                        select(:value="searchFor" @change="searchForChange" style="height: 44px;")
-                            option(value="timestamp") Date Created
-                            option(value="user_id") User ID
-                            option(value="email") Email
-                            option(value="phone_number") Phone
-                            option(value="address") Address
-                            option(value="gender") Gender
-                            option(value="name") Name
-                            option(value="locale") Locale
-                            option(value="birthdate") Birth Date
-                        .material-symbols-outlined arrow_drop_down
-                //- .dropDown.clickable(@click.stop="showDropDown" style="height:44px;line-height:44px;")
-                    span {{ searchFor }}
-                    .material-symbols-outlined.mid arrow_drop_down
-                    .moreVert(style="--moreVert-left:0;display:none")
+                    .moreVert(style="--moreVert-top:calc(1.5rem + 44px);display:none")
                         .inner
                             .more(value="timestamp") Date Created
                             .more(value="user_id") User ID
@@ -71,13 +45,57 @@
     section.infoBox
         .tableHeader 
             .actions
-                .customSelect(@click="(e) => {checkDropDown.showModal();}")
+                .customSelect(@click.stop="showDropDown")
                     button(style="height:unset")
                         span Headers
                         .material-symbols-outlined.mid arrow_drop_down
-                    //- .moreVert(@click.stop style="--moreVert-left: 0; display:none")
+                    .moreVert(@click.stop style="display:none")
                         .inner
-
+                            .more.customCheckBox
+                                input#userID(type="checkbox" :checked="filterOptions.userID" @change="filterOptions.userID = !filterOptions.userID")
+                                label(for="userID")
+                                    .material-symbols-outlined.mid.check check
+                                    span User ID
+                            .more.customCheckBox
+                                input#name(type="checkbox" :checked="filterOptions.name" @change="filterOptions.name = !filterOptions.name")
+                                label(for="name")
+                                    .material-symbols-outlined.mid.check check
+                                    span Name
+                            .more.customCheckBox
+                                input#block(type="checkbox" :checked="filterOptions.block" @change="filterOptions.block = !filterOptions.block")
+                                label(for="block")
+                                    .material-symbols-outlined.mid.check check
+                                    span Block/Unblock
+                            .more.customCheckBox
+                                input#status(type="checkbox" :checked="filterOptions.status" @change="filterOptions.status = !filterOptions.status")
+                                label(for="status")
+                                    .material-symbols-outlined.mid.check check
+                                    span Status
+                            .more.customCheckBox
+                                input#email(type="checkbox" :checked="filterOptions.email" @change="filterOptions.email = !filterOptions.email")
+                                label(for="email")
+                                    .material-symbols-outlined.mid.check check
+                                    span Email
+                            .more.customCheckBox
+                                input#address(type="checkbox" :checked="filterOptions.address" @change="filterOptions.address = !filterOptions.address")
+                                label(for="address")
+                                    .material-symbols-outlined.mid.check check
+                                    span Address
+                            .more.customCheckBox
+                                input#gender(type="checkbox" :checked="filterOptions.gender" @change="filterOptions.gender = !filterOptions.gender")
+                                label(for="gender")
+                                    .material-symbols-outlined.mid.check check
+                                    span Gender
+                            .more.customCheckBox
+                                input#locale(type="checkbox" :checked="filterOptions.locale" @change="filterOptions.locale = !filterOptions.locale")
+                                label(for="locale")
+                                    .material-symbols-outlined.mid.check check
+                                    span Locale
+                            .more.customCheckBox
+                                input#timestamp(type="checkbox" :checked="filterOptions.timestamp" @change="filterOptions.timestamp = !filterOptions.timestamp")
+                                label(for="timestamp")
+                                    .material-symbols-outlined.mid.check check
+                                    span Date Created   
 
                 .material-symbols-outlined.clickable.refresh cached
                 .material-symbols-outlined.clickable.fill.create(@click="inviteDialog.showModal();") mail
@@ -500,9 +518,8 @@ document.addEventListener('mouseup', function () {
         }
     }
 }
-.infoBox {
-    position: relative;
-    z-index: 2;    
+.moreVert {
+    left: 1.5rem;
 }
 .tableHeader {
     display: flex;

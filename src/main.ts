@@ -15,6 +15,11 @@ document.addEventListener('click', (e) => {
               }
         });
     }
+
+    let getMoreVert = document.getElementsByClassName('moreVert');
+    for (let i = 0; i < getMoreVert.length; i++) {
+        getMoreVert[i].style.display = 'none'
+    }
 })
 
 app.use(router)
