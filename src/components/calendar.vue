@@ -4,21 +4,38 @@
         .timeNav 
             input#here(type="date" hidden)
             input.year(type="text" pattern="[0-9]+" minlength="4" :value="currentYear" @input="(e) => currentYear = e.target.value" @change="updateCalendar")
-            .customSelect
-                select.month(v-model="currentMonth" @change="updateCalendar")
-                    option(value="0") January
-                    option(value="1") February
-                    option(value="2") March
-                    option(value="3") April
-                    option(value="4") May
-                    option(value="5") June
-                    option(value="6") July
-                    option(value="7") August
-                    option(value="8") September
-                    option(value="9") October
-                    option(value="10") November
-                    option(value="11") December
-                .material-symbols-outlined.mid.search.selectArrowDown(style="right:0") arrow_drop_down
+            .customSelect(@click="showDropDown")
+                button(style="height:unset")
+                    span {{ monthObj[currentMonth] }}
+                    .material-symbols-outlined.mid arrow_drop_down
+                .moreVert(style="--moreVert-left:0;display:none")
+                    .inner
+                        .more(v-for="(m,i) in monthObj" :value="i" @click="updateCalendar(i)") {{ m }}
+                        //- .more(value="1") February
+                        //- .more(value="2") March
+                        //- .more(value="3") April
+                        //- .more(value="4") May
+                        //- .more(value="5") June
+                        //- .more(value="6") July
+                        //- .more(value="7") August
+                        //- .more(value="8") September
+                        //- .more(value="9") October
+                        //- .more(value="10") November
+                        //- .more(value="11") December
+                //- select.month(v-model="currentMonth" @change="updateCalendar")
+                //-     option(value="0") January
+                //-     option(value="1") February
+                //-     option(value="2") March
+                //-     option(value="3") April
+                //-     option(value="4") May
+                //-     option(value="5") June
+                //-     option(value="6") July
+                //-     option(value="7") August
+                //-     option(value="8") September
+                //-     option(value="9") October
+                //-     option(value="10") November
+                //-     option(value="11") December
+                //- .material-symbols-outlined.mid.search.selectArrowDown(style="right:0") arrow_drop_down
             .goback
                 .material-symbols-outlined.prev(@click="prevTime") arrow_back_ios
                 .material-symbols-outlined.next(@click="nextTime") arrow_forward_ios
@@ -41,11 +58,12 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
+import { showDropDown } from '@/main';
 
-let showDropDown = ref(false);
 let activeTime = ref(false);
 let startDate = ref('');
 let endDate = ref('');
+let monthObj = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 let newDate = new Date(); // 현재 날짜
 let utc = newDate.getTime() + (newDate.getTimezoneOffset() * 60 * 1000); // utc 표준시
@@ -100,7 +118,8 @@ onMounted(() => {
     }
 })
 
-let updateCalendar = () => {
+let updateCalendar = (i) => {
+    currentMonth.value = i
     thisMonth = new Date(currentYear.value, currentMonth.value, 1);
     renderCalender(thisMonth);
 }
@@ -161,29 +180,6 @@ let createdDate = (date) => {
         width: 65px;
         padding: 5px;
         cursor: pointer;
-
-        &.active {
-            .dropdown {
-                display: block;
-            }
-        }
-
-        .dropdown {
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            border: 1px solid #ccc;
-            max-height: 100px;
-            /* 최대 높이 조절 */
-            overflow-y: auto;
-            background-color: white;
-            display: none;
-
-            >div {
-                padding: 5px;
-                cursor: pointer;
-            }
-        }
     }
 
     .timeWrap {
@@ -226,6 +222,7 @@ let createdDate = (date) => {
                 border: 1px solid rgba(0,0,0,0.05);
                 background-color: rgba(0,0,0,0.02);
                 padding: 4px 0;
+                margin-right: 14px;
                 border-radius: 4px;
             }
 

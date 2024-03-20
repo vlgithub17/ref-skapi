@@ -22,6 +22,16 @@ document.addEventListener('click', (e) => {
     }
 })
 
+let showDropDown = (e) => {
+    if (e.currentTarget.lastChild.style.display === 'none') {
+        e.currentTarget.lastChild.style.display = 'block';
+    } else {
+        e.currentTarget.lastChild.style.display = 'none'
+    }
+}
+
 app.use(router)
 
 app.mount('#app')
+
+export { showDropDown }
