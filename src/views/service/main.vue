@@ -58,7 +58,7 @@ if(currentService.value !== route.path.split('/')[2] || currentService.value == 
         padding-left: 20px;
     }
     .right {
-        width: 100%;
+        width: 50%;
         flex-grow: 1;
         padding: 0 20px;
 

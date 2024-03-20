@@ -76,6 +76,12 @@
 }
 
 input {
+    height: 44px;
+    border: 0;
+    background-color: unset;
+    font-size: 0.8rem;
+    font-weight: 400;
+
     &:not(.lineInput):focus {
         outline: 2px solid var(--main-color);
         border-radius: 8px;
@@ -86,6 +92,14 @@ input {
         &:focus {
             border-bottom: 2px solid var(--main-color) !important;
         }
+    }
+
+    // &[type=search] {padding-right: 15px;}
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-results-button,
+    &::-webkit-search-results-decoration{
+        // display:none;
     }
 }
 
@@ -227,7 +241,7 @@ button {
         align-items: center;
         justify-content: space-between;
         color: var(--black-6);
-        font-weight: 500;
+        font-weight: 400;
     }
 }
 
@@ -339,8 +353,10 @@ button {
     position: absolute;
     left: var(--moreVert-left);
     right: var(--moreVert-right);
-    top: calc(100% + 8px);
+    top: 100%;
+    margin-top: 8px;
     z-index: 99;
+    cursor: default;
 
     .inner {
         padding: 1rem;
@@ -359,12 +375,13 @@ button {
             color: rgba(0, 0, 0, 0.6);
             font-size: 0.8rem;
             font-weight: 400;
+            cursor: pointer !important;
 
             &:last-child {
                 margin-bottom: 0;
             }
 
-            &:hover {
+            &:not(.customCheckBox):hover {
                 .material-symbols-outlined {
                     &::before {
                         display: block;

@@ -9,36 +9,38 @@
                         span.material-symbols-outlined arrow_drop_down
                     .moreVert(style="--moreVert-left:0;width:100%;display:none")
                         .inner
-                            .more(value="timestamp") Date Created
-                            .more(value="user_id") User ID
-                            .more(value="email") Email
-                            .more(value="phone_number") Phone
-                            .more(value="address") Address
-                            .more(value="gender") Gender
-                            .more(value="name") Name
-                            .more(value="locale") Locale
-                            .more(value="birthdate") Birth Date
+                            .more(value="timestamp" @click="searchFor = 'timestamp'") Date Created
+                            .more(value="user_id" @click="searchFor = 'user_id'") User ID
+                            .more(value="email" @click="searchFor = 'email'") Email
+                            .more(value="phone_number" @click="searchFor = 'phone_number'") Phone
+                            .more(value="address" @click="searchFor = 'address'") Address
+                            .more(value="gender" @click="searchFor = 'gender'") Gender
+                            .more(value="name" @click="searchFor = 'name'") Name
+                            .more(value="locale" @click="searchFor = 'locale'") Locale
+                            .more(value="birthdate" @click="searchFor = 'birthdate'") Birth Date
             .searchBar
-                .material-symbols-outlined.mid.search search
+                .material-symbols-outlined.nohover.search search
                 input#searchInput(v-if="searchFor === 'timestamp'" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
-                input#searchInput(
-                    v-else-if="searchFor === 'user_id'" 
-                    placeholder="Search Users" 
-                    v-model="searchText"
-                    @input="e=>{e.target.setCustomValidity('');}"
-                    pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-                )
-                input#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchText")
-                input#searchInput(v-else-if="searchFor === 'phone_number'" placeholder="eg+821234567890" v-model="searchText")
-                input#searchInput(v-else-if="searchFor === 'address'" placeholder="Address" v-model="searchText")
-                input#searchInput(v-else-if="searchFor === 'gender'" placeholder="Gender" v-model="searchText")
-                input#searchInput(v-else-if="searchFor === 'name'" placeholder="Name" v-model="searchText")
-                input#searchInput(v-else-if="searchFor === 'locale'" placeholder="2 digit country code e.g. KR" v-model="searchText")
+                label(v-else-if="searchFor === 'user_id'")
+                    input#searchInput(
+                        type="search"
+                        placeholder="Search Users" 
+                        v-model="searchText"
+                        @input="e=>{e.target.setCustomValidity('');}"
+                        pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                    )
+                    div(style='display:inline-block; position: absolute; right: 0; background:red; width: 2rem; height: 100%' @click='searchText=""') x
+                input#searchInput(v-else-if="searchFor === 'email'" type="email" placeholder="Search public email address" v-model="searchText")
+                input#searchInput(v-else-if="searchFor === 'phone_number'" type="search" placeholder="eg+821234567890" v-model="searchText")
+                input#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchText")
+                input#searchInput(v-else-if="searchFor === 'gender'" type="search" placeholder="Gender" v-model="searchText")
+                input#searchInput(v-else-if="searchFor === 'name'" type="search" placeholder="Name" v-model="searchText")
+                input#searchInput(v-else-if="searchFor === 'locale'" type="search" placeholder="2 digit country code e.g. KR" v-model="searchText")
                 input#searchInput(v-else-if="searchFor === 'birthdate'" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
                 input(hidden type='submit')
-                .material-symbols-outlined.delete(v-if="searchText" @click="e=>{searchText = ''; if(fetchParams.searchFor !== 'timestamp') { fetchParams = defaultFetchParams; }}") close
-                .material-symbols-outlined.fill.modalIcon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate') && !searchText" @click.stop="showCalendar = !showCalendar") calendar_today
+                .material-symbols-outlined.fill.modalIcon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')" @click.stop="showCalendar = !showCalendar") calendar_today
                 .material-symbols-outlined.fill.modalIcon(v-if="searchFor === 'locale' && !searchText" @click.stop="showLocale = !showLocale") arrow_drop_down
+                Calendar(v-if="showCalendar" @dateClicked="handledateClick" alwaysEmit='true')
 
     br
 
@@ -179,7 +181,7 @@
                             td(v-if="filterOptions.locale")
                                 .overflow user.locale.flag
                             td(v-if="filterOptions.timestamp")
-                                h6.overflow user.timestamp
+                                .overflow user.timestamp
                         tr(v-if="users.length < 10" v-for="i in (10 - users.length)" :key="'extra-' + i")
                     tr.noData(v-if="users === null")
                         td(colspan="9" style="text-align:center; padding-top:20px;")
@@ -187,7 +189,6 @@
                             br
                             p There are no users matching your search terms.
 
-    Calendar(v-if="showCalendar" @dateClicked="handledateClick" alwaysEmit='true')
     Invite(ref="inviteDialog" @close="inviteDialog.close();" @load="(e)=>inviteDialog = e")
     Create(ref="createDialog" @close="createDialog.close();" @load="(e)=>createDialog = e")
 </template>
@@ -200,13 +201,6 @@ import Invite from '@/views/service/users/dialog/invite.vue'
 import Create from '@/views/service/users/dialog/create.vue'
 
 let searchFor = ref('timestamp');
-let defaultFetchParams = {
-    service: 'serviceid',
-    searchFor: 'timestamp',
-    condition: '<=',
-    value: new Date().getTime()
-}
-let fetchParams = defaultFetchParams;
 let searchText = ref('');
 let showCalendar = ref(false);
 let showFilter = ref(false);
@@ -371,8 +365,11 @@ document.addEventListener('mouseup', function () {
 #calendar,
 #localeSelector {
     position: absolute;
-    right: 41px;
-    top: 80px;
+    right: 0;
+    top: 100%;
+    max-width: 100%;
+    margin-top: 8px;
+    z-index: 1;
 }
 #searchForm {
     display: flex;
@@ -381,46 +378,37 @@ document.addEventListener('mouseup', function () {
 
     .selectBar {
         width: 200px;
-
-        .customSelect {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-        }
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
     }
     .searchBar {
         position: relative;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
         flex-grow: 1;
 
         input {
             width: 100%;
-            height: 44px;
-            border: 0;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.05);
-            font-size: 0.8rem;
-            padding-left: 50px;
-            font-weight: 400;
+            padding: 0 50px;
         }
-
         .search {
             position: absolute;
             left: 16px;
             top: 10px;
             color: rgba(0, 0, 0, 0.4);
         }
-
-        .delete {
-            position: absolute;
-            right: 16px;
-            top: 10px;
-            cursor: pointer;
-        }
-
         .modalIcon {
             position: absolute;
             right: 16px;
             top: 10px;
             color: rgba(0, 0, 0, 0.8);
+            cursor: pointer;
+        }
+    }
+}
+.customCheckBox {
+    label {
+        span {
             cursor: pointer;
         }
     }
