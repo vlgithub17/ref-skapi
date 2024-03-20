@@ -3,9 +3,20 @@ header#navBar
     .left 
         router-link(to="/") logo
     .right
-        a.doc(href="https://docs.skapi.com" target="_blank") Documentation
-        router-link.ser(to="/my-services") My Services
-        .prof F
+        ul
+            li(style="margin-right:1rem;margin-top:3px;")
+                a(href="https://twitter.com/skapijs" target="_blank")
+                    img(src="@/assets/img/icon/twitter.svg")
+            li(style="margin-top:3px;")
+                a(href="https://discord.com/invite/thqvysPnQt" target="_blank")
+                    img(src="@/assets/img/icon/discord.svg")
+        ul
+            li
+                a.doc(href="https://docs.skapi.com" target="_blank") Documentation
+            li
+                router-link.ser(to="/my-services") My Services
+            li
+                .prof F
 </template>
 
 <script setup lang="ts">
@@ -35,8 +46,22 @@ const route = useRoute();
         top: 0;
         color: #fff;
 
+        .right {
+            ul {
+                &:first-child {
+                    &::after {
+                        background-color: #fff;
+                    }
+                }
+            }
+        }
+
         a {
             color: #fff;
+
+            img {
+                filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(355deg) brightness(107%) contrast(106%) !important;
+            }
         }
     }
     .left {
@@ -44,8 +69,36 @@ const route = useRoute();
         padding-left: 20px;
     }
     .right {
+        display: flex;
+        align-items: center;
         padding: 0 20px;
 
+        ul {
+            position: relative;
+            display: flex;
+
+            &:first-child {
+                &::after {
+                    position: absolute;
+                    content: '';
+                    top: 50%;
+                    right: -1rem;
+                    transform: translateY(-50%);
+                    width: 1px;
+                    height: 50%;
+                    background-color: var(--black-6);
+                }
+            }
+            li {
+                list-style: none;
+
+                img {
+                    width: 20px;
+                    height: 20px;
+                    filter: invert(37%) sepia(0%) saturate(0%) hue-rotate(92deg) brightness(97%) contrast(89%);
+                }
+            }
+        }
         .ser {
             padding: 0 1rem;
         }

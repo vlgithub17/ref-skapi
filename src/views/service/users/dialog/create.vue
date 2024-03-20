@@ -1,14 +1,9 @@
 <template lang="pug">
-dialog#modalBox(ref='dialog')
+dialog#modalBox(ref='dialog' style="width:478px")
     .header 
-        h4 Invite User
+        h4 Create User
     .content 
-        p Invitation Email includes a temporary password and the acception link. User must accept the invitation within 7 days.
-        p For more information, refer:&nbsp;
-            a(href="https://docs.skapi.com/email/email-templates.html" target="_blank" style='white-space: nowrap') E-Mail Templates
-
         br
-
         form(@submit.prevent="createUser")
             input(hidden name="service" :value="currentService.service")
 
@@ -34,11 +29,13 @@ dialog#modalBox(ref='dialog')
             br
 
             .input
-                label.label Redirect URL 
+                label.label Password 
                 input(
-                    @input="e => redirect = e.target.value"
-                    placeholder="URL to redirect when accepted. (optional)"
-                    type='url'
+                    @input="e => password = e.target.value"
+                    placeholder="User's Password"
+                    type='Password'
+                    minlength="6"
+                    required
                 )
 
             br

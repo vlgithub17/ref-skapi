@@ -96,8 +96,8 @@
                             .key
                                 .material-symbols-outlined.fill.clickable do_not_disturb_on
                                 .inputWrap
-                                    input#keyName(type="text" name='keyName' placeholder="Key name" required)
-                                    input#secretKey(type="text" name='secretKey' placeholder="Secret Key" required)
+                                    input#keyName.lineInput(type="text" name='keyName' placeholder="Key name" required)
+                                    input#secretKey.lineInput(type="text" name='secretKey' placeholder="Secret Key" required)
                                 .buttonWrap
                                     template(v-if="promiseRunning")
                                         img.loading(style='padding:0;width:18px;height:18px;' src="@/assets/img/loading.png")
@@ -137,7 +137,7 @@
         section.cardBox
             .header 
                 .title 
-                    .material-symbols-outlined.fill(style="font-size: 1.5rem") group
+                    .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") group
                     span Users
                 router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/users`' style="font-size: 1.5rem") arrow_forward_ios
             .content
@@ -151,7 +151,7 @@
         section.cardBox
             .header 
                 .title 
-                    .material-symbols-outlined.fill(style="font-size: 1.5rem") database
+                    .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") database
                     span Database
                 router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
             .content
@@ -165,7 +165,7 @@
         section.cardBox
             .header 
                 .title 
-                    .material-symbols-outlined.fill(style="font-size: 1.5rem") mail
+                    .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") mail
                     span Mail
                 router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/mail`' style="font-size: 1.5rem") arrow_forward_ios
             .content
@@ -179,7 +179,7 @@
         section.cardBox
             .header 
                 .title 
-                    .material-symbols-outlined.fill(style="font-size: 1.5rem") language
+                    .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") language
                     span Hosting
                 router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
             .content

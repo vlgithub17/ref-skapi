@@ -6,25 +6,25 @@ br
 #serviceMain(v-if="currentService")
     nav.left 
         router-link.router(:to="`/my-services`")
-            span.material-symbols-outlined.back arrow_back_ios
+            span.material-symbols-outlined.nohover.back arrow_back_ios
             span.name My services
         br
         br
         br
         router-link.router(:to="`/my-services/${currentService.service}`" :class="{'active': route.name == 'service'}")
-            span.material-symbols-outlined.icon.fill home
+            span.material-symbols-outlined.icon.fill.nohover home
             span.name Dashboard
         router-link.router(:to="`/my-services/${currentService.service}/users`" :class="{'active': route.name == 'users'}")
-            span.material-symbols-outlined.icon.fill supervisor_account
+            span.material-symbols-outlined.icon.fill.nohover supervisor_account
             span.name Users
         router-link.router(:to="`/my-services/${currentService.service}/records`" :class="{'active': route.name == 'records'}")
-            span.material-symbols-outlined.icon.fill database
+            span.material-symbols-outlined.icon.fill.nohover database
             span.name Database
         router-link.router(:to="`/my-services/${currentService.service}/mail`" :class="{'active': route.name == 'mail'}")
-            span.material-symbols-outlined.icon.fill email
+            span.material-symbols-outlined.icon.fill.nohover email
             span.name Mail
         router-link.router(:to="`/my-services/${currentService.service}/hosting`" :class="{'active': route.name == 'hosting'}")
-            span.material-symbols-outlined.icon.fill language
+            span.material-symbols-outlined.icon.fill.nohover language
             span.name Hosting
     main.right 
         router-view
@@ -49,6 +49,8 @@ if(currentService.value !== route.path.split('/')[2] || currentService.value == 
 
 <style lang="less" scoped>
 #serviceMain {
+    position: relative;
+    max-width: 100%;
     display: flex;
     flex-wrap: nowrap;
 
@@ -56,6 +58,7 @@ if(currentService.value !== route.path.split('/')[2] || currentService.value == 
         padding-left: 20px;
     }
     .right {
+        width: 100%;
         flex-grow: 1;
         padding: 0 20px;
 
