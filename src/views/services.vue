@@ -141,8 +141,16 @@ main#services
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { onBeforeUnmount, onMounted, ref, nextTick } from 'vue';
+import { watch } from 'vue';
+import { loginState } from '@/code/user';
 
 const router = useRouter();
+
+watch(loginState, nv=>{
+    if(!nv) {
+        router.push('/login');
+    }
+}, {immediate: true});
 
 onMounted(() => {
     document.querySelector('body').classList.add('fa');

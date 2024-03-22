@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Main from '@/views/main.vue'
 import LandingPage from '@/views/landing.vue'
+import Login from '@/views/login.vue'
 import Create from '@/views/create.vue'
 import Subscription from '@/views/service/subscription/subscription.vue'
 import MyServices from '@/views/services.vue'
@@ -10,8 +11,20 @@ import Users from '@/views/service/users/users.vue'
 import Records from '@/views/service/records/records.vue'
 import Mail from '@/views/service/mail.vue'
 import Hosting from '@/views/service/hosting/hosting.vue'
+import { skapi } from '@/code/admin'
 
-const router = createRouter({
+let checkUser = async (t, f, n)=>{
+  let u = await skapi.getProfile();
+  if(u) return n();
+  n('/login');
+}
+
+const router = createRouter(
+  {
+    scrollBehavior(to, from, savedPosition) {
+    // always scroll to top
+    return { top: 0 }
+  },
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     // {
@@ -20,6 +33,11 @@ const router = createRouter({
     //   component: LandingPage
     // },
     {
+      path: '/login',
+      name: 'login',
+      component: Login
+    },
+    {
       path: '/create',
       name: 'create',
       component: Create
@@ -27,7 +45,8 @@ const router = createRouter({
     {
       path: '/subscription/:service',
       name: 'subscription',
-      component: Subscription
+      component: Subscription,
+      // beforeEnter: checkUser
     },
     {
       path: '/',

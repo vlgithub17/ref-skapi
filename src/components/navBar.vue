@@ -1,7 +1,6 @@
 <template lang="pug">
 header#navBar 
     .left 
-        //- router-link(to="/") logo
         router-link.logo(to="/")
             template(v-if="route.name == 'home'")
                 img.full(src="@/assets/img/logo/logo-white.svg")
@@ -21,17 +20,34 @@ header#navBar
         ul
             li
                 a.doc(href="https://docs.skapi.com" target="_blank") Documentation
-            li
-                router-link.ser(to="/my-services") My Services
-            li
-                .prof F
+            template(v-if="loginState")
+                li
+                    router-link.ser(to="/my-services") My Services
+                li
+                    .prof F
+                li(@click="logout") logout
+            template(v-else)
+                li
+                    router-link.ser(to="/login") login
+                li
+                    router-link.ser(to="/login") sign-up
 </template>
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
+import { skapi } from '@/code/admin';
+import { loginState, user } from '@/code/user';
 
 const router = useRouter();
 const route = useRoute();
+
+let logout = () => {
+    skapi.logout().then(()=>{
+        for(let k in user) {
+            delete user[k];
+        }
+    })
+}
 </script>
 
 <style lang="less" scoped>

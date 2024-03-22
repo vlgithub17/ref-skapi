@@ -33,9 +33,17 @@ br
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { currentService } from '@/data.js';
+import { watch } from 'vue';
+import { loginState } from '@/code/user';
 
 const router = useRouter();
 const route = useRoute();
+
+watch(loginState, nv=>{
+    if(!nv) {
+        router.push('/login');
+    }
+}, {immediate: true});
 
 let getCurrentService = () => {
     currentService.value = {};
