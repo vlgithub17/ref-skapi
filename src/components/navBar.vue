@@ -1,7 +1,15 @@
 <template lang="pug">
 header#navBar 
     .left 
-        router-link(to="/") logo
+        //- router-link(to="/") logo
+        router-link.logo(to="/")
+            template(v-if="route.name == 'home'")
+                img.full(src="@/assets/img/logo/logo-white.svg")
+                img.symbol(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;")
+            template(v-else-if="route.name == 'myservices' || route.name == 'accountSettings'")
+                img.full(src="@/assets/img/logo/logo.png")
+                img.symbol(src="@/assets/img/logo/symbol-logo.png" style="image-orientation: none;")
+            img.small(v-else src="@/assets/img/logo/symbol-logo.png")
     .right
         ul
             li(style="margin-right:1rem;margin-top:3px;")
@@ -30,6 +38,7 @@ const route = useRoute();
 #navBar {
     position: relative;
     height: 60px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -53,25 +62,40 @@ const route = useRoute();
                         background-color: #fff;
                     }
                 }
+                img {
+                    filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(355deg) brightness(107%) contrast(106%) !important;
+                }
             }
         }
 
         a {
             color: #fff;
-
-            img {
-                filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(355deg) brightness(107%) contrast(106%) !important;
-            }
         }
     }
     .left {
         width: 11rem;
-        padding-left: 20px;
+
+        .logo {
+            display: block;
+            height: 32px;
+
+            img {
+                height: 100%;
+                
+                &.symbol {
+                    height: 85%;
+                    display: none;
+                }
+                &.small {
+                    height: 85%;
+                    vertical-align: middle;
+                }
+            }
+        }
     }
     .right {
         display: flex;
         align-items: center;
-        padding: 0 20px;
 
         ul {
             position: relative;
@@ -135,6 +159,23 @@ const route = useRoute();
             }
             .ser {
                 padding-right: 0;
+            }
+        }
+    }
+}
+
+@media (max-width:479px) {
+    #navBar {
+        .left {
+            .logo {
+                img {
+                    &.full {
+                        display: none;
+                    }
+                    &.symbol {
+                        display: block;
+                    }
+                }
             }
         }
     }

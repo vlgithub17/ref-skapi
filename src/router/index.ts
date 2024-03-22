@@ -19,6 +19,11 @@ const router = createRouter({
     //   component: LandingPage
     // },
     {
+      path: '/subscription/:service',
+      name: 'subscription',
+      component: Subscription
+    },
+    {
       path: '/',
       component: Main,
       children: [
@@ -27,11 +32,11 @@ const router = createRouter({
           name: 'home',
           component: LandingPage
         },
-        {
-          path: '/subscription/:service',
-          name: 'subscription',
-          component: Subscription
-        },
+        // {
+        //   path: '/subscription/:service',
+        //   name: 'subscription',
+        //   component: Subscription
+        // },
         {
           path: 'my-services',
           name: 'myservices',

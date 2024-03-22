@@ -128,7 +128,8 @@
         
         br
 
-        div(style="display:block; text-align:right") 
+        //- div(style="display:block; text-align:right") 
+        router-link(:to='`/subscription/ap226E8TXhYtbcXRgi5D`' style="display:block; text-align:right")
             button.final Manage Subscription
     
     br
