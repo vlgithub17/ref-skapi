@@ -3,7 +3,7 @@
     section.infoBox
         form#searchForm(@submit.prevent="searchUsers")
             .selectBar
-                .customSelect(@click.stop="showDropDown" style="padding: 0 1rem;")
+                .customSelect(@click.stop="(e)=>{showDropDown(e)}" style="padding: 0 1rem;")
                     button
                         span {{ searchFor }}
                         span.material-symbols-outlined arrow_drop_down
@@ -58,7 +58,7 @@
     section.infoBox
         .tableHeader 
             .actions
-                .customSelect(@click.stop="showDropDown")
+                .customSelect(@click.stop="(e)=>{showDropDown(e)}")
                     button(style="height:unset")
                         span Headers
                         .material-symbols-outlined.mid arrow_drop_down
@@ -206,7 +206,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, nextTick } from 'vue';
-import { showDropDown } from '@/main';
+import { showDropDown } from '@/assets/js/event.js'
 import Calendar from '@/components/calendar.vue';
 import Invite from '@/views/service/users/dialog/invite.vue'
 import Create from '@/views/service/users/dialog/create.vue'

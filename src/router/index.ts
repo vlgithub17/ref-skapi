@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Main from '@/views/main.vue'
 import LandingPage from '@/views/landing.vue'
+import Create from '@/views/create.vue'
 import Subscription from '@/views/service/subscription/subscription.vue'
 import MyServices from '@/views/services.vue'
 import ServiceMain from '@/views/service/main.vue'
@@ -18,6 +19,11 @@ const router = createRouter({
     //   name: 'home',
     //   component: LandingPage
     // },
+    {
+      path: '/create',
+      name: 'create',
+      component: Create
+    },
     {
       path: '/subscription/:service',
       name: 'subscription',

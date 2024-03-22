@@ -3,8 +3,8 @@ br
 br
 br
 
-main#subscription
-    .wrap
+main#create
+    form.wrap
         img(src="@/assets/img/logo/logo.png" style="width:193px;")
 
         br
@@ -12,40 +12,22 @@ main#subscription
         br
 
         section
-            .title Current Subscription
+            .title Subscription Plans
+            .desc Choose one of the plans
 
             .line 
             
-            .smallTitle Service Plan
-            .smallValue Trial
+            label.smallTitle Name of Service
+            input#serviceName(type="text" @input='(e)=>{newServiceName=e.target.value;error="";}' placeholder="Name of Service")
 
-            br
-
-            .smallTitle Service Name
-            .smallValue abcdefg
-
-            br
-
-            .smallTitle Service ID
-            .smallValue ap226E8TXhYtbcXRgi5D
-
-        br
         br
         br
 
         section
-            .title Subscription Plans
-
-            .line 
-
             .planWrap
-                .infoBox
+                .infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
                     .mode Trial Mode
                     .price $0
-
-                    br
-
-                    button.final.disabled Current Plan
 
                     .line
 
@@ -54,13 +36,9 @@ main#subscription
                         li 4 GB of database
                         li 50 GB of file storage
                         li All the users and data will be deleted every 7 days
-                .infoBox
+                .infoBox(:class="{'checked' : serviceMode == 'standard'}" @click="serviceMode='standard'")
                     .mode Standard Mode
                     .price $19
-
-                    br
-
-                    button.final Upgrade
 
                     .line
 
@@ -74,13 +52,9 @@ main#subscription
                         li Automated emails and sending newsletters
                         li 1GB of email storage
                         li Subdomain hosting
-                .infoBox
+                .infoBox(:class="{'checked' : serviceMode == 'premium'}" @click="serviceMode='premium'")
                     .mode Premium Mode
                     .price $89
-
-                    br
-
-                    button.final Upgrade
 
                     .line
 
@@ -95,6 +69,12 @@ main#subscription
                         li 10GB of email storage
                         li Subdomain hosting
                         li unlimited use with pay-as-you-go when exceeding the limit
+        br
+        br
+
+        div(style="width:100%;text-align:center")
+            button.final(type="submit") Create
+
 br
 br
 br
@@ -119,10 +99,11 @@ let service = {
     users: 10
 }
 let serviceFetching = ref(false);
+let serviceMode = ref('standard');
 </script>
 
 <style scoped lang="less">
-#subscription {
+#create {
     width: 100%;
     padding: 0 20px;
 
@@ -131,10 +112,17 @@ let serviceFetching = ref(false);
         margin: 0 auto 0;
     }
     .title {
+        display: inline-block;
         color: rgba(0, 0, 0, 0.80);
         font-size: 28px;
         font-weight: 700;
-        // margin-top: 28px;
+        margin-right: 1rem;
+    }
+    .desc {
+        display: inline-block;
+        font-size: 0.9rem;
+        color: var(--black-4);
+        margin-top: 8px;
     }
     .line {
         width: 100%;
@@ -144,7 +132,12 @@ let serviceFetching = ref(false);
         margin: 28px 0;
     }
 }
-.smallValue {
+input {
+    display: block;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    padding: 0 1rem;
     margin-top: 8px;
 }
 .planWrap {
@@ -156,13 +149,33 @@ let serviceFetching = ref(false);
     .infoBox {
         width: 280px;
         flex-grow: 1;
+        user-select: none;
+        cursor: pointer;
+
+        &:hover {
+            li {
+                &::before {
+                    filter: brightness(0) saturate(100%) invert(12%) sepia(84%) saturate(6348%) hue-rotate(240deg) brightness(96%) contrast(87%);
+                }
+            }
+        }
+        &.checked {
+            background-color: rgba(41,63,230,0.02);
+            box-shadow: 0 0 0 4px #A5AFFF inset !important;
+
+            li {
+                &::before {
+                    filter: brightness(0) saturate(100%) invert(12%) sepia(84%) saturate(6348%) hue-rotate(240deg) brightness(96%) contrast(87%);
+                }
+            }
+        }
     }
     .price {
         position: relative;
         display: inline-block;
         font-size: 1.6rem;
         font-weight: 700;
-        padding: 1rem 0;
+        padding-top: 1rem;
 
         &::before {
             position: absolute;
@@ -179,7 +192,7 @@ let serviceFetching = ref(false);
         padding: 0;
         margin: 0;
         list-style: none;
-        line-height: 28px;
+        line-height: 1.4rem;
         
         li {
             position: relative;
@@ -192,7 +205,7 @@ let serviceFetching = ref(false);
                 position: absolute;
                 content: '';
                 left: 0;
-                top: 6px;
+                top: 0.25rem;
                 background: url('@/assets/img/icon/check.svg') no-repeat;
                 background-size: cover;
                 width: 16px;

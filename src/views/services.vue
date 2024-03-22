@@ -3,11 +3,8 @@ br
 br
 br
 
-//- router-link.service(:to="`/my-services/abcdefghijklmnopqrstuvwxyz`") abcdefghijklmnopqrstuvwxyz
-//- router-link.service(:to="`/my-services/hijklmn`") hijklmn
-
 main#services
-    .sentenceButton(@click="createService")
+    router-link.sentenceButton(to="/create" style="text-decoration:none")
         .material-symbols-outlined add
         span &nbsp;Create new service
 
@@ -137,8 +134,8 @@ main#services
 
     br
 
-    .plus(v-if="!serviceFetching")
-        .material-symbols-outlined.hover.fill(@click="createService" style="") add_circle
+    .plus
+        router-link.material-symbols-outlined.hover.fill(to="/create" style="text-decoration:none") add_circle
 </template>
 
 <script setup lang="ts">
@@ -236,6 +233,8 @@ let toggleServiceInfo = (e:any, index:number) => {
 
 <style lang="less" scoped>
 #services {
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 0 20px;
 }
 .service {
