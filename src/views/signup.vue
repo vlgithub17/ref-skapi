@@ -8,25 +8,48 @@ br
 br
 br
 
-#login
+#signup
     router-link(to="/")
         img(src="@/assets/img/logo/symbol-logo.png" style="width: 40px;")
 
-    .bottomLineTitle Log in
+    .bottomLineTitle Sign up
 
     br
 
-    form(@submit.prevent="login")
+    form(@submit.prevent="signup")
         label
             | Email
-            input(type="text" @input="e=> { form.email = e.target.value; e.target.setCustomValidity(''); }" placeholder="E.g. someone@gmail.com" required)
+            input(type="text" 
+            :value='form.email' 
+            @input="e=> { form.email = e.target.value; }"
+            title="Please enter a valid email address." 
+            placeholder="Enter your email" 
+            required)
 
         .passwordInput
             label 
                 | Password
                 input(:type='showPassword ? "text" : "password"'
-                @input="e=>form.password = e.target.value" 
-                name="password" placeholder="Enter password" required)
+                ref="passwordField" 
+                @input="e=> { form.password = e.target.value; e.target.setCustomValidity(''); error = '' }"
+                @change="validatePassword" 
+                placeholder="Create a password" 
+                required)
+            .passwordIcon(@click="showPassword = !showPassword")
+                template(v-if="showPassword")
+                    .material-symbols-outlined.fill visibility
+                template(v-else)
+                    .material-symbols-outlined.fill visibility_off
+
+        .passwordInput
+            label 
+                | Password Confirm
+                input(:type='showPassword ? "text" : "password"'
+                ref="confirmPasswordField" 
+                @input="e=> { form.password_confirm = e.target.value; e.target.setCustomValidity(''); error = '' }"
+                @change="validatePassword" 
+                placeholder="Confirm the password" 
+                required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
                     .material-symbols-outlined.fill visibility
@@ -35,11 +58,10 @@ br
 
         .actions 
             .customCheckBox
-                input#remember(type="checkbox" @change="e => {window.localStorage.setItem('remember', e.target.checked ? 'true' : 'false')}" checked)
+                input#remember(type="checkbox" @input="(e)=> form.subscribe = e.target.checked" checked)
                 label(for="remember")
-                    span(style="font-weight:400") Remember Me
+                    span(style="line-height:24px; font-weight:400") I agree to receive newsletters from Skapi via Email.
                     .material-symbols-outlined.mid.check check
-            RouterLink.forgot(to="/") Forgot Email & Password?
 
         .error(v-if="error")
             .material-symbols-outlined.fill error
@@ -49,19 +71,12 @@ br
         .bottom
             template(v-if="promiseRunning")
                 img.loading(src="@/assets/img/loading.png")
+            
             template(v-else)
-                button.final Login
-                //- br
-                //- br
-                //- a.googleLogin(:href="googleOpenId")
-                //-     img(src="@/assets/img/icon/google.svg")
-                //-     span Sign in with Google
-                br
-                br
-                RouterLink.forgot(to="/") Forgot Email & Password?
+                button.final Sign up
                 .signup 
-                    span No account?
-                    router-link(to="/signup") Sign up
+                    span Have an account?
+                    RouterLink(:to="{name: 'login'}") Login
 
 br
 br
@@ -84,46 +99,60 @@ const route = useRoute();
 
 let showPassword = ref(false);
 let promiseRunning = ref(false);
+let passwordField = ref(null);
+let confirmPasswordField = ref(null);
 let error = ref(null);
 let form = {
     email: '',
     password: '',
+    password_confirm: '',
+    subscribe: true,
 };
 
-let login = (e) => {
+let validatePassword = () => {
+    if (form.password.length < 6 || form.password.length > 60) {
+        passwordField.value.setCustomValidity('Min 6 characters and Max 60 characters');
+        passwordField.value.reportValidity();
+    } else if (form.password_confirm !== form.password) {
+        confirmPasswordField.value.setCustomValidity('Password does not match');
+        confirmPasswordField.value.reportValidity();
+    }
+}
+
+let signup = (e) => {
+    error.value = '';
     promiseRunning.value = true;
 
     let params = {
         email: form.email,
-        password: form.password
+        password: form.password,
+    }
+    let options = {
+        signup_confirmation: '/success',
+        email_subscription: form.subscribe
     }
 
-    skapi.login(params).then(u => {
-        Object.assign(user, u);
-        router.push('/my-services');
+    skapi.signup(params, options).then(res => {
+        console.log(res);
+        router.push({ path: '/confirmation', query: { email: form.email } })
     }).catch(err => {
-        for (let k in user) {
-            delete user[k];
-        }
-        if (err.code === "SIGNUP_CONFIRMATION_NEEDED") {
-            router.push({ path: '/confirmation', query: { email: form.email } });
-        } else if (err.code === "USER_IS_DISABLED") {
-            error.value = "This account is disabled."
-        } else if (err.code === "INCORRECT_USERNAME_OR_PASSWORD") {
-            error.value = "Incorrect email or password."
-        } else if (err.code === "NOT_EXISTS") {
-            error.value = "Incorrect email or password."
-        } else {
-            error.value = err.message;
-        }
-    }).finally(()=>{
+        console.log(err)
         promiseRunning.value = false;
-    })
+
+        switch (err.code) {
+            case 'EXISTS':
+                error.value = "This email is already in use";
+                break;
+            default:
+                error.value = "Something went wrong please contact an administrator.";
+                throw e;
+        }
+    });
 }
 </script>
 
 <style scoped lang="less">
-#login {
+#signup {
     max-width: 440px;
     padding: 0 20px;
     margin: 0 auto;
@@ -207,4 +236,4 @@ form {
         }
     }
 }
-</style>
+</style>    

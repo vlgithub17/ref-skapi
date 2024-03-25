@@ -2,8 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Main from '@/views/main.vue'
 import LandingPage from '@/views/landing.vue'
 import Login from '@/views/login.vue'
+import Signup from '@/views/signup.vue'
 import Create from '@/views/create.vue'
-import Subscription from '@/views/service/subscription/subscription.vue'
+import Subscription from '@/views/subscription/subscription.vue'
 import MyServices from '@/views/services.vue'
 import ServiceMain from '@/views/service/main.vue'
 import Service from '@/views/service/service.vue'
@@ -27,15 +28,25 @@ const router = createRouter(
   },
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: LandingPage
-    // },
     {
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: Signup
+    },
+    {
+      path: '/confirmation',
+      name: 'confirmation',
+      component: () => import('@/views/confirmation.vue')
+    },
+    {
+      path: '/success',
+      name: 'success',
+      component: () => import('@/views/success.vue')
     },
     {
       path: '/create',

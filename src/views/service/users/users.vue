@@ -113,9 +113,9 @@
                 .material-symbols-outlined.clickable.refresh cached
                 .material-symbols-outlined.clickable.fill.create(@click="inviteDialog.showModal();") mail
                 .material-symbols-outlined.clickable.fill.create(@click="createDialog.showModal();") person_add
-                .menu(@click.stop="showUserSetting = !showUserSetting")
+                .menu(@click.stop="(e)=>{showDropDown(e)}")
                     .material-symbols-outlined.mid.clickable more_vert
-                    .moreVert(v-if="showUserSetting" @click.stop style="--moreVert-left: 0")
+                    .moreVert(@click.stop style="--moreVert-left:0;display:none")
                         .inner
                             .more(@click="()=>{stateText='Block'; showBlockUser=true; showUserSetting=false;}")
                                 .material-symbols-outlined.fill.nohover account_circle_off
