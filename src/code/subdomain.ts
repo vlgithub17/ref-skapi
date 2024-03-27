@@ -19,7 +19,7 @@ export async function refreshCDN(
     if (!serviceId) throw 'Service ID is required';
 
     try {
-        let res = await skapi.request(await getEndpointUrl('refresh-cdn'), {
+        let res = await skapi.util.request(await getEndpointUrl('refresh-cdn'), {
             service: serviceId,
             subdomain: service.subdomain,
             exec: typeof checkStatus === 'boolean' && checkStatus ? 'status' : 'refresh'
@@ -113,7 +113,7 @@ export async function deleteHostFiles(
         pathsArr.push(params.subdomain + '/' + params.paths[i]);
     }
 
-    return skapi.request('del-files', {
+    return skapi.util.request('del-files', {
         service: serviceId,
         endpoints: pathsArr,
         storage: 'host'

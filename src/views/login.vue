@@ -19,13 +19,13 @@ br
     form(@submit.prevent="login")
         label
             | Email
-            input(type="text" @input="e=> { form.email = e.target.value; e.target.setCustomValidity(''); }" placeholder="E.g. someone@gmail.com" required)
+            input(type="email" @input="e=> { form.email = e.target.value; error='';}" placeholder="E.g. someone@gmail.com" required)
 
         .passwordInput
             label 
                 | Password
                 input(:type='showPassword ? "text" : "password"'
-                @input="e=>form.password = e.target.value" 
+                @input="(e)=>{form.password = e.target.value; error='';}" 
                 name="password" placeholder="Enter password" required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
@@ -35,11 +35,11 @@ br
 
         .actions 
             .customCheckBox
-                input#remember(type="checkbox" @change="e => {window.localStorage.setItem('remember', e.target.checked ? 'true' : 'false')}" checked)
+                input#remember(type="checkbox" @change="(e)=>{checkLocalSetorage(e)}" checked)
                 label(for="remember")
                     span(style="font-weight:400") Remember Me
                     .material-symbols-outlined.mid.check check
-            RouterLink.forgot(to="/") Forgot Email & Password?
+            RouterLink.forgot(to="/forgot") Forgot Email & Password?
 
         .error(v-if="error")
             .material-symbols-outlined.fill error
@@ -58,7 +58,7 @@ br
                 //-     span Sign in with Google
                 br
                 br
-                RouterLink.forgot(to="/") Forgot Email & Password?
+                RouterLink.forgot(to="/forgot") Forgot Email & Password?
                 .signup 
                     span No account?
                     router-link(to="/signup") Sign up
@@ -89,6 +89,10 @@ let form = {
     email: '',
     password: '',
 };
+
+let checkLocalSetorage = (e) => {
+    localStorage.setItem('remember', e.target.checked ? 'true' : 'false');
+}
 
 let login = (e) => {
     promiseRunning.value = true;

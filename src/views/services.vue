@@ -143,6 +143,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { onBeforeUnmount, onMounted, ref, nextTick } from 'vue';
 import { watch } from 'vue';
 import { loginState } from '@/code/user';
+import { skapi } from '@/code/admin';
 
 const router = useRouter();
 

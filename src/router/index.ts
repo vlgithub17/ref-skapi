@@ -44,6 +44,11 @@ const router = createRouter(
       component: () => import('@/views/confirmation.vue')
     },
     {
+      path: '/forgot',
+      name: 'forgot',
+      component: () => import('@/views/forgot-password.vue')
+    },
+    {
       path: '/success',
       name: 'success',
       component: () => import('@/views/success.vue')

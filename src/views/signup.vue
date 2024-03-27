@@ -19,10 +19,9 @@ br
     form(@submit.prevent="signup")
         label
             | Email
-            input(type="text" 
+            input(type="email" 
             :value='form.email' 
             @input="e=> { form.email = e.target.value; }"
-            title="Please enter a valid email address." 
             placeholder="Enter your email" 
             required)
 
@@ -32,7 +31,7 @@ br
                 input(:type='showPassword ? "text" : "password"'
                 ref="passwordField" 
                 @input="e=> { form.password = e.target.value; e.target.setCustomValidity(''); error = '' }"
-                @change="validatePassword" 
+                minlength="6"
                 placeholder="Create a password" 
                 required)
             .passwordIcon(@click="showPassword = !showPassword")
@@ -47,7 +46,7 @@ br
                 input(:type='showPassword ? "text" : "password"'
                 ref="confirmPasswordField" 
                 @input="e=> { form.password_confirm = e.target.value; e.target.setCustomValidity(''); error = '' }"
-                @change="validatePassword" 
+                @change="validatePassword"
                 placeholder="Confirm the password" 
                 required)
             .passwordIcon(@click="showPassword = !showPassword")
@@ -110,10 +109,7 @@ let form = {
 };
 
 let validatePassword = () => {
-    if (form.password.length < 6 || form.password.length > 60) {
-        passwordField.value.setCustomValidity('Min 6 characters and Max 60 characters');
-        passwordField.value.reportValidity();
-    } else if (form.password_confirm !== form.password) {
+    if (form.password_confirm !== form.password) {
         confirmPasswordField.value.setCustomValidity('Password does not match');
         confirmPasswordField.value.reportValidity();
     }
