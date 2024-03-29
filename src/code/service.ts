@@ -3,7 +3,7 @@ import { skapi } from './admin';
 import { Countries } from './countries';
 const regions = JSON.parse(import.meta.env.VITE_REG);
 
-export let serviceList: {[key:string]:ServiceObj} = reactive({});
+export let serviceList: { [key: string]: ServiceObj } = reactive({});
 export let currentService = reactive({});
 export let serviceFetching = ref(false);
 
@@ -181,8 +181,8 @@ export default class Service {
     }
 
     async setServiceOption(opt: {
-        'prevent_signup': boolean;
-        'client_secret': Record<string, any>;
+        prevent_signup: boolean;
+        client_secret: Record<string, any>;
     }): Promise<ServiceObj> {
         let updated = await skapi.util.request(this.admin_private_endpoint + 'service-opt', { service: this.id, owner: this.owner, opt }, { auth: true });
         Object.assign(this.service, updated);
@@ -204,7 +204,7 @@ export default class Service {
             }
             wait.push(skapi.util.request(this.admin_private_endpoint + 'list-host-directory', { service: this.id, owner: this.owner, info: true, dir: subdomain }, { auth: true }).then((r: any) => {
                 this.storageInfo.host = r.size;
-            }));
+            }).catch(() => this.storageInfo.host = 0));
         }
 
         wait.push(skapi.util.request(this.record_private_endpoint + 'storage-info', { service: this.id, owner: this.owner }, { auth: true }).then(r => {
@@ -346,6 +346,9 @@ export default class Service {
         if (this.service?.subdomain) {
             if (subdomain && this.service?.subdomain[0] === '*') {
                 throw 'Previous subdomain is in removal process.';
+            }
+            if (!v && typeof v !== 'boolean') {
+                throw new SkapiError('"index.value" is required.', { code: 'INVALID_PARAMETER' });
             }
             else if (subdomain && this.service?.subdomain[0] === '+') {
                 throw `Previous subdomain is in transit to "${this.service.subdomain.slice(1)}".`;
