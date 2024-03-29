@@ -8,10 +8,13 @@ import { skapi } from './code/admin';
 import { user } from './code/user';
 import { ref } from 'vue';
 import Service from './code/service';
+import { serviceFetching, serviceList } from './code/service';
 
 let loaded = ref(false);
 
 skapi.getProfile().then(async u => {
+    serviceFetching.value = true;
+
     if (u) {
         Object.assign(user, u);
         console.log(u)
@@ -22,13 +25,25 @@ skapi.getProfile().then(async u => {
         });
 
         let serviceIdList = uInfo.list[0].services;
+        let promsieList = [];
+        
+        for (let serviceId of serviceIdList) {
 
-        for(let serviceId of serviceIdList) {
-            console.log(serviceId)
-            Service.load(serviceId).then(sobj=>console.log(sobj))
+            promsieList.push(Service.load(serviceId).then(serviceObj => {
+                console.log(serviceObj)
+                serviceList[serviceId] = serviceObj;
+
+                serviceFetching.value = false;
+            }))
         }
+
+        Promise.all(promsieList).then(()=>{
+            serviceFetching.value = false;
+        });
+
+        // console.log(serviceList);
     }
-}).finally(()=>{
+}).finally(() => {
     loaded.value = true;
 });
 
@@ -36,6 +51,4 @@ const router = useRouter();
 const route = useRoute();
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

@@ -11,19 +11,19 @@ br
         br
         br
         br
-        router-link.router(:to="`/my-services/${currentService.service}`" :class="{'active': route.name == 'service'}")
+        router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
             span.material-symbols-outlined.icon.fill.nohover home
             span.name Dashboard
-        router-link.router(:to="`/my-services/${currentService.service}/users`" :class="{'active': route.name == 'users'}")
+        router-link.router(:to="`/my-services/${currentService.id}/users`" :class="{'active': route.name == 'users'}")
             span.material-symbols-outlined.icon.fill.nohover supervisor_account
             span.name Users
-        router-link.router(:to="`/my-services/${currentService.service}/records`" :class="{'active': route.name == 'records'}")
+        router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
             span.material-symbols-outlined.icon.fill.nohover database
             span.name Database
-        router-link.router(:to="`/my-services/${currentService.service}/mail`" :class="{'active': route.name == 'mail'}")
+        router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
             span.material-symbols-outlined.icon.fill.nohover email
             span.name Mail
-        router-link.router(:to="`/my-services/${currentService.service}/hosting`" :class="{'active': route.name == 'hosting'}")
+        router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting'}")
             span.material-symbols-outlined.icon.fill.nohover language
             span.name Hosting
     main.right 
@@ -32,27 +32,40 @@ br
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { currentService } from '@/data.js';
 import { watch } from 'vue';
 import { loginState } from '@/code/user';
+import { serviceList } from '@/code/service';
+import { currentService } from '@/views/service/main';
 
 const router = useRouter();
 const route = useRoute();
 
-watch(loginState, nv=>{
-    if(!nv) {
+watch(loginState, nv => {
+    if (!nv) {
         router.push('/login');
     }
-}, {immediate: true});
+}, { immediate: true });
 
-let getCurrentService = () => {
-    currentService.value = {};
-    currentService.value.service = route.path.split('/')[2];
+for (let k in currentService) {
+    delete currentService[k];
 }
 
-if(currentService.value !== route.path.split('/')[2] || currentService.value == null) {
-    getCurrentService();
-}
+Object.assign(currentService, serviceList[route.path.split('/')[2]]);
+console.log(currentService)
+// if(currentService !== route.path.split('/')[2] || currentService == null) {
+//     for(let k in currentService) {
+//         delete currentService[k]
+//     }
+
+//     Object.assign(currentService, serviceList[route.path.split('/')[2]])
+//     // currentService = serviceList[route.path.split('/')[2]];
+// }
+
+// let getCurrentService = () => {
+//     currentService.value = {};
+//     currentService.value.service = route.path.split('/')[2];
+// }
+
 </script>
 
 <style lang="less" scoped>
@@ -65,17 +78,19 @@ if(currentService.value !== route.path.split('/')[2] || currentService.value == 
     .left {
         padding-left: 20px;
     }
+
     .right {
         width: 50%;
         flex-grow: 1;
         padding: 0 20px;
 
-        > div {
+        >div {
             max-width: 1200px;
             margin: 0 auto;
         }
     }
 }
+
 .router {
     display: block;
     padding: 12px;
@@ -92,16 +107,20 @@ if(currentService.value !== route.path.split('/')[2] || currentService.value == 
             font-weight: 700;
         }
     }
+
     span {
         vertical-align: middle;
     }
+
     .back {
         font-size: 1rem;
         margin-left: 9px;
     }
+
     .icon {
         font-size: 1.5rem;
     }
+
     .name {
         font-size: 1rem;
         font-weight: 500;

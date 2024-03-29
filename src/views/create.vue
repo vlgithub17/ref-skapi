@@ -83,6 +83,7 @@ br
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { ref } from 'vue';
+import { serviceFetching } from '@/code/service'
 
 const router = useRouter();
 const route = useRoute();
@@ -98,7 +99,6 @@ let service = {
     service: 'ap226E8TXhYtbcXRgi5D',
     users: 10
 }
-let serviceFetching = ref(false);
 let serviceMode = ref('standard');
 </script>
 

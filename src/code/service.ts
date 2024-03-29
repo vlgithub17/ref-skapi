@@ -1,8 +1,13 @@
+import { reactive, ref } from 'vue';
 import { skapi } from './admin';
 import { Countries } from './countries';
 const regions = JSON.parse(import.meta.env.VITE_REG);
 
-type ServiceObj = {
+export let serviceList: {[key:string]:ServiceObj} = reactive({});
+export let currentService = reactive({});
+export let serviceFetching = ref(false);
+
+export type ServiceObj = {
     active: number; // 0 = disabled / -1 = suspended
     api_key: string;
     cors: string; // "url, url"

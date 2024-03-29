@@ -38,7 +38,7 @@ main#services
                         | Datebase
                         .resizer(@mousedown="mousedown")
             tbody
-                template(v-if="services.length" v-for="(service, index) in services")
+                template(v-if="Object.keys(serviceList).length" v-for="(service, index, key) in serviceList")
                     tr(ref="tr" @click="(e) => goServiceDashboard(e, service)")
                         td(style="display:flex;align-items:center;height:60px")
                             .material-symbols-outlined.hover.nohover.upArrow(:class="{ hide: currentServiceIndex !== index }" @click.stop="(e) => toggleServiceInfo(e, index)") arrow_forward_ios
@@ -46,16 +46,12 @@ main#services
                             .serviceActive(:class="{'active': service.active == 1 }")
                                 .material-symbols-outlined.power.nohover power_settings_new
                         td
-                            .overflow {{ service.name }}
+                            .overflow {{ service.service.name }}
                         td
-                            .overflow {{ service.cors }}
-                        td.center(style="white-space:nowrap") {{ typeof service.timestamp === 'string' ? service.timestamp : new Date(service.timestamp).toDateString() }}
-                        td.center
-                            template(v-if="service.group == 1") Trial
-                            template(v-else-if="service.group == 2") Standard
-                            template(v-else-if="service.group == 3") Premium
-                            template(v-else-if="service.group == 50") Unlimited
-                            template(v-else-if="service.group == 51") Free Standard
+                            .overflow {{ service.service.cors }}
+                        td.center(style="white-space:nowrap") {{ typeof service.service.timestamp === 'string' ? service.service.timestamp : new Date(service.service.timestamp).toDateString() }}
+                        td.center(style="white-space:nowrap")
+                            template(v-if="service.plan") {{ service.plan }}
                             template(v-else) ...
                         td.center
                             template(v-if="service?.subscription") 
@@ -65,32 +61,32 @@ main#services
                             template(v-else)
                                 .state(style="color:#52D687") Running
                         td.center
-                            .percent.purple(v-if="service.group == 50") Unlimited
-                            .percent(v-else-if="service.group !== 50 && Math.ceil(service.users/10000*100)" :class='{"green": 0 <= Math.ceil(service.users/10000*100) && Math.ceil(service.users/10000*100) < 51, "orange": 51 <= Math.ceil(service.users/10000*100) && Math.ceil(service.users/10000*100) < 81, "red": 81 <= Math.ceil(service.users/10000*100) && Math.ceil(service.users/10000*100) < 101}') {{ Math.ceil(service.users/10000*100) + '%' }}
+                            .percent.purple(v-if="service.plan == 'Unlimited'") Unlimited
+                            .percent(v-else-if="service.plan == 'Unlimited' && Math.ceil(service.service.users/10000*100)" :class='{"green": 0 <= Math.ceil(service.service.users/10000*100) && Math.ceil(service.service.users/10000*100) < 51, "orange": 51 <= Math.ceil(service.service.users/10000*100) && Math.ceil(service.service.users/10000*100) < 81, "red": 81 <= Math.ceil(service.service.users/10000*100) && Math.ceil(service.service.users/10000*100) < 101}') {{ Math.ceil(service.service.users/10000*100) + '%' }}
                             .percent.green(v-else) 0%
                         td.center
-                            .percent.purple(v-if="service.group == 50") Unlimited
-                            //- .percent(v-else-if="service.group !== 50 && Math.ceil(storageInfo?.[service]?.cloud/53687091200*100)" :class='{"green": 0 <= Math.ceil(storageInfo?.[service]?.cloud/53687091200*100) && Math.ceil(storageInfo?.[service]?.cloud/53687091200*100) < 51, "orange": 51 <= Math.ceil(storageInfo?.[service]?.cloud/53687091200*100) && Math.ceil(storageInfo?.[service]?.cloud/53687091200*100) < 81, "red": 81 <= Math.ceil(storageInfo?.[service]?.cloud/53687091200*100)}') {{ Math.ceil(storageInfo?.[service]?.cloud/53687091200*100) + '%' }}
+                            .percent.purple(v-if="service.plan == 'Unlimited'") Unlimited
+                            .percent(v-else-if="service.plan == 'Unlimited' && Math.ceil(service.storageInfo.cloud/53687091200*100)" :class='{"green": 0 <= Math.ceil(service.storageInfo.cloud/53687091200*100) && Math.ceil(service.storageInfo.cloud/53687091200*100) < 51, "orange": 51 <= Math.ceil(service.storageInfo.cloud/53687091200*100) && Math.ceil(service.storageInfo.cloud/53687091200*100) < 81, "red": 81 <= Math.ceil(service.storageInfo.cloud/53687091200*100)}') {{ Math.ceil(service.storageInfo.cloud/53687091200*100) + '%' }}
                             .percent.green(v-else) 0%
                         td(style="padding-left:20px;")
-                            .percent.purple(v-if="service.group == 50") Unlimited
-                            //- .percent(v-else-if="service.group !== 50 && Math.ceil(storageInfo?.[service]?.database/4294967296*100)" :class='{"green": 0 <= Math.ceil(storageInfo?.[service]?.database/4294967296*100) && Math.ceil(storageInfo?.[service]?.database/4294967296*100) < 51, "orange": 51 <= Math.ceil(storageInfo?.[service]?.database/4294967296*100) && Math.ceil(storageInfo?.[service]?.database/4294967296*100) < 81, "red": 81 <= Math.ceil(storageInfo?.[service]?.database/4294967296*100)}') {{ Math.ceil(storageInfo?.[service]?.database/4294967296*100) + '%' }}
+                            .percent.purple(v-if="service.plan == 'Unlimited'") Unlimited
+                            .percent(v-else-if="service.plan == 'Unlimited' && Math.ceil(service.storageInfo.database/4294967296*100)" :class='{"green": 0 <= Math.ceil(service.storageInfo.database/4294967296*100) && Math.ceil(service.storageInfo.database/4294967296*100) < 51, "orange": 51 <= Math.ceil(service.storageInfo.database/4294967296*100) && Math.ceil(service.storageInfo.database/4294967296*100) < 81, "red": 81 <= Math.ceil(service.storageInfo.database/4294967296*100)}') {{ Math.ceil(service.storageInfo.database/4294967296*100) + '%' }}
                             .percent.green(v-else) 0%
                     tr.cont(ref="trCont" :class="{ active: currentServiceIndex === index }")
                         td(colspan="9")
                             .info
                                 .title Name
-                                .value(style="color:var(--black-8);font-weight:700") {{ service.name }}
+                                .value(style="color:var(--black-8);font-weight:700") {{ service.service.name }}
                             .info 
                                 .title Service ID 
-                                .value {{ service.service }}
+                                .value {{ service.id }}
                             .info 
                                 .title CORS 
-                                .value {{ service.cors }}
+                                .value {{ service.service.cors }}
                             br
                             .info.inline
                                 .title # of Users 
-                                .value {{ service.users }}
+                                .value {{ service.service.users }}
                             .info.inline 
                                 .title Database Used
                                 .value -
@@ -121,8 +117,8 @@ main#services
                                 .title Subdomain
                                 .value(v-if="service?.subdomain") {{ service.subdomain }}
                                 .value(v-else) -
-                tr.noData(v-else)
-                    td(colspan="9" style="text-align:center; padding-top:20px;")
+                tr.noData(v-else-if="!Object.keys(serviceList).length && !serviceFetching")
+                    td(colspan="9" style="text-align:center; padding:20px 0;")
                         br
                         br
                         .title No Services
@@ -144,6 +140,7 @@ import { onBeforeUnmount, onMounted, ref, nextTick } from 'vue';
 import { watch } from 'vue';
 import { loginState } from '@/code/user';
 import { skapi } from '@/code/admin';
+import { serviceFetching, serviceList } from '@/code/service';
 
 const router = useRouter();
 
@@ -208,25 +205,13 @@ document.addEventListener('mouseup', function () {
     document.removeEventListener('mousemove', mouseMoveHandler);
 });
 
-let services = [
-    {
-        active: 1,
-        name: 'service name',
-        cors: 'service cors',
-        timestamp: 1709102706561,
-        group: 1,
-        service: 'ap226E8TXhYtbcXRgi5D',
-        users: 10
-    }
-];
-let serviceFetching = ref(false);
 let currentServiceIndex = ref(null);
 
 let goServiceDashboard = (e:any, service:Object) => {
     e.currentTarget.classList.add('active');
 
     setTimeout(() => {
-        router.push('/my-services/' + service.service);
+        router.push('/my-services/' + service.id);
     }, 500);
 }
 
@@ -251,6 +236,14 @@ let toggleServiceInfo = (e:any, index:number) => {
     text-decoration: none;
     color: var(--black-8);
     padding: 10px 0;
+}
+.noData {
+    color: var(--black-4);
+
+    .title {
+        font-size: 1rem;
+        font-weight: 700;
+    }
 }
 .loadingWrap {
     text-align: center;
