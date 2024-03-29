@@ -34,7 +34,7 @@ br
 import { useRoute, useRouter } from 'vue-router';
 import { watch } from 'vue';
 import { loginState } from '@/code/user';
-import { serviceList } from '@/code/service';
+import { serviceList, serviceFetching } from '@/code/service';
 import { currentService, setService, serviceLoaded } from '@/views/service/main';
 
 const router = useRouter();
@@ -46,20 +46,19 @@ watch(loginState, nv => {
     }
 }, { immediate: true });
 
-// for (let k in currentService) {
-//     delete currentService[k];
-// }
+watch(serviceFetching, nv => {
+    if (!nv) {
+        try {
+            setService(route.path.split('/')[2]);
+            console.log(currentService);
+        }
+        catch (err) {
+            console.log(err);
+            router.push('/my-services');
+        }
+    }
+}, {immediate: true})
 
-// Object.assign(currentService, serviceList[route.path.split('/')[2]]);
-
-try {
-    setService(route.path.split('/')[2])
-    console.log(currentService)
-}
-catch (err) {
-    console.log(err);
-    //다른페이지로
-}
 
 </script>
 

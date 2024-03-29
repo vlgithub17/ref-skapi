@@ -26,18 +26,18 @@ skapi.getProfile().then(async u => {
 
         let serviceIdList = uInfo.list[0].services;
         let promsieList = [];
-        
-        for (let serviceId of serviceIdList) {
 
+        for (let serviceId of serviceIdList) {
             promsieList.push(Service.load(serviceId).then(serviceObj => {
                 console.log(serviceObj)
                 serviceList[serviceId] = serviceObj;
 
-                serviceFetching.value = false;
+                // serviceFetching.value = false;
             }))
         }
 
-        Promise.all(promsieList).then(()=>{
+        // await 안하면 service main 에서 setService 할때 serviceList 에서 못찾아냄
+        await Promise.all(promsieList).then(()=>{
             serviceFetching.value = false;
         });
 

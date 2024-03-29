@@ -3,8 +3,8 @@ import { skapi } from './admin';
 import { Countries } from './countries';
 const regions = JSON.parse(import.meta.env.VITE_REG);
 
-export let serviceList: { [key: string]: ServiceObj } = reactive({});
-export let currentService = reactive({});
+export let serviceList: { [key: string]: Service } = reactive({});
+// export let currentService = reactive({});
 export let serviceFetching = ref(false);
 
 export type ServiceObj = {
@@ -144,8 +144,6 @@ export default class Service {
         this.owner = service.owner;
         this.dateCreated = typeof service.timestamp === 'string' ? service.timestamp : new Date(service.timestamp).toDateString();
         this.plan = this.planCode[this.service.group];
-        this.getSubscription();
-        this.getStorageInfo();
     }
 
     async getSubscription(refresh = false): Promise<SubscriptionObj> {
@@ -427,8 +425,10 @@ export default class Service {
 
         if (typeof id === 'string') {
             let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: id }, { auth: true });
-            for (let k in service) {
-                return new Service(id, service[k][0], [admin_private_endpoint, record_private_endpoint, admin_public_endpoint]);
+            for(let region in service) {
+                let serviceClass = new Service(id, service[region][0], [admin_private_endpoint, record_private_endpoint]);
+                await Promise.all([serviceClass.getSubscription().catch(()=>{}), serviceClass.getStorageInfo().catch(()=>{})])
+                return serviceClass;
             }
         }
     }
