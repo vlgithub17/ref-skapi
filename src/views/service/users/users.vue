@@ -3,49 +3,62 @@
     section.infoBox
         form#searchForm(@submit.prevent="searchUsers")
             .selectBar
-                .customSelect(@click.stop="showDropDown" style="padding: 0 1rem;")
+                .customSelect(@click.stop="(e)=>{showDropDown(e)}" style="padding: 0 1rem;")
                     button
                         span {{ searchFor }}
                         span.material-symbols-outlined arrow_drop_down
                     .moreVert(style="--moreVert-left:0;width:100%;display:none")
                         .inner
-                            .more(value="timestamp") Date Created
-                            .more(value="user_id") User ID
-                            .more(value="email") Email
-                            .more(value="phone_number") Phone
-                            .more(value="address") Address
-                            .more(value="gender") Gender
-                            .more(value="name") Name
-                            .more(value="locale") Locale
-                            .more(value="birthdate") Birth Date
+                            .more(value="timestamp" @click="searchFor = 'timestamp';searchText = ''") Date Created
+                            .more(value="user_id" @click="searchFor = 'user_id';searchText = ''") User ID
+                            .more(value="email" @click="searchFor = 'email';searchText = ''") Email
+                            .more(value="phone_number" @click="searchFor = 'phone_number';searchText = ''") phone_number
+                            .more(value="address" @click="searchFor = 'address';searchText = ''") Address
+                            .more(value="gender" @click="searchFor = 'gender';searchText = ''") Gender
+                            .more(value="name" @click="searchFor = 'name';searchText = ''") Name
+                            .more(value="locale" @click="searchFor = 'locale';searchText = ''") Locale
+                            .more(value="birthdate" @click="searchFor = 'birthdate';searchText = ''") Birth Date
             .searchBar
-                .material-symbols-outlined.mid.search search
+                .material-symbols-outlined.nohover.search search
                 input#searchInput(v-if="searchFor === 'timestamp'" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
-                input#searchInput(
-                    v-else-if="searchFor === 'user_id'" 
-                    placeholder="Search Users" 
-                    v-model="searchText"
-                    @input="e=>{e.target.setCustomValidity('');}"
-                    pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-                )
-                input#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchText")
-                input#searchInput(v-else-if="searchFor === 'phone_number'" placeholder="eg+821234567890" v-model="searchText")
-                input#searchInput(v-else-if="searchFor === 'address'" placeholder="Address" v-model="searchText")
-                input#searchInput(v-else-if="searchFor === 'gender'" placeholder="Gender" v-model="searchText")
-                input#searchInput(v-else-if="searchFor === 'name'" placeholder="Name" v-model="searchText")
-                input#searchInput(v-else-if="searchFor === 'locale'" placeholder="2 digit country code e.g. KR" v-model="searchText")
-                input#searchInput(v-else-if="searchFor === 'birthdate'" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
+                label.customSearchLabel(v-else-if="searchFor === 'user_id'")
+                    input#searchInput(
+                        placeholder="Search Users" 
+                        v-model="searchText"
+                        @input="e=>{e.target.setCustomValidity('');}"
+                        pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                    )
+                    .material-symbols-outlined.delete(v-if="searchText" @click='searchText=""') close
+                label.customSearchLabel(v-else-if="searchFor === 'email'")
+                    input#searchInput(type="email" placeholder="Search public email address" v-model="searchText")
+                    .material-symbols-outlined.delete(v-if="searchText" @click='searchText=""') close
+                label.customSearchLabel(v-else-if="searchFor === 'phone_number'")
+                    input#searchInput(type="text" placeholder="eg+821234567890" v-model="searchText")
+                    .material-symbols-outlined.delete(v-if="searchText" @click='searchText=""') close
+                label.customSearchLabel(v-else-if="searchFor === 'address'")
+                    input#searchInput(type="text" placeholder="Address" v-model="searchText")
+                    .material-symbols-outlined.delete(v-if="searchText" @click='searchText=""') close
+                label.customSearchLabel(v-else-if="searchFor === 'gender'")
+                    input#searchInput(type="text" placeholder="Gender" v-model="searchText")
+                    .material-symbols-outlined.delete(v-if="searchText" @click='searchText=""') close
+                label.customSearchLabel(v-else-if="searchFor === 'name'")
+                    input#searchInput(vtype="text" placeholder="Name" v-model="searchText")
+                    .material-symbols-outlined.delete(v-if="searchText" @click='searchText=""') close
+                label.customSearchLabel(v-else-if="searchFor === 'locale'")
+                    input#searchInput(type="text" placeholder="2 digit country code e.g. KR" v-model="searchText")
+                    .material-symbols-outlined.delete(v-if="searchText" @click='searchText=""') close
+                input#searchInput(v-else="searchFor === 'birthdate'" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
                 input(hidden type='submit')
-                .material-symbols-outlined.delete(v-if="searchText" @click="e=>{searchText = ''; if(fetchParams.searchFor !== 'timestamp') { fetchParams = defaultFetchParams; }}") close
-                .material-symbols-outlined.fill.modalIcon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate') && !searchText" @click.stop="showCalendar = !showCalendar") calendar_today
+                .material-symbols-outlined.fill.modalIcon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')" @click.stop="showCalendar = !showCalendar") calendar_today
                 .material-symbols-outlined.fill.modalIcon(v-if="searchFor === 'locale' && !searchText" @click.stop="showLocale = !showLocale") arrow_drop_down
+                Calendar(v-if="showCalendar" @dateClicked="handledateClick" alwaysEmit='true')
 
     br
 
     section.infoBox
         .tableHeader 
             .actions
-                .customSelect(@click.stop="showDropDown")
+                .customSelect(@click.stop="(e)=>{showDropDown(e)}")
                     button(style="height:unset")
                         span Headers
                         .material-symbols-outlined.mid arrow_drop_down
@@ -100,9 +113,9 @@
                 .material-symbols-outlined.clickable.refresh cached
                 .material-symbols-outlined.clickable.fill.create(@click="inviteDialog.showModal();") mail
                 .material-symbols-outlined.clickable.fill.create(@click="createDialog.showModal();") person_add
-                .menu(@click.stop="showUserSetting = !showUserSetting")
+                .menu(@click.stop="(e)=>{showDropDown(e)}")
                     .material-symbols-outlined.mid.clickable more_vert
-                    .moreVert(v-if="showUserSetting" @click.stop style="--moreVert-left: 0")
+                    .moreVert(@click.stop style="--moreVert-left:0;display:none")
                         .inner
                             .more(@click="()=>{stateText='Block'; showBlockUser=true; showUserSetting=false;}")
                                 .material-symbols-outlined.fill.nohover account_circle_off
@@ -179,7 +192,7 @@
                             td(v-if="filterOptions.locale")
                                 .overflow user.locale.flag
                             td(v-if="filterOptions.timestamp")
-                                h6.overflow user.timestamp
+                                .overflow user.timestamp
                         tr(v-if="users.length < 10" v-for="i in (10 - users.length)" :key="'extra-' + i")
                     tr.noData(v-if="users === null")
                         td(colspan="9" style="text-align:center; padding-top:20px;")
@@ -187,26 +200,18 @@
                             br
                             p There are no users matching your search terms.
 
-    Calendar(v-if="showCalendar" @dateClicked="handledateClick" alwaysEmit='true')
     Invite(ref="inviteDialog" @close="inviteDialog.close();" @load="(e)=>inviteDialog = e")
     Create(ref="createDialog" @close="createDialog.close();" @load="(e)=>createDialog = e")
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, nextTick } from 'vue';
-import { showDropDown } from '@/main';
+import { showDropDown } from '@/assets/js/event.js'
 import Calendar from '@/components/calendar.vue';
 import Invite from '@/views/service/users/dialog/invite.vue'
 import Create from '@/views/service/users/dialog/create.vue'
 
 let searchFor = ref('timestamp');
-let defaultFetchParams = {
-    service: 'serviceid',
-    searchFor: 'timestamp',
-    condition: '<=',
-    value: new Date().getTime()
-}
-let fetchParams = defaultFetchParams;
 let searchText = ref('');
 let showCalendar = ref(false);
 let showFilter = ref(false);
@@ -371,8 +376,11 @@ document.addEventListener('mouseup', function () {
 #calendar,
 #localeSelector {
     position: absolute;
-    right: 41px;
-    top: 80px;
+    right: 0;
+    top: 100%;
+    max-width: 100%;
+    margin-top: 8px;
+    z-index: 1;
 }
 #searchForm {
     display: flex;
@@ -381,46 +389,37 @@ document.addEventListener('mouseup', function () {
 
     .selectBar {
         width: 200px;
-
-        .customSelect {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-        }
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
     }
     .searchBar {
         position: relative;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
         flex-grow: 1;
 
         input {
             width: 100%;
-            height: 44px;
-            border: 0;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.05);
-            font-size: 0.8rem;
-            padding-left: 50px;
-            font-weight: 400;
+            padding: 0 50px;
         }
-
         .search {
             position: absolute;
             left: 16px;
             top: 10px;
             color: rgba(0, 0, 0, 0.4);
         }
-
-        .delete {
-            position: absolute;
-            right: 16px;
-            top: 10px;
-            cursor: pointer;
-        }
-
         .modalIcon {
             position: absolute;
             right: 16px;
             top: 10px;
             color: rgba(0, 0, 0, 0.8);
+            cursor: pointer;
+        }
+    }
+}
+.customCheckBox {
+    label {
+        span {
             cursor: pointer;
         }
     }

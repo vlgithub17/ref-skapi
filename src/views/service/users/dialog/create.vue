@@ -54,6 +54,7 @@ dialog#modalBox(ref='dialog' style="width:478px")
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { currentService } from '@/data.js';
+import { skapi } from '@/code/admin';
 
 let emits = defineEmits(['close', 'load']);
 let error = ref('');
@@ -62,9 +63,28 @@ let email = '';
 let name = '';
 let redirect = '';
 let dialog:HTMLDialogElement | null=null;
+
 onMounted(()=>{
     emits('load', dialog);
 })
+
+// let createUser = () => {
+//     promiseRunning.value = true;
+//     error.value = '';
+//     skapi.signup({
+//         email,
+//         name,
+//         password,
+//         service: currentService.value.service
+//     }).then((res) => {
+//         console.log(res)
+//         promiseRunning.value = false;
+//         emits('close', res);
+//     }).catch((err) => {
+//         promiseRunning.value = false;
+//         error.value = err.message;
+//     });
+// }
 </script>
 
 <style lang="less">

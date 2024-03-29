@@ -1,8 +1,13 @@
+import { reactive, ref } from 'vue';
 import { skapi } from './admin';
 import { Countries } from './countries';
 const regions = JSON.parse(import.meta.env.VITE_REG);
 
-type ServiceObj = {
+export let serviceList: {[key:string]:ServiceObj} = reactive({});
+export let currentService = reactive({});
+export let serviceFetching = ref(false);
+
+export type ServiceObj = {
     active: number; // 0 = disabled / -1 = suspended
     api_key: string;
     cors: string; // "url, url"
@@ -103,6 +108,7 @@ type SubscriptionObj = {
 
 export default class Service {
     id: string;
+    owner: string;
     admin_private_endpoint: string;
     record_private_endpoint: string;
     service: ServiceObj;
@@ -133,6 +139,7 @@ export default class Service {
         this.admin_private_endpoint = endpoints[0];
         this.record_private_endpoint = endpoints[1];
         this.service = service;
+        this.owner = service.owner;
         this.dateCreated = typeof service.timestamp === 'string' ? service.timestamp : new Date(service.timestamp).toDateString();
         this.plan = this.planCode[this.service.group];
         this.getSubscription();
@@ -177,7 +184,7 @@ export default class Service {
         prevent_signup: boolean;
         client_secret: Record<string, any>;
     }): Promise<ServiceObj> {
-        let updated = await skapi.util.request(this.admin_private_endpoint + 'service-opt', { owner: this.service.owner, service: this.id, opt }, { auth: true });
+        let updated = await skapi.util.request(this.admin_private_endpoint + 'service-opt', { service: this.id, owner: this.owner, opt }, { auth: true });
         Object.assign(this.service, updated);
         return updated;
     }
@@ -195,12 +202,12 @@ export default class Service {
             if (this.service?.subdomain[0] === '*' || this.service?.subdomain[0] === '+') {
                 subdomain = subdomain.slice(1);
             }
-            wait.push(skapi.util.request(this.admin_private_endpoint + 'list-host-directory', { owner: this.service.owner, service: this.id, info: true, dir: subdomain }, { auth: true }).then((r: any) => {
+            wait.push(skapi.util.request(this.admin_private_endpoint + 'list-host-directory', { service: this.id, owner: this.owner, info: true, dir: subdomain }, { auth: true }).then((r: any) => {
                 this.storageInfo.host = r.size;
             }));
         }
 
-        wait.push(skapi.util.request(this.record_private_endpoint + 'storage-info', { owner: this.service.owner, service: this.id }, { auth: true }).then(r => {
+        wait.push(skapi.util.request(this.record_private_endpoint + 'storage-info', { service: this.id, owner: this.owner }, { auth: true }).then(r => {
             this.storageInfo.cloud = r.cloud;
             this.storageInfo.database = r.database;
             this.storageInfo.email = r.email;
@@ -215,7 +222,7 @@ export default class Service {
         if (this.service.active === 0) {
             await skapi.util.request(this.record_private_endpoint + 'register-service', {
                 service: this.id,
-                owner: this.service.owner,
+                owner: this.owner,
                 execute: 'enable'
             }, { auth: true });
 
@@ -229,7 +236,7 @@ export default class Service {
         if (this.service.active > 0) {
             await skapi.util.request(this.record_private_endpoint + 'register-service', {
                 service: this.id,
-                owner: this.service.owner,
+                owner: this.owner,
                 execute: 'disable'
             }, { auth: true });
 
@@ -268,7 +275,7 @@ export default class Service {
         }
 
         if (Object.keys(to_update).length) {
-            await skapi.util.request(this.record_private_endpoint + 'register-service', Object.assign({ execute: 'update', service: this.id, owner: this.service.owner }, to_update), { auth: true });
+            await skapi.util.request(this.record_private_endpoint + 'register-service', Object.assign({ execute: 'update', service: this.id, owner: this.owner }, to_update), { auth: true });
             Object.assign(this.service, to_update);
         }
 
@@ -276,7 +283,7 @@ export default class Service {
     }
 
     async getServiceInfo() {
-        this.service = await skapi.util.request(this.admin_private_endpoint + 'get-services', { service_id: this.id, owner: this.service.owner }, { auth: true });
+        this.service = await skapi.util.request(this.admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: this.id }, { auth: true });
         return this.service;
     }
 
@@ -291,10 +298,10 @@ export default class Service {
         stat: string;
         ["404"]?: string;
     }> {
-        return skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { subdomain: params.subdomain, service: this.id, owner: this.service.owner }, { auth: true });
+        return skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service_id: this.id, subdomain: params.subdomain, service: skapi.service, owner: skapi.owner }, { auth: true });
     }
 
-    updateSubdomain(serviceId: string, cb: (service: ServiceObj) => void, time = 1000) {
+    updateSubdomain(cb: (service: ServiceObj) => void, time = 1000) {
         if (this.service?.subdomain && (this.service.subdomain?.[0] === '+' || this.service.subdomain?.[0] === '*')) {
             this.getServiceInfo().then(() => {
                 if (!this.service?.subdomain || this.service?.subdomain && this.service.subdomain[0] !== '+' && this.service.subdomain[0] !== '*') {
@@ -302,7 +309,7 @@ export default class Service {
                 }
                 else {
                     time *= 1.2;
-                    setTimeout(() => this.updateSubdomain(serviceId, cb, time), time);
+                    setTimeout(() => this.updateSubdomain(cb, time), time);
                 }
             });
         }
@@ -345,7 +352,7 @@ export default class Service {
             }
         }
 
-        let resp = await skapi.util.request(this.admin_private_endpoint + 'register-subdomain', { owner: this.service.owner, service: this.id, subdomain }, {
+        let resp = await skapi.util.request(this.admin_private_endpoint + 'register-subdomain', { service: this.id, owner: this.owner, subdomain }, {
             auth: true,
             method: 'post'
         });
@@ -355,7 +362,7 @@ export default class Service {
         }
 
         if (typeof params.cb === 'function') {
-            this.updateSubdomain(this.id, params.cb);
+            this.updateSubdomain(params.cb);
         }
 
         return this.service;
@@ -403,7 +410,7 @@ export default class Service {
             }
         }
 
-        let service = await skapi.util.request(admin_private_endpoint + 'register-service', Object.assign({ service: skapi.service, owner: skapi.user.user_id }, params, { execute: 'create', region: serviceRegion }), { auth: true });
+        let service = await skapi.util.request(admin_private_endpoint + 'register-service', Object.assign(params, { service: skapi.service, owner: skapi.owner, execute: 'create', region: serviceRegion }), { auth: true });
         return new Service(service.service, service, [admin_private_endpoint, record_private_endpoint]);
     }
 
@@ -415,7 +422,7 @@ export default class Service {
         let record_private_endpoint = endpoints[1].record_private; // https://.../
 
         if (typeof id === 'string') {
-            let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service_id: id }, { auth: true });
+            let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: id }, { auth: true });
             for (let k in service) {
                 return new Service(id, service[k][0], [admin_private_endpoint, record_private_endpoint]);
             }

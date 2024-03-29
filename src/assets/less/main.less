@@ -1,4 +1,4 @@
-@import './base.less';
+@import '@/assets/less/base.less';
 
 #modalBox {
     max-width: 478px;
@@ -75,7 +75,20 @@
     }
 }
 
+// hr {
+//     border: 0;
+//     height: 1px;
+//     background-color: rgba(0, 0, 0, 0.1);
+//     box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
+// }
+
 input {
+    height: 44px;
+    border: 0;
+    background-color: unset;
+    font-size: 0.8rem;
+    font-weight: 400;
+
     &:not(.lineInput):focus {
         outline: 2px solid var(--main-color);
         border-radius: 8px;
@@ -87,6 +100,14 @@ input {
             border-bottom: 2px solid var(--main-color) !important;
         }
     }
+
+    // &[type=search] {padding-right: 15px;}
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-results-button,
+    &::-webkit-search-results-decoration{
+        // display:none;
+    }
 }
 
 button {
@@ -96,7 +117,7 @@ button {
     background-color: unset;
     color: var(--main-color);
     font-size: 0.8rem;
-    font-weight: 400;
+    font-weight: 700;
     cursor: pointer;
     box-sizing: border-box;
     font-family: "Radio Canada";
@@ -214,6 +235,22 @@ button {
     }
 }
 
+.error {
+    // padding-top: 0.8rem;
+    color: #F04E4E;
+    font-size: 0.8rem;
+    font-weight: 400;
+    
+    .material-symbols-outlined {
+        margin-right: 4px;
+        vertical-align: middle;
+    }
+    
+    span {
+        vertical-align: middle;
+    }
+}
+
 .customSelect {
     position: relative;
     cursor: pointer;
@@ -227,7 +264,7 @@ button {
         align-items: center;
         justify-content: space-between;
         color: var(--black-6);
-        font-weight: 500;
+        font-weight: 400;
     }
 }
 
@@ -335,12 +372,25 @@ button {
     }
 }
 
+.customSearchLabel {
+    .delete {
+        position: absolute;
+        right: 17px; 
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1rem;
+        cursor: pointer;
+    }
+}
+
 .moreVert {
     position: absolute;
     left: var(--moreVert-left);
     right: var(--moreVert-right);
-    top: calc(100% + 8px);
+    top: 100%;
+    margin-top: 8px;
     z-index: 99;
+    cursor: default;
 
     .inner {
         padding: 1rem;
@@ -359,12 +409,13 @@ button {
             color: rgba(0, 0, 0, 0.6);
             font-size: 0.8rem;
             font-weight: 400;
+            cursor: pointer !important;
 
             &:last-child {
                 margin-bottom: 0;
             }
 
-            &:hover {
+            &:not(.customCheckBox):hover {
                 .material-symbols-outlined {
                     &::before {
                         display: block;
@@ -493,10 +544,10 @@ button {
                 font-weight: 500;
                 color: var(--black-4);
                 padding: 0 20px;
+                white-space: nowrap;
                 user-select: none;
 
                 &.center {
-                    // padding: 0;
                     text-align: center;
                 }
                 &:last-child {
@@ -582,10 +633,10 @@ button {
                 position: relative;
                 padding: 0 20px;
                 font-size: 0.8rem;
+                // white-space: nowrap;
                 user-select: none;
 
                 &.center {
-                    // padding: 0;
                     text-align: center;
                 }
                 .upArrow, .downArrow {
@@ -651,7 +702,8 @@ button {
                 }
                 .overflow {
                     position: relative;
-                    width: 100%;
+                    // width: 100%;
+                    width: 160px;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
@@ -744,6 +796,24 @@ button {
     pointer-events: none !important;
 }
 
+.bottomLineTitle {
+    position: relative;
+    font-size: 28px;
+    font-weight: 700;
+    padding: 28px 0;
+    color: var(--black-8);
+
+    &::after {
+        position: absolute;
+        content: '';
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background: rgba(0, 0, 0, 0.10);
+        box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
+    }
+}
 .smallTitle {
     font-size: 0.9rem;
     color: #0006;
@@ -786,6 +856,7 @@ button {
     background-color: #fafafa;
     padding: 1.5rem;
     border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
     // filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10));
 
     .infoTitle {
@@ -800,6 +871,11 @@ button {
     background-color: #fafafa;
     border-radius: 8px;
     filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10));
+
+    &.line {
+        border: 1px solid rgba(0,0,0,.15);
+        filter: unset;
+    }
 
     .header {
         display: flex;
