@@ -202,11 +202,12 @@ export default class Service {
             if (this.service?.subdomain[0] === '*' || this.service?.subdomain[0] === '+') {
                 subdomain = subdomain.slice(1);
             }
-            wait.push(skapi.util.request(this.admin_private_endpoint + 'list-host-directory', { service: this.id, owner: this.owner, info: true, dir: subdomain }, { auth: true }).then((r: any) => {
-                this.storageInfo.host = r.size;
-            }).catch(() => this.storageInfo.host = 0));
-        }
 
+            wait.push(
+                skapi.util.request(this.admin_private_endpoint + 'list-host-directory', { info: true, dir: subdomain }, { auth: true })
+                    .then((r: any) => { this.storageInfo.host = r?.size || 0; }));
+        }
+        
         wait.push(skapi.util.request(this.record_private_endpoint + 'storage-info', { service: this.id, owner: this.owner }, { auth: true }).then(r => {
             this.storageInfo.cloud = r.cloud;
             this.storageInfo.database = r.database;
@@ -346,9 +347,6 @@ export default class Service {
         if (this.service?.subdomain) {
             if (subdomain && this.service?.subdomain[0] === '*') {
                 throw 'Previous subdomain is in removal process.';
-            }
-            if (!v && typeof v !== 'boolean') {
-                throw new SkapiError('"index.value" is required.', { code: 'INVALID_PARAMETER' });
             }
             else if (subdomain && this.service?.subdomain[0] === '+') {
                 throw `Previous subdomain is in transit to "${this.service.subdomain.slice(1)}".`;
