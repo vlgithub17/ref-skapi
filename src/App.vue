@@ -29,10 +29,10 @@ skapi.getProfile().then(async u => {
 
         for (let serviceId of serviceIdList) {
             promsieList.push(Service.load(serviceId).then(serviceObj => {
-                // console.log(serviceObj)
+                console.log(serviceObj)
                 serviceList[serviceId] = serviceObj;
 
-                serviceFetching.value = false;
+                // serviceFetching.value = false;
             }))
         }
 

@@ -9,7 +9,7 @@
                         form.modifyInputForm(v-if="modifyServiceName" @submit.prevent="modifyServiceName = false;")
                             .customInput
                                 input#modifyServiceName(type="text" placeholder="Service name" max-length="30" :value='inputServiceName' @input="(e) => inputServiceName = e.target.value" required)
-                            template(v-if="serviceFetching")
+                            template(v-if="updatingValue.name")
                                 img.loading(src="@/assets/img/loading.png")
                             template(v-else)
                                 input#submitInp(type="submit" hidden)
@@ -221,9 +221,13 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { currentService } from '@/views/service/main';
-import { serviceFetching } from '@/code/service'
 import { user } from '@/code/user';
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, reactive } from 'vue';
+
+let updatingValue = reactive({
+    name: false,
+    cors: false
+});
 
 const router = useRouter();
 const route = useRoute();
