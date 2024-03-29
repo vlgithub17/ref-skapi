@@ -205,7 +205,7 @@ export default class Service {
 
             wait.push(
                 skapi.util.request(this.admin_private_endpoint + 'list-host-directory', { info: true, dir: subdomain }, { auth: true })
-                    .then((r: any) => { this.storageInfo.host = r?.size; }).catch(() => { this.storageInfo.host = 0 } ));
+                    .then((r: any) => { this.storageInfo.host = r?.size || 0; }));
         }
         
         wait.push(skapi.util.request(this.record_private_endpoint + 'storage-info', { service: this.id, owner: this.owner }, { auth: true }).then(r => {
