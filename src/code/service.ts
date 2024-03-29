@@ -111,6 +111,7 @@ export default class Service {
     owner: string;
     admin_private_endpoint: string;
     record_private_endpoint: string;
+    admin_public_endpoint: string;
     service: ServiceObj;
     dateCreated: string;
     plan: string;
@@ -138,6 +139,7 @@ export default class Service {
         this.id = id;
         this.admin_private_endpoint = endpoints[0];
         this.record_private_endpoint = endpoints[1];
+        this.admin_public_endpoint = endpoints[2];
         this.service = service;
         this.owner = service.owner;
         this.dateCreated = typeof service.timestamp === 'string' ? service.timestamp : new Date(service.timestamp).toDateString();
@@ -204,10 +206,10 @@ export default class Service {
             }
 
             wait.push(
-                skapi.util.request(this.admin_private_endpoint + 'list-host-directory', { info: true, dir: subdomain }, { auth: true })
+                skapi.util.request(this.admin_public_endpoint + 'list-host-directory', { info: true, dir: subdomain }, { auth: true })
                     .then((r: any) => { this.storageInfo.host = r?.size || 0; }));
         }
-        
+
         wait.push(skapi.util.request(this.record_private_endpoint + 'storage-info', { service: this.id, owner: this.owner }, { auth: true }).then(r => {
             this.storageInfo.cloud = r.cloud;
             this.storageInfo.database = r.database;
@@ -420,12 +422,13 @@ export default class Service {
 
         let endpoints = await Promise.all([skapi.admin_endpoint, skapi.record_endpoint]);
         let admin_private_endpoint = endpoints[0].admin_private; // https://.../
+        let admin_public_endpoint = endpoints[0].admin_public; // https://.../
         let record_private_endpoint = endpoints[1].record_private; // https://.../
 
         if (typeof id === 'string') {
             let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: id }, { auth: true });
             for (let k in service) {
-                return new Service(id, service[k][0], [admin_private_endpoint, record_private_endpoint]);
+                return new Service(id, service[k][0], [admin_private_endpoint, record_private_endpoint, admin_public_endpoint]);
             }
         }
     }
