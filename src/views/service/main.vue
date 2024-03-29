@@ -3,9 +3,9 @@ br
 br
 br
 
-#serviceMain(v-if="currentService")
+#serviceMain(v-if="serviceLoaded")
     nav.left 
-        router-link.router(:to="`/my-services`")
+        router-link.router(to="/my-services")
             span.material-symbols-outlined.nohover.back arrow_back_ios
             span.name My services
         br
@@ -35,7 +35,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { watch } from 'vue';
 import { loginState } from '@/code/user';
 import { serviceList } from '@/code/service';
-import { currentService } from '@/views/service/main';
+import { currentService, setService, serviceLoaded } from '@/views/service/main';
 
 const router = useRouter();
 const route = useRoute();
@@ -46,25 +46,20 @@ watch(loginState, nv => {
     }
 }, { immediate: true });
 
-for (let k in currentService) {
-    delete currentService[k];
+// for (let k in currentService) {
+//     delete currentService[k];
+// }
+
+// Object.assign(currentService, serviceList[route.path.split('/')[2]]);
+
+try {
+    setService(route.path.split('/')[2])
+    console.log(currentService)
 }
-
-Object.assign(currentService, serviceList[route.path.split('/')[2]]);
-console.log(currentService)
-// if(currentService !== route.path.split('/')[2] || currentService == null) {
-//     for(let k in currentService) {
-//         delete currentService[k]
-//     }
-
-//     Object.assign(currentService, serviceList[route.path.split('/')[2]])
-//     // currentService = serviceList[route.path.split('/')[2]];
-// }
-
-// let getCurrentService = () => {
-//     currentService.value = {};
-//     currentService.value.service = route.path.split('/')[2];
-// }
+catch (err) {
+    console.log(err);
+    //다른페이지로
+}
 
 </script>
 

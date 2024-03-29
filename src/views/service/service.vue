@@ -16,28 +16,28 @@
                                 label.material-symbols-outlined.big.save(for='submitInp') done
                                 .material-symbols-outlined.cancel(@click="modifyServiceName = false;") close
                         template(v-else)
-                            span.ellipsis.pencil.strong {{ currentService.service }}
-                            span.material-symbols-outlined.fill.clickable.edit(@click="editServiceName") edit
+                            span.ellipsis.pencil.strong {{ currentService.service.name }}
+                            span.material-symbols-outlined.fill.clickable.edit(@click="editServiceName" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") edit
 
                 .state 
                     .smallTitle(style="width: 150px;") Service ID
                     .smallValue
-                        .ellipsis ap226E8TXhYtbcXRgi5D
+                        .ellipsis {{ currentService.id }}
 
                 .state 
                     .smallTitle(style="width: 150px;") Date Created
-                    .smallValue 0000.00.00
+                    .smallValue {{ currentService.dateCreated }}
 
-            .toggleWrap.active
+            .toggleWrap(:class="{'active': currentService.service.active >= 1}")
                 span.smallTitle(style="width: 150px;") Disable/Enable
-                .toggleBg
+                .toggleBg(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == -1}")
                     .toggleBtn(@click="enableDisableToggle")
 
         br
         .codeWrap
             .scrollWrap
                 pre.scrollInner.
-                    #[span(style="color:#33adff") &nbsp;&nbsp;&nbsp;&nbsp;const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.service }}"], #[span(style="color:#FFED91") "dsalfkjsldkfjalsdkfjalskdfjlkdfjlaskfjlskjfalsf"]);&nbsp;&nbsp;&nbsp;&nbsp;
+                    #[span(style="color:#33adff") &nbsp;&nbsp;&nbsp;&nbsp;const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);&nbsp;&nbsp;&nbsp;&nbsp;
                 
             .copy.clickable.material-symbols-outlined.fill(@click="copy") file_copy
         br
@@ -47,7 +47,7 @@
 
     br
 
-    section.infoBox
+    section.infoBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}") 
         .infoTitle(style="margin-right: 1rem;") Security Setting
         a.question.help(href='https://docs.skapi.com/security/security-settings.html' target="_blank")
             .material-symbols-outlined.empty help 
@@ -85,17 +85,17 @@
                             label.material-symbols-outlined.big.save(for='submitInp') done
                             .material-symbols-outlined.sml.cancel(@click="modifyKey = false;") close
                     template(v-else)
-                        span.ellipsis.pencil dlfsl2sldkfjf48475skd
-                        span.material-symbols-outlined.fill.clickable.edit(@click="editKey") edit
+                        span.ellipsis.pencil {{ currentService.service.api_key || 'No key' }}
+                        span.material-symbols-outlined.fill.clickable.edit(@click="editKey" :class="{'nonClickable' : !user?.email_verified}") edit
             .state(style="flex-grow:1")
                 label.smallTitle(style="width: 170px;") Client Secret Key
-                .material-symbols-outlined.fill.clickable(:class="{'nonClickable' : showKeyAdd}" style="padding: 12.5px 0" @click="showKeyAdd = !showKeyAdd") add_box
+                .material-symbols-outlined.fill.clickable(:class="{'nonClickable' : showKeyAdd || promiseRunning}" style="padding: 12.5px 0" @click="showKeyAdd = !showKeyAdd") add_box
                 .smallValue.keyBox
                     template(v-if="showKeyAdd")
                         form.keyWrap(@submit.prevent="saveSecretKey(index)")
                             .key
                                 .material-symbols-outlined.fill.clickable do_not_disturb_on
-                                .inputWrap
+                                .inputWrapx
                                     input#keyName.lineInput(type="text" name='keyName' placeholder="Key name" required)
                                     input#secretKey.lineInput(type="text" name='secretKey' placeholder="Secret Key" required)
                                 .buttonWrap
@@ -118,71 +118,85 @@
         .flexInfo
             .subs 
                 .smallTitle(style="width: 150px;") Currnet Plan
-                .smallValue ======
+                .smallValue {{ currentService.plan }}
             .subs 
                 .smallTitle(style="width: 150px;") State
-                .smallValue ======
+                .smallValue 
+                    template(v-if="currentService?.subscription?.cancel_at_period_end" style="color:var(--caution-color)") Canceled
+                    template(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color)") Suspended
+                    template(v-else) Running
             .subs 
                 .smallTitle(style="width: 150px;") Renew Date
-                .smallValue ======
+                .smallValue 
+                    template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be deleted by {{ dateFormat(currentService.service.timestamp + 604800000) }}
+                    template(v-else-if="currentService.service.active >= 0")
+                        h5 {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
+                    template(v-else) 
+                        h5 -
         
         br
 
         //- div(style="display:block; text-align:right") 
-        router-link(:to='`/subscription/ap226E8TXhYtbcXRgi5D`' style="display:block; text-align:right")
-            button.final Manage Subscription
+        router-link(:to='`/subscription/${currentService.id}`' style="display:block; text-align:right")
+            button.final(v-if="new Date().getTime() < currentService?.subscription?.canceled_at") Resume Plan
+            button.final(v-else) Manage Subscription
     
     br
 
     .flexInfo
-        section.cardBox
+        section.cardBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
             .header 
                 .title 
                     .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") group
                     span Users
-                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/users`' style="font-size: 1.5rem") arrow_forward_ios
+                router-link.material-symbols-outlined(:to='`/my-services/${currentService.id}/users`' style="font-size: 1.5rem") arrow_forward_ios
             .content
                 .cont
                     .smallTitle # of Users
-                    .smallValue ======
+                    .smallValue {{ currentService.service.users }}
                 .cont 
                     .smallTitle Creating User
                     .smallValue ======
+                    //- .customSelect
+                        select(:value="currentService.prevent_signup ? 'admin' : 'anyone'" @change="(e) => changeCreateUserMode(e)" style="color:var(--main-color);")
+                            option(value="admin") Only Admin allowed 
+                            option(value="anyone") Anyone allowed
+                        .material-symbols-outlined.mid.search.selectArrowDown(style="right:-30px;top:66%;color:var(--main-color);") arrow_drop_down
 
-        section.cardBox
+        section.cardBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
             .header 
                 .title 
                     .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") database
                     span Database
-                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
+                router-link.material-symbols-outlined(:to='`/my-services/${currentService.id}/records`' style="font-size: 1.5rem") arrow_forward_ios
             .content
                 .cont
-                    .smallTitle # of Users
-                    .smallValue ======
+                    .smallTitle # of database storage Used
+                    .smallValue {{ currentService.storageInfo.database }}
                 .cont 
-                    .smallTitle Creating User
-                    .smallValue ======
+                    .smallTitle # of cloud storage Used
+                    .smallValue {{ currentService.storageInfo.cloud }}
 
-        section.cardBox
+        section.cardBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
             .header 
                 .title 
                     .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") mail
                     span Mail
-                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/mail`' style="font-size: 1.5rem") arrow_forward_ios
+                router-link.material-symbols-outlined(:to='`/my-services/${currentService.id}/mail`' style="font-size: 1.5rem") arrow_forward_ios
             .content
                 .cont
                     .smallTitle # Subscribers
-                    .smallValue ======
+                    .smallValue {{ currentService.service.newsletter_subscribers }}
                 .cont 
                     .smallTitle Mail storage used
-                    .smallValue ======
+                    .smallValue {{ currentService.storageInfo.email }}
 
-        section.cardBox
+        section.cardBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
             .header 
                 .title 
                     .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") language
                     span Hosting
-                router-link.material-symbols-outlined(:to='`/my-services/${currentService.service}/records`' style="font-size: 1.5rem") arrow_forward_ios
+                router-link.material-symbols-outlined(:to='`/my-services/${currentService.id}/records`' style="font-size: 1.5rem") arrow_forward_ios
             .content
                 .cont
                     .smallTitle Registered Subdomain
@@ -193,7 +207,7 @@
 
     br
 
-    section.deleteWrap 
+    //- section.deleteWrap 
         h3 Delete Service
         ul.deleteDesc
             li Deleting the service will permanently erase all data. Recovery is not possible. The service plan will also be immediately canceled, and the remaining days will be prorated and refunded.
@@ -227,6 +241,15 @@ let secretKeyEdit = ref(false);
 let promiseRunning = ref(false);
 let showKeyAdd = ref(false);
 
+let dateFormat = (timestamp) => {
+    let currentDate = new Date(timestamp);
+    let year = currentDate.getFullYear();
+    let month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+    let day = ('0' + currentDate.getDate()).slice(-2);
+    let dateStr = `${year}-${month}-${day}`;
+
+    return dateStr;
+}
 let editServiceName = () => {
     inputServiceName = currentService.value.name;
     modifyServiceName.value = true;
