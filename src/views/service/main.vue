@@ -46,19 +46,13 @@ watch(loginState, nv => {
     }
 }, { immediate: true });
 
-// for (let k in currentService) {
-//     delete currentService[k];
-// }
-
-// Object.assign(currentService, serviceList[route.path.split('/')[2]]);
-
 try {
-    setService(route.path.split('/')[2])
-    console.log(currentService)
+    setService(route.path.split('/')[2]);
+    console.log(currentService);
 }
 catch (err) {
     console.log(err);
-    //다른페이지로
+    router.push('/my-services');
 }
 
 </script>

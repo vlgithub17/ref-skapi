@@ -8,6 +8,7 @@ export let serviceLoaded = ref(false);
 
 export let setService = (id:string) => {
     if(!serviceList?.[id]) {
+        console.log(serviceList[id])
         throw 'No Service'
     }
     currentService = reactive(serviceList[id])

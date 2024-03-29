@@ -10,7 +10,7 @@ dialog#modalBox(ref='dialog')
         br
 
         form(@submit.prevent="createUser")
-            input(hidden name="service" :value="currentService.service")
+            input(hidden name="service" :value="currentService.id")
 
             .input
                 label.label User's Email 
@@ -56,7 +56,7 @@ dialog#modalBox(ref='dialog')
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { currentService } from '@/data.js';
+import { currentService } from '@/views/service/main';
 
 let emits = defineEmits(['close', 'load']);
 let error = ref('');

@@ -172,10 +172,10 @@
             .content
                 .cont
                     .smallTitle # of database storage Used
-                    .smallValue {{ currentService.storageInfo.database }}
+                    .smallValue {{ currentService?.storageInfo?.database }}
                 .cont 
                     .smallTitle # of cloud storage Used
-                    .smallValue {{ currentService.storageInfo.cloud }}
+                    .smallValue {{ currentService?.storageInfo?.cloud }}
 
         section.cardBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
             .header 
@@ -189,7 +189,7 @@
                     .smallValue {{ currentService.service.newsletter_subscribers }}
                 .cont 
                     .smallTitle Mail storage used
-                    .smallValue {{ currentService.storageInfo.email }}
+                    .smallValue {{ currentService?.storageInfo?.email }}
 
         section.cardBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
             .header 
@@ -200,10 +200,10 @@
             .content
                 .cont
                     .smallTitle Registered Subdomain
-                    .smallValue ======
+                    .smallValue {{ currentService.service?.subdomain || '-' }}
                 .cont 
                     .smallTitle Host storage used
-                    .smallValue ======
+                    .smallValue {{ currentService?.storageInfo?.host || '-' }}
 
     br
 
@@ -222,6 +222,7 @@
 import { useRoute, useRouter } from 'vue-router';
 import { currentService } from '@/views/service/main';
 import { serviceFetching } from '@/code/service'
+import { user } from '@/code/user';
 import { ref, nextTick } from 'vue';
 
 const router = useRouter();

@@ -5,7 +5,7 @@ dialog#modalBox(ref='dialog' style="width:478px")
     .content 
         br
         form(@submit.prevent="createUser")
-            input(hidden name="service" :value="currentService.service")
+            input(hidden name="service" :value="currentService.id")
 
             .input
                 label.label User's Email 
@@ -53,7 +53,7 @@ dialog#modalBox(ref='dialog' style="width:478px")
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { currentService } from '@/data.js';
+import { currentService } from '@/views/service/main';
 import { skapi } from '@/code/admin';
 
 let emits = defineEmits(['close', 'load']);
