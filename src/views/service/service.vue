@@ -254,14 +254,14 @@ let dateFormat = (timestamp) => {
     return dateStr;
 }
 let editServiceName = () => {
-    inputServiceName = currentService.value.name;
+    inputServiceName = currentService.name;
     modifyServiceName.value = true;
 }
 let editCors = () => {
-    inputCors.value = currentService.value.cors === '*' ? '' : currentService.value.cors; modifyCors.value = true;
+    inputCors.value = currentService.cors === '*' ? '' : currentService.cors; modifyCors.value = true;
 }
 let editKey = () => {
-    inputKey = currentService.value.api_key;
+    inputKey = currentService.api_key;
     modifyKey.value = true;
 }
 let addSecretKey = () => {
