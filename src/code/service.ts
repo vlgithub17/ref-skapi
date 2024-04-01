@@ -1,11 +1,8 @@
 import { reactive, ref } from 'vue';
 import { skapi } from './admin';
 import { Countries } from './countries';
-const regions = JSON.parse(import.meta.env.VITE_REG);
 
-export let serviceList: { [key: string]: Service } = reactive({});
-// export let currentService = reactive({});
-export let serviceFetching = ref(false);
+const regions = JSON.parse(import.meta.env.VITE_REG);
 
 export type ServiceObj = {
     active: number; // 0 = disabled / -1 = suspended
@@ -111,6 +108,8 @@ export default class Service {
     owner: string;
     admin_private_endpoint: string;
     record_private_endpoint: string;
+    admin_public_endpoint:string;
+
     service: ServiceObj;
     dateCreated: string;
     plan: string;
@@ -127,21 +126,24 @@ export default class Service {
         database: number,
         email: number,
         host: number
-    } = {
+    } = reactive({
             cloud: null,
             database: null,
             email: null,
             host: null
-        }
+        })
 
     constructor(id: string, service: ServiceObj, endpoints: string[]) {
         this.id = id;
         this.admin_private_endpoint = endpoints[0];
         this.record_private_endpoint = endpoints[1];
-        this.service = service;
+        this.admin_public_endpoint = endpoints[2];
+        this.service = reactive(service);
         this.owner = service.owner;
         this.dateCreated = typeof service.timestamp === 'string' ? service.timestamp : new Date(service.timestamp).toDateString();
         this.plan = this.planCode[this.service.group];
+        this.getSubscription();
+        this.getStorageInfo();
     }
 
     async getSubscription(refresh = false): Promise<SubscriptionObj> {
@@ -202,7 +204,7 @@ export default class Service {
             }
 
             wait.push(
-                skapi.util.request(this.admin_private_endpoint + 'list-host-directory', { info: true, dir: subdomain }, { auth: true })
+                skapi.util.request(this.admin_public_endpoint + 'list-host-directory', { service: this.id, owner: this.owner, info: true, dir: subdomain }, { auth: true })
                     .then((r: any) => { this.storageInfo.host = r?.size || 0; }));
         }
 
@@ -418,13 +420,14 @@ export default class Service {
 
         let endpoints = await Promise.all([skapi.admin_endpoint, skapi.record_endpoint]);
         let admin_private_endpoint = endpoints[0].admin_private; // https://.../
+        let admin_public_endpoint = endpoints[0].admin_public; // https://.../
         let record_private_endpoint = endpoints[1].record_private; // https://.../
 
         if (typeof id === 'string') {
             let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: id }, { auth: true });
             for(let region in service) {
-                let serviceClass = new Service(id, service[region][0], [admin_private_endpoint, record_private_endpoint]);
-                await Promise.all([serviceClass.getSubscription().catch(()=>{}), serviceClass.getStorageInfo().catch(()=>{})])
+                let serviceClass = new Service(id, service[region][0], [admin_private_endpoint, record_private_endpoint, admin_public_endpoint]);
+                // await Promise.all([serviceClass.getSubscription().catch(()=>{}), serviceClass.getStorageInfo().catch(()=>{})])
                 return serviceClass;
             }
         }

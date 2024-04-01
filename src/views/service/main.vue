@@ -3,7 +3,7 @@ br
 br
 br
 
-#serviceMain(v-if="serviceLoaded")
+#serviceMain(v-if="serviceMainLoaded")
     nav.left 
         router-link.router(to="/my-services")
             span.material-symbols-outlined.nohover.back arrow_back_ios
@@ -34,11 +34,14 @@ br
 import { useRoute, useRouter } from 'vue-router';
 import { watch } from 'vue';
 import { loginState } from '@/code/user';
-import { serviceList, serviceFetching } from '@/code/service';
-import { currentService, setService, serviceLoaded } from '@/views/service/main';
+import { serviceList } from '@/views/service-list';
+import { currentService, setService, serviceMainLoaded } from '@/views/service/main';
 
 const router = useRouter();
 const route = useRoute();
+serviceMainLoaded.value = false;
+
+let serviceId = route.path.split('/')[2];
 
 watch(loginState, nv => {
     if (!nv) {
@@ -46,10 +49,12 @@ watch(loginState, nv => {
     }
 }, { immediate: true });
 
-watch(serviceFetching, nv => {
-    if (!nv) {
+watch(serviceList, nv => {
+    console.log({nv, serviceId})
+    if (nv[serviceId]) {
+        console.log('watched')
         try {
-            setService(route.path.split('/')[2]);
+            setService(serviceId);
             console.log(currentService);
         }
         catch (err) {

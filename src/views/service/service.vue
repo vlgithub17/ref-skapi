@@ -117,22 +117,20 @@
 
         .flexInfo
             .subs 
-                .smallTitle(style="width: 150px;") Currnet Plan
+                .smallTitle(style="width: 150px;padding:0") Currnet Plan
                 .smallValue {{ currentService.plan }}
             .subs 
-                .smallTitle(style="width: 150px;") State
+                .smallTitle(style="width: 150px;padding:0") State
                 .smallValue 
                     template(v-if="currentService?.subscription?.cancel_at_period_end" style="color:var(--caution-color)") Canceled
                     template(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color)") Suspended
                     template(v-else) Running
             .subs 
-                .smallTitle(style="width: 150px;") Renew Date
+                .smallTitle(style="width: 150px;padding:0") Renew Date
                 .smallValue 
                     template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be deleted by {{ dateFormat(currentService.service.timestamp + 604800000) }}
-                    template(v-else-if="currentService.service.active >= 0")
-                        h5 {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
-                    template(v-else) 
-                        h5 -
+                    template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
+                    template(v-else) -
         
         br
 

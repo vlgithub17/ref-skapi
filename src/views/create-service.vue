@@ -83,7 +83,7 @@ br
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { ref } from 'vue';
-import { serviceFetching } from '@/code/service'
+import { callServiceList } from '@/views/service-list'
 
 const router = useRouter();
 const route = useRoute();

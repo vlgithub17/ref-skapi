@@ -15,25 +15,32 @@ main#subscription
             .title Current Subscription
 
             .line 
-            
-            .smallTitle Service Plan
-            .smallValue Trial
 
-            br
+            template(v-if="serviceList[serviceId]")
+                .smallTitle Service Plan
+                .smallValue {{ serviceList[serviceId].plan }}
 
-            .smallTitle Service Name
-            .smallValue abcdefg
+                br
 
-            br
+                .smallTitle Service Name
+                .smallValue {{ serviceList[serviceId].service.name }}
 
-            .smallTitle Service ID
-            .smallValue ap226E8TXhYtbcXRgi5D
+                br
+
+                .smallTitle Service ID
+                .smallValue {{ serviceList[serviceId].id }}
+
+            template(v-else)
+                div(style="text-align:center")
+                    br
+                    br
+                    img.loading(src="@/assets/img/loading.png")
 
         br
         br
         br
 
-        section
+        section(v-if="serviceList[serviceId]")
             .title Subscription Plans
 
             .line 
@@ -45,7 +52,8 @@ main#subscription
 
                     br
 
-                    button.final.disabled Current Plan
+                    button.final.disabled(v-if="serviceList[serviceId].plan == 'Trial'") Current Plan
+                    div(v-else style="height:44px")
 
                     .line
 
@@ -60,7 +68,9 @@ main#subscription
 
                     br
 
-                    button.final Upgrade
+                    button.final.disabled(v-if="serviceList[serviceId].plan == 'Standard'") Current Plan
+                    button.final(v-else-if="serviceList[serviceId].plan == 'Trial'") Upgrade
+                    button.final(v-else-if="serviceList[serviceId].plan == 'Premium'") Downgrade
 
                     .line
 
@@ -80,7 +90,8 @@ main#subscription
 
                     br
 
-                    button.final Upgrade
+                    button.final.disabled(v-if="serviceList[serviceId].plan == 'Premium'") Current Plan
+                    button.final(v-else) Upgrade
 
                     .line
 
@@ -103,12 +114,12 @@ br
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { serviceFetching } from '@/code/service'
+import { serviceList } from '@/views/service-list'
 
 const router = useRouter();
 const route = useRoute();
 
-// document.body.classList.add('fa');
+let serviceId = route.path.split('/')[2];
 
 let service = {
     active: 1,
