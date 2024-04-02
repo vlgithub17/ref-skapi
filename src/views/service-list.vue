@@ -150,7 +150,6 @@ onMounted(() => {
     document.querySelector('body').classList.add('fa');
 })
 let mouseupEvent = () => {
-    console.log('up')
     document.removeEventListener('mousemove', mouseMoveHandler);
 }
 onBeforeUnmount(() => {

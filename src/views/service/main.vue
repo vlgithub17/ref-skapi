@@ -50,12 +50,12 @@ watch(loginState, nv => {
 }, { immediate: true });
 
 watch(serviceList, nv => {
-    console.log({nv, serviceId})
+    // console.log({nv, serviceId})
     if (nv[serviceId]) {
-        console.log('watched')
+        // console.log('watched')
         try {
             setService(serviceId);
-            console.log(currentService);
+            // console.log(currentService);
         }
         catch (err) {
             console.log(err);
