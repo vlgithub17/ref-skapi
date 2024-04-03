@@ -62,8 +62,8 @@
                 .smallValue(style="padding:0")
                     form.modifyInputForm(v-if="modifyCors" @submit.prevent="changeCors")
                         .customInput
-                            input#modifyCors(:disabled="promiseRunningCors || null" type="text" placeholder='https://your.domain.com' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
-                        template(v-if="promiseRunningCors")
+                            input#modifyCors(:disabled="updatingValue.cors || null" type="text" placeholder='https://your.domain.com' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
+                        template(v-if="updatingValue.cors")
                             img.loading(src="@/assets/img/loading.png")
                         template(v-else)
                             input#submitInp(type="submit" hidden)
@@ -77,8 +77,8 @@
                 .smallValue
                     form.modifyInputForm(v-if="modifyKey" @submit.prevent="setSecretKey")
                         .customInput
-                            input#modifyKey(:disabled="promiseRunningSecKey || null" type="text" placeholder="Secret key for external request" :value='inputKey' @input="(e) => inputKey = e.target.value")
-                        template(v-if="promiseRunningSecKey")
+                            input#modifyKey(:disabled="updatingValue.secretKey || null" type="text" placeholder="Secret key for external request" :value='inputKey' @input="(e) => inputKey = e.target.value")
+                        template(v-if="updatingValue.secretKey")
                             img.loading(src="@/assets/img/loading.png")
                         template(v-else)
                             input#submitInp(type="submit" hidden)
@@ -89,23 +89,34 @@
                         span.material-symbols-outlined.fill.clickable.edit(@click="editKey" :class="{'nonClickable' : !user?.email_verified}") edit
             .state(style="flex-grow:1")
                 label.smallTitle(style="width: 170px;") Client Secret Key
-                .material-symbols-outlined.fill.clickable(:class="{'nonClickable' : showKeyAdd || promiseRunning}" style="padding: 12.5px 0" @click="showKeyAdd = !showKeyAdd") add_box
-                .smallValue.keyBox
-                    template(v-if="showKeyAdd")
-                        form.keyWrap(@submit.prevent="saveSecretKey(index)")
-                            .key
-                                .material-symbols-outlined.fill.clickable do_not_disturb_on
-                                .inputWrapx
-                                    input#keyName.lineInput(type="text" name='keyName' placeholder="Key name" required)
-                                    input#secretKey.lineInput(type="text" name='secretKey' placeholder="Secret Key" required)
-                                .buttonWrap
-                                    template(v-if="promiseRunning")
-                                        img.loading(style='padding:0;width:18px;height:18px;' src="@/assets/img/loading.png")
-                                    template(v-else)
-                                        input#submitInp(type="submit" hidden)
-                                        label.material-symbols-outlined.clickable.save(for='submitInp') check
-                                        .material-symbols-outlined.clickable.cancel(@click="showKeyAdd = false") close
-                    .empty(v-else) No Secret Key
+                .sentenceButton.noBorder.withIcon(@click="addSecretKey" :class="{'nonClickable' : activeIndex !== null || updatingValue.clientKey}" style="padding: 12.5px 0;height:unset")
+                    .material-symbols-outlined.fill.clickable(style="color:unset") add_box
+                    span Add Secret Key
+                .keyBox
+                    .inner
+                        .header 
+                            .keyName keyName
+                            .secretKey secretKey
+                        .content(v-if="clientSecretKeys")
+                            template(v-for="(key, index) of clientSecretKeys")
+                                template(v-if="key.edit || key.add")
+                                    form.key(@submit.prevent="saveSecretKey(index)")
+                                        input#keyName.keyName.lineInput(type="text" name='keyName' :value="key.key" placeholder="Key name" required)
+                                        input.secretKey.lineInput(type="text" name='secretKey' :value="key.value" placeholder="Secret Key" required)
+                                        .buttonWrap
+                                            template(v-if="updatingValue.clientKey")
+                                                img.loading(style='padding:0;width:18px;height:18px;' src="@/assets/img/loading.png")
+                                            template(v-else)
+                                                input#submitInp(type="submit" hidden)
+                                                .material-symbols-outlined.fill.clickable(v-if="key.edit") delete
+                                                label.material-symbols-outlined.clickable.save(for='submitInp') check
+                                                .material-symbols-outlined.clickable.cancel(@click="checkInput(key)") close
+                                template(v-else)
+                                    .key
+                                        .keyName {{ key.key }}
+                                        .secretKey {{ key.value.substr(0,4) + '**********' }}
+                                        .material-symbols-outlined.fill.clickable.edit(@click="editSecretKey(key, index)" :class="{'nonClickable' : activeIndex !== null && activeIndex !== index}") edit
+                        .empty(v-else) No Secret Key
 
     br
     
@@ -117,22 +128,20 @@
 
         .flexInfo
             .subs 
-                .smallTitle(style="width: 150px;") Currnet Plan
+                .smallTitle(style="width: 150px;padding:0") Currnet Plan
                 .smallValue {{ currentService.plan }}
             .subs 
-                .smallTitle(style="width: 150px;") State
+                .smallTitle(style="width: 150px;padding:0") State
                 .smallValue 
                     template(v-if="currentService?.subscription?.cancel_at_period_end" style="color:var(--caution-color)") Canceled
                     template(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color)") Suspended
                     template(v-else) Running
             .subs 
-                .smallTitle(style="width: 150px;") Renew Date
+                .smallTitle(style="width: 150px;padding:0") Renew Date
                 .smallValue 
                     template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be deleted by {{ dateFormat(currentService.service.timestamp + 604800000) }}
-                    template(v-else-if="currentService.service.active >= 0")
-                        h5 {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
-                    template(v-else) 
-                        h5 -
+                    template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
+                    template(v-else) -
         
         br
 
@@ -156,12 +165,18 @@
                     .smallValue {{ currentService.service.users }}
                 .cont 
                     .smallTitle Creating User
-                    .smallValue ======
-                    //- .customSelect
-                        select(:value="currentService.prevent_signup ? 'admin' : 'anyone'" @change="(e) => changeCreateUserMode(e)" style="color:var(--main-color);")
-                            option(value="admin") Only Admin allowed 
-                            option(value="anyone") Anyone allowed
-                        .material-symbols-outlined.mid.search.selectArrowDown(style="right:-30px;top:66%;color:var(--main-color);") arrow_drop_down
+                    .customSelect(@click.stop="(e)=>{showDropDown(e)}")
+                        button
+                            span ddd
+                            span.material-symbols-outlined arrow_drop_down
+                        .moreVert(style="--moreVert-left:0;margin-top:0;display:none")
+                            .inner 
+                                .more(value="admin") Only Admin allowed
+                                .more(value="anyone") Anyone allowed
+                        //- select(:value="currentService.prevent_signup ? 'admin' : 'anyone'" @change="(e) => changeCreateUserMode(e)" style="color:var(--main-color);")
+                        //-     option(value="admin") Only Admin allowed 
+                        //-     option(value="anyone") Anyone allowed
+                        //- .material-symbols-outlined.mid.search.selectArrowDown(style="right:-30px;top:66%;color:var(--main-color);") arrow_drop_down
 
         section.cardBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
             .header 
@@ -219,32 +234,45 @@
 </template>
 
 <script setup lang="ts">
+import { ref, nextTick, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { showDropDown } from '@/assets/js/event.js'
 import { currentService } from '@/views/service/main';
 import { user } from '@/code/user';
-import { ref, nextTick, reactive } from 'vue';
-
-let updatingValue = reactive({
-    name: false,
-    cors: false
-});
 
 const router = useRouter();
 const route = useRoute();
 
+console.log(currentService)
+
+let updatingValue = reactive({
+    name: false,
+    cors: false,
+    secretKey: false,
+    clientKey : false
+});
+let clientSecretKeys = ref([
+    { key: 'aaaaa', value: 'apd210dkfjseoddj', edit: false, add: false },
+    { key: 'bbbbb', value: 'apd210dkfjseoddj', edit: false, add: false },
+    { key: 'ccccc', value: 'apd210dkfjseoddj', edit: false, add: false },
+    { key: 'ddddd', value: 'apd210dkfjseoddj', edit: false, add: false }
+])
+let activeIndex = ref(null);
+let checkInput = (key) => {
+    if(key.add) {
+        clientSecretKeys.value.shift();
+    } else {
+        key.edit = false;
+    }
+    activeIndex.value = null;
+}
+
 let modifyServiceName = ref(false);
 let inputServiceName = '';
 let modifyCors = ref(false);
-let promiseRunningCors = ref(false);
 let inputCors = ref('');
 let modifyKey = ref(false);
-let promiseRunningSecKey = ref(false);
 let inputKey = '';
-let clientSecretState =ref([]);
-let secretKeyAdd = ref(false);
-let secretKeyEdit = ref(false);
-let promiseRunning = ref(false);
-let showKeyAdd = ref(false);
 
 let dateFormat = (timestamp) => {
     let currentDate = new Date(timestamp);
@@ -256,22 +284,23 @@ let dateFormat = (timestamp) => {
     return dateStr;
 }
 let editServiceName = () => {
-    inputServiceName = currentService.value.name;
+    inputServiceName = currentService.name;
     modifyServiceName.value = true;
 }
 let editCors = () => {
-    inputCors.value = currentService.value.cors === '*' ? '' : currentService.value.cors; modifyCors.value = true;
+    inputCors.value = currentService.cors === '*' ? '' : currentService.cors; modifyCors.value = true;
 }
 let editKey = () => {
-    inputKey = currentService.value.api_key;
+    inputKey = currentService.api_key;
     modifyKey.value = true;
 }
 let addSecretKey = () => {
-    clientSecretState.value.unshift({ key: '', value: '', keyEdit: false, keyAdd: true });
-    secretKeyAdd.value = true;
-    nextTick(() => {
-        document.getElementById('keyName').focus();
-    });
+    clientSecretKeys.value.unshift({ key: '', value: '', edit: false, add: true });
+    activeIndex.value = 0;
+}
+let editSecretKey = (key, index) => {
+    key.edit=true;
+    activeIndex.value = clientSecretKeys.value[index].edit ? index : null;
 }
 
 </script>
@@ -307,6 +336,7 @@ let addSecretKey = () => {
     }
 
     .state {
+        position: relative;
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
@@ -315,77 +345,58 @@ let addSecretKey = () => {
 
     .ellipsis {
         width: 250px;
+        flex-grow: 1;
     }
 
     .smallValue {
+        position: relative;
+        width: calc(100% - 150px);
         margin: 0;
         flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 }
 .keyBox {
     width: 100%;
-    line-height: unset;
     height: 180px;
-    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 16px;
     border: 1px solid rgba(0, 0, 0, 0.10);
-    overflow-y: auto;
-    padding: 8px 16px;
+    border-radius: 8px;
+    overflow: auto;
 
-    .add {
-        display: block;
-        background-color: #293fe60d;
-        border-radius: 4px;
-        text-align: center;
-        padding: 6px 0;
-        margin-bottom: 0.5rem;
-        cursor: pointer;
-        
-        * {
-            color: var(--main-color);
-        }
+    .inner {
+        min-width: 420px;
     }
-    .empty {
-        line-height: 160px;
-        color: rgba(0, 0, 0, 0.4);
-        font-size: 0.9rem;
-        font-weight: 400;
-        text-align: center;
-    }
-    .key {
-        position: relative;
+    .header, .key {
         height: 30px;
+        padding: 0 8px;
         display: flex;
-        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-
-        div {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        .inputWrap {
-            position: relative;
-            width: calc(100% - 94px);
-
-            #keyName {
-                width: 200px;
-            }
-            #secretKey {
-                flex-grow: 1;
-            }
-        }
-        input {
-            border: 0;
-            background-color: unset;
-            border-bottom: 1px solid #000;
-            height: 36px;
-            // background-color: rgba(0,0,0,0.05);
-            // border-radius: 8px;
-            // font-size: 16px;
-            // padding: 0 12px;
-        }
+        font-size: 0.8rem;
+        margin-bottom: 4px;
+        gap: 20px;
+    }
+    .header {
+        height: 36px;
+        color: #0006;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .keyName {
+        width: 130px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .secretKey {
+        flex-grow: 1;
+    }
+    input {
+        height: 100%;
+        border-bottom: 1px solid #000;
     }
 }
 .toggleWrap {

@@ -219,6 +219,19 @@ button {
         color: #2C3CB6;
     }
 
+    &.noBorder {
+        border: 0;
+    }
+
+    &.withIcon {
+        .material-symbols-outlined:hover {
+            opacity: 1 !important;
+        }
+        span {
+            margin-left: 5px;
+        }
+    }
+
     &.disabled {
         color: rgba(0,0,0,0.2);
         user-select: none;
@@ -870,7 +883,8 @@ button {
     position: relative;
     background-color: #fafafa;
     border-radius: 8px;
-    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10));
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    // filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10));
 
     &.line {
         border: 1px solid rgba(0,0,0,.15);
