@@ -4,7 +4,7 @@
         .flexInfo
             .serviceState
                 .state 
-                    .smallTitle(style="width: 150px;") Service Name
+                    .smallTitle Service Name
                     .smallValue
                         form.modifyInputForm(v-if="modifyServiceName" @submit.prevent="modifyServiceName = false;")
                             .customInput
@@ -20,16 +20,16 @@
                             span.material-symbols-outlined.fill.clickable.edit(@click="editServiceName" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") edit
 
                 .state 
-                    .smallTitle(style="width: 150px;") Service ID
+                    .smallTitle Service ID
                     .smallValue
                         .ellipsis {{ currentService.id }}
 
                 .state 
-                    .smallTitle(style="width: 150px;") Date Created
+                    .smallTitle Date Created
                     .smallValue {{ currentService.dateCreated }}
 
             .toggleWrap(:class="{'active': currentService.service.active >= 1}")
-                span.smallTitle(style="width: 150px;") Disable/Enable
+                span.smallTitle Disable/Enable
                 .toggleBg(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == -1}")
                     .toggleBtn(@click="enableDisableToggle")
 
@@ -58,7 +58,7 @@
 
         .serviceState.security
             .state    
-                label.smallTitle(style="width: 170px;") Cors 
+                label.smallTitle Cors 
                 .smallValue(style="padding:0")
                     form.modifyInputForm(v-if="modifyCors" @submit.prevent="changeCors")
                         .customInput
@@ -73,7 +73,7 @@
                         span.ellipsis.pencil https://expamle.domain.com
                         span.material-symbols-outlined.fill.clickable.edit(@click="editCors") edit
             .state
-                label.smallTitle(style="width: 170px;") Secret Key
+                label.smallTitle Secret Key
                 .smallValue
                     form.modifyInputForm(v-if="modifyKey" @submit.prevent="setSecretKey")
                         .customInput
@@ -88,7 +88,7 @@
                         span.ellipsis.pencil {{ currentService.service.api_key || 'No key' }}
                         span.material-symbols-outlined.fill.clickable.edit(@click="editKey" :class="{'nonClickable' : !user?.email_verified}") edit
             .state(style="flex-grow:1")
-                label.smallTitle(style="width: 170px;") Client Secret Key
+                label.smallTitle Client Secret Key
                 .sentenceButton.noBorder.withIcon(@click="addSecretKey" :class="{'nonClickable' : activeIndex !== null || updatingValue.clientKey}" style="padding: 12.5px 0;height:unset")
                     .material-symbols-outlined.fill.clickable(style="color:unset") add_box
                     span Add Secret Key
@@ -128,16 +128,16 @@
 
         .flexInfo
             .subs 
-                .smallTitle(style="width: 150px;padding:0") Currnet Plan
+                .smallTitle(style="padding:0") Currnet Plan
                 .smallValue {{ currentService.plan }}
             .subs 
-                .smallTitle(style="width: 150px;padding:0") State
+                .smallTitle(style="padding:0") State
                 .smallValue 
                     template(v-if="currentService?.subscription?.cancel_at_period_end" style="color:var(--caution-color)") Canceled
                     template(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color)") Suspended
                     template(v-else) Running
             .subs 
-                .smallTitle(style="width: 150px;padding:0") Renew Date
+                .smallTitle(style="padding:0") Renew Date
                 .smallValue 
                     template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be deleted by {{ dateFormat(currentService.service.timestamp + 604800000) }}
                     template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
@@ -284,8 +284,12 @@ let dateFormat = (timestamp) => {
     return dateStr;
 }
 let editServiceName = () => {
-    inputServiceName = currentService.name;
-    modifyServiceName.value = true;
+    if (user.email_verified) {
+        inputServiceName = currentService.service.name;
+        modifyServiceName.value = true;
+    } else {
+        return false;
+    }
 }
 let editCors = () => {
     inputCors.value = currentService.cors === '*' ? '' : currentService.cors; modifyCors.value = true;
@@ -386,7 +390,7 @@ let editSecretKey = (key, index) => {
         border-bottom: 1px solid rgba(0,0,0,0.1);
     }
     .keyName {
-        width: 130px;
+        width: 150px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

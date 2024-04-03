@@ -208,9 +208,10 @@
 import { onMounted, ref, nextTick } from 'vue';
 import { showDropDown } from '@/assets/js/event.js'
 import Calendar from '@/components/calendar.vue';
-import Invite from '@/views/service/users/dialog/invite.vue'
-import Create from '@/views/service/users/dialog/create.vue'
+import Invite from '@/views/service/users/dialog/invite-user.vue'
+import Create from '@/views/service/users/dialog/create-user.vue'
 import { skapi } from '@/code/admin';
+import { currentService, serviceUsers } from '@/views/service/main';
 
 let searchFor = ref('timestamp');
 let searchText = ref('');
@@ -235,16 +236,14 @@ let users = ref([
         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
     }
 ]);
-// skapi.getUsers({
-//     searchFor: 'timestamp',
-//     value: new Date(), // 13 자리 timestamp,
-//     condition: '<'
-// }, {
-//     fetchMore: false, // 첫 페이지고 true 인경우 마지막 fetch부터 다음페이지,
-//     limit: 20
-// }).then(u=>{
-//     // u.list:User[]
-// })
+skapi.getUsers({
+    service: currentService.id,
+    searchFor: 'timestamp',
+    value: + new Date(),
+    condition: '<'
+}).then(u=>{
+    console.log(u)
+})
 let filterOptions = ref({
     userID: true,
     name: true,

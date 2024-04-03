@@ -4,7 +4,7 @@ dialog#modalBox(ref='dialog' style="width:478px")
         h4 Create User
     .content 
         br
-        form(@submit.prevent="createUser")
+        form#createUserForm(@submit.prevent="createUser")
             input(hidden name="service" :value="currentService.id")
 
             .input
@@ -47,8 +47,11 @@ dialog#modalBox(ref='dialog' style="width:478px")
             br
 
             .buttonWrap
-                button.noLine(@click="emits('close')") Cancel 
-                button.final(@click="emits('close')") Create User
+                template(v-if="promiseRunning")
+                    img.loading(src="@/assets/img/loading.png")
+                template(v-else)
+                    button.noLine(@click="emits('close')") Cancel 
+                    button.final(type="submit") Create User
 </template>
 
 <script setup lang="ts">
@@ -61,30 +64,31 @@ let error = ref('');
 let promiseRunning = ref(false);
 let email = '';
 let name = '';
-let redirect = '';
+let password = '';
 let dialog:HTMLDialogElement | null=null;
 
 onMounted(()=>{
     emits('load', dialog);
 })
 
-// let createUser = () => {
-//     promiseRunning.value = true;
-//     error.value = '';
-//     skapi.signup({
-//         email,
-//         name,
-//         password,
-//         service: currentService.value.service
-//     }).then((res) => {
-//         console.log(res)
-//         promiseRunning.value = false;
-//         emits('close', res);
-//     }).catch((err) => {
-//         promiseRunning.value = false;
-//         error.value = err.message;
-//     });
-// }
+let createUser = () => {
+    promiseRunning.value = true;
+    error.value = '';
+    skapi.signup({
+        email,
+        name,
+        password,
+        service: currentService.id
+    }).then((res) => {
+        promiseRunning.value = false;
+        document.getElementById('createUserForm').reset();
+        console.log(res);
+        emits('close', res);
+    }).catch((err) => {
+        promiseRunning.value = false;
+        error.value = err.message;
+    });
+}
 </script>
 
 <style lang="less">
