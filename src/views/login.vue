@@ -45,7 +45,7 @@ br
             .material-symbols-outlined.fill error
             span {{ error }}
         br
-        
+
         .bottom
             template(v-if="promiseRunning")
                 img.loading(src="@/assets/img/loading.png")
@@ -103,7 +103,14 @@ let login = (e) => {
     }
 
     skapi.login(params).then(u => {
-        Object.assign(user, u);
+        // Object.assign(user, u);
+        for (let k in user) {
+            delete user[k]
+        }
+        for (let k in u) {
+            user[k] = u[k]
+        }
+
         router.push('/my-services');
     }).catch(err => {
         for (let k in user) {
@@ -120,7 +127,7 @@ let login = (e) => {
         } else {
             error.value = err.message;
         }
-    }).finally(()=>{
+    }).finally(() => {
         promiseRunning.value = false;
     })
 }
@@ -132,33 +139,41 @@ let login = (e) => {
     padding: 0 20px;
     margin: 0 auto;
 }
+
 form {
-    > div, label {
+
+    >div,
+    label {
         margin-bottom: 16px;
     }
+
     label {
         display: block;
         color: var(--black-6);
         font-size: 16px;
         font-weight: 700;
     }
+
     input {
         width: 100%;
         margin-top: 8px;
         padding: 12px 15px;
         border-radius: 8px;
-        background-color: rgba(0,0,0,0.05);
+        background-color: rgba(0, 0, 0, 0.05);
     }
+
     a {
         font-size: 16px;
         text-decoration: none;
         color: var(--main-color);
     }
+
     .actions {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
     }
+
     .bottom {
         display: flex;
         flex-wrap: wrap;
@@ -169,6 +184,7 @@ form {
         .forgot {
             display: none;
         }
+
         .signup {
             a {
                 font-weight: 700;
@@ -177,6 +193,7 @@ form {
         }
     }
 }
+
 .passwordInput {
     position: relative;
 
@@ -196,6 +213,7 @@ form {
                 display: none;
             }
         }
+
         .bottom {
             height: unset;
             display: block;
@@ -204,6 +222,7 @@ form {
             button {
                 width: 100%;
             }
+
             .forgot {
                 display: block;
                 margin-bottom: 8px;
