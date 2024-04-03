@@ -420,7 +420,6 @@ export default class Service {
         let endpoints = await Promise.all([skapi.admin_endpoint, skapi.record_endpoint]);
         let admin_private_endpoint = endpoints[0].admin_private; // https://.../
         let admin_public_endpoint = endpoints[0].admin_public; // https://.../
-        let admin_public_endpoint = endpoints[0].admin_public; // https://.../
         let record_private_endpoint = endpoints[1].record_private; // https://.../
 
         if (typeof id === 'string') {
