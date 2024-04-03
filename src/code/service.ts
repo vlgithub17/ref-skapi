@@ -30,6 +30,11 @@ export type ServiceObj = {
             verification: string,
             invitation: string
         }
+    };
+    opt?: {
+        prevent_signup: boolean,
+        client_secret: { [key: string]: string },
+        auth_client_secret: string[],
     }
 };
 
@@ -108,8 +113,7 @@ export default class Service {
     owner: string;
     admin_private_endpoint: string;
     record_private_endpoint: string;
-    admin_public_endpoint:string;
-
+    admin_public_endpoint: string;
     service: ServiceObj;
     dateCreated: string;
     plan: string;
@@ -127,11 +131,11 @@ export default class Service {
         email: number,
         host: number
     } = reactive({
-            cloud: null,
-            database: null,
-            email: null,
-            host: null
-        })
+        cloud: null,
+        database: null,
+        email: null,
+        host: null
+    })
 
     constructor(id: string, service: ServiceObj, endpoints: string[]) {
         this.id = id;
@@ -182,7 +186,8 @@ export default class Service {
 
     async setServiceOption(opt: {
         prevent_signup: boolean;
-        client_secret: Record<string, any>;
+        client_secret: { [key: string]: string };
+        auth_client_secret: string[]; // client_secret key to be auth required
     }): Promise<ServiceObj> {
         let updated = await skapi.util.request(this.admin_private_endpoint + 'service-opt', { service: this.id, owner: this.owner, opt }, { auth: true });
         Object.assign(this.service, updated);
@@ -425,9 +430,8 @@ export default class Service {
 
         if (typeof id === 'string') {
             let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: id }, { auth: true });
-            for(let region in service) {
+            for (let region in service) {
                 let serviceClass = new Service(id, service[region][0], [admin_private_endpoint, record_private_endpoint, admin_public_endpoint]);
-                // await Promise.all([serviceClass.getSubscription().catch(()=>{}), serviceClass.getStorageInfo().catch(()=>{})])
                 return serviceClass;
             }
         }
