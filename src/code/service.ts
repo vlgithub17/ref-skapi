@@ -426,7 +426,6 @@ export default class Service {
             let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: id }, { auth: true });
             for(let region in service) {
                 let serviceClass = new Service(id, service[region][0], [admin_private_endpoint, record_private_endpoint, admin_public_endpoint]);
-                // await Promise.all([serviceClass.getSubscription().catch(()=>{}), serviceClass.getStorageInfo().catch(()=>{})])
                 return serviceClass;
             }
         }
