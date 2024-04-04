@@ -87,7 +87,7 @@
                     template(v-else)
                         span.ellipsis.pencil {{ currentService.service.api_key || 'No api_key' }}
                         span.material-symbols-outlined.fill.clickable.edit(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified}") edit
-            form.state(@submit.prevent="saveSecretKey")
+            form.state(@submit.prevent="changeClientKey")
                 label.smallTitle Client Secret Key
                 template(v-if="modifyMode.client_key")
                     input#submitInp(type="submit" hidden)
@@ -102,9 +102,9 @@
                         .secretKey secretKey
                     .content(v-if="clientSecretKeys")
                         .inner
-                            .key(v-for="(key, index) of clientSecretKeys")
+                            .key(v-for="(key, index) of clientSecretKeys" :key="index")
                                 template(v-if="modifyMode.client_key")
-                                    input#keyName.keyName.lineInput(type="text" name='keyName' :value="key.key" placeholder="Key name" required)
+                                    input.keyName.lineInput(type="text" name='keyName' :value="key.key" placeholder="Key name" required)
                                     input.secretKey.lineInput(type="text" name='secretKey' :value="key.value" placeholder="Secret Key" required)
                                     .buttonWrap
                                         template(v-if="updatingValue.client_key")
@@ -118,7 +118,7 @@
                             .addButtonRow(v-if="modifyMode.client_key" @click="addSecretKey") 
                                 .material-symbols-outlined.fill.clickable(style="color:unset") add_box
                                 span Add Secret Key
-                    .empty(v-else) No Secret Key
+                            .empty(v-else) No Secret Key
 
     br
     
@@ -262,14 +262,19 @@ let updatingValue = reactive({
     api_key: false,
     client_key : false
 });
-let clientSecretKeys = ref([
-    { key: 'aaaaa', value: 'apd210dkfjseoddj' },
-    { key: 'bbbbb', value: 'apd210dkfjseoddj' },
-    { key: 'ccccc', value: 'apd210dkfjseoddj' },
-    { key: 'ddddd', value: 'apd210dkfjseoddj' }
-])
+let clientSecretKeys = ref([]);
+// let clientSecretKeys = ref([
+//     { key: 'aaaaa', value: 'apd210dkfjseoddj' },
+//     { key: 'bbbbb', value: 'apd210dkfjseoddj' },
+//     { key: 'ccccc', value: 'apd210dkfjseoddj' },
+//     { key: 'ddddd', value: 'apd210dkfjseoddj' }
+// ])
+
 let editClientKey = () => {
     modifyMode.client_key = true;
+    if(!clientSecretKeys.value.length) {
+        addSecretKey();
+    }
     nextTick(() => {
         let scrollTarget = document.querySelector('.keyBox .content');
         if (scrollTarget.getBoundingClientRect().height < scrollTarget.scrollHeight) {
@@ -278,13 +283,24 @@ let editClientKey = () => {
     })
 }
 let addSecretKey = () => {
-    clientSecretKeys.value.push({ key: '', value: ''});
+    // let addKey = reactive({ key: '', value: '' });
+    // clientSecretKeys.value.push(addKey);
+    Object.assign(clientSecretKeys, { key: '', value: '' })
     nextTick(() => {
         let scrollTarget = document.querySelector('.keyBox .content');
         if (scrollTarget.getBoundingClientRect().height < scrollTarget.scrollHeight) {
             scrollTarget.scrollTop = scrollTarget.getBoundingClientRect().height + 30;
         }
     })
+}
+let changeClientKey = () => {
+    
+}
+if(currentService.service?.client_secret) {
+    console.log(currentService.service)
+    console.log(currentService.service?.client_secret)
+} else {
+    
 }
 
 // edit/change name
@@ -467,6 +483,13 @@ let dateFormat = (timestamp) => {
         font-size: 0.8rem;
         gap: 20px;
     }
+    .key {
+        margin-bottom: 8px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
     .header {
         height: 36px;
         color: #0006;
@@ -480,7 +503,7 @@ let dateFormat = (timestamp) => {
     .addButtonRow {
         text-align: center;
         padding: 6px 0;
-        margin-bottom: 8px;
+        // margin-bottom: 8px;
         color: var(--main-color);
         background-color: #293fe60d;
         border-radius: 4px;
@@ -488,12 +511,10 @@ let dateFormat = (timestamp) => {
         font-weight: 500;
         cursor: pointer;
     }
-    .key {
-        margin-bottom: 8px;
-
-        &:last-child {
-            margin-bottom: 0;
-        }
+    .empty {
+        text-align: center;
+        color: var(--black-6);
+        line-height: 140px;
     }
     .keyName {
         width: 150px;
