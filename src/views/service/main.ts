@@ -7,6 +7,7 @@ export let serviceMainLoaded = ref(false);
 export let serviceUsers = ref([]);
 
 export let setService = (id: string) => {
+    console.log('setService');
     currentService = serviceList[id];
     serviceMainLoaded.value = true;
 }

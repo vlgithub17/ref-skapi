@@ -36,7 +36,7 @@ import { watch } from 'vue';
 import { skapi } from '@/code/admin';
 import { loginState } from '@/code/user';
 import { serviceList } from '@/views/service-list';
-import { currentService, setService, serviceMainLoaded } from '@/views/service/main';
+import { currentService, setService, serviceMainLoaded, serviceUsers } from '@/views/service/main';
 
 const router = useRouter();
 const route = useRoute();
@@ -51,9 +51,9 @@ watch(loginState, nv => {
 }, { immediate: true });
 
 watch(serviceList, nv => {
-    // console.log({nv, serviceId})
-    if (nv[serviceId]) {
-        // console.log('watched')
+    // console.log({nv, serviceId});
+    if (nv[serviceId] && currentService?.id !== serviceId) {
+        // console.log('watched');
         try {
             setService(serviceId);
             // console.log(currentService);
@@ -63,7 +63,29 @@ watch(serviceList, nv => {
             router.push('/my-services');
         }
     }
-}, {immediate: true})
+}, {immediate: true});
+
+// watch(currentService, (nv, ov) => {
+//     console.log(currentService)
+//     console.log(nv, ov)
+//     if(nv) {
+//         console.log('nv')
+//         console.log(currentService)
+//         skapi.getUsers({
+//             service: currentService.id,
+//             searchFor: 'timestamp',
+//             value: + new Date(),
+//             condition: '<'
+//         }).then(u=>{
+//             if(!serviceUsers.value.length) {
+//                 for(let k of u.list) {
+//                     serviceUsers.value.push(k);
+//                 }
+//             }
+//             console.log(serviceUsers);
+//         })
+//     }
+// }, {immediate: true});
 
 
 </script>
