@@ -33,6 +33,7 @@ br
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { watch } from 'vue';
+import { skapi } from '@/code/admin';
 import { loginState } from '@/code/user';
 import { serviceList } from '@/views/service-list';
 import { currentService, setService, serviceMainLoaded } from '@/views/service/main';
