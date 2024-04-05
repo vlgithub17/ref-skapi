@@ -133,7 +133,7 @@
             table#resizeMe.table
                 thead
                     tr
-                        th.th.center(style="width:20px;" :class='{nonClickable: users === null || !users.length}')
+                        th.th.center(style="width:20px;" :class='{nonClickable: serviceUsers === null || !serviceUsers.length}')
                             .customCheckBox
                                 input#allUsers(type="checkbox" value='selectall' @click="selectAll")
                                 label(for="allUsers")
@@ -166,8 +166,8 @@
                             | Date Created
                             .resizer(@mousedown="mousedown")
                 tbody
-                    template(v-if="users && users.length")
-                        tr(v-for="(user, index) in users" :key="index" @click="userCheckConfirm(user)")
+                    template(v-if="serviceUsers && serviceUsers.length")
+                        tr(v-for="(user, index) in serviceUsers" :key="index" @click="userCheckConfirm(user)")
                             td(style="min-width:20px;")
                                 .customCheckBox
                                     input(type="checkbox" name="user" :id="user.user_id" @change='trackSelectedUsers' :value="user.user_id")
@@ -180,21 +180,21 @@
                                 .material-symbols-outlined.fill.nohover.enable(v-if="user.access_group > 0") check_circle
                                 .material-symbols-outlined.fill.nohover.disable(v-else) cancel
                             td(v-if="filterOptions.userID") 
-                                .overflow user.user_id
+                                .overflow {{ user.user_id }}
                             td(v-if="filterOptions.name")
-                                .overflow user.name
+                                .overflow {{ user.name }}
                             td(v-if="filterOptions.email")
-                                .overflow user.email
+                                .overflow {{ user.email }}
                             td(v-if="filterOptions.address") 
-                                .overflow user.address
+                                .overflow {{ user.address }}
                             td(v-if="filterOptions.gender")
-                                .overflow user.gender
+                                .overflow {{ user.gender }}
                             td(v-if="filterOptions.locale")
-                                .overflow user.locale.flag
+                                .overflow {{ user.locale.flag }}
                             td(v-if="filterOptions.timestamp")
-                                .overflow user.timestamp
-                        tr(v-if="users.length < 10" v-for="i in (10 - users.length)" :key="'extra-' + i")
-                    tr.noData(v-if="users === null")
+                                .overflow {{ user.timestamp }}
+                        tr(v-if="serviceUsers.length < 10" v-for="i in (10 - serviceUsers.length)" :key="'extra-' + i")
+                    tr.noData(v-if="serviceUsers === null")
                         td(colspan="9" style="text-align:center; padding-top:20px;")
                             h3 No Users
                             br
@@ -208,9 +208,10 @@
 import { onMounted, ref, nextTick } from 'vue';
 import { showDropDown } from '@/assets/js/event.js'
 import Calendar from '@/components/calendar.vue';
-import Invite from '@/views/service/users/dialog/invite.vue'
-import Create from '@/views/service/users/dialog/create.vue'
+import Invite from '@/views/service/users/dialog/invite-user.vue'
+import Create from '@/views/service/users/dialog/create-user.vue'
 import { skapi } from '@/code/admin';
+import { currentService, serviceUsers } from '@/views/service/main';
 
 let searchFor = ref('timestamp');
 let searchText = ref('');
@@ -221,30 +222,35 @@ let checkDropDown = ref(null);
 let inviteDialog = ref(null);
 let createDialog = ref(null);
 let showUserSetting = ref(false);
-let users = ref([
-    {
-        access_group: 1,
-        approved: "by_skapi:approved:1705046812570",
-        email: "sdfsf@dsflf.ccc",
-        locale: "KR",
-        name: "slfk",
-        records: 0,
-        service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-        subscribers: 0,
-        timestamp: 1705046815700,
-        user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+// let users = ref([
+//     {
+//         access_group: 1,
+//         approved: "by_skapi:approved:1705046812570",
+//         email: "sdfsf@dsflf.ccc",
+//         locale: "KR",
+//         name: "slfk",
+//         records: 0,
+//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
+//         subscribers: 0,
+//         timestamp: 1705046815700,
+//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+//     }
+// ]);
+
+skapi.getUsers({
+    service: currentService.id,
+    searchFor: 'timestamp',
+    value: + new Date(),
+    condition: '<'
+}).then(u=>{
+    if(!serviceUsers.value.length) {
+        for(let k of u.list) {
+            serviceUsers.value.push(k);
+        }
     }
-]);
-// skapi.getUsers({
-//     searchFor: 'timestamp',
-//     value: new Date(), // 13 자리 timestamp,
-//     condition: '<'
-// }, {
-//     fetchMore: false, // 첫 페이지고 true 인경우 마지막 fetch부터 다음페이지,
-//     limit: 20
-// }).then(u=>{
-//     // u.list:User[]
-// })
+    console.log(serviceUsers);
+})
+
 let filterOptions = ref({
     userID: true,
     name: true,

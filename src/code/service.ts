@@ -31,11 +31,9 @@ export type ServiceObj = {
             invitation: string
         }
     };
-    opt?: {
-        prevent_signup: boolean,
-        client_secret: { [key: string]: string },
-        auth_client_secret: string[],
-    }
+    prevent_signup?: boolean,
+    client_secret?: { [key: string]: string },
+    auth_client_secret?: string[],
 };
 
 type SubscriptionObj = {
@@ -185,10 +183,18 @@ export default class Service {
     }
 
     async setServiceOption(opt: {
-        prevent_signup: boolean;
-        client_secret: { [key: string]: string };
-        auth_client_secret: string[]; // client_secret key to be auth required
+        prevent_signup?: boolean;
+        client_secret?: { [key: string]: string };
+        auth_client_secret?: string[]; // client_secret key to be auth required
     }): Promise<ServiceObj> {
+        let toUpload = {
+            prevent_signup: this.service.prevent_signup || false,
+            client_secret: this.service.client_secret || {},
+            auth_client_secret: this.service.auth_client_secret || []
+        }
+
+        Object.assign(toUpload, opt);
+
         let updated = await skapi.util.request(this.admin_private_endpoint + 'service-opt', { service: this.id, owner: this.owner, opt }, { auth: true });
         Object.assign(this.service, updated);
         return updated;
@@ -254,9 +260,9 @@ export default class Service {
 
     async updateService(
         params: {
-            name: string;
-            cors: string;
-            api_key: string;
+            name?: string;
+            cors?: string;
+            api_key?: string;
         }
     ): Promise<ServiceObj> {
         let to_update: { [key: string]: any; } = {};
@@ -266,7 +272,7 @@ export default class Service {
             let service_cors = (this.service.cors || '').split(',').map((c) => c.trim());
             for (let c of cors) {
                 if (!service_cors.includes(c)) {
-                    to_update.cors = service_cors;
+                    to_update.cors = cors;
                     break;
                 }
             }
@@ -281,7 +287,7 @@ export default class Service {
         }
 
         if (Object.keys(to_update).length) {
-            await skapi.util.request(this.record_private_endpoint + 'register-service', Object.assign({ execute: 'update', service: this.id, owner: this.owner }, to_update), { auth: true });
+            await skapi.util.request(this.admin_private_endpoint + 'register-service', Object.assign({ execute: 'update', service: this.id, owner: this.owner }, to_update), { auth: true });
             Object.assign(this.service, to_update);
         }
 
