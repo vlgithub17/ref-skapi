@@ -210,8 +210,18 @@ import { showDropDown } from '@/assets/js/event.js'
 import Calendar from '@/components/calendar.vue';
 import Invite from '@/views/service/users/dialog/invite-user.vue'
 import Create from '@/views/service/users/dialog/create-user.vue'
+import Pager from '@/code/pager'
 import { skapi } from '@/code/admin';
 import { currentService, serviceUsers } from '@/views/service/main';
+
+// if( !serviceUsers.length ) {
+//     Pager.init({
+//         id: 'user_id',
+//         sortBy: 'user_id',
+//         order: 'desc',
+//         resultsPerPage: 10
+//     })
+// }
 
 let searchFor = ref('timestamp');
 let searchText = ref('');
@@ -236,21 +246,6 @@ let showUserSetting = ref(false);
 //         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
 //     }
 // ]);
-
-skapi.getUsers({
-    service: currentService.id,
-    searchFor: 'timestamp',
-    value: + new Date(),
-    condition: '<'
-}).then(u=>{
-    if(!serviceUsers.value.length) {
-        for(let k of u.list) {
-            serviceUsers.value.push(k);
-        }
-    }
-    console.log(serviceUsers);
-})
-
 let filterOptions = ref({
     userID: true,
     name: true,

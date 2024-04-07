@@ -98,23 +98,11 @@
                     .material-symbols-outlined.fill.clickable.edit(@click="editClientKey" style="padding: 12.5px 0;") edit
                 .keyBox
                     .header 
-                        .keyName keyName
-                        .secretKey secretKey
+                        .keyName(style="width:150px") keyName
+                        .secretKey(style="flex-grow:1") secretKey
                     .content(v-if="clientSecretKeys")
-                        .inner
-                            .key(v-for="(key, index) of clientSecretKeys" :key="index")
-                                template(v-if="modifyMode.client_key")
-                                    input.keyName.lineInput(type="text" name='keyName' :value="key.key" placeholder="Key name" required)
-                                    input.secretKey.lineInput(type="text" name='secretKey' :value="key.value" placeholder="Secret Key" required)
-                                    .buttonWrap
-                                        template(v-if="updatingValue.client_key")
-                                            img.loading(style='padding:0;width:18px;height:18px;' src="@/assets/img/loading.png")
-                                        template(v-else)
-                                            .material-symbols-outlined.fill.clickable lock
-                                            .material-symbols-outlined.fill.clickable delete
-                                template(v-else)
-                                    .keyName {{ key.key }}
-                                    .secretKey {{ key.value.substr(0,4) + '**********' }}
+                        .inner 
+                            .keyWrap(ref="keyWrap")
                             .addButtonRow(v-if="modifyMode.client_key" @click="addSecretKey") 
                                 .material-symbols-outlined.fill.clickable(style="color:unset") add_box
                                 span Add Secret Key
@@ -236,11 +224,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, reactive } from 'vue';
+import { createApp, ref, nextTick, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { showDropDown } from '@/assets/js/event.js'
 import { currentService } from '@/views/service/main';
 import { user } from '@/code/user';
+import ClientKey from '@/views/service/client_key.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -262,6 +251,7 @@ let updatingValue = reactive({
     api_key: false,
     client_key : false
 });
+let keyWrap = ref(null);
 let clientSecretKeys = ref([]);
 // let clientSecretKeys = ref([
 //     { key: 'aaaaa', value: 'apd210dkfjseoddj' },
@@ -272,9 +262,9 @@ let clientSecretKeys = ref([]);
 
 let editClientKey = () => {
     modifyMode.client_key = true;
-    if(!clientSecretKeys.value.length) {
-        addSecretKey();
-    }
+    // if(!clientSecretKeys.value.length) {
+    //     addSecretKey();
+    // }
     nextTick(() => {
         let scrollTarget = document.querySelector('.keyBox .content');
         if (scrollTarget.getBoundingClientRect().height < scrollTarget.scrollHeight) {
@@ -283,15 +273,29 @@ let editClientKey = () => {
     })
 }
 let addSecretKey = () => {
+    let keyComponent = createComponent();
+    // keyComponent.mount(keyWrap.value);
+    keyWrap.value.appendChild(keyComponent)
     // let addKey = reactive({ key: '', value: '' });
     // clientSecretKeys.value.push(addKey);
-    Object.assign(clientSecretKeys, { key: '', value: '' })
+    // Object.assign(clientSecretKeys, { key: '', value: '' })
     nextTick(() => {
         let scrollTarget = document.querySelector('.keyBox .content');
         if (scrollTarget.getBoundingClientRect().height < scrollTarget.scrollHeight) {
             scrollTarget.scrollTop = scrollTarget.getBoundingClientRect().height + 30;
         }
     })
+}
+let createComponent = () => {
+    // const keyComponent = createApp(ClientKey, {
+    //     modifyMode: modifyMode.client_key,
+    //     updatingValue: updatingValue.client_key
+    // });
+    const keyComponent = new ClientKey({
+        modifyMode: modifyMode.client_key,
+        updatingValue: updatingValue.client_key
+    })
+    return keyComponent;
 }
 let changeClientKey = () => {
     
@@ -474,8 +478,10 @@ let dateFormat = (timestamp) => {
     .inner {
         min-width: 420px;
     }
-    .header, .key {
-        height: 30px;
+    .header {
+        height: 36px;
+        color: #0006;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
         padding: 0 8px;
         display: flex;
         align-items: center;
@@ -483,22 +489,13 @@ let dateFormat = (timestamp) => {
         font-size: 0.8rem;
         gap: 20px;
     }
-    .key {
-        margin-bottom: 8px;
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-    .header {
-        height: 36px;
-        color: #0006;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-    }
     .content {
         height: calc(100% - 38px);
         padding: 8px 0;
         overflow: auto;
+    }
+    .keyWrap {
+        margin-bottom: 8px;
     }
     .addButtonRow {
         text-align: center;
@@ -515,23 +512,6 @@ let dateFormat = (timestamp) => {
         text-align: center;
         color: var(--black-6);
         line-height: 140px;
-    }
-    .keyName {
-        width: 150px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .secretKey {
-        flex-grow: 1;
-    }
-    input {
-        height: 100%;
-        border-bottom: 1px solid #000;
-    }
-    .buttonWrap {
-        display: flex;
-        gap: 10px;
     }
 }
 .toggleWrap {
