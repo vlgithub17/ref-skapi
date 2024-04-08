@@ -44,7 +44,7 @@ header#navBar
                 li
                     router-link.ser(to="/login") login
                 li
-                    router-link.sign(to="/login") sign-up
+                    router-link.sign(to="/signup") sign-up
 </template>
 
 <script setup lang="ts">

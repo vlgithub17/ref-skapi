@@ -2,11 +2,6 @@
 br
 br
 br
-br
-br
-br
-br
-br
 
 #login
     router-link(to="/")
@@ -62,15 +57,6 @@ br
                 .signup 
                     span No account?
                     router-link(to="/signup") Sign up
-
-br
-br
-br
-br
-br
-br
-br
-br
 </template>
 
 <script setup lang="ts">

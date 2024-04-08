@@ -210,6 +210,7 @@ button {
     border: 1px solid #D9D9D9;
     color: var(--main-color);
     cursor: pointer;
+    white-space: nowrap;
 
     &:not(.disabled):hover {
         color: #6776FF;
@@ -517,9 +518,9 @@ button {
 }
 
 .tableWrap {
-    display: flex;
+    // display: flex;
     position: relative;
-    margin-top: 16px;
+    // margin-top: 16px;
     overflow-x: auto;
     box-sizing: border-box;
 
@@ -537,16 +538,26 @@ button {
         }
     }
 
+    table.resizable > thead > tr > th > .resizer {
+        cursor: col-resize;
+    }
     table {
         // width: 100%;
-        flex-grow: 1;
+        // flex-grow: 1;
         border-collapse: collapse;
         table-layout: fixed;
+        
+        .overflow {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         thead {
             text-align: left;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
+            // box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06); // <- shadow 옆으로 튀어나옴
+            box-shadow: 0px 3px 3px -3px rgba(0, 0, 0, 0.06);
 
             tr {
                 height: 60px;
@@ -559,7 +570,12 @@ button {
                 padding: 0 20px;
                 white-space: nowrap;
                 user-select: none;
-
+                // &:first-child {
+                //     padding-left: 0;
+                // }
+                // &:last-child {
+                //     padding-right: 0;
+                // }
                 &.center {
                     text-align: center;
                 }
@@ -572,12 +588,13 @@ button {
                 .resizer {
                     position: absolute;
                     top: 50%;
-                    right: 0px;
+                    // right: 0px;
+                    right: -2px;
                     transform: translateY(-50%);
                     width: 4px;
                     height: 20px;
                     background-color: rgba(0, 0, 0, 0.1);
-                    cursor: col-resize;
+                    // cursor: col-resize;
 
                     &.contrast {
                         background-color: #fff !important;
@@ -593,7 +610,8 @@ button {
             tr {
                 height: 60px;
                 border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-                box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
+                // box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06); // <- shadow 옆으로 튀어나옴
+                box-shadow: 0px 3px 3px -3px rgba(0, 0, 0, 0.06);
 
                 &:not(.cont, .active, .noData):hover {
                     background-color: rgba(41,63,230,0.05);
@@ -645,9 +663,17 @@ button {
             td {
                 position: relative;
                 padding: 0 20px;
+
+                // &:first-child {
+                //     padding-left: 0;
+                // }
+                // &:last-child {
+                //     padding-right: 0;
+                // }
+
                 font-size: 0.8rem;
                 // white-space: nowrap;
-                user-select: none;
+                // user-select: none;
 
                 &.center {
                     text-align: center;
@@ -713,10 +739,11 @@ button {
                         background-color: #B881FF;
                     }
                 }
-                .overflow {
+
+                .overflow { // should this be depricated?
                     position: relative;
-                    // width: 100%;
-                    width: 160px;
+                    width: 100%;
+                    // width: 160px;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;

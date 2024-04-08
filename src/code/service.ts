@@ -34,6 +34,7 @@ export type ServiceObj = {
     prevent_signup?: boolean,
     client_secret?: { [key: string]: string },
     auth_client_secret?: string[],
+    plan: '-' | 'Trial' | 'Standard' | 'Premium' | 'Unlimited' | 'Free Standard' | 'Canceled' | 'Suspended' | string
 };
 
 type SubscriptionObj = {
@@ -114,8 +115,8 @@ export default class Service {
     admin_public_endpoint: string;
     service: ServiceObj;
     dateCreated: string;
-    plan: string;
-    planCode: { [key: number]: string } = {
+    plan:string;
+    planCode: {[key: number]: string} = {
         1: 'Trial',
         2: 'Standard',
         3: 'Premium',
@@ -140,11 +141,19 @@ export default class Service {
         this.admin_private_endpoint = endpoints[0];
         this.record_private_endpoint = endpoints[1];
         this.admin_public_endpoint = endpoints[2];
+        service.plan = '-'
         this.service = reactive(service);
         this.owner = service.owner;
         this.dateCreated = typeof service.timestamp === 'string' ? service.timestamp : new Date(service.timestamp).toDateString();
         this.plan = this.planCode[this.service.group];
-        this.getSubscription();
+        this.getSubscription().then((subscription: SubscriptionObj) => {
+            if (subscription?.cancel_at_period_end || new Date().getTime() < (subscription?.canceled_at || 0)) {
+                this.service.plan = 'Canceled';
+            }
+            else {
+                this.service.plan = this.plan;
+            }
+        });
         this.getStorageInfo();
     }
 
@@ -215,7 +224,7 @@ export default class Service {
             }
 
             wait.push(
-                skapi.util.request(this.admin_public_endpoint + 'list-host-directory', { service: this.id, owner: this.owner, info: true, dir: subdomain }, { auth: true })
+                skapi.util.request(this.admin_private_endpoint + 'host-directory', { service: this.id, owner: this.owner, info: true, dir: subdomain }, { auth: true })
                     .then((r: any) => { this.storageInfo.host = r?.size || 0; }));
         }
 
