@@ -51,9 +51,10 @@ watch(loginState, nv => {
 }, { immediate: true });
 
 watch(serviceList, nv => {
-    // console.log({nv, serviceId});
+    console.log({nv, serviceId});
+    console.log(serviceMainLoaded.value)
     if (nv[serviceId] && currentService?.id !== serviceId) {
-        // console.log('watched');
+        console.log('watched');
         try {
             setService(serviceId);
             // console.log(currentService);
@@ -62,6 +63,8 @@ watch(serviceList, nv => {
             console.log(err);
             router.push('/my-services');
         }
+    } else if (nv[serviceId] && currentService?.id === serviceId && !serviceMainLoaded.value) {
+        serviceMainLoaded.value = true;
     }
 }, {immediate: true});
 

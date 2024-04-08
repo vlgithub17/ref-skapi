@@ -214,6 +214,8 @@ import Pager from '@/code/pager'
 import { skapi } from '@/code/admin';
 import { currentService, serviceUsers } from '@/views/service/main';
 
+console.log(serviceUsers.value)
+
 // if( !serviceUsers.length ) {
 //     Pager.init({
 //         id: 'user_id',
