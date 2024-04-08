@@ -1,16 +1,16 @@
 <template lang="pug">
 header#navBar 
     .left 
-        router-link.logo(to="/")
-            template(v-if="route.name == 'home'")
-                img.full(src="@/assets/img/logo/logo-white.svg")
+        template(v-if="route.path.split('/').length > 2 && route.path.split('/')[1] == 'my-services'")
+            router-link.logo(to="/my-services")
+                .material-symbols-outlined.nohover.back(style="font-size:32px") arrow_back_ios
+                span.name My services
+        template(v-else)
+            router-link.logo(to="/")
                 img.symbol(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;")
-            template(v-else-if="route.name == 'myservices' || route.name == 'accountSettings'")
-                img.full(src="@/assets/img/logo/logo.png")
-                img.symbol(src="@/assets/img/logo/symbol-logo.png" style="image-orientation: none;")
-            img.small(v-else src="@/assets/img/logo/symbol-logo.png")
+                span Skapi
     .right
-        ul
+        //- ul
             li(style="margin-right:1rem;margin-top:6px;")
                 a(href="https://twitter.com/skapijs" target="_blank")
                     img(src="@/assets/img/icon/twitter.svg")
@@ -19,12 +19,13 @@ header#navBar
                     img(src="@/assets/img/icon/discord.svg")
         ul
             li
-                a.doc(href="https://docs.skapi.com" target="_blank") Documentation
+                a.doc(href="https://docs.skapi.com" target="_blank") Docs
             template(v-if="loginState")
+                li(v-if="route.name == 'home'" style="margin-left:1rem")
+                    router-link(to="/my-services") My services
                 li
-                    router-link.ser(to="/my-services") My Services
-                li
-                    .prof(@click.stop="(e)=>{showDropDown(e)}") {{ user.email.charAt(0).toUpperCase() }}
+                    .prof(@click.stop="(e)=>{showDropDown(e)}")
+                        .material-symbols-outlined.fill.nohover(style="margin-left:1rem") person
                         .moreVert.profile(v-if="user" @click.stop style="--moreVert-right:0;display:none")
                             .inner(style="padding:0")
                                 .account {{ user.email }}
@@ -57,6 +58,8 @@ import { showDropDown } from '@/assets/js/event.js'
 const router = useRouter();
 const route = useRoute();
 
+console.log(route.path.split('/')[1])
+
 let showProfile = ref(false);
 
 let logout = () => {
@@ -70,93 +73,61 @@ let logout = () => {
 
 <style lang="less" scoped>
 #navBar {
-    position: relative;
-    height: 60px;
-    padding: 0 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 99999;
+    width: 100%;
+    padding: 12px 20px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    left: unset;
-    top: unset;
-    background-color: unset;
-    color: var(--black-6);
+    background-color: #262626;
+    font-size: 18px;
+    color: #fff;
     
-    &.home {
-        position: fixed;
-        width: 100%;
-        background-color: #262626;
-        left: 0;
-        top: 0;
-        color: #fff;
-
-        .right {
-            ul {
-                &:first-child {
-                    &::after {
-                        background-color: #fff;
-                    }
-                }
-                img {
-                    filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(355deg) brightness(107%) contrast(106%) !important;
-                }
-            }
-        }
-
-        a:not(.policy a) {
-            color: #fff;
-        }
-    }
     .left {
-        width: 11rem;
+        display: inline-block;
+        vertical-align: middle;
 
         .logo {
             display: block;
-            height: 32px;
+            text-decoration: none;
+
+            * {
+                vertical-align: middle;
+            }
 
             img {
-                height: 100%;
-                
-                &.symbol {
-                    height: 85%;
-                    display: none;
-                }
-                &.small {
-                    height: 85%;
-                    vertical-align: middle;
-                }
+                height: 30px;
+                margin-right: 1rem;
+            }
+            span {
+                font-weight: bold;
             }
         }
     }
     .right {
-        display: flex;
-        align-items: center;
+        display: inline-block;
+        vertical-align: middle;
+        flex-grow: 1;
+        font-weight: bold;
 
         ul {
             position: relative;
-            display: flex;
-
-            &:first-child {
-                &::after {
-                    position: absolute;
-                    content: '';
-                    top: 50%;
-                    right: -1rem;
-                    transform: translateY(-50%);
-                    width: 1px;
-                    height: 50%;
-                    background-color: var(--black-6);
-                }
-            }
+            text-align: right;
+            margin: 0;
+            
             li {
+                display: inline-block;
+                vertical-align: middle;
                 list-style: none;
-                line-height: 36px;
                 user-select: none;
                 cursor: pointer;
 
                 img {
                     width: 20px;
                     height: 20px;
-                    filter: invert(37%) sepia(0%) saturate(0%) hue-rotate(92deg) brightness(97%) contrast(89%);
+                    // filter: invert(37%) sepia(0%) saturate(0%) hue-rotate(92deg) brightness(97%) contrast(89%);
+                    filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(355deg) brightness(107%) contrast(106%) !important;
                 }
             }
         }
@@ -167,26 +138,10 @@ let logout = () => {
             color: #fff;
             padding: 0 20px;
             border-radius: 8px;
-            font-size: .8rem;
-            font-weight: 700;
             background: var(--main-color);
-        }
-        .prof {
-            display: table-cell;
-            vertical-align: middle;
-            position: relative;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
-            background-color: var(--main-color);
-            color: #fff;
-            font-size: 1rem;
-            text-align: center;
-            cursor: pointer;
         }
         .profile {
             color: #262626;
-            font-size: 16px;
             text-align: left;
             user-select: none;
 
@@ -197,7 +152,6 @@ let logout = () => {
             .menu {
                 display: block;
                 padding: 10px 20px;
-                font-weight: 500;
                 color: var(--main-color);
 
                 .material-symbols-outlined {
@@ -208,7 +162,6 @@ let logout = () => {
             .policy {
                 border-top: 1px solid rgba(0, 0, 0, .15);
                 font-size: 14px;
-                font-weight: 500;
                 text-align: center;
                 padding: 5px 30px;
                 white-space: nowrap;
@@ -219,55 +172,25 @@ let logout = () => {
                 }
             }
         }
+        .prof {
+            .material-symbols-outlined {
+                font-size: 32px;
+            }
+        }
     }
     a:not(.policy a) {
-        font-weight: 700;
-        color: var(--black-6);
+        color: #fff;
         text-decoration: none;
         display: inline-block;
+
+        &:not(.logo):hover {
+            text-decoration: underline;
+        }
     }
 }
 .service {
     font-size: 1rem;
-    font-weight: 700;
     color: var(--main-color) !important;
 }
 
-@media (max-width:1023px) {
-    #navBar {
-        .left {
-            width: 2.5rem;
-        }
-    }
-}
-
-@media (max-width:767px) {
-    #navBar {
-        .right {
-            .doc, .prof {
-                display: none !important;
-            }
-            .ser {
-                padding-right: 0;
-            }
-        }
-    }
-}
-
-@media (max-width:479px) {
-    #navBar {
-        .left {
-            .logo {
-                img {
-                    &.full {
-                        display: none;
-                    }
-                    &.symbol {
-                        display: block;
-                    }
-                }
-            }
-        }
-    }
-}
 </style>

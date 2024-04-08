@@ -1,49 +1,78 @@
 <template lang="pug">
 #service
+    section.codeWrap
+        div(@click="copy" style="text-align:right")
+            .copy
+                span#copyMsg Copy code
+                .material-symbols-outlined.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
+        .scrollWrap
+            pre#code.scrollInner.
+                #[span(style="color:#999") &lt;]#[span(style="color:#44E9FF") script]#[span(style="color:#44E9FF") &nbsp;src] = #[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
+                #[span(style="color:#999") &lt;]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
+                    #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
+                #[span(style="color:#999") &lt;/]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
+    
+    br
+
+    a.question(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
+        .material-symbols-outlined.empty(style="font-size: 20px;") help 
+        span Where do I put this code?
+    
+    br
+    br
+
     section.infoBox
-        .flexInfo
-            .serviceState
-                .state 
-                    .smallTitle Service Name
-                    .smallValue
-                        form.modifyInputForm(v-if="modifyMode.name" @submit.prevent="changeName")
-                            .customInput
-                                input(type="text" placeholder="Service name" max-length="30" :value='inputName' @input="(e) => inputName = e.target.value" required)
-                            template(v-if="updatingValue.name")
-                                img.loading(src="@/assets/img/loading.png")
-                            template(v-else)
-                                input#submitInp(type="submit" hidden)
-                                label.material-symbols-outlined.save(for='submitInp') done
-                                .material-symbols-outlined.cancel(@click="modifyMode.name = false;") close
-                        template(v-else)
-                            span.ellipsis.pencil.strong {{ currentService.service.name }}
-                            span.material-symbols-outlined.fill.clickable.edit(@click="editName" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") edit
+        .state 
+            .smallTitle 
+                | Service Name
+                span.material-symbols-outlined.fill.clickable.edit(@click="editName" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") edit
+            template(v-if="modifyMode.name")
+                form.modifyInputForm(@submit.prevent="changeName")
+                    .customInput
+                        input(type="text" placeholder="Service name" max-length="30" :value='inputName' @input="(e) => inputName = e.target.value" required)
+                    template(v-if="updatingValue.name")
+                        img.loading(src="@/assets/img/loading.png")
+                    template(v-else)
+                        input#submitInp(type="submit" hidden)
+                        label.material-symbols-outlined.save(for='submitInp') done
+                        .material-symbols-outlined.cancel(@click="modifyMode.name = false;") close
+            template(v-else)
+                .smallValue.ellipsis.pencil.strong {{ currentService.service.name }}
 
-                .state 
-                    .smallTitle Service ID
-                    .smallValue
-                        .ellipsis {{ currentService.id }}
+        .state 
+            .smallTitle Service ID
+            .smallValue.ellipsis {{ currentService.id }}
 
-                .state 
-                    .smallTitle Date Created
-                    .smallValue {{ currentService.dateCreated }}
+        .state 
+            .smallTitle Date Created
+            .smallValue {{ currentService.dateCreated }}
 
-            .toggleWrap(:class="{'active': currentService.service.active >= 1}")
+        .state 
+            .smallTitle State
+            .smallValue 
+                template(v-if="currentService?.subscription?.cancel_at_period_end" style="color:var(--caution-color)") Canceled
+                template(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color)") Suspended
+                template(v-else) Running
+
+        .state 
+            .smallTitle Subscription Plan
+            .smallValue {{ currentService.plan }}
+
+        .state 
+            .smallTitle Renew Date
+            .smallValue 
+                template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be deleted by {{ dateFormat(currentService.service.timestamp + 604800000) }}
+                template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
+                template(v-else) -
+        
+        router-link(:to='`/subscription/${currentService.id}`' style="display:block; text-align:right")
+            button.final(v-if="new Date().getTime() < currentService?.subscription?.canceled_at") Resume Plan
+            button.final(v-else) Manage Subscription
+
+            //- .toggleWrap(:class="{'active': currentService.service.active >= 1}")
                 span.smallTitle Disable/Enable
                 .toggleBg(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == -1}")
                     .toggleBtn(@click="enableDisableToggle")
-
-        br
-        .codeWrap
-            .scrollWrap
-                pre.scrollInner.
-                    #[span(style="color:#33adff") &nbsp;&nbsp;&nbsp;&nbsp;const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);&nbsp;&nbsp;&nbsp;&nbsp;
-                
-            .copy.clickable.material-symbols-outlined.fill(@click="copy") file_copy
-        br
-        a.question(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
-            .material-symbols-outlined.empty help 
-            span Where do I put this code?
 
     br
 
@@ -106,39 +135,11 @@
                             .addButtonRow(v-if="modifyMode.client_key" @click="addSecretKey") 
                                 .material-symbols-outlined.fill.clickable(style="color:unset") add_box
                                 span Add Secret Key
-                            .empty(v-else) No Secret Key
-
-    br
-    
-    section.infoBox
-        .infoTitle Subsription Plan
-
-        br
-        br
-
-        .flexInfo
-            .subs 
-                .smallTitle(style="padding:0") Currnet Plan
-                .smallValue {{ currentService.plan }}
-            .subs 
-                .smallTitle(style="padding:0") State
-                .smallValue 
-                    template(v-if="currentService?.subscription?.cancel_at_period_end" style="color:var(--caution-color)") Canceled
-                    template(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color)") Suspended
-                    template(v-else) Running
-            .subs 
-                .smallTitle(style="padding:0") Renew Date
-                .smallValue 
-                    template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be deleted by {{ dateFormat(currentService.service.timestamp + 604800000) }}
-                    template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
-                    template(v-else) -
-        
-        br
-
-        //- div(style="display:block; text-align:right") 
-        router-link(:to='`/subscription/${currentService.id}`' style="display:block; text-align:right")
-            button.final(v-if="new Date().getTime() < currentService?.subscription?.canceled_at") Resume Plan
-            button.final(v-else) Manage Subscription
+                            .empty(v-else) 
+                                br
+                                br
+                                br
+                                | No Secret Key
     
     br
 
@@ -408,20 +409,33 @@ let dateFormat = (timestamp) => {
     return dateStr;
 }
 
+let copy = () => {
+    let code = document.getElementById('code');
+    let doc = document.createElement('textarea');
+    doc.textContent = code.textContent;
+    document.body.append(doc);
+    doc.select();
+    document.execCommand('copy');
+    doc.remove();
 
+    let copyMsg = document.getElementById('copyMsg');
+    copyMsg.textContent = 'Copied'
+}
 
 
 </script>
 
 <style lang="less" scoped>
 .smallTitle {
-    width: 150px;
-    padding: 12.5px 0;
+    display: inline-block;
+    width: 200px;
+    // padding: 12.5px 0;
 }
 .smallValue {
-    height: 44px;
-    line-height: 44px;
-    margin-top: 8px;
+    display: inline-block;
+    // height: 44px;
+    // line-height: 44px;
+    // margin-top: 8px;
 }
 .flexInfo {
     display: flex;
@@ -429,9 +443,19 @@ let dateFormat = (timestamp) => {
     justify-content: space-between;
     gap: 1rem;
 }
+.state {
+    margin-bottom: 0.75rem;
+}
+.ellipsis {
+    max-width: 100%;
+}
+.modifyInputForm {
+    width: 100%;
+    margin-top: 0.25rem;
+}
 .serviceState {
+    position: relative;
     display: inline-block;
-    flex-grow: 1;
 
     &.security {
         width: 100%;
@@ -440,29 +464,6 @@ let dateFormat = (timestamp) => {
     &.subs {
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-    .state {
-        position: relative;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        flex-grow: 1;
-    }
-
-    .ellipsis {
-        width: 250px;
-        flex-grow: 1;
-    }
-
-    .smallValue {
-        position: relative;
-        width: calc(100% - 150px);
-        margin: 0;
-        flex-grow: 1;
-        display: flex;
-        align-items: center;
         justify-content: space-between;
     }
 }
@@ -480,7 +481,6 @@ let dateFormat = (timestamp) => {
     }
     .header {
         height: 36px;
-        color: #0006;
         border-bottom: 1px solid rgba(0,0,0,0.1);
         padding: 0 8px;
         display: flex;
@@ -510,8 +510,6 @@ let dateFormat = (timestamp) => {
     }
     .empty {
         text-align: center;
-        color: var(--black-6);
-        line-height: 140px;
     }
 }
 .toggleWrap {
@@ -570,8 +568,16 @@ let dateFormat = (timestamp) => {
 .codeWrap {
     position: relative;
 
+    .copy {
+        display: inline-block;
+        text-align: right;
+        font-size: 14px;
+        font-weight: 400;
+        cursor: pointer;
+    }
     .scrollWrap {
         background: rgba(0,0,0,0.8);
+        margin-top: 8px;
         border-radius: 8px;
         box-shadow: 3px 9px 6px 0px rgba(0, 0, 0, 0.15);
         color: #FFF;
@@ -579,36 +585,9 @@ let dateFormat = (timestamp) => {
     
         .scrollInner {
             font-size: 20px;
-            max-width: 0;
-            font-size: 1rem;
-        }
-    }
-    .copy {
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #fff;
-
-        &::after {
-            position: absolute;
-            display: block;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            text-align: center;
-            font-size: 14px;
-            font-weight: 400;
-            background: rgba(255, 255, 255, 0.6);
-            color: #343434;
-            padding: 4px;
-            content: "Copied";
-            transition: opacity .4s;
-            opacity: 0;
-        }
-
-        &.copied::after {
-            opacity: 1;
+            font-size: 16px;
+            margin: 0;
+            padding: 1rem;
         }
     }
 }
@@ -616,8 +595,12 @@ let dateFormat = (timestamp) => {
     display: block;
     text-decoration: none;
     color: var(--main-color);
-    font-size: 0.9rem;
+    font-size: 14px;
     font-weight: 500;
+
+    &:hover {
+        text-decoration: underline;
+    }
 
     &.help {
         display: inline-block;
@@ -646,7 +629,6 @@ let dateFormat = (timestamp) => {
     }
 }
 .deleteDesc li {
-    color: var(--black-6);
     line-height: 1.5rem;
 }
 
@@ -665,18 +647,6 @@ let dateFormat = (timestamp) => {
     .flexInfo {
         &:first-child {
             gap: unset;
-        }
-    }
-    .serviceState {
-        .smallValue {
-            width: 100%;
-        }
-    }
-    .ellipsis {
-        width: calc(100vw - 40px - 3rem) !important;
-
-        &.pencil {
-            width: calc(100vw - 40px - 3rem - 24px) !important;
         }
     }
     .toggleWrap {

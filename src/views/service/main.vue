@@ -2,15 +2,16 @@
 br
 br
 br
+br
 
 #serviceMain(v-if="serviceMainLoaded")
     nav.left 
-        router-link.router(to="/my-services")
+        //- router-link.router(to="/my-services")
             span.material-symbols-outlined.nohover.back arrow_back_ios
             span.name My services
-        br
-        br
-        br
+        //- br
+        //- br
+        //- br
         router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
             span.material-symbols-outlined.icon.fill.nohover home
             span.name Dashboard
@@ -110,7 +111,7 @@ watch(serviceList, nv => {
         padding: 0 20px;
 
         >div {
-            max-width: 1200px;
+            // max-width: 1200px;
             margin: 0 auto;
         }
     }
