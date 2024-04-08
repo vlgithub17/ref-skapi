@@ -3,19 +3,19 @@ br
 br
 
 main#serviceList
-    router-link.sentenceButton(to="/create" style="text-decoration:none;margin: 8px;")
-        .material-symbols-outlined add
-        span &nbsp;Create Service
-
-    br
+    //- router-link.sentenceButton(to="/create" style="text-decoration:none;margin: 8px;")
+    //-     .material-symbols-outlined add
+    //-     span &nbsp;Create Service
+    div(style='padding: 0 20px;')
+        router-link.material-symbols-outlined.hover.fill(to="/create" style="text-decoration:none;font-size:1.5rem") add_circle
+        span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Create New Service
+      
     br
 
     .tableWrap
         Table
             template(v-slot:head)
                 tr
-                    th.th.center.overflow(style="width:44px;padding:0;")
-                        span.resizer
                     th.th.overflow(style="width:166px;")
                         | Service Name
                         span.resizer
@@ -37,15 +37,13 @@ main#serviceList
                     th.th.center.overflow(style="width:144px;")
                         | Datebase
                         span.resizer
+            
             template(v-slot:body v-if="!callServiceList")
                 template(v-if="Object.keys(serviceIdList).length" v-for="(id, index) in serviceIdList")
                     template(v-if="serviceList[id]")
                         tr.serviceRow(ref="tr" @click="(e) => goServiceDashboard(e, serviceList[id])" @mousedown="(e) => e.currentTarget.classList.add('active')" @mouseleave="(e) => e.currentTarget.classList.remove('active')")
-                            td.center(style="padding:0;")
-                                .material-symbols-outlined.hover.nohover.upArrow(:class="{ hide: currentServiceIndex !== index }" @click.stop="(e) => toggleServiceInfo(e, index)") arrow_forward_ios
-                                .material-symbols-outlined.hover.nohover.downArrow(:class="{ hide: currentServiceIndex === index }" @click.stop="(e) => toggleServiceInfo(e, index)") arrow_forward_ios
                             td.overflow {{ serviceList[id].service.name }}
-                            td.overflow {{ typeof serviceList[id].service.timestamp === 'string' ? serviceList[id].service.timestamp : new Date(serviceList[id].service.timestamp).toDateString() }}
+                            td.center.overflow {{ typeof serviceList[id].service.timestamp === 'string' ? serviceList[id].service.timestamp : new Date(serviceList[id].service.timestamp).toDateString() }}
                             td.center(style="white-space:nowrap")
                                 // plans
                                 .state(:style="{color: serviceList[id].service.plan === 'Canceled' ? 'var(--caution-color)' : null}") {{ serviceList[id].service.plan }}
@@ -66,50 +64,8 @@ main#serviceList
                                 .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
                                 .percent(v-else-if="Math.ceil(serviceList[id].storageInfo.database/4294967296*100)" :class='{"green": 0 <= Math.ceil(serviceList[id].storageInfo.database/4294967296*100) && Math.ceil(serviceList[id].storageInfo.database/4294967296*100) < 51, "orange": 51 <= Math.ceil(serviceList[id].storageInfo.database/4294967296*100) && Math.ceil(serviceList[id].storageInfo.database/4294967296*100) < 81, "red": 81 <= Math.ceil(serviceList[id].storageInfo.database/4294967296*100)}') {{ Math.ceil(serviceList[id].storageInfo.database/4294967296*100) + '%' }}
                                 .percent.green(v-else) 0%
-                        tr.cont(ref="trCont" :class="{ active: currentServiceIndex === index }")
-                            td(colspan="8")
-                                .info
-                                    .title Name
-                                    .value(style="color:var(--black-8);font-weight:700") {{ serviceList[id].service.name }}
-                                .info 
-                                    .title Service ID 
-                                    .value {{ serviceList[id].id }}
-                                .info 
-                                    .title CORS 
-                                    .value {{ serviceList[id].service.cors }}
-                                br
-                                .info.inline
-                                    .title # of Users 
-                                    .value {{ serviceList[id].service.users }}
-                                .info.inline 
-                                    .title Database Used
-                                    .value {{ serviceList[id].storageInfo.database }}
-                                .info.inline 
-                                    .title Subscription Plan
-                                    router-link(:to="`/subscription/${serviceList[id].id}`" style="color:var(--main-color);font-weight:700;") {{ serviceList[id].plan }}
-                                .info.inline 
-                                    .title Hosting Strorage
-                                    .value 
-                                        template(v-if="serviceList[id].service.subdomain") {{ serviceList[id].storageInfo.host }}
-                                        template(v-else) -
-                                br
-                                br
-                                .info.inline 
-                                    .title Locale
-                                    .value {{ serviceList[id].service.created_locale }}
-                                .info.inline 
-                                    .title Cloud Storage Used
-                                    .value {{ serviceList[id].storageInfo.cloud }}
-                                .info.inline 
-                                    .title Date Created
-                                    .value {{ serviceList[id].dateCreated }}
-                                .info.inline 
-                                    .title Subdomain
-                                    .value(v-if="serviceList[id].service?.subdomain") {{ serviceList[id].service?.subdomain }}
-                                    .value(v-else) -
-
                 tr.noData(v-else)
-                    td(colspan="8" style="text-align:center; padding:20px 0;")
+                    td(colspan="7" style="text-align:center; padding:20px 0;")
                         br
                         br
                         .title No Services
@@ -140,28 +96,9 @@ watch(loginState, nv => {
     }
 }, { immediate: true });
 
-// onMounted(() => {
-//     document.querySelector('body').classList.add('fa');
-// })
-// onBeforeUnmount(() => {
-//     document.querySelector('body').classList.remove('fa');
-//     // document.removeEventListener('mouseup', mouseupEvent);
-// })
-
-let currentServiceIndex = ref(null);
-
 let goServiceDashboard = (e: any, service: { [key: string]: any }) => {
     router.push('/my-services/' + service.id);
 }
-
-let toggleServiceInfo = (e: any, index: number) => {
-    if (currentServiceIndex.value === index || e.target.classList.contains('upArrow')) {
-        currentServiceIndex.value = null;
-    } else {
-        currentServiceIndex.value = index;
-    }
-}
-
 </script>
 
 <style lang="less" scoped>
