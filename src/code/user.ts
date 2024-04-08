@@ -2,6 +2,7 @@ import { computed, reactive, watch } from "vue";
 import { skapi } from "./admin";
 import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
 import Service from "./service";
+
 export let user: { [key: string]: any } = reactive({});
 export let loginState = computed(() => !!user?.user_id);
 
