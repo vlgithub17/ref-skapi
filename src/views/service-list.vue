@@ -1,13 +1,16 @@
 <template lang="pug">
 br
 br
+br
+br
+br
 
 main#serviceList
     //- router-link.sentenceButton(to="/create" style="text-decoration:none;margin: 8px;")
     //-     .material-symbols-outlined add
     //-     span &nbsp;Create Service
-    div(style='padding: 0 20px;')
-        router-link.material-symbols-outlined.hover.fill(to="/create" style="text-decoration:none;font-size:1.5rem") add_circle
+    .createButton(style='padding: 0 20px;')
+        router-link.material-symbols-outlined.fill(to="/create" style="text-decoration:none;font-size:1.5rem") add_circle
         span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Create New Service
       
     br
@@ -106,6 +109,38 @@ let goServiceDashboard = (e: any, service: { [key: string]: any }) => {
     max-width: 1200px;
     margin: 0 auto;
     // padding: 0 20px;
+}
+
+.createButton {
+    color: var(--main-color);
+    cursor: pointer;
+
+    &:hover .material-symbols-outlined::before {
+        background-color: rgba(41, 63, 230, 0.1);
+    }
+
+    a {
+        color: var(--main-color);
+    }
+    .material-symbols-outlined {
+        position: relative;
+        font-size: 1.6rem;
+        padding: 4px;
+        color: var(--main-color);
+        cursor: pointer;
+
+        &::before {
+            position: absolute;
+            content: '';
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background-color: unset;
+            border-radius: 50%;
+        }
+    }
 }
 
 .service {
