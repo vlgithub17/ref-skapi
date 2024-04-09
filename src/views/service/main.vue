@@ -1,32 +1,24 @@
 <template lang="pug">
-br
-br
-br
-br
-
 #serviceMain(v-if="serviceMainLoaded")
-    nav.left 
-        //- router-link.router(to="/my-services")
-            span.material-symbols-outlined.nohover.back arrow_back_ios
-            span.name My services
-        //- br
-        //- br
-        //- br
-        router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
-            span.material-symbols-outlined.icon.fill.nohover home
-            span.name Dashboard
-        router-link.router(:to="`/my-services/${currentService.id}/users`" :class="{'active': route.name == 'users'}")
-            span.material-symbols-outlined.icon.fill.nohover supervisor_account
-            span.name Users
-        router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
-            span.material-symbols-outlined.icon.fill.nohover database
-            span.name Database
-        router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
-            span.material-symbols-outlined.icon.fill.nohover email
-            span.name Mail
-        router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting'}")
-            span.material-symbols-outlined.icon.fill.nohover language
-            span.name Hosting
+    Sticky(fix-width)
+        br
+        
+        nav.left
+            router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
+                span.material-symbols-outlined.icon.fill.nohover home
+                span.name Dashboard
+            router-link.router(:to="`/my-services/${currentService.id}/users`" :class="{'active': route.name == 'users'}")
+                span.material-symbols-outlined.icon.fill.nohover supervisor_account
+                span.name Users
+            router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
+                span.material-symbols-outlined.icon.fill.nohover database
+                span.name Database
+            router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
+                span.material-symbols-outlined.icon.fill.nohover email
+                span.name Mail
+            router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting'}")
+                span.material-symbols-outlined.icon.fill.nohover language
+                span.name Hosting
     main.right 
         router-view
 </template>
@@ -38,6 +30,7 @@ import { skapi } from '@/code/admin';
 import { loginState } from '@/code/user';
 import { serviceList } from '@/views/service-list';
 import { currentService, setService, serviceMainLoaded, serviceUsers } from '@/views/service/main';
+import Sticky from '@/components/sticky.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -52,68 +45,36 @@ watch(loginState, nv => {
 }, { immediate: true });
 
 watch(serviceList, nv => {
-    console.log({nv, serviceId});
-    console.log(serviceMainLoaded.value)
     if (nv[serviceId] && currentService?.id !== serviceId) {
-        console.log('watched');
         try {
             setService(serviceId);
-            // console.log(currentService);
         }
         catch (err) {
-            console.log(err);
             router.push('/my-services');
         }
     } else if (nv[serviceId] && currentService?.id === serviceId && !serviceMainLoaded.value) {
         serviceMainLoaded.value = true;
     }
-}, {immediate: true});
-
-// watch(currentService, (nv, ov) => {
-//     console.log(currentService)
-//     console.log(nv, ov)
-//     if(nv) {
-//         console.log('nv')
-//         console.log(currentService)
-//         skapi.getUsers({
-//             service: currentService.id,
-//             searchFor: 'timestamp',
-//             value: + new Date(),
-//             condition: '<'
-//         }).then(u=>{
-//             if(!serviceUsers.value.length) {
-//                 for(let k of u.list) {
-//                     serviceUsers.value.push(k);
-//                 }
-//             }
-//             console.log(serviceUsers);
-//         })
-//     }
-// }, {immediate: true});
-
+}, { immediate: true });
 
 </script>
 
 <style lang="less" scoped>
 #serviceMain {
     position: relative;
-    max-width: 100%;
+    max-width: 1200px;
     display: flex;
     flex-wrap: nowrap;
+    margin: 0 auto;
 
     .left {
-        padding-left: 20px;
+        margin-right: 1rem;
     }
 
     .right {
         width: 50%;
         flex-grow: 1;
-        padding: 0 20px;
-
-        >div {
-            // max-width: 1200px;
-            margin: 0 auto;
-        }
+        padding: 8px;
     }
 }
 
@@ -127,7 +88,7 @@ watch(serviceList, nv => {
 
     &.active {
         background: #293FE60D;
-        box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, 0.15) inset;
+        box-shadow: -1px -1px 0px 0px rgba(0, 0, 0, 0.15) inset;
 
         .name {
             font-weight: 700;
@@ -136,11 +97,6 @@ watch(serviceList, nv => {
 
     span {
         vertical-align: middle;
-    }
-
-    .back {
-        font-size: 1rem;
-        margin-left: 9px;
     }
 
     .icon {

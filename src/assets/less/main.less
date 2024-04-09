@@ -75,13 +75,6 @@
     }
 }
 
-// hr {
-//     border: 0;
-//     height: 1px;
-//     background-color: rgba(0, 0, 0, 0.1);
-//     box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
-// }
-
 input {
     height: 44px;
     border: 0;
@@ -102,12 +95,12 @@ input {
     }
 
     // &[type=search] {padding-right: 15px;}
-    &::-webkit-search-decoration,
-    &::-webkit-search-cancel-button,
-    &::-webkit-search-results-button,
-    &::-webkit-search-results-decoration{
-        // display:none;
-    }
+    // &::-webkit-search-decoration,
+    // &::-webkit-search-cancel-button,
+    // &::-webkit-search-results-button,
+    // &::-webkit-search-results-decoration{
+    //     // display:none;
+    // }
 }
 
 button {
@@ -120,7 +113,6 @@ button {
     font-weight: 700;
     cursor: pointer;
     box-sizing: border-box;
-    font-family: "Radio Canada";
 
     &.noLine {
         border: 0;
@@ -517,12 +509,6 @@ button {
     }
 }
 
-.tableWrap {
-    position: relative;
-    overflow-x: auto;
-    box-sizing: border-box;
-}
-
 .material-symbols-outlined {
     vertical-align: middle;
     
@@ -571,6 +557,7 @@ button {
 }
 
 .loading {
+    vertical-align: middle;
     width: 24px;
     height: 24px;
     margin: 0 auto;
@@ -593,7 +580,6 @@ button {
 
 .clickable {
     cursor: pointer;
-    color: var(--black-6);
 }
 
 .nonClickable {
@@ -607,7 +593,6 @@ button {
     font-size: 28px;
     font-weight: 700;
     padding: 28px 0;
-    color: var(--black-8);
 
     &::after {
         position: absolute;
@@ -621,12 +606,11 @@ button {
     }
 }
 .smallTitle {
+    font-weight: 400;
     font-size: 0.9rem;
-    color: #0006;
 }
 .smallValue {
     font-size: 0.9rem;
-    color: var(--black-6);
     line-height: 1.4;
 }
 
@@ -634,36 +618,14 @@ button {
     position: relative;
     display: inline-block;
     padding-left: 10px;
-
-    &::after {
-        position: absolute;
-        display: block;
-        right: -60px;
-        top: 50%;
-        transform: translateY(-50%);
-        text-align: center;
-        font-size: 14px;
-        font-weight: 400;
-        background: rgba(255, 255, 255, 0.6);
-        color: #343434;
-        padding: 4px;
-        content: "Copied";
-        transition: opacity .4s;
-        opacity: 0;
-    }
-
-    &.copied::after {
-        opacity: 1;
-    }
 }
 
 .infoBox {
     position: relative;
-    background-color: #fafafa;
+    background-color: #fff;
     padding: 1.5rem;
     border-radius: 8px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    // filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10));
+    border: 1px solid rgba(0,0,0,0.2);
 
     .infoTitle {
         display: inline-block;
@@ -674,10 +636,9 @@ button {
 
 .cardBox {
     position: relative;
-    background-color: #fafafa;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,0.2);
     border-radius: 8px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    // filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10));
 
     &.line {
         border: 1px solid rgba(0,0,0,.15);

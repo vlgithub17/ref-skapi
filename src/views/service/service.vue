@@ -1,29 +1,62 @@
 <template lang="pug">
 #service
+    h2(style="margin-bottom:0;")
+        | Getting Started
+        br
+        span(style="font-weight:300;font-size:1rem;") Add the following code to your HTML website to get started:
+
     section.codeWrap
         div(@click="copy" style="text-align:right")
             .copy
-                span#copyMsg Copy code
+                span.copyMsg Copy code
                 .material-symbols-outlined.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
         .scrollWrap
-            pre#code.scrollInner.
-                #[span(style="color:#999") &lt;]#[span(style="color:#44E9FF") script]#[span(style="color:#44E9FF") &nbsp;src] = #[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
+            pre.code.scrollInner.
+                #[span(style="color:#999") &lt;]#[span(style="color:#44E9FF") script]#[span(style="color:#44E9FF") &nbsp;src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
                 #[span(style="color:#999") &lt;]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
                     #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
                 #[span(style="color:#999") &lt;/]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
     
     br
 
-    a.question(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
-        .material-symbols-outlined.empty(style="font-size: 20px;") help 
-        span Where do I put this code?
+    h4 For SPA Projects:
+
+    p(style='margin-bottom: 0;') 1. Install the package:
+
+    section.codeWrap
+        div(@click="copy" style="text-align:right")
+            .copy
+                span.copyMsg Copy code
+                .material-symbols-outlined.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
+        .scrollWrap
+            pre.code.scrollInner.
+                npm install skapi-js
+
+    br
+
+    p(style='margin-bottom:0;') 2. Initialize Skapi from your main.js:
+
+    section.codeWrap
+        div(@click="copy" style="text-align:right")
+            .copy
+                span.copyMsg Copy code
+                .material-symbols-outlined.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
+        .scrollWrap
+            pre.code.scrollInner.
+                #[span(style="color:#999") // main.js]
+                #[span(style="color:#44E9FF") import] { Skapi } #[span(style="color:#44E9FF") from] #[span(style="color:#FFED91") "skapi-js"]
+                #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
+                #[span(style="color:#44E9FF") export] { skapi } #[span(style="color:#999") // Import the instance in your components]
+    
+    p.
+        For more details, please refer to the #[a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank" style='font-weight:normal;') Documentation]
     
     br
     br
 
     section.infoBox
         .state 
-            .smallTitle 
+            .smallTitle
                 | Service Name
                 span.material-symbols-outlined.fill.clickable.edit(@click="editName" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") edit
             template(v-if="modifyMode.name")
@@ -409,8 +442,13 @@ let dateFormat = (timestamp) => {
     return dateStr;
 }
 
-let copy = () => {
-    let code = document.getElementById('code');
+let copy = (e) => {
+    let allcopy = document.querySelectorAll('.copyMsg');
+    for(let i = 0; i < allcopy.length; i++) {
+        allcopy[i].textContent = 'Copy code';
+    }
+    let code = e.currentTarget.nextElementSibling.querySelector('.code');
+    //  document.getElementById('code');
     let doc = document.createElement('textarea');
     doc.textContent = code.textContent;
     document.body.append(doc);
@@ -418,8 +456,8 @@ let copy = () => {
     document.execCommand('copy');
     doc.remove();
 
-    let copyMsg = document.getElementById('copyMsg');
-    copyMsg.textContent = 'Copied'
+    let copyMsg = e.currentTarget.querySelector('.copyMsg')
+    copyMsg.textContent = 'Copied!'
 }
 
 
@@ -576,10 +614,10 @@ let copy = () => {
         cursor: pointer;
     }
     .scrollWrap {
-        background: rgba(0,0,0,0.8);
+        background: var(--black-8);
         margin-top: 8px;
         border-radius: 8px;
-        box-shadow: 3px 9px 6px 0px rgba(0, 0, 0, 0.15);
+        box-shadow: 2px 2px 3px 0px rgba(0, 0, 0, 0.15);
         color: #FFF;
         overflow-x: auto;
     

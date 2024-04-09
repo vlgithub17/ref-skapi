@@ -1,9 +1,11 @@
 :root {
     --main-color: #293FE6;
     --caution-color: #F04E4E;
-    --black-8: rgba(0,0,0,0.8);
-    --black-6: rgba(0,0,0,0.6);
-    --black-4: rgba(0,0,0,0.4);
+    --black-8: rgba(0,0,0,0.88);
+    --black-6: rgba(0,0,0,0.66);
+    --black-4: rgba(0,0,0,0.44);
+    --text-green: #00a020;
+    --green: #5ad858;
 }
 
 * {
@@ -29,24 +31,22 @@
         font-size: 18px;
     }
 }
-
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+}
 body {
     width: 100%;
-    height: 100%;
     margin: 0;
     padding: 0;
     background-color: #fafafa;
-    color: #000;
-    font-family: "Radio Canada", sans-serif;
+    // color: var(--black-8);
+    font-family: "Radio Canada", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    // font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-weight: 300;
 
-    &.fa {
-        background-color: #fafafa;
-    }
-}
-
-* {
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 // /* IE의 경우 input(type="search") x 버튼 제거 */
@@ -61,4 +61,3 @@ body {
 // input::-webkit-search-results-decoration{
 //     display:none;
 // }
-

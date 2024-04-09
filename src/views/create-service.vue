@@ -88,8 +88,6 @@ import { callServiceList } from '@/views/service-list'
 const router = useRouter();
 const route = useRoute();
 
-// document.body.classList.add('fa');
-
 let service = {
     active: 1,
     name: 'service name',

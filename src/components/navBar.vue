@@ -1,25 +1,18 @@
 <template lang="pug">
-header#navBar 
+div.dummy(:style='{height:navHeight+"px"}')
+nav#navBar(ref="navBar")
     .left 
-        template(v-if="route.path.split('/').length > 2 && route.path.split('/')[1] == 'my-services'")
-            router-link.logo(to="/my-services")
-                .material-symbols-outlined.nohover.back(style="font-size:32px") arrow_back_ios
-                span.name My services
-        template(v-else)
-            router-link.logo(to="/")
-                img.symbol(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;")
-                span Skapi
+        router-link.logo(to="/my-services" v-if="route.path.split('/').length > 2 && route.path.split('/')[1] == 'my-services'")
+            .material-symbols-outlined.nohover.back(style="font-size:32px") arrow_back_ios
+            span.name My Services
+        router-link.logo(to="/" v-else)
+            img.symbol(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;")
+            span Skapi
     .right
-        //- ul
-            li(style="margin-right:1rem;margin-top:6px;")
-                a(href="https://twitter.com/skapijs" target="_blank")
-                    img(src="@/assets/img/icon/twitter.svg")
-            li(style="margin-top:6px;")
-                a(href="https://discord.com/invite/thqvysPnQt" target="_blank")
-                    img(src="@/assets/img/icon/discord.svg")
         ul
-            li
+            li(v-if="route.name != 'home'")
                 a.doc(href="https://docs.skapi.com" target="_blank") Docs
+            
             template(v-if="loginState")
                 li(v-if="route.name == 'home'" style="margin-left:1rem")
                     router-link(to="/my-services") My services
@@ -50,7 +43,7 @@ header#navBar
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { skapi } from '@/code/admin';
 import { loginState, user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
@@ -59,16 +52,21 @@ const router = useRouter();
 const route = useRoute();
 
 console.log(route.path.split('/')[1])
-
+let navBar = ref(null);
 let showProfile = ref(false);
 
 let logout = () => {
-    skapi.logout().then(()=>{
-        for(let k in user) {
+    skapi.logout().then(() => {
+        for (let k in user) {
             delete user[k];
         }
     })
 }
+
+let navHeight = ref(0);
+onMounted(() => {
+    navHeight.value = parseFloat(window.getComputedStyle(navBar.value).height);
+})
 </script>
 
 <style lang="less" scoped>
@@ -83,7 +81,7 @@ let logout = () => {
     background-color: #262626;
     font-size: 18px;
     color: #fff;
-    
+
     .left {
         display: inline-block;
         vertical-align: middle;
@@ -97,14 +95,16 @@ let logout = () => {
             }
 
             img {
-                height: 30px;
-                margin-right: 1rem;
+                height: 32px;
+                margin-right: 10px;
             }
+
             span {
                 font-weight: bold;
             }
         }
     }
+
     .right {
         display: inline-block;
         vertical-align: middle;
@@ -115,31 +115,28 @@ let logout = () => {
             position: relative;
             text-align: right;
             margin: 0;
-            
+            padding: 0;
+
             li {
                 display: inline-block;
                 vertical-align: middle;
                 list-style: none;
                 user-select: none;
                 cursor: pointer;
-
-                img {
-                    width: 20px;
-                    height: 20px;
-                    // filter: invert(37%) sepia(0%) saturate(0%) hue-rotate(92deg) brightness(97%) contrast(89%);
-                    filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(355deg) brightness(107%) contrast(106%) !important;
-                }
             }
         }
+
         .ser {
             padding: 0 1rem;
         }
+
         .sign {
             color: #fff;
             padding: 0 20px;
             border-radius: 8px;
             background: var(--main-color);
         }
+
         .profile {
             color: #262626;
             text-align: left;
@@ -149,6 +146,7 @@ let logout = () => {
                 padding: 10px 20px;
                 border-bottom: 1px solid rgba(0, 0, 0, .15);
             }
+
             .menu {
                 display: block;
                 padding: 10px 20px;
@@ -159,25 +157,28 @@ let logout = () => {
                     margin-right: 8px;
                 }
             }
+
             .policy {
                 border-top: 1px solid rgba(0, 0, 0, .15);
                 font-size: 14px;
                 text-align: center;
                 padding: 5px 30px;
                 white-space: nowrap;
-                
+
                 a {
                     text-decoration: none;
                     color: var(--black-4);
                 }
             }
         }
+
         .prof {
             .material-symbols-outlined {
                 font-size: 32px;
             }
         }
     }
+
     a:not(.policy a) {
         color: #fff;
         text-decoration: none;
@@ -188,9 +189,4 @@ let logout = () => {
         }
     }
 }
-.service {
-    font-size: 1rem;
-    color: var(--main-color) !important;
-}
-
 </style>

@@ -1,10 +1,11 @@
 <template lang="pug">
-table.customTbl(ref='table' :class='{resizable}' :style='{width: resizable ? "0" : "100%"}')
-    thead(ref="thead")
-        slot(name="head")
+.tableWrap
+    table.customTbl(ref='table' :class='{resizable}' :style='{width: resizable ? "0" : "100%"}')
+        thead(ref="thead")
+            slot(name="head")
 
-    tbody
-        slot(name='body')
+        tbody
+            slot(name='body')
 </template>
 <script setup lang="ts">
 import { defineProps, ref, onMounted, nextTick, useSlots, onBeforeUnmount } from 'vue';
@@ -79,6 +80,12 @@ let mouseMoveHandler = (e) => {
     cursor: col-resize;
 }
 
+.tableWrap {
+    position: relative;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
 .customTbl {
     width: 0;
     border-collapse: collapse;
@@ -94,7 +101,7 @@ let mouseMoveHandler = (e) => {
         background-color: #f0f0f0;
         text-align: left;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        box-shadow: 0px 3px 3px -3px rgba(0, 0, 0, 0.06);
+        box-shadow: inset 0px -3px 3px -3px rgba(0, 0, 0, 0.2);
 
         tr {
             height: 60px;
@@ -141,7 +148,7 @@ let mouseMoveHandler = (e) => {
         tr {
             height: 60px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0px 3px 3px -3px rgba(0, 0, 0, 0.06);
+            box-shadow: inset 0px -3px 3px -3px rgba(0, 0, 0, 0.2);
         }
 
         td {
