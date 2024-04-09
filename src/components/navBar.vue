@@ -14,23 +14,23 @@ nav#navBar(ref="navBar")
                 a.doc(href="https://docs.skapi.com" target="_blank") Docs
             
             template(v-if="loginState")
-                li(v-if="route.name == 'home'" style="margin-left:1rem")
+                li(v-if="route.name == 'home' || route.name == 'accountsetting'" style="margin-left:1rem")
                     router-link(to="/my-services") My services
                 li
                     .prof(@click.stop="(e)=>{showDropDown(e)}")
                         .material-symbols-outlined.fill.nohover(style="margin-left:1rem") person
-                        .moreVert.profile(v-if="user" @click.stop style="--moreVert-right:0;display:none")
+                        .moreVert.profile(ref="moreVert" @click.stop style="--moreVert-right:0;display:none")
                             .inner(style="padding:0")
                                 .account {{ user.email }}
                                 ul.menu 
                                     li
-                                        .material-symbols-outlined.fill credit_card
+                                        .material-symbols-outlined.fill.nohover credit_card
                                         span Billing
-                                    li
-                                        .material-symbols-outlined.fill settings
+                                    li(@click="navigateToPage")
+                                        .material-symbols-outlined.fill.nohover settings
                                         span Account Settings
                                     li(@click="logout")
-                                        .material-symbols-outlined.fill logout
+                                        .material-symbols-outlined.fill.nohover logout
                                         span Logout
                                 .policy
                                     router-link(to="public/pp.html" target="_blank") terms of service ● privacy policy
@@ -53,7 +53,12 @@ const route = useRoute();
 
 console.log(route.path.split('/')[1])
 let navBar = ref(null);
-let showProfile = ref(false);
+let moreVert = ref(null);
+
+let navigateToPage = () => {
+    moreVert.value.style.display = 'none';
+    router.push({ path: '/account-setting' });
+}
 
 let logout = () => {
     skapi.logout().then(() => {
@@ -136,45 +141,54 @@ onMounted(() => {
             border-radius: 8px;
             background: var(--main-color);
         }
-
-        .profile {
-            color: #262626;
-            text-align: left;
-            user-select: none;
-
-            .account {
-                padding: 10px 20px;
-                border-bottom: 1px solid rgba(0, 0, 0, .15);
-            }
-
-            .menu {
-                display: block;
-                padding: 10px 20px;
-                color: var(--main-color);
-
-                .material-symbols-outlined {
-                    color: var(--main-color);
-                    margin-right: 8px;
-                }
-            }
-
-            .policy {
-                border-top: 1px solid rgba(0, 0, 0, .15);
-                font-size: 14px;
-                text-align: center;
-                padding: 5px 30px;
-                white-space: nowrap;
-
-                a {
-                    text-decoration: none;
-                    color: var(--black-4);
-                }
-            }
-        }
-
         .prof {
             .material-symbols-outlined {
                 font-size: 32px;
+            }
+        }
+    }
+    .profile {
+        color: #000;
+        font-weight: 500;
+        margin-top: 20px;
+        user-select: none;
+
+        ul {
+            text-align: left;
+            li {
+                display: block;
+            }
+        }
+
+        .account {
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, .15);
+        }
+        .menu {
+            display: block;
+            padding: 10px 20px;
+            color: var(--main-color);
+
+            .material-symbols-outlined {
+                color: var(--main-color);
+                margin-right: 8px;
+            }
+        }
+        .policy {
+            border-top: 1px solid rgba(0, 0, 0, .15);
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px 30px;
+            white-space: nowrap;
+            
+            a {
+                text-decoration: none;
+                color: var(--black-4);
+
+                &:hover {
+                    text-decoration: underline;
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ import Login from '@/views/login.vue'
 import Signup from '@/views/signup.vue'
 import Create from '@/views/create-service.vue'
 import Subscription from '@/views/subscription/subscription.vue'
+import AccountSetting from '@/views/account-setting.vue'
 import MyServices from '@/views/service-list.vue'
 import ServiceMain from '@/views/service/main.vue'
 import Service from '@/views/service/service.vue'
@@ -72,6 +73,11 @@ const router = createRouter(
           path: '/',
           name: 'home',
           component: LandingPage
+        },
+        {
+          path: 'account-setting',
+          name: 'accountsetting',
+          component: AccountSetting
         },
         // {
         //   path: '/subscription/:service',
