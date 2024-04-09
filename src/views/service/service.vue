@@ -15,7 +15,7 @@
     br
 
     a.question(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
-        .material-symbols-outlined.empty(style="font-size: 20px;") help 
+        .material-symbols-outlined.empty.nohover(style="font-size: 20px;") help 
         span Where do I put this code?
     
     br
@@ -55,6 +55,29 @@
                 template(v-else) Running
 
         .state 
+            .smallTitle Users 
+            .smallValue {{ currentService.service.users }} / 
+                span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 10K
+                span(v-else-if="currentService.plan == 'Premium'") 100K
+                span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+
+        .state 
+            .smallTitle Database 
+            .smallValue {{ currentService.storageInfo.database + 'B' }} / 
+                span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 4GB
+                span(v-else-if="currentService.plan == 'Premium'") 100GB
+                span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+
+        .state 
+            .smallTitle Cloud 
+            .smallValue {{ currentService.storageInfo.cloud + 'B' }} / 
+                span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
+                span(v-else-if="currentService.plan == 'Premium'") 1TB
+                span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+
+        hr(style="background:rgba(0,0,0,0.15);height:1px;border:0;margin:1rem 0")
+
+        .state 
             .smallTitle Subscription Plan
             .smallValue {{ currentService.plan }}
 
@@ -65,9 +88,10 @@
                 template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
                 template(v-else) -
         
-        router-link(:to='`/subscription/${currentService.id}`' style="display:block; text-align:right")
-            button.final(v-if="new Date().getTime() < currentService?.subscription?.canceled_at") Resume Plan
-            button.final(v-else) Manage Subscription
+        div(style="text-align:right")
+            router-link(:to='`/subscription/${currentService.id}`')
+                button.final(v-if="new Date().getTime() < currentService?.subscription?.canceled_at") Resume Plan
+                button.final(v-else) Manage Subscription
 
             //- .toggleWrap(:class="{'active': currentService.service.active >= 1}")
                 span.smallTitle Disable/Enable
@@ -87,7 +111,9 @@
 
         .serviceState.security
             .state    
-                label.smallTitle Cors 
+                .smallTitle 
+                    | Cors 
+                    span.material-symbols-outlined.fill.clickable.edit(@click="editCors") edit
                 .smallValue(style="padding:0")
                     form.modifyInputForm(v-if="modifyMode.cors" @submit.prevent="changeCors")
                         .customInput
@@ -100,11 +126,12 @@
                             .material-symbols-outlined.sml.cancel(@click="modifyMode.cors = false;") close
                     template(v-else)
                         span.ellipsis.pencil {{ currentService.service.cors || 'No cors' }}
-                        span.material-symbols-outlined.fill.clickable.edit(@click="editCors") edit
             .state
-                label.smallTitle Secret Key
-                .smallValue
-                    form.modifyInputForm(v-if="modifyMode.api_key" @submit.prevent="changeApiKey")
+                .smallTitle 
+                    | Secret Key
+                    span.material-symbols-outlined.fill.clickable.edit(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified}") edit
+                template(v-if="modifyMode.api_key")
+                    form.modifyInputForm(@submit.prevent="changeApiKey")
                         .customInput
                             input(:disabled="updatingValue.api_key || null" type="text" placeholder="Secret key for external request" :value='inputKey' @input="(e) => inputKey = e.target.value")
                         template(v-if="updatingValue.api_key")
@@ -113,9 +140,7 @@
                             input#submitInp(type="submit" hidden)
                             label.material-symbols-outlined.save(for='submitInp') done
                             .material-symbols-outlined.cancel(@click="modifyMode.api_key = false;") close
-                    template(v-else)
-                        span.ellipsis.pencil {{ currentService.service.api_key || 'No api_key' }}
-                        span.material-symbols-outlined.fill.clickable.edit(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified}") edit
+                .smallValue.ellipsis.edit(v-else) {{ currentService.service.api_key || 'No api_key' }}
             form.state(@submit.prevent="changeClientKey")
                 label.smallTitle Client Secret Key
                 template(v-if="modifyMode.client_key")
@@ -445,6 +470,10 @@ let copy = () => {
 }
 .state {
     margin-bottom: 0.75rem;
+
+    .edit {
+        margin-left: 5px;
+    }
 }
 .ellipsis {
     max-width: 100%;
@@ -592,8 +621,9 @@ let copy = () => {
     }
 }
 .question {
-    display: block;
+    display: inline-block;
     text-decoration: none;
+    font-weight: bold;
     color: var(--main-color);
     font-size: 14px;
     font-weight: 500;

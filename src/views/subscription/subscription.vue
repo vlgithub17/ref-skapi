@@ -61,7 +61,7 @@ main#subscription
                         li Provides 10k user accounts
                         li 4 GB of database
                         li 50 GB of file storage
-                        li All the users and data will be deleted every 7 days
+                        li.warning All the users and data will be deleted every 7 days
                 .infoBox
                     .mode Standard Mode
                     .price $19
@@ -209,6 +209,16 @@ let service = {
                 width: 16px;
                 height: 16px;
                 opacity: 0.8;
+            }
+
+            &.warning {
+                &::before {
+                    background: url('@/assets/img/icon/warning.svg') no-repeat;
+                    background-size: cover;
+                    width: 20px;
+                    height: 20px;
+                    left: -2px;
+                }
             }
         }
     }

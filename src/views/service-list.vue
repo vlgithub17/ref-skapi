@@ -9,10 +9,10 @@ main#serviceList
     //- router-link.sentenceButton(to="/create" style="text-decoration:none;margin: 8px;")
     //-     .material-symbols-outlined add
     //-     span &nbsp;Create Service
-    .createButton(style='padding: 0 20px;')
-        router-link.material-symbols-outlined.fill(to="/create" style="text-decoration:none;font-size:1.5rem") add_circle
+    router-link.createButton(to="/create")
+        .material-symbols-outlined.fill(style="text-decoration:none;font-size:1.5rem") add_circle
         span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Create New Service
-      
+
     br
 
     .tableWrap
@@ -40,7 +40,7 @@ main#serviceList
                     th.th.center.overflow(style="width:144px;")
                         | Datebase
                         span.resizer
-            
+
             template(v-slot:body v-if="!callServiceList")
                 template(v-if="Object.keys(serviceIdList).length" v-for="(id, index) in serviceIdList")
                     template(v-if="serviceList[id]")
@@ -57,16 +57,15 @@ main#serviceList
                                 .state(v-else style='color:var(--caution-color)') Suspended
                             td.center
                                 .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
-                                .percent(v-else-if="Math.ceil(serviceList[id].service.users/10000*100)" :class='{"green": 0 <= Math.ceil(serviceList[id].service.users/10000*100) && Math.ceil(serviceList[id].service.users/10000*100) < 51, "orange": 51 <= Math.ceil(serviceList[id].service.users/10000*100) && Math.ceil(serviceList[id].service.users/10000*100) < 81, "red": 81 <= Math.ceil(serviceList[id].service.users/10000*100) && Math.ceil(serviceList[id].service.users/10000*100) < 101}') {{ Math.ceil(serviceList[id].service.users/10000*100) + '%' }}
-                                .percent.green(v-else) 0%
+                                .percent(v-else :class="getClass(serviceList[id], 'users')") {{ formatUserCount(serviceList[id].service.users) }}
                             td.center
                                 .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
-                                .percent(v-else-if="Math.ceil(serviceList[id].storageInfo.cloud/53687091200*100)" :class='{"green": 0 <= Math.ceil(serviceList[id].storageInfo.cloud/53687091200*100) && Math.ceil(serviceList[id].storageInfo.cloud/53687091200*100) < 51, "orange": 51 <= Math.ceil(serviceList[id].storageInfo.cloud/53687091200*100) && Math.ceil(serviceList[id].storageInfo.cloud/53687091200*100) < 81, "red": 81 <= Math.ceil(serviceList[id].storageInfo.cloud/53687091200*100)}') {{ Math.ceil(serviceList[id].storageInfo.cloud/53687091200*100) + '%' }}
-                                .percent.green(v-else) 0%
+                                .percent(v-else-if="serviceList[id].plan == 'Trial' || serviceList[id].plan == 'Standard' || serviceList[id].plan == 'Free Standard'" :class="getClass(serviceList[id], 'cloud')") {{ Math.ceil(serviceList[id].storageInfo.cloud/53687091200*100) + '%' }}
+                                .percent(v-else-if="serviceList[id].plan == 'Premium'" :class="getClass(serviceList[id], 'cloud')") {{ Math.ceil(serviceList[id].storageInfo.cloud/1099511627776*100) + '%' }}
                             td.center
                                 .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
-                                .percent(v-else-if="Math.ceil(serviceList[id].storageInfo.database/4294967296*100)" :class='{"green": 0 <= Math.ceil(serviceList[id].storageInfo.database/4294967296*100) && Math.ceil(serviceList[id].storageInfo.database/4294967296*100) < 51, "orange": 51 <= Math.ceil(serviceList[id].storageInfo.database/4294967296*100) && Math.ceil(serviceList[id].storageInfo.database/4294967296*100) < 81, "red": 81 <= Math.ceil(serviceList[id].storageInfo.database/4294967296*100)}') {{ Math.ceil(serviceList[id].storageInfo.database/4294967296*100) + '%' }}
-                                .percent.green(v-else) 0%
+                                .percent(v-else-if="serviceList[id].plan == 'Trial' || serviceList[id].plan == 'Standard' || serviceList[id].plan == 'Free Standard'" :class="getClass(serviceList[id], 'database')") {{ Math.ceil(serviceList[id].storageInfo.database/4294967296*100) + '%' }}
+                                .percent(v-else-if="serviceList[id].plan == 'Premium'" :class="getClass(serviceList[id], 'database')") {{ Math.ceil(serviceList[id].storageInfo.database/107374182400*100) + '%' }}
                 tr.noData(v-else)
                     td(colspan="7" style="text-align:center; padding:20px 0;")
                         br
@@ -86,11 +85,12 @@ main#serviceList
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { onBeforeUnmount, onMounted, ref, nextTick, watch } from 'vue';
-// import { skapi } from '@/code/admin';
-import { loginState } from '@/code/user';
+import { onBeforeUnmount, onMounted, ref, nextTick, watch, computed } from 'vue';
 import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
+import { loginState } from '@/code/user';
+import type Service from '@/code/service';
 import Table from '@/components/table.vue';
+
 const router = useRouter();
 
 watch(loginState, nv => {
@@ -102,6 +102,77 @@ watch(loginState, nv => {
 let goServiceDashboard = (e: any, service: { [key: string]: any }) => {
     router.push('/my-services/' + service.id);
 }
+
+let formatUserCount = (users:number) => {
+    if (users < 1000) {
+        return users.toString();
+    } else if (users < 1000000) {
+        return Math.round(users / 1000) + 'K';
+    } else {
+        return Math.round(users / 1000000) + 'M';
+    }
+}
+
+let calculateUserPercentage = (users:number, plan:string) => {
+    switch (plan) {
+        case 'Trial':
+        case 'Standard':
+            return Math.ceil(users / 10000);
+        case 'Primium':
+            return Math.ceil(users / 100000);
+        default:
+            return 0;
+    }
+}
+
+let calculateCloudPercentage = (cloud:number, plan:string) => {
+    switch (plan) {
+        case 'Trial':
+        case 'Standard':
+            return Math.ceil(cloud / 53687091200);
+        case 'Primium':
+            return Math.ceil(cloud / 1099511627776);
+        default:
+            return 0;
+    }
+}
+
+let calculateDatabasePercentage = (database:number, plan:string) => {
+    switch (plan) {
+        case 'Trial':
+        case 'Standard':
+            return Math.ceil(database / 4294967296);
+        case 'Primium':
+            return Math.ceil(database / 107374182400);
+        default:
+            return 0;
+    }
+}
+
+let getClass = (serviceId:Service, what:string) => {
+    let percentage;
+
+    if (what == 'users') {
+        percentage = calculateUserPercentage(serviceId.service.users, serviceId.plan);
+    } else if (what == 'cloud') {
+        percentage = calculateCloudPercentage(serviceId.storageInfo.cloud, serviceId.plan);
+    } else if (what == 'database') {
+        percentage = calculateDatabasePercentage(serviceId.storageInfo.database, serviceId.plan);
+    } 
+
+    if (percentage >= 0 && percentage < 51) {
+        return 'green';
+    } else if (percentage >= 51 && percentage < 81) {
+        return 'orange';
+    } else if (percentage >= 81 && percentage < 101) {
+        return 'red';
+    }
+    return '';
+}
+
+
+
+console.log(serviceList)
 </script>
 
 <style lang="less" scoped>
@@ -112,16 +183,15 @@ let goServiceDashboard = (e: any, service: { [key: string]: any }) => {
 }
 
 .createButton {
+    padding: 0 20px;
     color: var(--main-color);
+    text-decoration: none;
     cursor: pointer;
 
     &:hover .material-symbols-outlined::before {
         background-color: rgba(41, 63, 230, 0.1);
     }
 
-    a {
-        color: var(--main-color);
-    }
     .material-symbols-outlined {
         position: relative;
         font-size: 1.6rem;
