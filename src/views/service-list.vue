@@ -1,31 +1,32 @@
 <template lang="pug">
 br
 br
-br
-br
-br
 
 main#serviceList
-    //- router-link.sentenceButton(to="/create" style="text-decoration:none;margin: 8px;")
-    //-     .material-symbols-outlined add
-    //-     span &nbsp;Create Service
-    .createButton(style='padding: 0 20px;')
-        router-link.material-symbols-outlined.fill(to="/create" style="text-decoration:none;font-size:1.5rem") add_circle
-        span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Create New Service
-      
+    div(style='padding:8px;')
+        h1 My Services
+        p Create and manage your web services.
+
     br
 
-    .tableWrap
-        Table
+    .createButton
+        router-link.material-symbols-outlined.fill(to="/create" style="text-decoration:none;font-size:1.5rem") add_circle
+        span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Create New Service
+
+    br
+    br
+
+    .loadingWrap(v-if="callServiceList")
+        img.loading(src="@/assets/img/loading.png")
+
+    .tableWrap(v-else)
+        Table(v-if="Object.keys(serviceIdList).length")
             template(v-slot:head)
                 tr
                     th.th.overflow(style="width:166px;")
                         | Service Name
                         span.resizer
-                    th.th.center.overflow(style="width:166px;")
-                        | Created
-                        span.resizer
-                    th.th.center.overflow(style="width:150px;")
+                    th.th.center.overflow(style="width:128px;")
                         | Plan
                         span.resizer
                     th.th.center.overflow(style="width:120px;")
@@ -40,13 +41,15 @@ main#serviceList
                     th.th.center.overflow(style="width:144px;")
                         | Datebase
                         span.resizer
-            
-            template(v-slot:body v-if="!callServiceList")
-                template(v-if="Object.keys(serviceIdList).length" v-for="(id, index) in serviceIdList")
+                    th.th.center.overflow(style="width:166px;")
+                        | Created
+                        span.resizer
+
+            template(v-slot:body)
+                template(v-for="(id, index) in serviceIdList")
                     template(v-if="serviceList[id]")
                         tr.serviceRow(ref="tr" @click="(e) => goServiceDashboard(e, serviceList[id])" @mousedown="(e) => e.currentTarget.classList.add('active')" @mouseleave="(e) => e.currentTarget.classList.remove('active')")
                             td.overflow {{ serviceList[id].service.name }}
-                            td.center.overflow {{ typeof serviceList[id].service.timestamp === 'string' ? serviceList[id].service.timestamp : new Date(serviceList[id].service.timestamp).toDateString() }}
                             td.center(style="white-space:nowrap")
                                 // plans
                                 .state(:style="{color: serviceList[id].service.plan === 'Canceled' ? 'var(--caution-color)' : null}") {{ serviceList[id].service.plan }}
@@ -67,16 +70,11 @@ main#serviceList
                                 .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
                                 .percent(v-else-if="Math.ceil(serviceList[id].storageInfo.database/4294967296*100)" :class='{"green": 0 <= Math.ceil(serviceList[id].storageInfo.database/4294967296*100) && Math.ceil(serviceList[id].storageInfo.database/4294967296*100) < 51, "orange": 51 <= Math.ceil(serviceList[id].storageInfo.database/4294967296*100) && Math.ceil(serviceList[id].storageInfo.database/4294967296*100) < 81, "red": 81 <= Math.ceil(serviceList[id].storageInfo.database/4294967296*100)}') {{ Math.ceil(serviceList[id].storageInfo.database/4294967296*100) + '%' }}
                                 .percent.green(v-else) 0%
-                tr.noData(v-else)
-                    td(colspan="7" style="text-align:center; padding:20px 0;")
-                        br
-                        br
-                        .title No Services
-                        br
-                        .desc Get started by creating a new service.
-
-    .loadingWrap(v-if="callServiceList")
-        img.loading(src="@/assets/img/loading.png")
+                            td.center.overflow {{ typeof serviceList[id].service.timestamp === 'string' ? serviceList[id].service.timestamp : new Date(serviceList[id].service.timestamp).toDateString() }}
+        .noData(v-else)
+            .title No Services
+            br
+            .desc Get started by creating a new service.
 
     br
 
@@ -108,54 +106,38 @@ let goServiceDashboard = (e: any, service: { [key: string]: any }) => {
 #serviceList {
     max-width: 1200px;
     margin: 0 auto;
-    // padding: 0 20px;
 }
 
 .createButton {
+    display: inline-block;    
     color: var(--main-color);
     cursor: pointer;
+    padding: 0 8px;
 
     &:hover .material-symbols-outlined::before {
-        background-color: rgba(41, 63, 230, 0.1);
+        box-shadow: inset 0 0 0 4px rgba(41, 63, 230, 0.1);
     }
 
-    a {
-        color: var(--main-color);
-    }
     .material-symbols-outlined {
         position: relative;
         font-size: 1.6rem;
-        padding: 4px;
-        color: var(--main-color);
-        cursor: pointer;
 
         &::before {
             position: absolute;
             content: '';
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background-color: unset;
             border-radius: 50%;
         }
     }
 }
 
-.service {
-    display: block;
-    text-decoration: none;
-    color: var(--black-8);
-    padding: 10px 0;
-}
-
 .noData {
-    color: var(--black-4);
-
     .title {
         font-size: 1rem;
-        font-weight: 700;
+        font-weight: 400;
     }
 }
 
@@ -174,6 +156,46 @@ let goServiceDashboard = (e: any, service: { [key: string]: any }) => {
         padding: 4px;
         color: var(--main-color);
         cursor: pointer;
+    }
+}
+
+// table style below
+
+tbody tr {
+    &:not(.active):hover {
+        background-color: rgba(41, 63, 230, 0.05);
+        cursor: pointer;
+    }
+
+    &.active {
+        background-color: rgba(41, 63, 230, 0.10);
+    }
+}
+
+td {
+    .percent {
+        display: inline-block;
+        padding: 3px 12px;
+        border-radius: 4px;
+        box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, 0.15) inset;
+        color: #fff;
+        font-weight: 400;
+
+        &.green {
+            background-color: #52D687;
+        }
+
+        &.orange {
+            background-color: #FCA642;
+        }
+
+        &.red {
+            background-color: var(--caution-color);
+        }
+
+        &.purple {
+            background-color: #B881FF;
+        }
     }
 }
 </style>
