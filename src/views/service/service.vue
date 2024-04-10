@@ -1,6 +1,6 @@
 <template lang="pug">
 h2 Getting Started
-p(style="font-weight:300;font-size:1rem;") Add the following code to your HTML website to get started:
+p Add the following code to your HTML website to get started:
 
 Code
     pre.
@@ -13,14 +13,14 @@ br
 
 h4 For SPA Projects:
 
-p(style='margin-bottom: 0;') 1. Install the package:
+p 1. Install the package:
 
 Code
     pre npm install skapi-js
 
 br
 
-p(style='margin-bottom:0;') 2. Initialize Skapi from your main.js:
+p 2. Initialize Skapi from your main.js:
 
 Code
     pre.
@@ -29,7 +29,7 @@ Code
         #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
         #[span(style="color:#44E9FF") export] { skapi } #[span(style="color:#999") // Import the instance in your components]
 
-p For more details, please refer to the #[a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank" style='font-weight:normal;') Documentation]
+p For more details, please refer to the #[a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank") Documentation]
 
 br
 
@@ -57,8 +57,8 @@ section.infoBox
         .smallTitle State
         .smallValue
             span(v-if="currentService.service.active == 0") Disabled
-            span(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="font-weight:normal;color:var(--caution-color)") Suspended
-            span(v-else style="color:var(--text-green);font-weight:normal;") Running
+            span(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color)") Suspended
+            span(v-else) Running
 
     .state 
         .smallTitle Host URL

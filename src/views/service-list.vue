@@ -2,7 +2,7 @@
 main#serviceList
     div(style='padding:0 8px;')
         h2 MY SERVICES
-        p(style='font-weight:300;font-size:1rem;')
+        p
             | Manage your web services.
             br
             | Create new service to get started.

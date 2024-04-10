@@ -26,7 +26,7 @@ p.
     It is using the client secret key stored under the name: #[b "myapi"]
     and the placeholder: #[b "$CLIENT_SECRET"] will be replaced to the actual client secret key.
 
-p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank" style='font-weight:normal;') Documentation]
+p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
 
 br
 

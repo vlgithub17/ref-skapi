@@ -34,9 +34,7 @@ label._checkbox {
     }
 
     &:hover {
-        .material-symbols-outlined.fill {
-            color: var(--main-color);
-        }
+        color: var(--main-color);
     }
 }
 </style>
