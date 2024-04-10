@@ -1,14 +1,13 @@
 <template lang="pug">
 main#serviceList
-
     div(style='padding:0 8px;')
-        h2
-            | My Services
+        h2 MY SERVICES
+        p(style='font-weight:300;font-size:1rem;')
+            | Manage your web services.
             br
-            span(style='font-weight:normal;font-size:1rem;') Create and manage your services.
+            | Create new service to get started.
 
-        
-        router-link.createButton(to="/create" style='text-decoration:none;')
+        router-link.createButton(to="/create")
             .material-symbols-outlined.fill add_circle
             span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Create New Service
 
@@ -21,72 +20,77 @@ main#serviceList
                 tr
                     th.th.overflow(style="width:166px;")
                         | Service Name
-                        span.resizer
-                    th.th.center.overflow(style="width:166px;")
-                        | Created
-                        span.resizer
+                        .resizer
                     th.th.center.overflow(style="width:150px;")
                         | Plan
-                        span.resizer
+                        .resizer
                     th.th.center.overflow(style="width:120px;")
                         | State
-                        span.resizer
+                        .resizer
                     th.th.center.overflow(style="width:144px;")
-                        | Accounts
-                        span.resizer
-                    th.th.center.overflow(style="width:144px;")
-                        | Cloud Storage
-                        span.resizer
+                        | Users
+                        .resizer
                     th.th.center.overflow(style="width:144px;")
                         | Datebase
-                        span.resizer
-            
-            template(v-slot:body v-if="!callServiceList")
-                template(v-if="Object.keys(serviceIdList).length" v-for="(id, index) in serviceIdList")
-                    template(v-if="serviceList[id]")
-                        tr.serviceRow(ref="tr" @click="(e) => goServiceDashboard(e, serviceList[id])" @mousedown="(e) => e.currentTarget.classList.add('active')" @mouseleave="(e) => e.currentTarget.classList.remove('active')")
-                            td.overflow {{ serviceList[id].service.name }}
-                            td.center.overflow {{ typeof serviceList[id].service.timestamp === 'string' ? serviceList[id].service.timestamp : new Date(serviceList[id].service.timestamp).toDateString() }}
-                            td.center(style="white-space:nowrap")
-                                // plans
-                                .state(:style="{color: serviceList[id].service.plan === 'Canceled' ? 'var(--caution-color)' : null}") {{ serviceList[id].service.plan }}
-                            td.center
-                                // active state
-                                .state(v-if="serviceList[id].service.active > 0" style="color:#52D687") Running
-                                .state(v-else-if="serviceList[id].service.active == 0") Disabled
-                                .state(v-else style='color:var(--caution-color)') Suspended
-                            td.center
-                                .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
-                                .percent(v-else :class="getClass(serviceList[id], 'users')") {{ formatUserCount(serviceList[id].service.users) }}
-                            td.center
-                                .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
-                                .percent(v-else-if="serviceList[id].plan == 'Trial' || serviceList[id].plan == 'Standard' || serviceList[id].plan == 'Free Standard'" :class="getClass(serviceList[id], 'cloud')") {{ Math.ceil(serviceList[id].storageInfo.cloud/53687091200*100) + '%' }}
-                                .percent(v-else-if="serviceList[id].plan == 'Premium'" :class="getClass(serviceList[id], 'cloud')") {{ Math.ceil(serviceList[id].storageInfo.cloud/1099511627776*100) + '%' }}
-                            td.center
-                                .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
-                                .percent(v-else-if="serviceList[id].plan == 'Trial' || serviceList[id].plan == 'Standard' || serviceList[id].plan == 'Free Standard'" :class="getClass(serviceList[id], 'database')") {{ Math.ceil(serviceList[id].storageInfo.database/4294967296*100) + '%' }}
-                                .percent(v-else-if="serviceList[id].plan == 'Premium'" :class="getClass(serviceList[id], 'database')") {{ Math.ceil(serviceList[id].storageInfo.database/107374182400*100) + '%' }}
-                            td.center.overflow {{ typeof serviceList[id].service.timestamp === 'string' ? serviceList[id].service.timestamp : new Date(serviceList[id].service.timestamp).toDateString() }}
-                tr.noData(v-else)
-                    td(colspan="7" style="text-align:center; padding:20px 0;")
-                        br
-                        br
-                        .title No Services
-                        br
-                        .desc Get started by creating a new service.
+                        .resizer
+                    th.th.center.overflow(style="width:144px;")
+                        | File Storage
+                        .resizer
+                    th.th.center.overflow(style="width:144px;")
+                        | Email
+                        .resizer
+                    th.th.center.overflow(style="width:144px;")
+                        | Host Storage
+            template(v-slot:body)
+                tr(v-if="callServiceList")
+                    td(colspan="8").
+                        Loading services ... &nbsp;
+                        #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+                tr(v-else-if="!Object.keys(serviceIdList).length")
+                    td(colspan="8") You have no services yet.
 
-    .loadingWrap(v-if="callServiceList")
-        img.loading(src="@/assets/img/loading.png")
+                template(v-else v-for="id in serviceIdList")
+                    tr.serviceRow(v-if="serviceList[id]" @click="() => goServiceDashboard(serviceList[id])" @mousedown="(e) => e.currentTarget.classList.add('active')" @mouseleave="(e) => e.currentTarget.classList.remove('active')")
+                        td.overflow {{ serviceList[id].service.name }}
+                        td.center(style="white-space:nowrap")
+                            // plans
+                            .state(:style="{fontWeight: serviceList[id].service.plan === 'Canceled' ? 'normal' : null, color: serviceList[id].service.plan === 'Canceled' ? 'var(--caution-color)' : null}") {{ serviceList[id].service.plan }}
+                        td.center
+                            // active state
+                            .state(v-if="serviceList[id].service.active > 0" style="color:var(--text-green);font-weight:normal;") Running
+                            .state(v-else-if="serviceList[id].service.active == 0") Disabled
+                            .state(v-else style='color:var(--caution-color)') Suspended
+                        td.center
+                            // users
+                            .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
+                            .percent(v-else :class="getClass(serviceList[id], 'users')") {{ calculateUserPercentage(serviceList[id].service.users, serviceList[id].plan, true) }}
 
-    br
+                        td.center
+                            // database
+                            .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
+                            .percent(v-else :class="getClass(serviceList[id], 'database')") {{ calculateDatabasePercentage(serviceList[id].storageInfo.database, serviceList[id].plan) + '%' }}
 
-    .plus
-        router-link.material-symbols-outlined.hover.fill(to="/create" style="text-decoration:none") add_circle
+                        td.center
+                            // cloud storage
+                            .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
+                            .percent(v-else :class="getClass(serviceList[id], 'cloud')") {{ calculateCloudPercentage(serviceList[id].storageInfo.cloud, serviceList[id].plan) + '%' }}
+
+                        td.center
+                            // email storage
+                            .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
+                            .percent(v-else :class="getClass(serviceList[id], 'email')") {{ serviceList[id].plan === 'Trial' ? 'N/A' : calculateEmailPercentage(serviceList[id].storageInfo.email, serviceList[id].plan) + '%' }}
+
+                        td.center
+                            // host storage
+                            .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
+                            .percent(v-else :class="getClass(serviceList[id], 'host')") {{ serviceList[id].plan === 'Trial' ? 'N/A' : calculateHostPercentage(serviceList[id].storageInfo.host, serviceList[id].plan) + '%' }}
+br
+br
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
-import { onBeforeUnmount, onMounted, ref, nextTick, watch, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { watch } from 'vue';
 import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
 import { loginState } from '@/code/user';
 import type Service from '@/code/service';
@@ -100,112 +104,129 @@ watch(loginState, nv => {
     }
 }, { immediate: true });
 
-let goServiceDashboard = (e: any, service: { [key: string]: any }) => {
+let goServiceDashboard = (service: { [key: string]: any }) => {
     router.push('/my-services/' + service.id);
 }
 
-let formatUserCount = (users:number) => {
-    if (users < 1000) {
-        return users.toString();
-    } else if (users < 1000000) {
-        return Math.round(users / 1000) + 'K';
-    } else {
-        return Math.round(users / 1000000) + 'M';
+let calculateUserPercentage = (users: number, plan: string, formatStr = false) => {
+    let formatUserCount = (users: number) => {
+        if (users < 1000) {
+            return users;
+        }
+        else if (users < 1000000) {
+            return Math.round(users / 1000) + 'k';
+        }
+        else {
+            return Math.round(users / 1000000) + 'M';
+        }
     }
-}
-
-let calculateUserPercentage = (users:number, plan:string) => {
     switch (plan) {
         case 'Trial':
         case 'Standard':
-            return Math.ceil(users / 10000);
-        case 'Primium':
-            return Math.ceil(users / 100000);
+        case 'Free Standard':
+            return formatStr ? `${formatUserCount(Math.ceil(users / 10000))}/10k` : Math.ceil(users / 10000);
+        case 'Premium':
+            return formatStr ? `${formatUserCount(Math.ceil(users / 10000))}/100k` : Math.ceil(users / 10000);
+        default:
+            return formatStr ? 'N/A' : 0;
+    }
+}
+
+let calculateEmailPercentage = (email: number, plan: string) => {
+    switch (plan) {
+        case 'Trial':
+            return null;
+        case 'Standard':
+        case 'Free Standard':
+            // 1GB
+            return Math.ceil(email / 1073741824);
+        case 'Premium':
+            // 10 GB
+            return Math.ceil(email / 10737418240);
         default:
             return 0;
     }
 }
 
-let calculateCloudPercentage = (cloud:number, plan:string) => {
+
+let calculateHostPercentage = (host: number, plan: string) => {
+    switch (plan) {
+        case 'Trial':
+            return null;
+        case 'Standard':
+        case 'Free Standard':
+            return Math.ceil(host / 53687091200);
+        case 'Premium':
+            return Math.ceil(host / 1099511627776);
+        default:
+            return 0;
+    }
+}
+
+let calculateCloudPercentage = (cloud: number, plan: string) => {
     switch (plan) {
         case 'Trial':
         case 'Standard':
+        case 'Free Standard':
             return Math.ceil(cloud / 53687091200);
-        case 'Primium':
+        case 'Premium':
             return Math.ceil(cloud / 1099511627776);
         default:
             return 0;
     }
 }
 
-let calculateDatabasePercentage = (database:number, plan:string) => {
+let calculateDatabasePercentage = (database: number, plan: string) => {
     switch (plan) {
         case 'Trial':
         case 'Standard':
+        case 'Free Standard':
             return Math.ceil(database / 4294967296);
-        case 'Primium':
+        case 'Premium':
             return Math.ceil(database / 107374182400);
         default:
             return 0;
     }
 }
 
-let getClass = (serviceId:Service, what:string) => {
+let getClass = (serviceClass: Service, what: string) => {
     let percentage;
 
     if (what == 'users') {
-        percentage = calculateUserPercentage(serviceId.service.users, serviceId.plan);
-    } else if (what == 'cloud') {
-        percentage = calculateCloudPercentage(serviceId.storageInfo.cloud, serviceId.plan);
-    } else if (what == 'database') {
-        percentage = calculateDatabasePercentage(serviceId.storageInfo.database, serviceId.plan);
-    } 
-
+        percentage = calculateUserPercentage(serviceClass.service.users, serviceClass.plan) as number;
+    }
+    else if (what == 'cloud') {
+        percentage = calculateCloudPercentage(serviceClass.storageInfo.cloud, serviceClass.plan);
+    }
+    else if (what == 'host') {
+        percentage = calculateHostPercentage(serviceClass.storageInfo.host, serviceClass.plan);
+    }
+    else if (what == 'database') {
+        percentage = calculateDatabasePercentage(serviceClass.storageInfo.database, serviceClass.plan);
+    }
+    else if (what == 'email') {
+        percentage = calculateEmailPercentage(serviceClass.storageInfo.email, serviceClass.plan);
+    }
+    if (percentage == null) {
+        return 'grey';
+    }
     if (percentage >= 0 && percentage < 51) {
         return 'green';
-    } else if (percentage >= 51 && percentage < 81) {
+    }
+    else if (percentage >= 51 && percentage < 81) {
         return 'orange';
-    } else if (percentage >= 81 && percentage < 101) {
+    }
+    else if (percentage >= 81 && percentage < 101) {
         return 'red';
     }
-    return '';
+    return 'grey';
 }
-
-
-
-console.log(serviceList)
 </script>
 
 <style lang="less" scoped>
 #serviceList {
     max-width: 1200px;
     margin: 0 auto;
-}
-
-.createButton {
-    display: inline-block;
-    color: var(--main-color);
-    text-decoration: none;
-    cursor: pointer;
-
-    &:hover .material-symbols-outlined::before {
-        box-shadow: inset 0 0 0 4px rgba(41, 63, 230, 0.1);
-    }
-
-    .material-symbols-outlined {
-        position: relative;
-        font-size: 1.6rem;
-
-        &::before {
-            position: absolute;
-            content: '';
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-        }
-    }
 }
 
 // table style below
@@ -244,6 +265,10 @@ td {
 
         &.purple {
             background-color: #B881FF;
+        }
+
+        &.grey {
+            background-color: #ccc;
         }
     }
 }

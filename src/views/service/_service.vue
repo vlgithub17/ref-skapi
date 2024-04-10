@@ -1,49 +1,102 @@
 <template lang="pug">
 #service
+    section.codeWrap
+        div(@click="copy" style="text-align:right")
+            .copy
+                span#copyMsg Copy code
+                .material-symbols-outlined.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
+        .scrollWrap
+            pre#code.scrollInner.
+                #[span(style="color:#999") &lt;]#[span(style="color:#44E9FF") script]#[span(style="color:#44E9FF") &nbsp;src] = #[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
+                #[span(style="color:#999") &lt;]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
+                    #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
+                #[span(style="color:#999") &lt;/]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
+    
+    br
+
+    a.question(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
+        .material-symbols-outlined.empty.nohover(style="font-size: 20px;") help 
+        span Where do I put this code?
+    
+    br
+    br
+
     section.infoBox
-        .flexInfo
-            .serviceState
-                .state 
-                    .smallTitle Service Name
-                    .smallValue
-                        form.modifyInputForm(v-if="modifyMode.name" @submit.prevent="changeName")
-                            .customInput
-                                input(type="text" placeholder="Service name" max-length="30" :value='inputName' @input="(e) => inputName = e.target.value" required)
-                            template(v-if="updatingValue.name")
-                                img.loading(src="@/assets/img/loading.png")
-                            template(v-else)
-                                input#submitInp(type="submit" hidden)
-                                label.material-symbols-outlined.save(for='submitInp') done
-                                .material-symbols-outlined.cancel(@click="modifyMode.name = false;") close
-                        template(v-else)
-                            span.ellipsis.pencil.strong {{ currentService.service.name }}
-                            span.material-symbols-outlined.fill.clickable.edit(@click="editName" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") edit
+        .state 
+            .smallTitle 
+                | Service Name
+                span.material-symbols-outlined.fill.clickable.edit(@click="editName" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") edit
+            template(v-if="modifyMode.name")
+                form.modifyInputForm(@submit.prevent="changeName")
+                    .customInput
+                        input(type="text" placeholder="Service name" max-length="30" :value='inputName' @input="(e) => inputName = e.target.value" required)
+                    template(v-if="updatingValue.name")
+                        img.loading(src="@/assets/img/loading.png")
+                    template(v-else)
+                        input#submitInp(type="submit" hidden)
+                        label.material-symbols-outlined.save(for='submitInp') done
+                        .material-symbols-outlined.cancel(@click="modifyMode.name = false;") close
+            template(v-else)
+                .smallValue.ellipsis.pencil.strong {{ currentService.service.name }}
 
-                .state 
-                    .smallTitle Service ID
-                    .smallValue
-                        .ellipsis {{ currentService.id }}
+        .state 
+            .smallTitle Service ID
+            .smallValue.ellipsis {{ currentService.id }}
 
-                .state 
-                    .smallTitle Date Created
-                    .smallValue {{ currentService.dateCreated }}
+        .state 
+            .smallTitle Date Created
+            .smallValue {{ currentService.dateCreated }}
 
-            .toggleWrap(:class="{'active': currentService.service.active >= 1}")
+        .state 
+            .smallTitle State
+            .smallValue 
+                template(v-if="currentService?.subscription?.cancel_at_period_end" style="color:var(--caution-color)") Canceled
+                template(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color)") Suspended
+                template(v-else) Running
+
+        .state 
+            .smallTitle Users 
+            .smallValue {{ currentService.service.users }} / 
+                span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 10K
+                span(v-else-if="currentService.plan == 'Premium'") 100K
+                span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+
+        .state 
+            .smallTitle Database 
+            .smallValue {{ currentService.storageInfo.database + 'B' }} / 
+                span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 4GB
+                span(v-else-if="currentService.plan == 'Premium'") 100GB
+                span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+
+        .state 
+            .smallTitle Cloud 
+            .smallValue {{ currentService.storageInfo.cloud + 'B' }} / 
+                span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
+                span(v-else-if="currentService.plan == 'Premium'") 1TB
+                span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+
+        hr(style="background:rgba(0,0,0,0.15);height:1px;border:0;margin:1rem 0")
+
+        .state 
+            .smallTitle Subscription Plan
+            .smallValue {{ currentService.plan }}
+
+        .state 
+            .smallTitle Renew Date
+            .smallValue 
+                template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be deleted by {{ dateFormat(currentService.service.timestamp + 604800000) }}
+                template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
+                template(v-else) -
+        
+        div(style="text-align:right")
+            router-link(:to='`/subscription/${currentService.id}`')
+                button.final(v-if="new Date().getTime() < currentService?.subscription?.canceled_at") Resume Plan
+                button.final(v-else) Manage Subscription
+
+            //- .toggleWrap(:class="{'active': currentService.service.active >= 1}")
                 span.smallTitle Disable/Enable
                 .toggleBg(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == -1}")
                     .toggleBtn(@click="enableDisableToggle")
-
-        br
-        .codeWrap
-            .scrollWrap
-                pre.scrollInner.
-                    #[span(style="color:#33adff") &nbsp;&nbsp;&nbsp;&nbsp;const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);&nbsp;&nbsp;&nbsp;&nbsp;
-                
-            .copy.clickable.material-symbols-outlined.fill(@click="copy") file_copy
-        br
-        a.question(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
-            .material-symbols-outlined.empty help 
-            span Where do I put this code?
 
     br
 
@@ -58,7 +111,9 @@
 
         .serviceState.security
             .state    
-                label.smallTitle Cors 
+                .smallTitle 
+                    | Cors 
+                    span.material-symbols-outlined.fill.clickable.edit(@click="editCors") edit
                 .smallValue(style="padding:0")
                     form.modifyInputForm(v-if="modifyMode.cors" @submit.prevent="changeCors")
                         .customInput
@@ -70,85 +125,46 @@
                             label.material-symbols-outlined.big.save(for='submitInp') done
                             .material-symbols-outlined.sml.cancel(@click="modifyMode.cors = false;") close
                     template(v-else)
-                        span.ellipsis.pencil https://expamle.domain.com
-                        span.material-symbols-outlined.fill.clickable.edit(@click="editCors") edit
+                        span.ellipsis.pencil {{ currentService.service.cors || 'No cors' }}
             .state
-                label.smallTitle Secret Key
-                .smallValue
-                    form.modifyInputForm(v-if="modifyMode.api_key" @submit.prevent="changeApiKey")
+                .smallTitle 
+                    | Secret Key
+                    span.material-symbols-outlined.fill.clickable.edit(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified}") edit
+                template(v-if="modifyMode.api_key")
+                    form.modifyInputForm(@submit.prevent="changeApiKey")
                         .customInput
                             input(:disabled="updatingValue.api_key || null" type="text" placeholder="Secret key for external request" :value='inputKey' @input="(e) => inputKey = e.target.value")
                         template(v-if="updatingValue.api_key")
                             img.loading(src="@/assets/img/loading.png")
                         template(v-else)
                             input#submitInp(type="submit" hidden)
-                            label.material-symbols-outlined.big.save(for='submitInp') done
-                            .material-symbols-outlined.sml.cancel(@click="modifyMode.api_key = false;") close
-                    template(v-else)
-                        span.ellipsis.pencil {{ currentService.service.api_key || 'No key' }}
-                        span.material-symbols-outlined.fill.clickable.edit(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified}") edit
-            .state(style="flex-grow:1")
+                            label.material-symbols-outlined.save(for='submitInp') done
+                            .material-symbols-outlined.cancel(@click="modifyMode.api_key = false;") close
+                .smallValue.ellipsis.edit(v-else) {{ currentService.service.api_key || 'No api_key' }}
+            form.state(@submit.prevent="changeClientKey")
                 label.smallTitle Client Secret Key
-                .sentenceButton.noBorder.withIcon(@click="addSecretKey" :class="{'nonClickable' : activeIndex !== null || updatingValue.client_key}" style="padding: 12.5px 0;height:unset")
-                    .material-symbols-outlined.fill.clickable(style="color:unset") add_box
-                    span Add Secret Key
+                template(v-if="modifyMode.client_key")
+                    input#submitInp(type="submit" hidden)
+                    .buttonWrap(style="padding: 12.5px 0;")
+                        label.material-symbols-outlined.clickable.save(for='submitInp' style="margin-right:8px") check
+                        .material-symbols-outlined.clickable.cancel(@click="modifyMode.client_key=false") close
+                template(v-else)
+                    .material-symbols-outlined.fill.clickable.edit(@click="editClientKey" style="padding: 12.5px 0;") edit
                 .keyBox
-                    .inner
-                        .header 
-                            .keyName keyName
-                            .secretKey secretKey
-                        .content(v-if="clientSecretKeys")
-                            template(v-for="(key, index) of clientSecretKeys")
-                                template(v-if="key.edit || key.add")
-                                    form.key(@submit.prevent="saveSecretKey(index)")
-                                        input#keyName.keyName.lineInput(type="text" name='keyName' :value="key.key" placeholder="Key name" required)
-                                        input.secretKey.lineInput(type="text" name='secretKey' :value="key.value" placeholder="Secret Key" required)
-                                        .buttonWrap
-                                            template(v-if="updatingValue.client_key")
-                                                img.loading(style='padding:0;width:18px;height:18px;' src="@/assets/img/loading.png")
-                                            template(v-else)
-                                                input#submitInp(type="submit" hidden)
-                                                .material-symbols-outlined.fill.clickable(v-if="key.edit") delete
-                                                label.material-symbols-outlined.clickable.save(for='submitInp') check
-                                                .material-symbols-outlined.clickable.cancel(@click="checkInput(key)") close
-                                template(v-else)
-                                    .key
-                                        .keyName {{ key.key }}
-                                        .secretKey {{ key.value.substr(0,4) + '**********' }}
-                                        .material-symbols-outlined.fill.clickable.edit(@click="editSecretKey(key, index)" :class="{'nonClickable' : activeIndex !== null && activeIndex !== index}") edit
-                        .empty(v-else) No Secret Key
-
-    br
-    
-    section.infoBox
-        .infoTitle Subsription Plan
-
-        br
-        br
-
-        .flexInfo
-            .subs 
-                .smallTitle(style="padding:0") Currnet Plan
-                .smallValue {{ currentService.plan }}
-            .subs 
-                .smallTitle(style="padding:0") State
-                .smallValue 
-                    template(v-if="currentService?.subscription?.cancel_at_period_end" style="color:var(--caution-color)") Canceled
-                    template(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color)") Suspended
-                    template(v-else) Running
-            .subs 
-                .smallTitle(style="padding:0") Renew Date
-                .smallValue 
-                    template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be deleted by {{ dateFormat(currentService.service.timestamp + 604800000) }}
-                    template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
-                    template(v-else) -
-        
-        br
-
-        //- div(style="display:block; text-align:right") 
-        router-link(:to='`/subscription/${currentService.id}`' style="display:block; text-align:right")
-            button.final(v-if="new Date().getTime() < currentService?.subscription?.canceled_at") Resume Plan
-            button.final(v-else) Manage Subscription
+                    .header 
+                        .keyName(style="width:150px") keyName
+                        .secretKey(style="flex-grow:1") secretKey
+                    .content(v-if="clientSecretKeys")
+                        .inner 
+                            .keyWrap(ref="keyWrap")
+                            .addButtonRow(v-if="modifyMode.client_key" @click="addSecretKey") 
+                                .material-symbols-outlined.fill.clickable(style="color:unset") add_box
+                                span Add Secret Key
+                            .empty(v-else) 
+                                br
+                                br
+                                br
+                                | No Secret Key
     
     br
 
@@ -165,14 +181,14 @@
                     .smallValue {{ currentService.service.users }}
                 .cont 
                     .smallTitle Creating User
-                    .customSelect(@click.stop="(e)=>{showDropDown(e)}")
+                    .customSelect(@click.stop="(e)=>{showDropDown(e)}" :class="{'nonClickable' : updatingValue.client_key}")
                         button
-                            span ddd
+                            span {{ currentService.service?.prevent_signup ? 'Only Admin allowed' : 'Anyone allowed' || 'Anyone allowed' }}
                             span.material-symbols-outlined arrow_drop_down
                         .moreVert(style="--moreVert-left:0;margin-top:0;display:none")
                             .inner 
-                                .more(value="admin") Only Admin allowed
-                                .more(value="anyone") Anyone allowed
+                                .more(value="admin" @click="changeCreateUserMode('admin')") Only Admin allowed
+                                .more(value="anyone" @click="changeCreateUserMode('anyone')") Anyone allowed
                         //- select(:value="currentService.prevent_signup ? 'admin' : 'anyone'" @change="(e) => changeCreateUserMode(e)" style="color:var(--main-color);")
                         //-     option(value="admin") Only Admin allowed 
                         //-     option(value="anyone") Anyone allowed
@@ -234,11 +250,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, reactive } from 'vue';
+import { createApp, ref, nextTick, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { showDropDown } from '@/assets/js/event.js'
 import { currentService } from '@/views/service/main';
 import { user } from '@/code/user';
+import ClientKey from '@/views/service/client_key.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -251,7 +268,8 @@ let inputKey = '';
 let modifyMode = reactive({
     name: false,
     cors: false,
-    api_key: false
+    api_key: false,
+    client_key : false
 })
 let updatingValue = reactive({
     name: false,
@@ -259,28 +277,60 @@ let updatingValue = reactive({
     api_key: false,
     client_key : false
 });
-let clientSecretKeys = ref([
-    { key: 'aaaaa', value: 'apd210dkfjseoddj', edit: false, add: false },
-    { key: 'bbbbb', value: 'apd210dkfjseoddj', edit: false, add: false },
-    { key: 'ccccc', value: 'apd210dkfjseoddj', edit: false, add: false },
-    { key: 'ddddd', value: 'apd210dkfjseoddj', edit: false, add: false }
-])
-let activeIndex = ref(null);
+let keyWrap = ref(null);
+let clientSecretKeys = ref([]);
+// let clientSecretKeys = ref([
+//     { key: 'aaaaa', value: 'apd210dkfjseoddj' },
+//     { key: 'bbbbb', value: 'apd210dkfjseoddj' },
+//     { key: 'ccccc', value: 'apd210dkfjseoddj' },
+//     { key: 'ddddd', value: 'apd210dkfjseoddj' }
+// ])
+
+let editClientKey = () => {
+    modifyMode.client_key = true;
+    // if(!clientSecretKeys.value.length) {
+    //     addSecretKey();
+    // }
+    nextTick(() => {
+        let scrollTarget = document.querySelector('.keyBox .content');
+        if (scrollTarget.getBoundingClientRect().height < scrollTarget.scrollHeight) {
+            scrollTarget.scrollTop = scrollTarget.scrollHeight;
+        }
+    })
+}
 let addSecretKey = () => {
-    clientSecretKeys.value.unshift({ key: '', value: '', edit: false, add: true });
-    activeIndex.value = 0;
+    let keyComponent = createComponent();
+    // keyComponent.mount(keyWrap.value);
+    keyWrap.value.appendChild(keyComponent)
+    // let addKey = reactive({ key: '', value: '' });
+    // clientSecretKeys.value.push(addKey);
+    // Object.assign(clientSecretKeys, { key: '', value: '' })
+    nextTick(() => {
+        let scrollTarget = document.querySelector('.keyBox .content');
+        if (scrollTarget.getBoundingClientRect().height < scrollTarget.scrollHeight) {
+            scrollTarget.scrollTop = scrollTarget.getBoundingClientRect().height + 30;
+        }
+    })
 }
-let editSecretKey = (key, index) => {
-    key.edit=true;
-    activeIndex.value = clientSecretKeys.value[index].edit ? index : null;
+let createComponent = () => {
+    // const keyComponent = createApp(ClientKey, {
+    //     modifyMode: modifyMode.client_key,
+    //     updatingValue: updatingValue.client_key
+    // });
+    const keyComponent = new ClientKey({
+        modifyMode: modifyMode.client_key,
+        updatingValue: updatingValue.client_key
+    })
+    return keyComponent;
 }
-let checkInput = (key) => {
-    if(key.add) {
-        clientSecretKeys.value.shift();
-    } else {
-        key.edit = false;
-    }
-    activeIndex.value = null;
+let changeClientKey = () => {
+    
+}
+if(currentService.service?.client_secret) {
+    console.log(currentService.service)
+    console.log(currentService.service?.client_secret)
+} else {
+    
 }
 
 // edit/change name
@@ -316,28 +366,18 @@ let changeName = () => {
 
 // edit/change cors
 let editCors = () => {
-    inputCors = currentService.service.cors === '*' ? '' : currentService.service.cors; modifyMode.cors = true;
+    inputCors = currentService.service.cors === '*' ? '' : currentService.service.cors;
+    modifyMode.cors = true;
 }
 let changeCors = () => {
-    let corsArr = inputCors.split(',');
-    let corsToUpdate = []
-
-    for (let u of corsArr) {
-        u = u.trim().toLowerCase();
-
-        if (u) {
-            corsToUpdate.push(u);
-        }
-    }
-
     updatingValue.cors = true;
-    corsToUpdate.sort()
+
     currentService.updateService({
-        cors: corsToUpdate.length ? corsToUpdate : ['*']
+        cors: inputCors
     }).then(() => {
         updatingValue.cors = false;
+        currentService.service.cors = inputCors;
         modifyMode.cors = false;
-        currentService.service.cors = corsToUpdate.join(', ');
     }).catch(err => {
         updatingValue.cors = false;
         nextTick(() => {
@@ -370,6 +410,20 @@ let changeApiKey = () => {
     });
 }
 
+// change prevent_signup
+let changeCreateUserMode = (value:string) => {
+    updatingValue.client_key = true;
+
+    let boolean = value == 'admin' ? true : false;
+
+    currentService.setServiceOption({
+        prevent_signup: boolean,
+    }).then(() => {
+        updatingValue.client_key = false;
+        currentService.service.prevent_signup = boolean;
+    })
+}
+
 let dateFormat = (timestamp) => {
     let currentDate = new Date(timestamp);
     let year = currentDate.getFullYear();
@@ -380,20 +434,33 @@ let dateFormat = (timestamp) => {
     return dateStr;
 }
 
+let copy = () => {
+    let code = document.getElementById('code');
+    let doc = document.createElement('textarea');
+    doc.textContent = code.textContent;
+    document.body.append(doc);
+    doc.select();
+    document.execCommand('copy');
+    doc.remove();
 
+    let copyMsg = document.getElementById('copyMsg');
+    copyMsg.textContent = 'Copied'
+}
 
 
 </script>
 
 <style lang="less" scoped>
 .smallTitle {
-    width: 150px;
-    padding: 12.5px 0;
+    display: inline-block;
+    width: 200px;
+    // padding: 12.5px 0;
 }
 .smallValue {
-    height: 44px;
-    line-height: 44px;
-    margin-top: 8px;
+    display: inline-block;
+    // height: 44px;
+    // line-height: 44px;
+    // margin-top: 8px;
 }
 .flexInfo {
     display: flex;
@@ -401,9 +468,23 @@ let dateFormat = (timestamp) => {
     justify-content: space-between;
     gap: 1rem;
 }
+.state {
+    margin-bottom: 0.75rem;
+
+    .edit {
+        margin-left: 5px;
+    }
+}
+.ellipsis {
+    max-width: 100%;
+}
+.modifyInputForm {
+    width: 100%;
+    margin-top: 0.25rem;
+}
 .serviceState {
+    position: relative;
     display: inline-block;
-    flex-grow: 1;
 
     &.security {
         width: 100%;
@@ -414,69 +495,50 @@ let dateFormat = (timestamp) => {
         flex-wrap: wrap;
         justify-content: space-between;
     }
-
-    .state {
-        position: relative;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        flex-grow: 1;
-    }
-
-    .ellipsis {
-        width: 250px;
-        flex-grow: 1;
-    }
-
-    .smallValue {
-        position: relative;
-        width: calc(100% - 150px);
-        margin: 0;
-        flex-grow: 1;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
 }
 .keyBox {
     width: 100%;
-    height: 180px;
+    height: 200px;
     padding: 0 16px;
     font-size: 16px;
     border: 1px solid rgba(0, 0, 0, 0.10);
     border-radius: 8px;
-    overflow: auto;
+    overflow: hidden;
 
     .inner {
         min-width: 420px;
     }
-    .header, .key {
-        height: 30px;
+    .header {
+        height: 36px;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
         padding: 0 8px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         font-size: 0.8rem;
-        margin-bottom: 4px;
         gap: 20px;
     }
-    .header {
-        height: 36px;
-        color: #0006;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
+    .content {
+        height: calc(100% - 38px);
+        padding: 8px 0;
+        overflow: auto;
     }
-    .keyName {
-        width: 150px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    .keyWrap {
+        margin-bottom: 8px;
     }
-    .secretKey {
-        flex-grow: 1;
+    .addButtonRow {
+        text-align: center;
+        padding: 6px 0;
+        // margin-bottom: 8px;
+        color: var(--main-color);
+        background-color: #293fe60d;
+        border-radius: 4px;
+        font-size: .7rem;
+        font-weight: 500;
+        cursor: pointer;
     }
-    input {
-        height: 100%;
-        border-bottom: 1px solid #000;
+    .empty {
+        text-align: center;
     }
 }
 .toggleWrap {
@@ -535,8 +597,16 @@ let dateFormat = (timestamp) => {
 .codeWrap {
     position: relative;
 
+    .copy {
+        display: inline-block;
+        text-align: right;
+        font-size: 14px;
+        font-weight: 400;
+        cursor: pointer;
+    }
     .scrollWrap {
         background: rgba(0,0,0,0.8);
+        margin-top: 8px;
         border-radius: 8px;
         box-shadow: 3px 9px 6px 0px rgba(0, 0, 0, 0.15);
         color: #FFF;
@@ -544,45 +614,23 @@ let dateFormat = (timestamp) => {
     
         .scrollInner {
             font-size: 20px;
-            max-width: 0;
-            font-size: 1rem;
-        }
-    }
-    .copy {
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #fff;
-
-        &::after {
-            position: absolute;
-            display: block;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            text-align: center;
-            font-size: 14px;
-            font-weight: 400;
-            background: rgba(255, 255, 255, 0.6);
-            color: #343434;
-            padding: 4px;
-            content: "Copied";
-            transition: opacity .4s;
-            opacity: 0;
-        }
-
-        &.copied::after {
-            opacity: 1;
+            font-size: 16px;
+            margin: 0;
+            padding: 1rem;
         }
     }
 }
 .question {
-    display: block;
+    display: inline-block;
     text-decoration: none;
+    font-weight: bold;
     color: var(--main-color);
-    font-size: 0.9rem;
+    font-size: 14px;
     font-weight: 500;
+
+    &:hover {
+        text-decoration: underline;
+    }
 
     &.help {
         display: inline-block;
@@ -611,7 +659,6 @@ let dateFormat = (timestamp) => {
     }
 }
 .deleteDesc li {
-    color: var(--black-6);
     line-height: 1.5rem;
 }
 
@@ -630,18 +677,6 @@ let dateFormat = (timestamp) => {
     .flexInfo {
         &:first-child {
             gap: unset;
-        }
-    }
-    .serviceState {
-        .smallValue {
-            width: 100%;
-        }
-    }
-    .ellipsis {
-        width: calc(100vw - 40px - 3rem) !important;
-
-        &.pencil {
-            width: calc(100vw - 40px - 3rem - 24px) !important;
         }
     }
     .toggleWrap {

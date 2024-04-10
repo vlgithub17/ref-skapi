@@ -12,38 +12,41 @@
     box-sizing: border-box;
 }
 
-@media all and (min-width:1024px) {
+@media all and (min-width:1200px) {
     html {
         font-size: 20px;
     }
 }
-
-/* 테블릿 가로, 테블릿 세로 (해상도 768px ~ 1023px)*/
-@media all and (min-width:768px) and (max-width:1023px) {
-    html {
-        font-size: 18px;
-    }
-}
-
-/* 모바일 가로, 모바일 세로 (해상도 480px ~ 767px)*/
-@media all and (max-width:767px) {
+@media all and (max-width:1199px) {
     html {
         font-size: 18px;
     }
 }
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
+    color: var(--black-8);
+}
+b {
+    font-weight: 600;
+    color: var(--black-8);
+}
+p {
+    line-height: 1.5;
 }
 body {
     width: 100%;
     margin: 0;
     padding: 0;
     background-color: #fafafa;
-    // color: var(--black-8);
     font-family: "Radio Canada", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     // font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-weight: 300;
-
+    
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+      
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

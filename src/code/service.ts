@@ -115,8 +115,8 @@ export default class Service {
     admin_public_endpoint: string;
     service: ServiceObj;
     dateCreated: string;
-    plan:string;
-    planCode: {[key: number]: string} = {
+    plan: string;
+    planCode: { [key: number]: string } = {
         1: 'Trial',
         2: 'Standard',
         3: 'Premium',
@@ -241,13 +241,18 @@ export default class Service {
 
     async enableService(): Promise<ServiceObj> {
         if (this.service.active === 0) {
-            await skapi.util.request(this.record_private_endpoint + 'register-service', {
-                service: this.id,
-                owner: this.owner,
-                execute: 'enable'
-            }, { auth: true });
-
             this.service.active = 1;
+            try {
+                await skapi.util.request(this.admin_private_endpoint + 'register-service', {
+                    service: this.id,
+                    owner: this.owner,
+                    execute: 'enable'
+                }, { auth: true });
+            }
+            catch (err: any) {
+                this.service.active = 0;
+                alert(err.message);
+            }
         }
 
         return this.service;
@@ -255,13 +260,19 @@ export default class Service {
 
     async disableService(): Promise<ServiceObj> {
         if (this.service.active > 0) {
-            await skapi.util.request(this.record_private_endpoint + 'register-service', {
-                service: this.id,
-                owner: this.owner,
-                execute: 'disable'
-            }, { auth: true });
-
+            let orgActive = this.service.active;
             this.service.active = 0;
+
+            try {
+                await skapi.util.request(this.admin_private_endpoint + 'register-service', {
+                    service: this.id,
+                    owner: this.owner,
+                    execute: 'disable'
+                }, { auth: true });
+            } catch (err: any) {
+                this.service.active = orgActive;
+                alert(err.message);
+            }
         }
 
         return this.service;
@@ -276,7 +287,7 @@ export default class Service {
     ): Promise<ServiceObj> {
         let to_update: { [key: string]: any; } = {};
 
-        if (params.cors) {
+        if ('cors' in params) {
             let cors = params.cors.split(',').map((c) => c.trim());
             let service_cors = (this.service.cors || '').split(',').map((c) => c.trim());
             for (let c of cors) {
@@ -287,11 +298,11 @@ export default class Service {
             }
         }
 
-        if (params.name && params.name !== this.service.name) {
+        if ('name' in params && params.name !== this.service.name) {
             to_update.name = params.name;
         }
 
-        if (params.api_key && params.api_key !== this.service.api_key) {
+        if ('api_key' in params && params.api_key !== this.service.api_key) {
             to_update.api_key = params.api_key;
         }
 

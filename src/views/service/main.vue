@@ -2,7 +2,7 @@
 #serviceMain(v-if="serviceMainLoaded")
     Sticky(fix-width)
         br
-        
+
         nav.left
             router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
                 span.material-symbols-outlined.icon.fill.nohover home
@@ -13,6 +13,9 @@
             router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
                 span.material-symbols-outlined.icon.fill.nohover database
                 span.name Database
+            router-link.router(:to="`/my-services/${currentService.id}/clientsecret`" :class="{'active': route.name == 'clientsecret'}")
+                span.material-symbols-outlined.icon.fill.nohover key
+                span.name Client Secret
             router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
                 span.material-symbols-outlined.icon.fill.nohover email
                 span.name Mail
@@ -26,10 +29,9 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { watch } from 'vue';
-import { skapi } from '@/code/admin';
 import { loginState } from '@/code/user';
 import { serviceList } from '@/views/service-list';
-import { currentService, setService, serviceMainLoaded, serviceUsers } from '@/views/service/main';
+import { currentService, setService, serviceMainLoaded } from '@/views/service/main';
 import Sticky from '@/components/sticky.vue';
 
 const router = useRouter();
@@ -69,6 +71,7 @@ watch(serviceList, nv => {
 
     .left {
         margin-right: 1rem;
+        margin-left: 8px;
     }
 
     .right {

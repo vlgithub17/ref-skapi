@@ -8,7 +8,7 @@
             slot(name='body')
 </template>
 <script setup lang="ts">
-import { defineProps, ref, onMounted, nextTick, useSlots, onBeforeUnmount } from 'vue';
+import { ref, onMounted, nextTick, useSlots, onBeforeUnmount } from 'vue';
 let { resizable } = defineProps({
     resizable: Boolean
 });
@@ -109,8 +109,8 @@ let mouseMoveHandler = (e) => {
 
         th {
             position: relative;
-            font-size: 0.8rem;
-            font-weight: 400;
+            font-size: 0.7rem;
+            font-weight: 500;
             padding: 0 20px;
             white-space: nowrap;
             user-select: none;
@@ -148,18 +148,17 @@ let mouseMoveHandler = (e) => {
         tr {
             height: 60px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: inset 0px -3px 3px -3px rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
         }
 
         td {
             position: relative;
-            padding: 0 20px;
+            padding: 0 1rem;
             font-size: 0.8rem;
 
             &.center {
                 text-align: center;
             }
-
         }
     }
 }

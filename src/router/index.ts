@@ -12,6 +12,7 @@ import Service from '@/views/service/service.vue'
 import Users from '@/views/service/users/users.vue'
 import Records from '@/views/service/records/records.vue'
 import Mail from '@/views/service/mail.vue'
+import ClientSecret from '@/views/service/client_secret.vue'
 import Hosting from '@/views/service/hosting/hosting.vue'
 import { skapi } from '@/code/admin'
 
@@ -117,7 +118,12 @@ const router = createRouter(
               path: 'hosting',
               name: 'hosting',
               component: Hosting
-            }
+            },
+            {
+              path: 'clientsecret',
+              name: 'clientsecret',
+              component: ClientSecret
+            },
           ]
         },
       ]
