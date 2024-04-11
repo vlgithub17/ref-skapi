@@ -10,12 +10,12 @@ main#serviceList
     //-     .material-symbols-outlined add
     //-     span &nbsp;Create Service
     router-link.createButton(to="/create")
-        .material-symbols-outlined.fill(style="text-decoration:none;font-size:1.5rem") add_circle
-        span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Create New Service
+        .material-symbols-outlined.fill(style="text-decoration:none;font-size:32px;margin-right:5px") add_circle
+        span(style="font-size: 0.8rem;font-weight:bold") Create New Service
 
     br
 
-    .tableWrap
+    .tableWrap(style="margin-top:.5rem")
         Table
             template(v-slot:head)
                 tr
@@ -188,8 +188,13 @@ console.log(serviceList)
     text-decoration: none;
     cursor: pointer;
 
-    &:hover .material-symbols-outlined::before {
-        background-color: rgba(41, 63, 230, 0.1);
+    &:hover {
+        .material-symbols-outlined::before {
+            background-color: rgba(41, 63, 230, 0.1);
+        }
+        span {
+            text-decoration: underline;
+        }
     }
 
     .material-symbols-outlined {

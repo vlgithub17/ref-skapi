@@ -144,7 +144,7 @@ watch(serviceList, nv => {
     }
 
     .icon {
-        font-size: 1.5rem;
+        font-size: 32px;
     }
 
     .name {

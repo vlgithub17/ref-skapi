@@ -12,8 +12,6 @@
                     #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
                 #[span(style="color:#999") &lt;/]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
     
-    br
-
     a.question(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
         .material-symbols-outlined.empty.nohover(style="font-size: 20px;") help 
         span Where do I put this code?
@@ -454,13 +452,9 @@ let copy = () => {
 .smallTitle {
     display: inline-block;
     width: 200px;
-    // padding: 12.5px 0;
 }
 .smallValue {
     display: inline-block;
-    // height: 44px;
-    // line-height: 44px;
-    // margin-top: 8px;
 }
 .flexInfo {
     display: flex;
@@ -608,7 +602,7 @@ let copy = () => {
         background: rgba(0,0,0,0.8);
         margin-top: 8px;
         border-radius: 8px;
-        box-shadow: 3px 9px 6px 0px rgba(0, 0, 0, 0.15);
+        // box-shadow: 3px 6px 6px 0px rgba(0, 0, 0, 0.15);
         color: #FFF;
         overflow-x: auto;
     
@@ -625,8 +619,9 @@ let copy = () => {
     text-decoration: none;
     font-weight: bold;
     color: var(--main-color);
+    margin-top: 8px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: bold;
 
     &:hover {
         text-decoration: underline;
