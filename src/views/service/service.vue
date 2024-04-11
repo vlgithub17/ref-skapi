@@ -36,7 +36,7 @@ br
 section.infoBox
     .infoTitle(style="margin-right: 1rem;") Dashboard&nbsp;
 
-    br
+    hr
     br
 
     .state 
@@ -125,7 +125,7 @@ section.infoBox
             .material-symbols-outlined.empty help 
             span Help
 
-    br
+    hr
     br
 
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
