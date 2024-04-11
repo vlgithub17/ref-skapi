@@ -7,25 +7,25 @@ br
 #serviceMain(v-if="serviceMainLoaded")
     nav.left 
         //- router-link.router(to="/my-services")
-            span.material-symbols-outlined.nohover.back arrow_back_ios
+            .material-symbols-outlined.back arrow_back_ios
             span.name My services
         //- br
         //- br
         //- br
         router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
-            span.material-symbols-outlined.icon.fill.nohover home
+            .material-symbols-outlined.fill home
             span.name Dashboard
         router-link.router(:to="`/my-services/${currentService.id}/users`" :class="{'active': route.name == 'users'}")
-            span.material-symbols-outlined.icon.fill.nohover supervisor_account
+            .material-symbols-outlined.fill supervisor_account
             span.name Users
         router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
-            span.material-symbols-outlined.icon.fill.nohover database
+            .material-symbols-outlined.fill database
             span.name Database
         router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
-            span.material-symbols-outlined.icon.fill.nohover email
+            .material-symbols-outlined.fill email
             span.name Mail
         router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting'}")
-            span.material-symbols-outlined.icon.fill.nohover language
+            .material-symbols-outlined.fill language
             span.name Hosting
     main.right 
         router-view
@@ -143,7 +143,7 @@ watch(serviceList, nv => {
         margin-left: 9px;
     }
 
-    .icon {
+    .material-symbols-outlined {
         font-size: 32px;
     }
 

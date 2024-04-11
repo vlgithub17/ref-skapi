@@ -55,7 +55,7 @@ br
         .info(style="text-align:right")
             .smallTitle(style="cursor:pointer")
                 | Delete Account 
-                .material-symbols-outlined.fill.nohover delete
+                .material-symbols-outlined.fill delete
 </template>
 
 <script setup lang="ts">

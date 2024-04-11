@@ -4,7 +4,7 @@
         div(@click="copy" style="text-align:right")
             .copy
                 span#copyMsg Copy code
-                .material-symbols-outlined.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
+                .material-symbols-outlined.fill(style="font-size:20px;margin-left:5px") file_copy
         .scrollWrap
             pre#code.scrollInner.
                 #[span(style="color:#999") &lt;]#[span(style="color:#44E9FF") script]#[span(style="color:#44E9FF") &nbsp;src] = #[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
@@ -13,7 +13,7 @@
                 #[span(style="color:#999") &lt;/]#[span(style="color:#44E9FF") script]#[span(style="color:#999") &gt;]
     
     a.question(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
-        .material-symbols-outlined.empty.nohover(style="font-size: 20px;") help 
+        .material-symbols-outlined.empty(style="font-size: 20px;") help 
         span Where do I put this code?
     
     br
@@ -170,7 +170,7 @@
         section.cardBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
             .header 
                 .title 
-                    .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") group
+                    .material-symbols-outlined.fill(style="font-size: 1.5rem") group
                     span Users
                 router-link.material-symbols-outlined(:to='`/my-services/${currentService.id}/users`' style="font-size: 1.5rem") arrow_forward_ios
             .content
@@ -195,7 +195,7 @@
         section.cardBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
             .header 
                 .title 
-                    .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") database
+                    .material-symbols-outlined.fill(style="font-size: 1.5rem") database
                     span Database
                 router-link.material-symbols-outlined(:to='`/my-services/${currentService.id}/records`' style="font-size: 1.5rem") arrow_forward_ios
             .content
@@ -209,7 +209,7 @@
         section.cardBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
             .header 
                 .title 
-                    .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") mail
+                    .material-symbols-outlined.fill(style="font-size: 1.5rem") mail
                     span Mail
                 router-link.material-symbols-outlined(:to='`/my-services/${currentService.id}/mail`' style="font-size: 1.5rem") arrow_forward_ios
             .content
@@ -223,7 +223,7 @@
         section.cardBox(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
             .header 
                 .title 
-                    .material-symbols-outlined.fill.nohover(style="font-size: 1.5rem") language
+                    .material-symbols-outlined.fill(style="font-size: 1.5rem") language
                     span Hosting
                 router-link.material-symbols-outlined(:to='`/my-services/${currentService.id}/records`' style="font-size: 1.5rem") arrow_forward_ios
             .content

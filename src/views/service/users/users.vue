@@ -19,7 +19,7 @@
                             .more(value="locale" @click="searchFor = 'locale';searchText = ''") Locale
                             .more(value="birthdate" @click="searchFor = 'birthdate';searchText = ''") Birth Date
             .searchBar
-                .material-symbols-outlined.nohover.search search
+                .material-symbols-outlined.search search
                 input#searchInput(v-if="searchFor === 'timestamp'" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
                 label.customSearchLabel(v-else-if="searchFor === 'user_id'")
                     input#searchInput(
@@ -118,13 +118,13 @@
                     .moreVert(@click.stop style="--moreVert-left:0;display:none")
                         .inner
                             .more(@click="()=>{stateText='Block'; showBlockUser=true; showUserSetting=false;}")
-                                .material-symbols-outlined.fill.nohover account_circle_off
+                                .material-symbols-outlined.fill account_circle_off
                                 span Block
                             .more(@click="()=>{stateText='Unblock'; showUnblockUser=true; showUserSetting=false;}")
-                                .material-symbols-outlined.fill.nohover account_circle
+                                .material-symbols-outlined.fill account_circle
                                 span Unblock
                             .more(@click="()=>{stateText='Delete'; showDeleteUser = true; showUserSetting = false;}")
-                                .material-symbols-outlined.fill.nohover delete
+                                .material-symbols-outlined.fill delete
                                 span Delete
             .pagenator
                 .material-symbols-outlined.clickable.prevPage(style="font-size:1rem;margin-right:0.5rem") arrow_back_ios
@@ -174,11 +174,11 @@
                                     label(:for="user.user_id")
                                         .material-symbols-outlined.fill.check check
                             td.center(v-if="filterOptions.block")
-                                .material-symbols-outlined.fill.nohover.block(v-if="user.approved.includes('suspended')") no_accounts
-                                .material-symbols-outlined.fill.nohover.unblock(v-else) account_circle
+                                .material-symbols-outlined.fill.block(v-if="user.approved.includes('suspended')") no_accounts
+                                .material-symbols-outlined.fill.unblock(v-else) account_circle
                             td.center(v-if="filterOptions.status")
-                                .material-symbols-outlined.fill.nohover.enable(v-if="user.access_group > 0") check_circle
-                                .material-symbols-outlined.fill.nohover.disable(v-else) cancel
+                                .material-symbols-outlined.fill.enable(v-if="user.access_group > 0") check_circle
+                                .material-symbols-outlined.fill.disable(v-else) cancel
                             td(v-if="filterOptions.userID") 
                                 .overflow {{ user.user_id }}
                             td(v-if="filterOptions.name")

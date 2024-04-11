@@ -3,7 +3,7 @@ header#navBar
     .left 
         template(v-if="route.path.split('/').length > 2 && route.path.split('/')[1] == 'my-services'")
             router-link.logo(to="/my-services")
-                .material-symbols-outlined.nohover.back(style="font-size:32px") arrow_back_ios
+                .material-symbols-outlined.back(style="font-size:32px") arrow_back_ios
                 span.name My services
         template(v-else)
             router-link.logo(to="/")
@@ -18,19 +18,19 @@ header#navBar
                     router-link(to="/my-services") My services
                 li
                     .prof(@click.stop="(e)=>{showDropDown(e)}")
-                        .material-symbols-outlined.fill.nohover(style="margin-left:1rem") person
+                        .material-symbols-outlined.fill(style="margin-left:1rem") person
                         .moreVert.profile(ref="moreVert" @click.stop style="--moreVert-right:0;display:none")
                             .inner(style="padding:0")
                                 .account {{ user.email }}
                                 ul.menu 
                                     li
-                                        .material-symbols-outlined.fill.nohover credit_card
+                                        .material-symbols-outlined.fill credit_card
                                         span Billing
                                     li(@click="navigateToPage")
-                                        .material-symbols-outlined.fill.nohover settings
+                                        .material-symbols-outlined.fill settings
                                         span Account Settings
                                     li(@click="logout")
-                                        .material-symbols-outlined.fill.nohover logout
+                                        .material-symbols-outlined.fill logout
                                         span Logout
                                 .policy
                                     router-link(to="public/pp.html" target="_blank") terms of service ● privacy policy
