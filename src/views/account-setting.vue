@@ -3,52 +3,78 @@ br
 br
 br
 br
-br
 
 #accountSetting 
-    .left 
-        .menu.active
-            .material-symbols-outlined.icon.fill.nohover person
-            span Account Info
-        .menu
-            .material-symbols-outlined.icon.fill.nohover delete
-            span Delete Account
-    .right 
-        .infoBox
-            .info 
-                .smallTitle 
-                    | Email 
-                    .material-symbols-outlined.fill edit
-                .smallValue {{ user.email }}
-            .info 
-                .smallTitle 
-                    | Verify Email 
-                    .material-symbols-outlined.fill(v-if="!user.email_verified") send
-                .smallValue 
-                    template(v-if="user.email_verified")
-                        .material-symbols-outlined.fill check_circle
-                        span(style="margin-left:5px;") Verified
+    .infoBox
+        .info
+            .smallTitle
+                | Email 
+                .material-symbols-outlined.fill.clickable(@click="editEmail") edit 
+            template(v-if="modifyMode")
+                form.modifyInputForm(@submit.prevent="changeEmail")
+                    .customInput
+                        input(type="email" :value="inputEmail" @input="(e) => {inputEmail = e.target.value;}" placeholder="Please enter a valid email address." required)
+                    template(v-if="updatingValue")
+                        img.loading(src="@/assets/img/loading.png")
                     template(v-else)
-                        .material-symbols-outlined.fill error
-                        span(style="margin-left:5px;") Unverified
-            .info 
-                .smallTitle Subscription 
-                .smallValue 
-                    .customCheckBox(:class="{'nonClickable' : !user.email_verified}" :style='{opacity: disableNewsletterCheckbox ? ".5" : "1"}')
-                        input#subscribeCheckbox(type="checkbox" v-model='newsletterSubscribed' :disabled="disableNewsletterCheckbox")
-                        label(for="subscribeCheckbox")
-                            span(style="font-weight:400") Subscribe to Skapi newsletter
-                            .material-symbols-outlined.mid.check(:style="{cursor: disableNewsletterCheckbox ? 'default' : null }") check
-            .info 
-                .smallTitle 
-                    | Password 
-                    .material-symbols-outlined.fill edit
+                        input#submitInp(type="submit" hidden)
+                        label.material-symbols-outlined.save(for='submitInp') done
+                        .material-symbols-outlined.cancel(@click="modifyMode = false;") close
+            template(v-else)
+                .smallValue {{ user.email }}
+
+        .info 
+            .smallTitle 
+                | Verify Email 
+                .material-symbols-outlined.fill.clickable(v-if="!user.email_verified") send
+            template(v-if="user.email_verified")
+                .smallValue(style="color:var(--main-color)")
+                    .material-symbols-outlined.fill check_circle
+                    span(style="margin-left:5px;") Verified
+            template(v-else)
+                .smallValue(style="color:var(--caution-color)") 
+                    .material-symbols-outlined.fill error
+                    span(style="margin-left:5px;") Unverified
+
+        .info 
+            .smallTitle Subscription 
+            .smallValue 
+                .customCheckBox(:class="{'nonClickable' : !user.email_verified}" :style='{opacity: disableNewsletterCheckbox ? ".5" : "1"}')
+                    input#subscribeCheckbox(type="checkbox" v-model='newsletterSubscribed' :disabled="disableNewsletterCheckbox")
+                    label(for="subscribeCheckbox")
+                        span(style="font-weight:400") Subscribe to Skapi newsletter
+                        .material-symbols-outlined.mid.check(:style="{cursor: disableNewsletterCheckbox ? 'default' : null }") check
+        
+        .info 
+            .smallTitle 
+                | Password 
+                .material-symbols-outlined.fill.clickable lock_reset
+
+        hr(style="background:rgba(0,0,0,0.15);height:1px;border:0;margin:1rem 0")
+
+        .info(style="text-align:right")
+            .smallTitle(style="cursor:pointer")
+                | Delete Account 
+                .material-symbols-outlined.fill delete
 </template>
 
 <script setup lang="ts">
 import { skapi } from '@/code/admin';
 import { loginState, user } from '@/code/user';
 import { computed, ref } from 'vue';
+
+let modifyMode = ref(false);
+let updatingValue = ref(false);
+let inputEmail = '';
+
+let editEmail = () => {
+    if (user.email_verified) {
+        inputEmail = user.email;
+        modifyMode.value = true;
+    } else {
+        return false;
+    }
+}
 
 let newsletterPromise = ref(null);
 let newsletterSubscribed = ref(null);
@@ -94,46 +120,28 @@ console.log(user)
 #accountSetting {
     position: relative;
     max-width: 100%;
-    display: flex;
-    flex-wrap: nowrap;
-
-    .left {
-        padding-left: 20px;
-    }
-
-    .right {
-        width: 50%;
-        flex-grow: 1;
-        padding: 0 20px;
-
-        >div {
-            margin: 0 auto;
-        }
-    }
+    padding: 20px;
 }
-.menu {
-    color: var(--main-color);
-    padding: 12px;
-
-    &.active {
-        span {
-            font-weight: bold;
-        }
-    }
-
-    span {
-        font-size: 1rem;
-        font-weight: 500;
-        margin-left: 13px;
-        padding-right: 60px;
-    }
+.infoBox {
+    max-width: 600px;
+    margin: 0 auto;
 }
 .info {
     margin-bottom: 0.75rem;
 
+    &:last-child {
+        margin-bottom: 0;
+    }
     .edit {
         margin-left: 5px;
     }
+}
+.ellipsis {
+    max-width: 100%;
+}
+.modifyInputForm {
+    width: 100%;
+    margin-top: 0.25rem;
 }
 .smallTitle {
     display: inline-block;

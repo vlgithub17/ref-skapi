@@ -75,6 +75,16 @@
     }
 }
 
+a {
+    text-decoration: none;
+    font-weight: bold;
+    color: var(--main-color);
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
 input {
     height: 44px;
     border: 0;
@@ -257,6 +267,7 @@ button {
     }
 }
 
+// custom
 .customSelect {
     position: relative;
     cursor: pointer;
@@ -532,6 +543,13 @@ button {
             'opsz' 20;
     }
 }
+
+.icon {
+    &:hover {
+        opacity: 0.7;
+    }
+}
+
 .hover {
     position: relative;
     display: inline-block;

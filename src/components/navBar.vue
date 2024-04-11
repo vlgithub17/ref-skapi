@@ -18,19 +18,19 @@ nav#navBar(ref="navBar")
                     router-link(to="/my-services") My services
                 li
                     .prof(@click.stop="(e)=>{showDropDown(e)}")
-                        .material-symbols-outlined.fill.nohover(style="margin-left:1rem") person
+                        .material-symbols-outlined.fill(style="margin-left:1rem") person
                         .moreVert.profile(ref="moreVert" @click.stop style="--moreVert-right:0;display:none")
                             .inner(style="padding:0")
                                 .account {{ user.email }}
                                 ul.menu 
                                     li
-                                        .material-symbols-outlined.fill.nohover credit_card
+                                        .material-symbols-outlined.fill credit_card
                                         span Billing
                                     li(@click="navigateToPage")
-                                        .material-symbols-outlined.fill.nohover settings
+                                        .material-symbols-outlined.fill settings
                                         span Account Settings
                                     li(@click="logout")
-                                        .material-symbols-outlined.fill.nohover logout
+                                        .material-symbols-outlined.fill logout
                                         span Logout
                                 .policy
                                     router-link(to="public/pp.html" target="_blank") terms of service ● privacy policy
@@ -148,28 +148,39 @@ onMounted(() => {
         }
     }
     .profile {
+        text-align: left;
         color: #000;
+        font-size: 16px;
         font-weight: 500;
         margin-top: 20px;
         user-select: none;
 
-        ul {
-            text-align: left;
-            li {
-                display: block;
-            }
-        }
-
         .account {
-            padding: 10px 20px;
+            padding: 14px 20px;
             border-bottom: 1px solid rgba(0, 0, 0, .15);
         }
-        .menu {
+        ul {
             display: block;
+            text-align: left;
             padding: 10px 20px;
             color: var(--main-color);
 
+            li {
+                display: block;
+                padding: 4px 0;
+
+                span {
+                    font-weight: bold;
+                }
+
+                &:hover {
+                    span {
+                        text-decoration: underline;
+                    }
+                }
+            }
             .material-symbols-outlined {
+                font-size: 24px;
                 color: var(--main-color);
                 margin-right: 8px;
             }
@@ -179,12 +190,14 @@ onMounted(() => {
             font-size: 14px;
             font-weight: bold;
             text-align: center;
-            padding: 10px 30px;
+            padding: 12px 30px;
             white-space: nowrap;
             
             a {
                 text-decoration: none;
-                color: var(--black-4);
+                // color: var(--black-4);
+                font-weight: bold;
+                color: #000;
 
                 &:hover {
                     text-decoration: underline;

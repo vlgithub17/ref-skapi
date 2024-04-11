@@ -14,7 +14,7 @@ main#serviceList
         br
         br
 
-    .tableWrap
+    .tableWrap(style="margin-top:.5rem")
         Table
             template(v-slot:head)
                 tr

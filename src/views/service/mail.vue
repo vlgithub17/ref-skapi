@@ -155,12 +155,12 @@ let copy = (e) => {
 
     .title {
         font-weight: 700;
-        color: var(--black-6)
+        // color: var(--black-6)
     }
     .desc {
         font-size: 0.8rem;
         margin-top: 0.5rem;
-        color: var(--black-4);
+        // color: var(--black-4);
     }
 }
 </style>

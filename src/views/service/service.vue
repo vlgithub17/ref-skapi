@@ -449,6 +449,7 @@ select {
     display: inline-block;
     text-decoration: none;
     color: var(--main-color);
+    margin-top: 8px;
     font-size: 14px;
     color: var(--black-4);
     vertical-align: middle;

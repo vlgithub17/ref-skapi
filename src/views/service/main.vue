@@ -102,8 +102,13 @@ watch(serviceList, nv => {
         vertical-align: middle;
     }
 
-    .icon {
-        font-size: 1.5rem;
+    .back {
+        font-size: 1rem;
+        margin-left: 9px;
+    }
+
+    .material-symbols-outlined {
+        font-size: 32px;
     }
 
     .name {
