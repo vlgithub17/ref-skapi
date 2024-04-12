@@ -32,6 +32,17 @@ p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bri
 
 br
 
+//- div(style="text-align:right")
+    span.editHandle(v-if="editMode" @click="editMode = false;" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [SAVE]
+    span.editHandle(v-else @click="editMode = true;" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
+
+.iconClick(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode}")
+    .material-symbols-outlined.fill add_circle
+    span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Add Key
+
+br
+br
+
 Table
     template(v-slot:head)
         tr
@@ -43,44 +54,151 @@ Table
                 .resizer
             th
                 | $CLIENT_SECRET
-                .resizer
+                //- .resizer
+            th.center(style="width:80px")
 
     template(v-slot:body)
-        tr
-            td(colspan=3)
-                .iconClick
-                    .material-symbols-outlined.fill add_circle
-                    span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Add Key
-        tr
-            td(colspan=3).
+        tr(v-if="loading")
+            td(colspan=4).
                 Loading keys ... &nbsp;
                 #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-        tr
-            td.center
-                Checkbox(v-model="checkbox[0]")
-            td.overflow Max 8 characters
-            td.overflow aspdofiapsfjpaoiesjfpaosijfapoiejpfaoidjfaoseijfpoasijfpoeijpsoijfdapoaeijfpaoiesjfoaiesjfpoaijesfpoasiejfpoaiesjfpaoesi
-        tr
-            td.center
-                Checkbox(v-model="checkbox[1]")
-            td.overflow Max 8 characters
-            td.overflow aspdofiapsfjpaoiesjfpaosijfapoiejpfaoidjfaoseijfpoasijfpoeijpsoijfdapoaeijfpaoiesjfoaiesjfpoaijesfpoasiejfpoaiesjfpaoesi
+        //- tr(v-if="!addMode")
+            td(colspan=4)
+                .iconClick(@click="addKey")
+                    .material-symbols-outlined.fill add_circle
+                    span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Add Key
+        tr(v-if="!client_key.length") 
+            td(colspan=4) No Client Secret Key
+        tr(v-for="(key, index) in client_key")
+            template(v-if="editMode && key.edit")
+                td.center 
+                    Checkbox(v-model="key.public")
+                td  
+                    input(type="text" v-model="key.name" required)
+                td
+                    input(type="text" v-model="key.key" required)
+                td.center.buttonWrap
+                    template(v-if="updating")
+                        img.loading(src="@/assets/img/loading.png")
+                    template(v-else)
+                        label.material-symbols-outlined.clickable.save(@click="key.edit=false;editMode=false;" style="color:var(--main-color)") done
+                            input(type="submit" hidden)
+                        .material-symbols-outlined.clickable.cancel(@click="key.edit=false;editMode=false;") close
+            template(v-else)  
+                td.center 
+                    .material-symbols-outlined.fill(v-if="key.public") check
+                td.overflow {{ key.name }}
+                td.overflow {{ key.key }}
+                td.center.buttonWrap
+                    .material-symbols-outlined.fill.clickable.hide(@click="key.edit=true;editMode=true;") edit
+                    //- .material-symbols-outlined.fill.clickable.hide(@click="client_key.splice(index, 1);") delete
+                    .material-symbols-outlined.fill.clickable.hide(@click="deleteClientKey = true;deleteIndex = index;") delete
 
-br
-br
-br
-br
-br
-br
-br
-br
+Modal(:open="deleteClientKey")
+    h4(style='margin:.5em 0 0;') Delete Client Secret
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            Are you sure you want to clear the current client secret key?
+    br
+    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+        template(v-if='sendingEmail')
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine.warning(@click="deleteClientKey = false") Cancel
+            button.unFinished.warning(@click="client_key.splice(deleteIndex, 1);deleteClientKey = false;") Delete
 
 </template>
 <script setup>
 import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
-import {ref, computed} from 'vue';
+import Modal from '@/components/modal.vue';
+
+import { ref, computed } from 'vue';
+import { user } from '@/code/user';
 import { currentService } from '@/views/service/main';
-let checkbox = ref([]);
+
+let loading = ref(false);
+let updating = ref(false);
+let editMode = ref(false);
+let deleteClientKey = ref(false);
+let deleteIndex = '';
+let client_key = ref([
+    {
+        edit: false,
+        public: true,
+        name: 'test1',
+        key: 'dssdlfkjsdakdsjfaiw'
+    },
+    {
+        edit: false,
+        public: false,
+        name: 'test2',
+        key: 'sdfsdfsafjssdfasdfasfdassjfaiw'
+    }
+]);
+
+let addKey = () => {
+    client_key.value.unshift({edit: true, public:false, name:'', key:''});
+    editMode.value = true;
+}
+console.log(currentService)
 </script>
+<style scoped lang="less">
+input {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    padding: 0 12px;
+}
+table {
+    form {
+        display: block;
+    }
+    tr {
+        &:hover {
+            .hide {
+                display: block;
+            }
+        }
+        .hide {
+            display: none;
+        }
+    }
+}
+.buttonWrap {
+    display: flex;
+    height: 60px;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+}
+.save,
+.cancel {
+    position: relative;
+    font-size: 1.3rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    &::after {
+        position: absolute;
+        content: '';
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        padding: 4px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background-color: #293FE61A;
+        display: none;
+    }
+
+    &:hover::after {
+        display: block;
+    }
+}
+</style>

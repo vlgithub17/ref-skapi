@@ -50,7 +50,7 @@ br
                 .material-symbols-outlined.fill(style='font-size:24px;') cancel
                 span &nbsp;&nbsp;Delete Account
 
-Dialog(:open="proceedVerification")
+Modal(:open="proceedVerification")
     h4(style='margin:.5em 0 0;') Email Verification
     hr
 
@@ -74,7 +74,7 @@ import { skapi } from '@/code/admin';
 import { user, updateUser } from '@/code/user';
 import router from '@/router';
 import { computed, ref, nextTick, watch } from 'vue';
-import Dialog from '@/components/dialog.vue';
+import Modal from '@/components/modal.vue';
 import Checkbox from '@/components/checkbox.vue';
 let modifyMode = ref(false);
 let updatingValue = ref(false);
