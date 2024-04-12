@@ -7,7 +7,7 @@ br
     router-link(to="/")
         img(src="@/assets/img/logo/symbol-logo.png" style="width: 40px;")
 
-    .bottomLineTitle Log in
+    .bottomLineTitle Login
 
     br
 
@@ -16,29 +16,27 @@ br
             | Email
             input(type="email" @input="e=> { form.email = e.target.value; error='';}" placeholder="E.g. someone@gmail.com" required)
 
-        .passwordInput
-            label 
-                | Password
-                input(:type='showPassword ? "text" : "password"'
-                @input="(e)=>{form.password = e.target.value; error='';}" 
-                name="password" placeholder="Enter password" required)
+        label.passwordInput
+            | Password
+            input(:type='showPassword ? "text" : "password"'
+            @input="(e)=>{form.password = e.target.value; error='';}" 
+            name="password" placeholder="Enter password" required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
                     .material-symbols-outlined.fill visibility
                 template(v-else)
                     .material-symbols-outlined.fill visibility_off
 
-        .actions 
-            .customCheckBox
-                input#remember(type="checkbox" @change="(e)=>{checkLocalSetorage(e)}" checked)
-                label(for="remember")
-                    span(style="font-weight:400") Remember Me
-                    .material-symbols-outlined.mid.check check
-            RouterLink.forgot(to="/forgot") Forgot Email & Password?
+        .actions
+            Checkbox(@change="(e)=>{setLocalStorage(e)}" :disabled='promiseRunning' v-model='remVal') Remember Me
+            RouterLink(to="/forgot" :class='{disabled: promiseRunning}') Forgot Password?
+
+        br
 
         .error(v-if="error")
             .material-symbols-outlined.fill error
             span {{ error }}
+
         br
 
         .bottom
@@ -46,16 +44,8 @@ br
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
                 button.final Login
-                //- br
-                //- br
-                //- a.googleLogin(:href="googleOpenId")
-                //-     img(src="@/assets/img/icon/google.svg")
-                //-     span Sign in with Google
-                br
-                br
-                RouterLink.forgot(to="/forgot") Forgot Email & Password?
-                .signup 
-                    span No account?
+                .signup
+                    span No account?&nbsp;
                     router-link(to="/signup") Sign up
 </template>
 
@@ -64,11 +54,12 @@ import { useRoute, useRouter } from 'vue-router';
 import { skapi } from '@/code/admin'
 import { user } from '@/code/user'
 import { ref } from 'vue';
-
+import Checkbox from '@/components/checkbox.vue';
 const router = useRouter();
 const route = useRoute();
-
+skapi.logout();
 let showPassword = ref(false);
+let remVal = ref(false); // dom 업데이트시 checkbox value 유지하기 위함
 let promiseRunning = ref(false);
 let error = ref(null);
 let form = {
@@ -76,7 +67,7 @@ let form = {
     password: '',
 };
 
-let checkLocalSetorage = (e) => {
+let setLocalStorage = (e) => {
     localStorage.setItem('remember', e.target.checked ? 'true' : 'false');
 }
 
@@ -127,9 +118,7 @@ let login = (e) => {
 }
 
 form {
-
-    >div,
-    label {
+    >label {
         margin-bottom: 16px;
     }
 
@@ -158,6 +147,7 @@ form {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
+        align-items: center
     }
 
     .bottom {
@@ -166,16 +156,11 @@ form {
         align-items: center;
         justify-content: space-between;
         flex-direction: row-reverse;
-
-        .forgot {
-            display: none;
-        }
+        min-height: 44px;
 
         .signup {
-            a {
-                font-weight: 700;
-                margin-left: 8px;
-            }
+            font-size: 16px;
+            margin: 16px 0;
         }
     }
 }
@@ -194,14 +179,7 @@ form {
 
 @media (max-width: 480px) {
     form {
-        .actions {
-            .forgot {
-                display: none;
-            }
-        }
-
         .bottom {
-            height: unset;
             display: block;
             text-align: center;
 

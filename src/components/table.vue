@@ -1,13 +1,14 @@
 <template lang="pug">
-table(ref='table' :class='{resizable}' :style='{width: resizable ? "0" : "100%"}')
-    thead(ref="thead")
-        slot(name="head")
+.tableWrap
+    table.customTbl(ref='table' :class='{resizable}' :style='{width: resizable ? "0" : "100%"}')
+        thead(ref="thead")
+            slot(name="head")
 
-    tbody
-        slot(name='body')
+        tbody
+            slot(name='body')
 </template>
 <script setup lang="ts">
-import { defineProps, ref, onMounted, nextTick, useSlots, onBeforeUnmount } from 'vue';
+import { ref, onMounted, nextTick, useSlots, onBeforeUnmount } from 'vue';
 let { resizable } = defineProps({
     resizable: Boolean
 });
@@ -33,10 +34,10 @@ if (resizable) {
     });
 }
 
-let resizers_arr:Element[] = [];
+let resizers_arr: Element[] = [];
 let setResize = (el: HTMLElement) => {
     let resizers = el.querySelectorAll('th > span.resizer');
-    for(let i = 0; i < resizers.length; i++) {
+    for (let i = 0; i < resizers.length; i++) {
         (resizers[i] as HTMLElement).addEventListener('mousedown', mousedown);
         resizers_arr.push(resizers[i]);
     }
@@ -67,15 +68,98 @@ let mouseMoveHandler = (e) => {
     if (!currentHeadCol) {
         return;
     }
-    
+
     pageXMouseMoveDiff = e.pageX - pageXMouseDown;
     currentHeadCol.style.width = `${currentHeadColWidth + pageXMouseMoveDiff}px`;
 };
 
 
 </script>
-<style lang="less" scoped>
-table {
+<style lang="less">
+.customTbl.resizable>thead>tr>th>.resizer {
+    cursor: col-resize;
+}
+
+.tableWrap {
+    position: relative;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
+.customTbl {
     width: 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    .overflow {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    thead {
+        background-color: #f0f0f0;
+        text-align: left;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: inset 0px -3px 3px -3px rgba(0, 0, 0, 0.2);
+
+        tr {
+            height: 60px;
+        }
+
+        th {
+            position: relative;
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 0 20px;
+            white-space: nowrap;
+            user-select: none;
+
+            &.center {
+                text-align: center;
+            }
+
+            &:last-child {
+                .resizer {
+                    display: none;
+                }
+            }
+
+            .resizer {
+                position: absolute;
+                top: 50%;
+                right: -2px;
+                transform: translateY(-50%);
+                width: 4px;
+                height: 20px;
+                background-color: rgba(0, 0, 0, 0.1);
+
+                &.contrast {
+                    background-color: #fff !important;
+                }
+            }
+        }
+    }
+
+    tbody {
+        overflow-y: auto;
+        background-color: #fff;
+
+        tr {
+            height: 60px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        td {
+            position: relative;
+            padding: 0 1rem;
+            font-size: 0.8rem;
+
+            &.center {
+                text-align: center;
+            }
+        }
+    }
 }
 </style>

@@ -1,5 +1,5 @@
 <template lang="pug">
-NavBar(:class="{ 'home' :route.name == 'home'}")
+NavBar
 router-view
 </template>
 

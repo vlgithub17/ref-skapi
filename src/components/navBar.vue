@@ -1,28 +1,28 @@
 <template lang="pug">
-header#navBar 
+div.dummy(:style='{height:navHeight+"px"}')
+nav#navBar(ref="navBar")
     .left 
-        template(v-if="route.path.split('/').length > 2 && route.path.split('/')[1] == 'my-services'")
-            router-link.logo(to="/my-services")
-                .material-symbols-outlined.back(style="font-size:32px") arrow_back_ios
-                span.name My services
-        template(v-else)
-            router-link.logo(to="/")
-                img.symbol(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;")
-                span Skapi
+        router-link.logo(to="/my-services" v-if="route.path.split('/').length > 2 && route.path.split('/')[1] == 'my-services'")
+            .material-symbols-outlined.nohover.back(style="font-size:32px") arrow_back_ios
+            span.name My Services
+        router-link.logo(to="/" v-else)
+            img.symbol(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;")
+            span Skapi
     .right
         ul
-            li
+            li(v-if="route.name != 'home'")
                 a.doc(href="https://docs.skapi.com" target="_blank") Docs
+            
             template(v-if="loginState")
                 li(v-if="route.name == 'home' || route.name == 'accountsetting'" style="margin-left:1rem")
                     router-link(to="/my-services") My services
                 li
                     .prof(@click.stop="(e)=>{showDropDown(e)}")
-                        .material-symbols-outlined.fill(style="margin-left:1rem") person
+                        .material-symbols-outlined.fill(style="margin-left:1rem;font-size:32px;") account_circle
                         .moreVert.profile(ref="moreVert" @click.stop style="--moreVert-right:0;display:none")
-                            .inner(style="padding:0")
+                            .inner
                                 .account {{ user.email }}
-                                ul.menu 
+                                ul.menu
                                     li
                                         .material-symbols-outlined.fill credit_card
                                         span Billing
@@ -33,7 +33,7 @@ header#navBar
                                         .material-symbols-outlined.fill logout
                                         span Logout
                                 .policy
-                                    router-link(to="public/pp.html" target="_blank") terms of service ● privacy policy
+                                    router-link(to="public/pp.html" target="_blank") Terms of service • Privacy policy
             template(v-else)
                 li
                     router-link.ser(to="/login") login
@@ -43,7 +43,7 @@ header#navBar
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { skapi } from '@/code/admin';
 import { loginState, user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
@@ -52,7 +52,7 @@ const router = useRouter();
 const route = useRoute();
 
 console.log(route.path.split('/')[1])
-
+let navBar = ref(null);
 let moreVert = ref(null);
 
 let navigateToPage = () => {
@@ -61,12 +61,17 @@ let navigateToPage = () => {
 }
 
 let logout = () => {
-    skapi.logout().then(()=>{
-        for(let k in user) {
+    skapi.logout().then(() => {
+        for (let k in user) {
             delete user[k];
         }
     })
 }
+
+let navHeight = ref(0);
+onMounted(() => {
+    navHeight.value = parseFloat(window.getComputedStyle(navBar.value).height);
+})
 </script>
 
 <style lang="less" scoped>
@@ -81,7 +86,7 @@ let logout = () => {
     background-color: #262626;
     font-size: 18px;
     color: #fff;
-    
+
     .left {
         display: inline-block;
         vertical-align: middle;
@@ -95,14 +100,16 @@ let logout = () => {
             }
 
             img {
-                height: 30px;
-                margin-right: 1rem;
+                height: 32px;
+                margin-right: 10px;
             }
+
             span {
                 font-weight: bold;
             }
         }
     }
+
     .right {
         display: inline-block;
         vertical-align: middle;
@@ -113,43 +120,34 @@ let logout = () => {
             position: relative;
             text-align: right;
             margin: 0;
-            
+            padding: 0;
+
             li {
                 display: inline-block;
                 vertical-align: middle;
                 list-style: none;
                 user-select: none;
                 cursor: pointer;
-
-                img {
-                    width: 20px;
-                    height: 20px;
-                    // filter: invert(37%) sepia(0%) saturate(0%) hue-rotate(92deg) brightness(97%) contrast(89%);
-                    filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(355deg) brightness(107%) contrast(106%) !important;
-                }
             }
         }
+
         .ser {
             padding: 0 1rem;
         }
+
         .sign {
             color: #fff;
             padding: 0 20px;
             border-radius: 8px;
             background: var(--main-color);
         }
-        .prof {
-            .material-symbols-outlined {
-                font-size: 32px;
-            }
-        }
+
     }
     .profile {
         text-align: left;
         color: #000;
         font-size: 16px;
-        font-weight: 500;
-        margin-top: 20px;
+        font-weight: normal;
         user-select: none;
 
         .account {
@@ -164,10 +162,10 @@ let logout = () => {
 
             li {
                 display: block;
-                padding: 4px 0;
+                padding: 8px 0;
 
                 span {
-                    font-weight: bold;
+                    font-weight: 500;
                 }
 
                 &:hover {
@@ -191,31 +189,14 @@ let logout = () => {
             white-space: nowrap;
             
             a {
-                text-decoration: none;
-                // color: var(--black-4);
-                font-weight: bold;
-                color: #000;
-
-                &:hover {
-                    text-decoration: underline;
-                }
+                color: var(--black-4);
+                font-weight: 300;
             }
         }
     }
+
     a:not(.policy a) {
         color: #fff;
-        text-decoration: none;
-        display: inline-block;
-
-        &:not(.logo):hover {
-            text-decoration: underline;
-        }
     }
 }
-
-.service {
-    font-size: 1rem;
-    color: var(--main-color) !important;
-}
-
 </style>

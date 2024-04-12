@@ -2,152 +2,136 @@
 br
 br
 br
-br
 
 #accountSetting 
     .infoBox
-        .info
-            .smallTitle
-                | Email 
-                .material-symbols-outlined.fill.clickable(@click="editEmail") edit 
+        .infoTitle Account Settings
+
+        hr
+
+        .infoValue
+            .smallTitle Email
             template(v-if="modifyMode")
-                form.modifyInputForm(@submit.prevent="changeEmail")
-                    .customInput
-                        input(type="email" :value="inputEmail" @input="(e) => {inputEmail = e.target.value;}" placeholder="Please enter a valid email address." required)
+                form.editValue(@submit.prevent="changeEmail")
+                    input(type="email" spellcheck="false" :value="inputEmail" @input="(e) => {e.target.setCustomValidity('');inputEmail = e.target.value;}" placeholder="your@email.com" required)
+
                     template(v-if="updatingValue")
                         img.loading(src="@/assets/img/loading.png")
-                    template(v-else)
-                        input#submitInp(type="submit" hidden)
-                        label.material-symbols-outlined.save(for='submitInp') done
-                        .material-symbols-outlined.cancel(@click="modifyMode = false;") close
-            template(v-else)
-                .smallValue {{ user.email }}
+                    label.material-symbols-outlined.save(v-else) done
+                        input(type="submit" hidden)
+                    span.material-symbols-outlined.cancel(@click="modifyMode = false;") close
 
-        .info 
-            .smallTitle 
-                | Verify Email 
-                .material-symbols-outlined.fill.clickable(v-if="!user.email_verified") send
-            template(v-if="user.email_verified")
-                .smallValue(style="color:var(--main-color)")
-                    .material-symbols-outlined.fill check_circle
-                    span(style="margin-left:5px;") Verified
             template(v-else)
-                .smallValue(style="color:var(--caution-color)") 
-                    .material-symbols-outlined.fill error
-                    span(style="margin-left:5px;") Unverified
+                .ellipsis {{ user.email }}&nbsp;
+                .editHandle(@click="editEmail") [EDIT]
 
-        .info 
-            .smallTitle Subscription 
+        .infoValue
+            .smallTitle Verify Email
+            .smallValue(v-if="user.email_verified" style="font-size:0.8rem;color:var(--main-color);")
+                .material-symbols-outlined.fill check_circle
+                span &nbsp;Verified
+            .iconClick.smallValue(v-else style="color:var(--caution-color);" @click="proceedVerification = true;")
+                .material-symbols-outlined.fill(style='font-size:24px;') error
+                span &nbsp;Unverified
+
+        .infoValue
+            .smallTitle Newsletter
             .smallValue 
-                .customCheckBox(:class="{'nonClickable' : !user.email_verified}" :style='{opacity: disableNewsletterCheckbox ? ".5" : "1"}')
-                    input#subscribeCheckbox(type="checkbox" v-model='newsletterSubscribed' :disabled="disableNewsletterCheckbox")
-                    label(for="subscribeCheckbox")
-                        span(style="font-weight:400") Subscribe to Skapi newsletter
-                        .material-symbols-outlined.mid.check(:style="{cursor: disableNewsletterCheckbox ? 'default' : null }") check
-        
-        .info 
-            .smallTitle 
-                | Password 
-                .material-symbols-outlined.fill.clickable lock_reset
+                Checkbox(v-model="newsletterSubscribed" :disabled="!user.email_verified") Subscribe {{ !user.email_verified ? '(Verification required)' : '' }}
+
+        .infoValue
+            .smallTitle Password 
+            router-link(to='/password' style='font-size:0.8rem;') Change Password
 
         hr(style="background:rgba(0,0,0,0.15);height:1px;border:0;margin:1rem 0")
 
-        .info(style="text-align:right")
-            .smallTitle(style="cursor:pointer")
-                | Delete Account 
-                .material-symbols-outlined.fill delete
+        div(style="text-align:right")
+            .iconClick(style='color:var(--caution-color);font-size:0.66rem;')
+                .material-symbols-outlined.fill(style='font-size:24px;') cancel
+                span &nbsp;&nbsp;Delete Account
+
+Dialog(:open="proceedVerification")
+    h4(style='margin:.5em 0 0;') Email Verification
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            Would you like to verify your email address?
+            #[br]
+            The verification code will be sent to #[b {{ user.email }}]
+    br
+    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+        template(v-if='sendingEmail')
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine(@click="proceedVerification = false") Cancel
+            button.final(@click="sendEmail") Proceed
+
 </template>
 
 <script setup lang="ts">
 import { skapi } from '@/code/admin';
-import { loginState, user } from '@/code/user';
-import { computed, ref } from 'vue';
-
+import { user, updateUser } from '@/code/user';
+import router from '@/router';
+import { computed, ref, nextTick, watch } from 'vue';
+import Dialog from '@/components/dialog.vue';
+import Checkbox from '@/components/checkbox.vue';
 let modifyMode = ref(false);
 let updatingValue = ref(false);
 let inputEmail = '';
-
+let sendingEmail = ref(false);
 let editEmail = () => {
-    if (user.email_verified) {
-        inputEmail = user.email;
-        modifyMode.value = true;
-    } else {
-        return false;
+    inputEmail = user.email;
+    modifyMode.value = true;
+}
+let sendEmail = async () => {
+    sendingEmail.value = true;
+    try {
+        await skapi.verifyEmail();
+        router.push('/verification');
+    } catch (err) {
+        window.alert(err.message);
+    }
+    finally {
+        proceedVerification.value = false
+    }
+}
+let changeEmail = async () => {
+    updatingValue.value = true;
+    try {
+        await skapi.updateProfile({
+            email: inputEmail
+        });
+        updatingValue.value = false;
+        modifyMode.value = false;
+        updateUser();
+    }
+    catch (err) {
+        updatingValue.value = false;
+        nextTick(() => {
+            document.getElementById('modifyCors').focus();
+            document.getElementById('modifyCors').setCustomValidity(err.message);
+            document.getElementById('modifyCors').reportValidity();
+        });
     }
 }
 
-let newsletterPromise = ref(null);
-let newsletterSubscribed = ref(null);
+let proceedVerification = ref(false);
+let newsletterSubscribed = ref(false);
 
-// if (user.hasOwnProperty('_newsletterSubscribed')) {
-//     newsletterSubscribed.value = user._newsletterSubscribed;
-// }
-// else {
-//     skapi.getNewsletterSubscription({
-//         group: 2
-//     }).then(s => {
-//         console.log(s)
-//         // if (s.length) {
-//         //     newsletterSubscribed.value = true;
-//         //     user._newsletterSubscribed = true;
-//         // }
-//         // else {
-//         //     newsletterSubscribed.value = false;
-//         //     user._newsletterSubscribed = false;
-//         // }
-//     })
-// }
-
-let disableNewsletterCheckbox = computed(() => {
-    // 사용자 email이 인증이 안되었을시 뉴스레터를 구독할수없습니다.
-    if (!user.hasOwnProperty('_newsletterSubscribed') || newsletterPromise.value) {
-        return true;
-    }
-    if (!user.email_verified) {
-        if (user._newsletterSubscribed) {
-            return false;
-        }
-        return true;
-    }
-    else {
-        return false;
-    }
+watch(newsletterSubscribed, () => {
+    updateUser();
 })
-console.log(user)
 </script>
 
 <style scoped lang="less">
 #accountSetting {
     position: relative;
-    max-width: 100%;
-    padding: 20px;
+    padding: 8px;
 }
+
 .infoBox {
     max-width: 600px;
     margin: 0 auto;
-}
-.info {
-    margin-bottom: 0.75rem;
-
-    &:last-child {
-        margin-bottom: 0;
-    }
-    .edit {
-        margin-left: 5px;
-    }
-}
-.ellipsis {
-    max-width: 100%;
-}
-.modifyInputForm {
-    width: 100%;
-    margin-top: 0.25rem;
-}
-.smallTitle {
-    display: inline-block;
-    width: 200px;
-}
-.smallValue {
-    display: inline-block;
 }
 </style>

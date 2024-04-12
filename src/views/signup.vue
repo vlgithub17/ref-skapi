@@ -2,17 +2,12 @@
 br
 br
 br
-br
-br
-br
-br
-br
 
 #signup
     router-link(to="/")
         img(src="@/assets/img/logo/symbol-logo.png" style="width: 40px;")
 
-    .bottomLineTitle Sign up
+    .bottomLineTitle Sign Up
 
     br
 
@@ -25,30 +20,29 @@ br
             placeholder="Enter your email" 
             required)
 
-        .passwordInput
-            label 
-                | Password
-                input(:type='showPassword ? "text" : "password"'
-                ref="passwordField" 
-                @input="e=> { form.password = e.target.value; e.target.setCustomValidity(''); error = '' }"
-                minlength="6"
-                placeholder="Create a password" 
-                required)
+
+        label.passwordInput
+            | Password
+            input(:type='showPassword ? "text" : "password"'
+            ref="passwordField" 
+            @input="e=> { form.password = e.target.value; e.target.setCustomValidity(''); error = '' }"
+            minlength="6"
+            placeholder="Create a password" 
+            required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
                     .material-symbols-outlined.fill visibility
                 template(v-else)
                     .material-symbols-outlined.fill visibility_off
 
-        .passwordInput
-            label 
-                | Password Confirm
-                input(:type='showPassword ? "text" : "password"'
-                ref="confirmPasswordField" 
-                @input="e=> { form.password_confirm = e.target.value; e.target.setCustomValidity(''); error = '' }"
-                @change="validatePassword"
-                placeholder="Confirm the password" 
-                required)
+        label.passwordInput
+            | Confirm password
+            input(:type='showPassword ? "text" : "password"'
+            ref="confirmPasswordField" 
+            @input="e=> { form.password_confirm = e.target.value; e.target.setCustomValidity(''); error = '' }"
+            @change="validatePassword"
+            placeholder="Confirm the password" 
+            required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
                     .material-symbols-outlined.fill visibility
@@ -56,35 +50,25 @@ br
                     .material-symbols-outlined.fill visibility_off
 
         .actions 
-            .customCheckBox
-                input#remember(type="checkbox" @input="(e)=> form.subscribe = e.target.checked" checked)
-                label(for="remember")
-                    span(style="line-height:24px; font-weight:400") I agree to receive newsletters from Skapi via Email.
-                    .material-symbols-outlined.mid.check check
+            Checkbox(v-model="form.subscribe") I agree to receive newsletters from Skapi.
+
+        br
 
         .error(v-if="error")
             .material-symbols-outlined.fill error
             span {{ error }}
-        br
         
+        br
+
         .bottom
             template(v-if="promiseRunning")
                 img.loading(src="@/assets/img/loading.png")
-            
-            template(v-else)
-                button.final Sign up
-                .signup 
-                    span Have an account?
-                    RouterLink(:to="{name: 'login'}") Login
 
-br
-br
-br
-br
-br
-br
-br
-br
+            template(v-else)
+                button.final Sign Up
+                .signup 
+                    | Have an account?&nbsp;
+                    RouterLink(:to="{name: 'login'}") Login
 </template>
 
 <script setup lang="ts">
@@ -92,7 +76,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { skapi } from '@/code/admin'
 import { user } from '@/code/user'
 import { ref } from 'vue';
-
+import Checkbox from '@/components/checkbox.vue';
 const router = useRouter();
 const route = useRoute();
 
@@ -153,51 +137,54 @@ let signup = (e) => {
     padding: 0 20px;
     margin: 0 auto;
 }
+
 form {
-    > div, label {
+    >label {
         margin-bottom: 16px;
     }
+
     label {
         display: block;
         color: var(--black-6);
         font-size: 16px;
         font-weight: 700;
     }
+
     input {
         width: 100%;
         margin-top: 8px;
         padding: 12px 15px;
         border-radius: 8px;
-        background-color: rgba(0,0,0,0.05);
+        background-color: rgba(0, 0, 0, 0.05);
     }
+
     a {
         font-size: 16px;
         text-decoration: none;
         color: var(--main-color);
     }
+
     .actions {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
+        align-items: center
     }
+
     .bottom {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
         flex-direction: row-reverse;
-
-        .forgot {
-            display: none;
-        }
+        min-height: 44px;
         .signup {
-            a {
-                font-weight: 700;
-                margin-left: 8px;
-            }
+            font-size: 16px;
+            margin: 16px 0;
         }
     }
 }
+
 .passwordInput {
     position: relative;
 
@@ -212,19 +199,14 @@ form {
 
 @media (max-width: 480px) {
     form {
-        .actions {
-            .forgot {
-                display: none;
-            }
-        }
         .bottom {
-            height: unset;
             display: block;
             text-align: center;
 
             button {
                 width: 100%;
             }
+
             .forgot {
                 display: block;
                 margin-bottom: 8px;
@@ -232,4 +214,4 @@ form {
         }
     }
 }
-</style>    
+</style>

@@ -1,4 +1,5 @@
 import './assets/less/main.less'
+import './assets/less/uistruct.less'
 
 import { createApp } from 'vue'
 import App from './App.vue'
