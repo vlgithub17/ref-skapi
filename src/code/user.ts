@@ -22,4 +22,18 @@ watch(() => user.user_id, (u, ou) => {
             }
         });
     }
-}, {immediate: true});
+}, { immediate: true });
+
+export let updateUser = () => {
+    return skapi.getProfile().then(u => {
+        if (u) {
+            // Object.assign(user, u);
+            for (let k in user) {
+                delete user[k]
+            }
+            for (let k in u) {
+                user[k] = u[k]
+            }
+        }
+    });
+}

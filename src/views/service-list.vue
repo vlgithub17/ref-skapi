@@ -1,15 +1,18 @@
 <template lang="pug">
 main#serviceList
     div(style='padding:0 8px;')
-        h2 MY SERVICES
+        h2 My Services
+
+        hr
+        
         p
             | Manage your web services.
             br
             | Create new service to get started.
 
-        router-link.createButton(to="/create")
+        router-link.iconClick(to="/create")
             .material-symbols-outlined.fill add_circle
-            span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Create New Service
+            span &nbsp;&nbsp;Create New Service
 
         br
         br

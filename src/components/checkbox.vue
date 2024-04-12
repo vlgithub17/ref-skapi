@@ -1,6 +1,6 @@
 <template lang="pug">
 label._checkbox(:class="{'nonClickable' : disabled}" :style='{opacity: disabled ? ".5" : "1"}')
-    input(type="checkbox" :checked='modelValue' @input="$emit('update:modelValue', $event.target.checked)" :disabled="disabled" :name="name" hidden)
+    input(type="checkbox" :checked='modelValue' @input="e=>{modelValue = e.target.checked;$emit('update:modelValue', e.target.checked)}" :disabled="disabled" :name="name" hidden)
     span.material-symbols-outlined.fill {{ modelValue ? 'check_box' : 'check_box_outline_blank' }}
     div
         slot
@@ -29,11 +29,11 @@ label._checkbox {
         font-weight: normal;
     }
 
-    input:checked+* {
-        color: var(--main-color);
+    span + div:not(:empty) {
+        margin-left: 4px;
     }
 
-    &:hover {
+    input:checked+* {
         color: var(--main-color);
     }
 }

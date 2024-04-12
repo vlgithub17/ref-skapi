@@ -18,11 +18,11 @@ nav#navBar(ref="navBar")
                     router-link(to="/my-services") My services
                 li
                     .prof(@click.stop="(e)=>{showDropDown(e)}")
-                        .material-symbols-outlined.fill(style="margin-left:1rem") person
+                        .material-symbols-outlined.fill(style="margin-left:1rem;font-size:32px;") account_circle
                         .moreVert.profile(ref="moreVert" @click.stop style="--moreVert-right:0;display:none")
-                            .inner(style="padding:0")
+                            .inner
                                 .account {{ user.email }}
-                                ul.menu 
+                                ul.menu
                                     li
                                         .material-symbols-outlined.fill credit_card
                                         span Billing
@@ -33,7 +33,7 @@ nav#navBar(ref="navBar")
                                         .material-symbols-outlined.fill logout
                                         span Logout
                                 .policy
-                                    router-link(to="public/pp.html" target="_blank") terms of service ● privacy policy
+                                    router-link(to="public/pp.html" target="_blank") Terms of service • Privacy policy
             template(v-else)
                 li
                     router-link.ser(to="/login") login
@@ -141,18 +141,13 @@ onMounted(() => {
             border-radius: 8px;
             background: var(--main-color);
         }
-        .prof {
-            .material-symbols-outlined {
-                font-size: 32px;
-            }
-        }
+
     }
     .profile {
         text-align: left;
         color: #000;
         font-size: 16px;
-        font-weight: 500;
-        margin-top: 20px;
+        font-weight: normal;
         user-select: none;
 
         .account {
@@ -167,10 +162,10 @@ onMounted(() => {
 
             li {
                 display: block;
-                padding: 4px 0;
+                padding: 8px 0;
 
                 span {
-                    font-weight: bold;
+                    font-weight: 500;
                 }
 
                 &:hover {
@@ -194,26 +189,14 @@ onMounted(() => {
             white-space: nowrap;
             
             a {
-                text-decoration: none;
-                // color: var(--black-4);
-                font-weight: bold;
-                color: #000;
-
-                &:hover {
-                    text-decoration: underline;
-                }
+                color: var(--black-4);
+                font-weight: 300;
             }
         }
     }
 
     a:not(.policy a) {
         color: #fff;
-        text-decoration: none;
-        display: inline-block;
-
-        &:not(.logo):hover {
-            text-decoration: underline;
-        }
     }
 }
 </style>

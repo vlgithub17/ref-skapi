@@ -2,7 +2,6 @@
 #serviceMain(v-if="serviceMainLoaded")
     Sticky(fix-width)
         br
-
         nav.left
             router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
                 span.material-symbols-outlined.icon.fill.nohover home
@@ -102,17 +101,11 @@ watch(serviceList, nv => {
         vertical-align: middle;
     }
 
-    .back {
-        font-size: 1rem;
-        margin-left: 9px;
-    }
-
-    .material-symbols-outlined {
+    .icon {
         font-size: 32px;
     }
 
     .name {
-        font-size: 1rem;
         font-weight: 500;
         margin-left: 13px;
         padding-right: 60px;

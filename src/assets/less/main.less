@@ -14,10 +14,12 @@
         &.red {
             color: #F04E4E;
         }
+
         &.blue {
             color: #293FE6;
         }
     }
+
     .content {
         padding: 0 1.5rem 1.5rem;
 
@@ -26,6 +28,7 @@
             color: var(--black-6);
             line-height: 1.5;
         }
+
         .input {
             label {
                 display: block;
@@ -34,6 +37,7 @@
                 font-size: 0.8rem;
                 font-weight: 700;
             }
+
             input {
                 width: 100%;
                 height: 44px;
@@ -45,6 +49,7 @@
                 font-weight: 400;
             }
         }
+
         .buttonWrap {
             width: 100%;
             height: 44px;
@@ -56,7 +61,7 @@
             &.running {
                 height: 44px;
             }
-            
+
             &.block {
                 display: block;
                 margin-bottom: 1rem;
@@ -69,19 +74,10 @@
         }
     }
 }
+
 @media (max-width:640px) {
     #modalBox {
         width: calc(100% - 40px) !important;
-    }
-}
-
-a {
-    text-decoration: none;
-    font-weight: bold;
-    color: var(--main-color);
-
-    &:hover {
-        text-decoration: underline;
     }
 }
 
@@ -96,6 +92,7 @@ input {
         outline: 2px solid var(--main-color);
         border-radius: 8px;
     }
+
     &.lineInput {
         outline: none;
 
@@ -124,6 +121,7 @@ button {
     cursor: pointer;
     box-sizing: border-box;
     font-family: inherit;
+
     &.noLine {
         border: 0;
         padding-left: 0;
@@ -131,21 +129,26 @@ button {
         &:not(.disabled, .warning):hover {
             color: #6776FF;
         }
+
         &:not(.disabled, .warning):active {
             color: #2C3CB6;
         }
+
         &:not(.warning).disabled {
-            color: rgba(0,0,0,0.2);
+            color: rgba(0, 0, 0, 0.2);
         }
+
         &.warning {
             color: var(--caution-color);
 
             &:not(.disabled):hover {
                 color: #FF7E7E;
             }
+
             &:not(.disabled):active {
                 color: #D54040;
             }
+
             &.disabled {
                 color: #F0AFAF;
             }
@@ -156,15 +159,18 @@ button {
         border: 2px solid var(--main-color);
 
         &:not(.disabled, .warning):hover {
-            background-color: #DCDEEF;
+            background-color: rgba(0, 0, 0, 0.025);
         }
+
         &:not(.disabled, .warning):active {
             background-color: #BEC4ED;
         }
+
         &:not(.warning).disabled {
-            border: 2px solid rgba(0,0,0,0.2);
-            color: rgba(0,0,0,0.2) !important;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            color: rgba(0, 0, 0, 0.2) !important;
         }
+
         &.warning {
             border: 2px solid var(--caution-color);
             color: var(--caution-color) !important;
@@ -172,9 +178,11 @@ button {
             &:not(.disabled):hover {
                 background-color: #F0E0E0;
             }
+
             &:not(.disabled):active {
                 background-color: #F0C7C7;
             }
+
             &.disabled {
                 border: 2px solid #F0AFAF;
                 color: #F0AFAF !important;
@@ -190,12 +198,14 @@ button {
         &:not(.disabled):hover {
             background-color: #4F61E9 !important;
         }
+
         &:not(.disabled):active {
             box-shadow: 0 0 0 2px #A5AFFF inset;
         }
+
         &.disabled {
-            background-color: rgba(0,0,0,0.2) !important;
-            color: rgba(0,0,0,0.2) !important;
+            background-color: rgba(0, 0, 0, 0.2) !important;
+            color: rgba(0, 0, 0, 0.2) !important;
         }
     }
 
@@ -203,6 +213,14 @@ button {
         user-select: none;
         cursor: default;
     }
+}
+
+&.disabled {
+    opacity: 0.5;
+    color: black !important;
+    user-select: none;
+    cursor: default;
+    pointer-events: none;
 }
 
 .sentenceButton {
@@ -230,17 +248,18 @@ button {
         .material-symbols-outlined:hover {
             opacity: 1 !important;
         }
+
         span {
             margin-left: 5px;
         }
     }
 
     &.disabled {
-        color: rgba(0,0,0,0.2);
+        color: rgba(0, 0, 0, 0.2);
         user-select: none;
         cursor: default;
     }
-    
+
     * {
         user-select: none;
         font-weight: 500;
@@ -252,18 +271,18 @@ button {
 }
 
 .error {
-    // padding-top: 0.8rem;
-    color: #F04E4E;
-    font-size: 0.8rem;
+    display: flex;
+    gap: 4px;
+    color: var(--caution-color) !important;
+    font-size: 14.2px;
     font-weight: 400;
-    
+
     .material-symbols-outlined {
-        margin-right: 4px;
-        vertical-align: middle;
+       margin-top: -4px; 
     }
-    
-    span {
-        vertical-align: middle;
+
+    * {
+        color: var(--caution-color);
     }
 }
 
@@ -271,7 +290,7 @@ button {
 .customSelect {
     position: relative;
     cursor: pointer;
-    
+
     button {
         width: 100%;
         border: 0;
@@ -300,14 +319,15 @@ button {
         transform: translateY(-50%);
         font-size: 0.8rem;
         font-weight: 400;
-        color: rgba(0,0,0,0.4);
+        color: rgba(0, 0, 0, 0.4);
         display: none;
     }
+
     input {
         width: 100%;
         height: 44px;
         border-radius: 8px;
-        background-color: rgba(0,0,0,0.05);
+        background-color: rgba(0, 0, 0, 0.05);
         border: 0;
         color: rgba(0, 0, 0, 0.8);
         font-weight: 500;
@@ -315,6 +335,7 @@ button {
         padding: 0 12px;
         // padding-right: 36px;
     }
+
     // .cancel {
     //     position: absolute;
     //     right: 8px;
@@ -331,7 +352,7 @@ button {
     input {
         display: none;
     }
-    
+
     label {
         position: relative;
         // width: 16px;
@@ -343,7 +364,7 @@ button {
         font-size: 0.8rem;
         font-weight: 400;
         margin-bottom: 0;
-        
+
         &::before {
             display: inline-block;
             position: absolute;
@@ -363,7 +384,7 @@ button {
         span:not(.check) {
             margin-left: 28px;
         }
-        
+
         .check {
             position: absolute;
             left: -2px;
@@ -379,11 +400,11 @@ button {
     input:checked+label::before {
         background-color: #5f5f5f;
     }
-    
+
     input:checked+label .check {
         opacity: 1;
     }
-    
+
     span {
         user-select: none;
     }
@@ -392,7 +413,7 @@ button {
 .customSearchLabel {
     .delete {
         position: absolute;
-        right: 17px; 
+        right: 17px;
         top: 50%;
         transform: translateY(-50%);
         width: 1rem;
@@ -405,14 +426,15 @@ button {
     left: var(--moreVert-left);
     right: var(--moreVert-right);
     top: 100%;
-    margin-top: 8px;
+    margin-top: 4px;
     z-index: 99;
     cursor: default;
 
     .inner {
-        padding: 1rem;
+        // padding: 1rem; // 자식 요소에 padding을 주면 부모 요소의 크기가 커짐
         padding-right: 1.2rem;
-        border-radius: 8px;
+        // border-radius: 8px;
+        border-radius: 16px; // 더 굵은 radius로 차별화
         border: 1px solid rgba(0, 0, 0, 0.15);
         background: #FAFAFA;
         box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);
@@ -456,7 +478,7 @@ button {
                     display: none;
                 }
             }
-            
+
             span {
                 font-size: 0.8rem;
                 margin-left: 0.6rem;
@@ -483,15 +505,19 @@ button {
             &::after {
                 display: block;
             }
+
             input {
                 padding-right: calc(4rem + 40px);
             }
         }
     }
+
     .loading {
         vertical-align: middle;
     }
-    .save, .cancel {
+
+    .save,
+    .cancel {
         position: relative;
         font-size: 1.3rem;
         font-weight: 500;
@@ -510,10 +536,12 @@ button {
             background-color: #293FE61A;
             display: none;
         }
+
         &:hover::after {
             display: block;
         }
     }
+
     .save {
         color: var(--main-color);
         margin-right: 10px;
@@ -522,8 +550,8 @@ button {
 
 .material-symbols-outlined {
     vertical-align: middle;
-    
-    & + * {
+
+    &+* {
         vertical-align: middle;
     }
 
@@ -534,7 +562,7 @@ button {
             'GRAD' 0,
             'opsz' 20;
     }
-    
+
     &.empty {
         font-variation-settings:
             'FILL' 0,
@@ -579,23 +607,24 @@ button {
     animation: rotate_image 1.5s linear infinite;
     transform-origin: 50% 50%;
 }
+
 @keyframes rotate_image {
     100% {
         transform: rotate(360deg);
     }
 }
 
-.ellipsis{
+.ellipsis {
     display: inline-block;
     vertical-align: middle;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
-} 
+}
 
 .clickable {
-    cursor: pointer;
+    cursor: pointer !important;
 }
 
 .nonClickable {
@@ -621,38 +650,15 @@ button {
         box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
     }
 }
-.smallTitle {
-    font-weight: 400;
-    font-size: 0.9rem;
-    color: var(--black-8);
-}
-.smallValue {
-    font-size: 0.9rem;
-}
-
-.infoBox {
-    position: relative;
-    background-color: #fff;
-    padding: 1.2rem;
-    border-radius: 1px;
-    border: 1px solid rgba(0,0,0,0.2);
-    box-shadow: 2px 2px 3px -2px rgba(0,0,0,0.2);
-
-    .infoTitle {
-        display: inline-block;
-        font-size: 1.2rem;
-        font-weight: 500;
-    }
-}
 
 .cardBox {
     position: relative;
     background-color: #fff;
-    border: 1px solid rgba(0,0,0,0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 8px;
 
     &.line {
-        border: 1px solid rgba(0,0,0,.15);
+        border: 1px solid rgba(0, 0, 0, .15);
         filter: unset;
     }
 
@@ -661,16 +667,18 @@ button {
         flex-wrap: nowrap;
         justify-content: space-between;
         padding: 1.5rem;
-        border-bottom: 1px solid rgba(0,0,0,.15);
+        border-bottom: 1px solid rgba(0, 0, 0, .15);
 
         .title {
             .material-symbols-outlined {
                 margin-right: 8px;
             }
+
             span {
                 font-weight: 500;
             }
         }
+
         a {
             position: relative;
             text-decoration: none;
@@ -681,33 +689,8 @@ button {
             }
         }
     }
+
     .content {
         padding: 1.5rem;
-    }
-}
-
-.createButton {
-    display: inline-block;
-    color: var(--main-color);
-    text-decoration: none;
-    cursor: pointer;
-
-    &:hover .material-symbols-outlined::before {
-        box-shadow: inset 0 0 0 4px rgba(41, 63, 230, 0.1);
-    }
-
-    .material-symbols-outlined {
-        position: relative;
-        font-size: 1.6rem;
-
-        &::before {
-            position: absolute;
-            content: '';
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-        }
     }
 }

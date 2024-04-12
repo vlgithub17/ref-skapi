@@ -47,18 +47,29 @@ b {
 }
 
 a {
-    font-weight: normal;
+    text-decoration: none;
+    font-weight: 500;
+    color: var(--main-color);
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 p {
     line-height: 1.5;
 }
 
+button {
+    user-select: none;
+    outline: none;
+}
+
 body {
     width: 100%;
     margin: 0;
     padding: 0;
-    background-color: #fafafa;
+    background-color: #fafaff;
     font-family: "Radio Canada", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     // font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-weight: 300;

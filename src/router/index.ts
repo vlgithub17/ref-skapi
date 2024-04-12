@@ -46,6 +46,11 @@ const router = createRouter(
       component: () => import('@/views/confirmation.vue')
     },
     {
+      path: '/verification',
+      name: 'verification',
+      component: () => import('@/views/verification.vue')
+    },
+    {
       path: '/forgot',
       name: 'forgot',
       component: () => import('@/views/forgot-password.vue')
@@ -58,13 +63,14 @@ const router = createRouter(
     {
       path: '/create',
       name: 'create',
-      component: Create
+      component: Create,
+      beforeEnter: checkUser
     },
     {
       path: '/subscription/:service',
       name: 'subscription',
       component: Subscription,
-      // beforeEnter: checkUser
+      beforeEnter: checkUser
     },
     {
       path: '/',
@@ -78,21 +84,19 @@ const router = createRouter(
         {
           path: 'account-setting',
           name: 'accountsetting',
-          component: AccountSetting
+          component: AccountSetting,
+          beforeEnter: checkUser
         },
-        // {
-        //   path: '/subscription/:service',
-        //   name: 'subscription',
-        //   component: Subscription
-        // },
         {
           path: 'my-services',
           name: 'myservices',
-          component: MyServices
+          component: MyServices,
+          beforeEnter: checkUser
         },
         {
           path: 'my-services/:service',
           component: ServiceMain,
+          beforeEnter: checkUser,
           children: [
             {
               path: '',

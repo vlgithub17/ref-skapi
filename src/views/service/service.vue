@@ -1,5 +1,8 @@
 <template lang="pug">
 h2 Getting Started
+
+hr
+
 p Add the following code to your HTML website to get started:
 
 Code
@@ -37,15 +40,14 @@ section.infoBox
     .infoTitle(style="margin-right: 1rem;") Dashboard&nbsp;
 
     hr
-    br
 
-    .state 
+    .state.nobreak
         .smallTitle Service ID
-        .smallValue.ellipsis {{ currentService.id }}
+        .ellipsis {{ currentService.id }}
 
-    .state
+    .state.nobreak
         .smallTitle Owner ID
-        .smallValue.ellipsis {{ currentService.service.owner }}
+        .ellipsis {{ currentService.service.owner }}
 
     br
 
@@ -95,7 +97,7 @@ section.infoBox
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
     .state 
-        .smallTitle Hosting Storage
+        .smallTitle Hosting
         .smallValue {{ (currentService.storageInfo.host || '0') + 'B' }} / 
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
             span(v-else-if="currentService.plan == 'Premium'") 1TB
@@ -104,10 +106,10 @@ section.infoBox
     br
 
     .state 
-        .smallTitle Subscription Plan
+        .smallTitle Subscription
         .smallValue(:style='{fontWeight:currentService.service.plan == "Canceled" ? "normal" : null, color:currentService.service.plan == "Canceled" ? "var(--caution-color)" : null}')
             | {{ currentService.service.plan }}&nbsp;
-            router-link.edit(:to='`/subscription/${currentService.id}`' style='font-size: 0.66rem;' @click="editCors") [Manage]
+            router-link.editHandle(:to='`/subscription/${currentService.id}`' @click="editCors") [CHANGE]
 
     .state 
         .smallTitle Renewal Date
@@ -119,15 +121,19 @@ section.infoBox
 br
 
 section.infoBox
-    .infoTitle(style="margin-right: 1rem;")
+    .error(v-if='!user?.email_verified')
+        .material-symbols-outlined.fill warning
+        router-link(to="/account-setting") Please verify your email address to modify settings.
+    .infoTitle(v-else style="margin-right: 1rem;")
         | Settings&nbsp;
         a.question(href='https://docs.skapi.com/security/security-settings.html' target="_blank")
             .material-symbols-outlined.empty help 
             span Help
-
+        br
+        
+            
     hr
-    br
-
+    
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
         .infoValue
             .smallTitle Service Name
@@ -143,7 +149,7 @@ section.infoBox
 
             div(v-else)
                 .smallValue {{ currentService.service.name }}&nbsp;
-                span.edit(style='font-size: 0.66rem;' @click="editName" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
+                span.editHandle(@click="editName" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
 
         .infoValue
             .smallTitle CORS
@@ -159,14 +165,14 @@ section.infoBox
 
             div(v-else)
                 .smallValue {{ currentService.service.cors || '*' }}&nbsp;
-                span.edit(style='font-size: 0.66rem;' @click="editCors" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
+                span.editHandle(@click="editCors" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
 
 
         .infoValue
             .smallTitle Secret Key
             template(v-if="modifyMode.api_key")
                 form.editValue(@submit.prevent="changeApiKey")
-                    input(:disabled="updatingValue.api_key || null" type="text" maxlength="256" placeholder='Maximum 256 characters' :value='inputKey' @input="(e) => inputKey = e.target.value")
+                    input(:disabled="updatingValue.api_key || null" type="text" minlength="2" maxlength="256" placeholder='Maximum 256 characters, At least 2 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
 
                     template(v-if="updatingValue.api_key")
                         img.loading(src="@/assets/img/loading.png")
@@ -174,9 +180,9 @@ section.infoBox
                         input(type="submit" hidden)
                     span.material-symbols-outlined.cancel(@click="modifyMode.api_key = false;") close
 
-            div(v-else)
-                .smallValue {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 1) + '*'.repeat(currentService.service.api_key.length - 1) : 'No Secret Key' }}&nbsp;
-                span.edit(style='font-size: 0.66rem;' @click="editApiKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
+            template(v-else)
+                .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 1) + '*'.repeat(currentService.service.api_key.length - 1) : 'No Secret Key' }}&nbsp;
+                span.editHandle(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
 
         .infoValue
             .smallTitle User Signup
@@ -184,11 +190,9 @@ section.infoBox
                 option(value="admin") Only admin allowed
                 option(value="anyone") Anyone allowed
 
-
-
-    .infoValue 
-        .smallTitle Disable/Enable
-        Toggle(:disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
+        .infoValue 
+            .smallTitle Disable/Enable
+            Toggle(:disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
 br
 </template>
 
@@ -324,138 +328,33 @@ select {
     margin: 0;
     outline: none;
     border: 0;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     margin-left: -2px;
     background-color: white;
     font-family: inherit;
-    font-weight: 300;
+    font-weight: normal;
+
+    &:disabled {
+        opacity: 0.5;
+    }
 
     &:not(:disabled) {
         cursor: pointer;
     }
 
-    &:not(:disabled)::hover {
+    &:not(:disabled):hover {
         text-decoration: underline;
     }
-}
-
-.smallTitle {
-    display: inline-block;
-    width: 160px;
-}
-
-.smallValue {
-    display: inline-block;
-}
-
-.edit {
-    // edit button
-    font-weight: normal;
-    color: var(--main-color);
-    text-decoration: none;
-    vertical-align: middle;
-
-    &:hover {
-        text-decoration: underline;
-    }
-
-    cursor: pointer;
-}
-
-.infoValue {
-    display: flex;
-    align-items: center;
-    max-width: 100%;
-    flex-wrap: wrap;
-    min-height: 52px;
-    margin-bottom: 8px;
-
-    &>* {
-        margin-bottom: 8px;
-        .smallValue {
-            word-break: break-all;
-        }
-        &:not(select):last-child {
-            min-height: 44px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-    }
-
-    .editValue {
-        display: flex;
-        align-items: center;
-        flex-grow: 1;
-        position: relative;
-        flex-wrap: nowrap !important;
-        
-        .loading {
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-
-        .save,
-        .cancel {
-            position: relative;
-            font-size: 1.3rem;
-            font-weight: 500;
-            cursor: pointer;
-
-            &::after {
-                position: absolute;
-                content: '';
-                top: 50%;
-                left: 50%;
-                width: 100%;
-                height: 100%;
-                padding: 4px;
-                transform: translate(-50%, -50%);
-                border-radius: 50%;
-                background-color: #293FE61A;
-                display: none;
-            }
-
-            &:hover::after {
-                display: block;
-            }
-        }
-
-        .save {
-            color: var(--main-color);
-            margin-right: 10px;
-        }
-
-        input {
-            flex-grow: 1;
-            width: 160px;
-            height: 44px;
-            border-radius: 8px;
-            margin-right: 10px;
-            background-color: rgba(0, 0, 0, 0.05);
-            border: 0;
-            color: rgba(0, 0, 0, 0.8);
-            font-size: 0.8rem;
-            padding: 0 12px;
-        }
-    }
-}
-
-.state {
-    margin-bottom: 0.75rem;
 }
 
 .question {
     display: inline-block;
-    text-decoration: none;
-    color: var(--main-color);
-    margin-top: 8px;
     font-size: 14px;
     color: var(--black-4);
     vertical-align: middle;
 
     &:hover {
-        text-decoration: underline;
+        text-decoration: none;
     }
 }
 </style>

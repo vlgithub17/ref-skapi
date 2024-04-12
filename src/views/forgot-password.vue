@@ -2,11 +2,6 @@
 br
 br
 br
-br
-br
-br
-br
-br
 
 #forgot
     template(v-if="step < 4")
@@ -16,16 +11,11 @@ br
         .bottomLineTitle Forgot Password
     template(v-else)
         .material-symbols-outlined.fill(style="font-size:50px;color:rgba(90, 216, 88, 1);") check_circle
-        .bottomLineTitle New Password Success
-
-    br
+        .bottomLineTitle Success
 
     template(v-if="step === 1")
         form(@submit.prevent="forgotPassword")
-            .message 
-                | Please check your inbox for a confirmation email.
-                br
-                | Click the link in the email to confirm your email address.
+            p Please enter your login email address.
 
             br
 
@@ -37,32 +27,25 @@ br
                 placeholder="Enter your email address" 
                 required)
 
+            br
+            
             .error(v-if="error")
                 .material-symbols-outlined.fill error
                 span {{ error }}
 
             br
-            br
 
-            .bottom 
+            .bottom
                 template(v-if="promiseRunning")
                     img.loading(src="@/assets/img/loading.png")
                 template(v-else)
-                    router-link(to="/login") Back to Log in
+                    button.noLine(type="button" @click="router.push('/login')") Back to Login
                     button.unFinished(type="submit") Continue
 
     template(v-else-if="step === 2")
         form(@submit.prevent="step++")
-            .message 
-                | Please check your email and insert the code
-                br
-                | in order to create a new password. 
-            
-            br
-
-            .email The code has sent to : {{ email }}
-
-            br
+            p Verification code has been sent to #[b {{email}}]
+            p Please check your email and enter the code.
 
             label
                 | Code
@@ -77,13 +60,15 @@ br
                 template(v-if="resending")
                     .resending The Code has been resent.
                 template(v-else)
-                    span(style="margin-right:5px") Haven’t got any Code?
+                    | Haven’t received the code?&nbsp;
                     span.click(@click="resend") Re-send Code
+
+            br
+
             .error(v-if="error") 
                 .material-symbols-outlined.mid error
                 span {{ error }}
 
-            br
             br
 
             .bottom
@@ -92,64 +77,53 @@ br
 
     template(v-else-if="step === 3")
         form(@submit.prevent="changePassword" action="")
-            .message Create a new password.
+            p Create a new password.
 
             br
 
-            .passwordInput(style="margin-bottom:16px")
-                label 
-                    | New password
-                    input(
-                    :type='showPassword ? "text" : "password"'
-                    ref="newPasswordField" 
-                    :value="newPassword"
-                    @input="e=> { newPassword = e.target.value; e.target.setCustomValidity(''); }" 
-                    @change="validateNewPassword" 
-                    placeholder="Create a new password"
-                    required)
+            label.passwordInput(style="margin-bottom:16px")
+                | New password
+                input(
+                :type='showPassword ? "text" : "password"'
+                ref="newPasswordField" 
+                :value="newPassword"
+                @input="e=> { newPassword = e.target.value; e.target.setCustomValidity(''); }" 
+                @change="validateNewPassword" 
+                placeholder="Create a new password"
+                required)
                 .passwordIcon(@click="showPassword = !showPassword")
                     template(v-if="showPassword")
                         .material-symbols-outlined.fill visibility
                     template(v-else)
                         .material-symbols-outlined.fill visibility_off
 
-            .passwordInput
-                label 
-                    | New password confirm
-                    input(
-                    :type='showPassword ? "text" : "password"'
-                    ref="confirmNewPasswordField"
-                    :value="newPasswordConfirm"
-                    @input="e=> { newPasswordConfirm = e.target.value; e.target.setCustomValidity(''); }" 
-                    @change="validateNewPassword" 
-                    placeholder="Confirm the new password"
-                    required)
+            label.passwordInput
+                | Confirm new password
+                input(
+                :type='showPassword ? "text" : "password"'
+                ref="confirmNewPasswordField"
+                :value="newPasswordConfirm"
+                @input="e=> { newPasswordConfirm = e.target.value; e.target.setCustomValidity(''); }" 
+                @change="validateNewPassword" 
+                placeholder="Confirm the new password"
+                required)
                 .passwordIcon(@click="showPassword = !showPassword")
                     template(v-if="showPassword")
                         .material-symbols-outlined.fill visibility
                     template(v-else)
                         .material-symbols-outlined.fill visibility_off
 
-            br
             br
 
             .bottom(style="justify-content: flex-end;")
                 template(v-if="promiseRunning")
                     img.loading(src="@/assets/img/loading.png")
                 template(v-else)
-                    button.final(type="submit") Change
+                    button.final(type="submit") Submit
 
     template(v-else-if="step === 4")
-        .message 
-            | Your password has been changed successfully.
-            br
-            | Please login with new password.
+        p Your password has been successfully changed. Please login with the new password.
         
-        br
-        br
-        br
-        br
-
         div(style="display:block;text-align:right")
             button.final(@click="router.push('/login')") Login
 
@@ -157,13 +131,7 @@ br
     br
 
     .navigator(v-if="step <= 3")
-        .ball(v-for="num in 3" @click="() => { num < step ? step = num : null; password = '';  passwordConfirm = '';}" :class="{'active': step === num}")
-br
-br
-br
-br
-br
-br
+        .ball(v-for="num in 3" :class="{'active': step === num}")
 br
 br
 
@@ -246,14 +214,6 @@ let changePassword = async () => {
     finally {
         promiseRunning.value = false;
     }
-    // skapi.resetPassword({ email: email, code: code, new_password: newPassword }).then(res => {
-    //     step.value++;
-    // }).catch(err => {
-    //     step.value--;
-    //     nextTick(() => {
-    //         error.value = err.message;
-    //     });
-    // })
 }
 </script>
 
@@ -262,10 +222,6 @@ let changePassword = async () => {
     max-width: 440px;
     padding: 0 20px;
     margin: 0 auto;
-}
-.message {
-    font-size: 16px;
-    line-height: 24px;
 }
 .passwordInput {
     position: relative;
@@ -287,7 +243,6 @@ let changePassword = async () => {
         width: 12px;
         border-radius: 50%;
         background-color: #D9D9D9;
-        cursor: pointer;
         margin-right: 12px;
 
         &.active {
@@ -299,47 +254,46 @@ let changePassword = async () => {
         }
     }
 }
+
 form {
-    font-size: 16px;
+    >label {
+        margin-bottom: 16px;
+    }
 
     label {
         display: block;
         color: var(--black-6);
+        font-size: 16px;
         font-weight: 700;
     }
+
     input {
         width: 100%;
         margin-top: 8px;
         padding: 12px 15px;
         border-radius: 8px;
-        background-color: rgba(0,0,0,0.05);
+        background-color: rgba(0, 0, 0, 0.05);
     }
-    .error, .resend {
-        margin-top: 8px;
+
+    a {
+        font-size: 16px;
+        text-decoration: none;
+        color: var(--main-color);
     }
     .resend {
+        font-size: 16px;
         .click {
             color: var(--main-color);
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
         }
     }
-    .email {
-        color: var(--black-4);
-        font-weight: 400;
-        line-height: 20px;
-    }
     .bottom {
+        min-height: 44px;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        
-        a {
-            text-decoration: none;
-            color: var(--main-color);
-            font-weight: 700;
-        }
     }
 }
 </style>

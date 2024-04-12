@@ -1,5 +1,7 @@
 <template lang="pug">
-h2 Client Secret Keys
+h2 Client Secret
+
+hr
 
 p If you are using 3rd party API's that requires a client secret key, you can add them here and safely make requests from your website without exposing your client secret key.
 
@@ -30,8 +32,6 @@ p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bri
 
 br
 
-h2 CLIENT SECRET
-
 Table
     template(v-slot:head)
         tr
@@ -48,9 +48,9 @@ Table
     template(v-slot:body)
         tr
             td(colspan=3)
-                .createButton
+                .iconClick
                     .material-symbols-outlined.fill add_circle
-                    span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Add New Key
+                    span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Add Key
         tr
             td(colspan=3).
                 Loading keys ... &nbsp;
