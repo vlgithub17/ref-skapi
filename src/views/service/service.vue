@@ -130,10 +130,10 @@ section.infoBox
             .material-symbols-outlined.empty help 
             span Help
         br
-        
-            
+
+
     hr
-    
+
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
         .infoValue
             .smallTitle Service Name
@@ -172,7 +172,7 @@ section.infoBox
             .smallTitle Secret Key
             template(v-if="modifyMode.api_key")
                 form.editValue(@submit.prevent="changeApiKey")
-                    input(:disabled="updatingValue.api_key || null" type="text" minlength="2" maxlength="256" placeholder='Maximum 256 characters, At least 2 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
+                    input(:disabled="updatingValue.api_key || null" type="text" minlength="4" maxlength="256" placeholder='Maximum 256 characters, At least 6 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
 
                     template(v-if="updatingValue.api_key")
                         img.loading(src="@/assets/img/loading.png")
@@ -181,7 +181,7 @@ section.infoBox
                     span.material-symbols-outlined.cancel(@click="modifyMode.api_key = false;") close
 
             template(v-else)
-                .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 1) + '*'.repeat(currentService.service.api_key.length - 1) : 'No Secret Key' }}&nbsp;
+                .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 2) + '*'.repeat(4) + '...' : 'No Secret Key' }}&nbsp;
                 span.editHandle(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
 
         .infoValue
@@ -190,9 +190,9 @@ section.infoBox
                 option(value="admin") Only admin allowed
                 option(value="anyone") Anyone allowed
 
-        .infoValue 
-            .smallTitle Disable/Enable
-            Toggle(:disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
+    .infoValue(:class="{'nonClickable' : !user?.email_verified}")
+        .smallTitle Disable/Enable
+        Toggle(:disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
 br
 </template>
 
@@ -259,12 +259,10 @@ let editCors = () => {
 }
 let changeCors = () => {
     updatingValue.cors = true;
-
     currentService.updateService({
         cors: inputCors
     }).then(() => {
         updatingValue.cors = false;
-        currentService.service.cors = inputCors;
         modifyMode.cors = false;
     }).catch(err => {
         updatingValue.cors = false;
