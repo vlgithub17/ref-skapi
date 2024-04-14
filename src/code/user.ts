@@ -12,13 +12,17 @@ watch(() => user.user_id, (u, ou) => {
             searchFor: "user_id",
             value: u
         }).then(async uInfo => {
-            Object.assign(serviceIdList, uInfo.list[0].services.reverse());
-
-            for (let serviceId of serviceIdList) {
-                Service.load(serviceId).then(serviceObj => {
-                    serviceList[serviceId] = serviceObj;
-                    callServiceList.value = false;
-                })
+            if (uInfo.list[0].services) {
+                Object.assign(serviceIdList, uInfo.list[0].services.reverse());
+                for (let serviceId of serviceIdList) {
+                    Service.load(serviceId).then(serviceObj => {
+                        serviceList[serviceId] = serviceObj;
+                        callServiceList.value = false;
+                    })
+                }
+            }
+            else {
+                callServiceList.value = false;
             }
         });
     }

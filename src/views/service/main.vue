@@ -63,7 +63,7 @@ watch(serviceList, nv => {
 <style lang="less" scoped>
 #serviceMain {
     position: relative;
-    max-width: 1200px;
+    max-width: 1400px;
     display: flex;
     flex-wrap: nowrap;
     margin: 0 auto;

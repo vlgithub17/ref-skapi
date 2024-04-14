@@ -139,7 +139,7 @@ section.infoBox
             .smallTitle Service Name
             template(v-if="modifyMode.name")
                 form.editValue(@submit.prevent="changeName")
-                    input(type="text" placeholder="Maximum 40 characters" maxlength="40" :value='inputName' @input="(e) => inputName = e.target.value" required)
+                    input(type="text" ref="focus_name" placeholder="Maximum 40 characters" maxlength="40" :value='inputName' @input="(e) => inputName = e.target.value" required)
 
                     template(v-if="updatingValue.name")
                         img.loading(src="@/assets/img/loading.png")
@@ -155,7 +155,7 @@ section.infoBox
             .smallTitle CORS
             template(v-if="modifyMode.cors")
                 form.editValue(@submit.prevent="changeCors")
-                    input#modifyCors(:disabled="updatingValue.cors || null" type="text" placeholder='https://your.domain.com, http://second.domain.net, ...' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
+                    input#modifyCors(ref="focus_cors" :disabled="updatingValue.cors || null" type="text" placeholder='https://your.domain.com, http://second.domain.net, ...' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
 
                     template(v-if="updatingValue.cors")
                         img.loading(src="@/assets/img/loading.png")
@@ -172,7 +172,7 @@ section.infoBox
             .smallTitle Secret Key
             template(v-if="modifyMode.api_key")
                 form.editValue(@submit.prevent="changeApiKey")
-                    input(:disabled="updatingValue.api_key || null" type="text" minlength="4" maxlength="256" placeholder='Maximum 256 characters, At least 6 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
+                    input(ref="focus_key" :disabled="updatingValue.api_key || null" type="text" minlength="4" maxlength="256" placeholder='Maximum 256 characters, At least 6 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
 
                     template(v-if="updatingValue.api_key")
                         img.loading(src="@/assets/img/loading.png")
@@ -197,7 +197,7 @@ br
 </template>
 
 <script setup lang="ts">
-import { nextTick, reactive } from 'vue';
+import { nextTick, reactive, ref } from 'vue';
 import { currentService } from '@/views/service/main';
 import { user } from '@/code/user';
 import Code from '@/components/code.vue';
@@ -220,15 +220,17 @@ let updatingValue = reactive({
     api_key: false,
     prevent_signup: false
 });
+let focus_name = ref();
+let focus_cors = ref();
+let focus_key = ref();
 
 // edit/change name
 let editName = () => {
-    if (user.email_verified) {
-        inputName = currentService.service.name;
-        modifyMode.name = true;
-    } else {
-        return false;
-    }
+    inputName = currentService.service.name;
+    modifyMode.name = true;
+    nextTick(() => {
+        focus_name.value.focus();
+    });
 }
 let changeName = () => {
     if (currentService.service.name !== inputName) {
@@ -256,6 +258,9 @@ let changeName = () => {
 let editCors = () => {
     inputCors = currentService.service.cors === '*' ? '' : currentService.service.cors;
     modifyMode.cors = true;
+    nextTick(() => {
+        focus_cors.value.focus();
+    });
 }
 let changeCors = () => {
     updatingValue.cors = true;
@@ -278,6 +283,9 @@ let changeCors = () => {
 let editApiKey = () => {
     inputKey = currentService.service.api_key;
     modifyMode.api_key = true;
+    nextTick(() => {
+        focus_key.value.focus();
+    });
 }
 let changeApiKey = () => {
     let previous = currentService.service.api_key;

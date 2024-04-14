@@ -9,11 +9,11 @@ br
 
         hr
 
-        .infoValue
+        .infoValue(style='margin-bottom:0;')
             .smallTitle Email
             template(v-if="modifyMode")
                 form.editValue(@submit.prevent="changeEmail")
-                    input(type="email" spellcheck="false" :value="inputEmail" @input="(e) => {e.target.setCustomValidity('');inputEmail = e.target.value;}" placeholder="your@email.com" required)
+                    input(type="email" ref='emailInp' spellcheck="false" :value="inputEmail" @input="(e) => {e.target.setCustomValidity('');inputEmail = e.target.value;}" placeholder="your@email.com" required)
 
                     template(v-if="updatingValue")
                         img.loading(src="@/assets/img/loading.png")
@@ -23,32 +23,28 @@ br
 
             template(v-else)
                 .ellipsis {{ user.email }}&nbsp;
-                .editHandle(@click="editEmail") [EDIT]
+                span.editHandle(@click="editEmail") [CHANGE]
 
-        .infoValue
-            .smallTitle Verify Email
-            .smallValue(v-if="user.email_verified" style="font-size:0.8rem;color:var(--main-color);")
-                .material-symbols-outlined.fill check_circle
-                span &nbsp;Verified
-            .iconClick.smallValue(v-else style="color:var(--caution-color);" @click="proceedVerification = true;")
+        .state
+            .smallTitle
+            Checkbox(v-if="user.email_verified" v-model="newsletterSubscribed" :disabled="!user.email_verified") I agree to receive newsletters from Skapi.
+            .iconClick(v-else style="color:var(--caution-color);" @click="proceedVerification = true;")
                 .material-symbols-outlined.fill(style='font-size:24px;') error
-                span &nbsp;Unverified
-
-        .infoValue
-            .smallTitle Newsletter
-            .smallValue 
-                Checkbox(v-model="newsletterSubscribed" :disabled="!user.email_verified") Subscribe {{ !user.email_verified ? '(Verification required)' : '' }}
-
-        .infoValue
+                span &nbsp;Click to verify your email address
+            
+        br
+        
+        .state
             .smallTitle Password 
-            router-link(to='/password' style='font-size:0.8rem;') Change Password
+            .ellipsis ******...&nbsp;
+            router-link.editHandle(to='/change-password') [CHANGE]
 
         hr(style="background:rgba(0,0,0,0.15);height:1px;border:0;margin:1rem 0")
 
         div(style="text-align:right")
-            .iconClick(style='color:var(--caution-color);font-size:0.66rem;')
+            router-link.iconClick(to='/delete-account' style='color:var(--caution-color);font-size:0.66rem;')
                 .material-symbols-outlined.fill(style='font-size:24px;') cancel
-                span &nbsp;&nbsp;Delete Account
+                span &nbsp;Delete Account
 
 Dialog(:open="proceedVerification")
     h4(style='margin:.5em 0 0;') Email Verification
@@ -80,9 +76,13 @@ let modifyMode = ref(false);
 let updatingValue = ref(false);
 let inputEmail = '';
 let sendingEmail = ref(false);
+let emailInp = ref();
 let editEmail = () => {
     inputEmail = user.email;
     modifyMode.value = true;
+    nextTick(() => {
+        emailInp.value.focus();
+    });
 }
 let sendEmail = async () => {
     sendingEmail.value = true;

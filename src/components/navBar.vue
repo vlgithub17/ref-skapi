@@ -1,44 +1,45 @@
 <template lang="pug">
 div.dummy(:style='{height:navHeight+"px"}')
 nav#navBar(ref="navBar")
-    .left 
-        router-link.logo(to="/my-services" v-if="route.path.split('/').length > 2 && route.path.split('/')[1] == 'my-services'")
-            .material-symbols-outlined.nohover.back(style="font-size:32px") arrow_back_ios
-            span.name My Services
-        router-link.logo(to="/" v-else)
-            img.symbol(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;")
-            span Skapi
-    .right
-        ul
-            li(v-if="route.name != 'home'")
-                a.doc(href="https://docs.skapi.com" target="_blank") Docs
-            
-            template(v-if="loginState")
-                li(v-if="route.name == 'home' || route.name == 'accountsetting'" style="margin-left:1rem")
-                    router-link(to="/my-services") My services
-                li
-                    .prof(@click.stop="(e)=>{showDropDown(e)}")
-                        .material-symbols-outlined.fill(style="margin-left:1rem;font-size:32px;") account_circle
-                        .moreVert.profile(ref="moreVert" @click.stop style="--moreVert-right:0;display:none")
-                            .inner
-                                .account {{ user.email }}
-                                ul.menu
-                                    li
-                                        .material-symbols-outlined.fill credit_card
-                                        span Billing
-                                    li(@click="navigateToPage")
-                                        .material-symbols-outlined.fill settings
-                                        span Account Settings
-                                    li(@click="logout")
-                                        .material-symbols-outlined.fill logout
-                                        span Logout
-                                .policy
-                                    router-link(to="public/pp.html" target="_blank") Terms of service • Privacy policy
-            template(v-else)
-                li
-                    router-link.ser(to="/login") login
-                li
-                    router-link.sign(to="/signup") sign-up
+    .wrap
+        .left
+            router-link.logo(to="/my-services" v-if="route.name != 'home' && loginState && route.path !== '/my-services'")
+                .material-symbols-outlined.nohover.back(style="font-size:32px") arrow_back_ios
+                span.name My Services
+            router-link.logo(to="/" v-else)
+                img.symbol(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;")
+                span Skapi
+        .right
+            ul
+                template(v-if="loginState")
+                    li(v-if="route.name == 'home'" style="margin-left:1rem")
+                        router-link(to="/my-services") My Services
+                    li(v-else="route.name != 'home'")
+                        a.doc(href="https://docs.skapi.com" target="_blank") Documentation
+
+                    li
+                        .prof(@click.stop="(e)=>{showDropDown(e)}")
+                            .material-symbols-outlined.fill(style="margin: 0 .5rem 0 1rem;font-size:32px;") account_circle
+                            .moreVert.profile(ref="moreVert" @click.stop style="--moreVert-right:0;display:none")
+                                .inner
+                                    .account {{ user.email }}
+                                    ul.menu
+                                        li
+                                            .material-symbols-outlined.fill credit_card
+                                            span Billing
+                                        li(@click="navigateToPage")
+                                            .material-symbols-outlined.fill settings
+                                            span Account Settings
+                                        li(@click="logout")
+                                            .material-symbols-outlined.fill logout
+                                            span Logout
+                                    .policy
+                                        router-link(to="public/pp.html" target="_blank") Terms of service • Privacy policy
+                template(v-else)
+                    li
+                        router-link.ser(to="/login") Login
+                    li
+                        router-link.sign(to="/signup") Sign-up
 </template>
 
 <script setup lang="ts">
@@ -65,6 +66,7 @@ let logout = () => {
         for (let k in user) {
             delete user[k];
         }
+        router.push({ path: '/login' });
     })
 }
 
@@ -81,122 +83,167 @@ onMounted(() => {
     top: 0;
     z-index: 99999;
     width: 100%;
-    padding: 12px 20px;
+    padding: 12px 6px 12px 20px;
     display: flex;
+    align-items: center;
     background-color: #262626;
     font-size: 18px;
     color: #fff;
+    justify-content: center;
 
-    .left {
-        display: inline-block;
-        vertical-align: middle;
+    .wrap {
+        width: 100%;
+        max-width: 1600px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-        .logo {
-            display: block;
-            text-decoration: none;
+        .left {
+            display: inline-block;
+            vertical-align: middle;
 
-            * {
-                vertical-align: middle;
-            }
-
-            img {
-                height: 32px;
-                margin-right: 10px;
-            }
-
-            span {
-                font-weight: bold;
-            }
-        }
-    }
-
-    .right {
-        display: inline-block;
-        vertical-align: middle;
-        flex-grow: 1;
-        font-weight: bold;
-
-        ul {
-            position: relative;
-            text-align: right;
-            margin: 0;
-            padding: 0;
-
-            li {
-                display: inline-block;
-                vertical-align: middle;
-                list-style: none;
-                user-select: none;
-                cursor: pointer;
-            }
-        }
-
-        .ser {
-            padding: 0 1rem;
-        }
-
-        .sign {
-            color: #fff;
-            padding: 0 20px;
-            border-radius: 8px;
-            background: var(--main-color);
-        }
-
-    }
-    .profile {
-        text-align: left;
-        color: #000;
-        font-size: 16px;
-        font-weight: normal;
-        user-select: none;
-
-        .account {
-            padding: 14px 20px;
-            border-bottom: 1px solid rgba(0, 0, 0, .15);
-        }
-        ul {
-            display: block;
-            text-align: left;
-            padding: 10px 20px;
-            color: var(--main-color);
-
-            li {
+            .logo {
                 display: block;
-                padding: 8px 0;
+                text-decoration: none;
 
-                span {
-                    font-weight: 500;
+                * {
+                    vertical-align: middle;
                 }
 
-                &:hover {
-                    span {
-                        text-decoration: underline;
+                img {
+                    height: 32px;
+                    margin-right: 10px;
+                }
+
+                span {
+                    font-weight: bold;
+                }
+            }
+        }
+
+        .right {
+            display: inline-block;
+            vertical-align: middle;
+            flex-grow: 1;
+            font-weight: bold;
+
+            ul {
+                position: relative;
+                text-align: right;
+                margin: 0;
+                padding: 0;
+
+                li {
+                    display: inline-block;
+                    vertical-align: middle;
+                    list-style: none;
+                    user-select: none;
+                    cursor: pointer;
+                }
+            }
+
+            .ser {
+                padding: 0 1.4rem;
+            }
+
+            .sign {
+                color: #fff;
+                display: block;
+                position: relative;
+                padding: 0 1.4rem;
+                text-decoration: none;
+                font-size: 0.8rem;
+                font-weight: 700;
+
+                &::before {
+                    content: '';
+                    display: inline-block;
+                    position: absolute;
+                    left: 0;
+                    top: -11px;
+                    z-index: -1;
+                    width: 100%;
+                    height: 100%;
+                    padding: 11px 0;
+                    border-radius: 8px;
+                    background: var(--main-color);
+                }
+
+                &:active {
+                    &::before {
+                        box-shadow: 0 0 0 2px #A5AFFF inset;
                     }
                 }
             }
-            .material-symbols-outlined {
-                font-size: 24px;
-                color: var(--main-color);
-                margin-right: 8px;
-            }
         }
-        .policy {
-            border-top: 1px solid rgba(0, 0, 0, .15);
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            padding: 12px 30px;
-            white-space: nowrap;
-            
-            a {
-                color: var(--black-4);
-                font-weight: 300;
-            }
-        }
-    }
 
-    a:not(.policy a) {
-        color: #fff;
+        @media all and (pointer: fine) {
+            .prof:hover {
+                &>.material-symbols-outlined:first-child {
+                    box-shadow: inset 0px 0px 0 4px rgba(255, 255, 255, 0.5);
+                    border-radius: 50%;
+                }
+            }
+        }
+
+        .profile {
+            text-align: left;
+            color: #000;
+            font-size: 16px;
+            font-weight: normal;
+            user-select: none;
+
+            .account {
+                padding: 14px 20px;
+                border-bottom: 1px solid rgba(0, 0, 0, .15);
+            }
+
+            ul {
+                display: block;
+                text-align: left;
+                padding: 10px 20px;
+                color: var(--main-color);
+
+                li {
+                    display: block;
+                    padding: 8px 0;
+
+                    span {
+                        font-weight: 500;
+                    }
+
+                    &:hover {
+                        span {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+
+                .material-symbols-outlined {
+                    font-size: 24px;
+                    color: var(--main-color);
+                    margin-right: 8px;
+                }
+            }
+
+            .policy {
+                border-top: 1px solid rgba(0, 0, 0, .15);
+                font-size: 14px;
+                font-weight: bold;
+                text-align: center;
+                padding: 12px 30px;
+                white-space: nowrap;
+
+                a {
+                    color: var(--black-4);
+                    font-weight: 300;
+                }
+            }
+        }
+
+        a:not(.policy a) {
+            color: #fff;
+        }
     }
 }
 </style>

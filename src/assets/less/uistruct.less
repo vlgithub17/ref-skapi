@@ -39,7 +39,7 @@
 .editHandle {
     // text button for edit -> [edit]
     font-size: 0.66rem;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--main-color);
     text-decoration: none;
     vertical-align: middle;
@@ -148,14 +148,15 @@
         max-width: 100%;
         flex-wrap: wrap;
         min-height: 52px;
-        margin-bottom: 16px;
+        margin-bottom: 10px;
 
-        &>*:not(.ellipsis, span, .editHandle) {
+        &>*:not(.ellipsis, span, .editHandle, a) {
             &:not(select):last-child {
                 min-height: 44px;
                 display: flex;
                 flex-wrap: wrap;
                 align-items: center;
+                margin: 4px 0;
             }
         }
 

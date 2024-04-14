@@ -18,5 +18,3 @@ updateUser().finally(() => {
 const router = useRouter();
 const route = useRoute();
 </script>
-
-<style lang="less" scoped></style>

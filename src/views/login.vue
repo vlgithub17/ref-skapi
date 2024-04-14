@@ -28,7 +28,7 @@ br
                     .material-symbols-outlined.fill visibility_off
 
         .actions
-            Checkbox(@change="(e)=>{setLocalStorage(e)}" :disabled='promiseRunning' v-model='remVal') Remember Me
+            Checkbox(style='font-weight:unset;' @change="(e)=>{setLocalStorage(e)}" :disabled='promiseRunning' v-model='remVal') Remember Me
             RouterLink(to="/forgot" :class='{disabled: promiseRunning}') Forgot Password?
 
         br
@@ -139,8 +139,6 @@ form {
 
     a {
         font-size: 16px;
-        text-decoration: none;
-        color: var(--main-color);
     }
 
     .actions {

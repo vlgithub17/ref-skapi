@@ -9,19 +9,17 @@ main#create
 
         br
         br
-        br
 
         section
-            .title Subscription Plans
-            .desc Choose one of the plans
+            .title Create a New Service
 
-            .line 
-            
-            label.smallTitle Name of Service
-            input#serviceName(type="text" @input='(e)=>{newServiceName=e.target.value;error="";}' placeholder="Name of Service")
+            .line
 
-        br
-        br
+            p
+                span 1.&nbsp;
+                span Choose a plan that suits your needs:
+
+            br
 
         section
             .planWrap
@@ -69,12 +67,21 @@ main#create
                         li 10GB of email storage
                         li Subdomain hosting
                         li unlimited use with pay-as-you-go when exceeding the limit
-        br
+        
+        p Selected Plan: #[b {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
+
         br
 
-        div(style="width:100%;text-align:center")
+        p
+            span 2.&nbsp;
+            span Choose a name for your service and click on Create:
+
+        .inputWrap
+            input#serviceName(type="text" @input='(e)=>{newServiceName=e.target.value;error="";}' placeholder="Your service name" required)
             button.final(type="submit") Create
+        
 
+br
 br
 br
 br
@@ -103,7 +110,7 @@ let serviceMode = ref('standard');
 <style scoped lang="less">
 #create {
     width: 100%;
-    padding: 0 20px;
+    padding: 0 8px;
 
     .wrap {
         max-width: 900px;
@@ -116,12 +123,6 @@ let serviceMode = ref('standard');
         font-weight: 700;
         margin-right: 1rem;
     }
-    .desc {
-        display: inline-block;
-        font-size: 0.9rem;
-        color: var(--black-4);
-        margin-top: 8px;
-    }
     .line {
         width: 100%;
         height: 1px;
@@ -130,13 +131,21 @@ let serviceMode = ref('standard');
         margin: 28px 0;
     }
 }
+.inputWrap {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
 input {
     display: block;
-    width: 100%;
+    flex-grow: 1;
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 8px;
-    padding: 0 1rem;
-    margin-top: 8px;
+    padding: 12px 15px;
+}
+p {
+    display: flex;
 }
 .planWrap {
     display: flex;
