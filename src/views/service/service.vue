@@ -167,7 +167,6 @@ section.infoBox
                 .smallValue {{ currentService.service.cors || '*' }}&nbsp;
                 span.editHandle(@click="editCors" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
 
-
         .infoValue
             .smallTitle Secret Key
             template(v-if="modifyMode.api_key")
@@ -180,19 +179,19 @@ section.infoBox
                         input(type="submit" hidden)
                     span.material-symbols-outlined.cancel(@click="modifyMode.api_key = false;") close
 
-            template(v-else)
-                .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 2) + '*'.repeat(4) + '...' : 'No Secret Key' }}&nbsp;
+            div(v-else)
+                .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 2) + '*'.repeat(currentService.service.api_key.length - 2) + '...' : 'No Secret Key' }}&nbsp;
                 span.editHandle(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
 
-        .infoValue
+        .infoValue(style='display:flex;align-items:center;min-height:44px;')
             .smallTitle User Signup
             select(@change="(e) => changeCreateUserMode(e.target.value)" :value="currentService.service.prevent_signup ? 'admin' : 'anyone'" :disabled='updatingValue.prevent_signup')
                 option(value="admin") Only admin allowed
                 option(value="anyone") Anyone allowed
 
-    .infoValue(:class="{'nonClickable' : !user?.email_verified}")
-        .smallTitle Disable/Enable
-        Toggle(:disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
+    //- .infoValue(:class="{'nonClickable' : !user?.email_verified}" style='display: flex;align-items: center;min-height:44px;')
+    //-     .smallTitle Disable/Enable
+    //-     Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
 br
 </template>
 
@@ -330,13 +329,13 @@ let changeCreateUserMode = (value: string) => {
 <style lang="less" scoped>
 select {
     box-sizing: border-box;
-    padding: 0;
+    padding: 4px;
     margin: 0;
     outline: none;
     border: 0;
+    border-radius: 4px;
     font-size: 0.8rem;
-    margin-left: -2px;
-    background-color: white;
+    background-color: rgba(0, 0, 0, 0.05);
     font-family: inherit;
     font-weight: normal;
 

@@ -46,7 +46,7 @@ nav#navBar(ref="navBar")
 import { useRoute, useRouter } from 'vue-router';
 import { onMounted, ref } from 'vue';
 import { skapi } from '@/code/admin';
-import { loginState, user } from '@/code/user';
+import { loginState, user, updateUser } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
 
 const router = useRouter();
@@ -63,9 +63,7 @@ let navigateToPage = () => {
 
 let logout = () => {
     skapi.logout().then(() => {
-        for (let k in user) {
-            delete user[k];
-        }
+        updateUser();
         router.push({ path: '/login' });
     })
 }

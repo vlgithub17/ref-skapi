@@ -100,7 +100,7 @@
 
     // --smallTitle-width: 130px; <- can be adjusted
 
-    --smallTitle-width: 130px;
+    --smallTitle-width: 120px;
     position: relative;
     background-color: #fff;
     padding: 1.2rem;
@@ -143,12 +143,13 @@
     }
 
     .infoValue {
-        display: flex;
-        align-items: center;
         max-width: 100%;
-        flex-wrap: wrap;
-        min-height: 52px;
         margin-bottom: 10px;
+
+        .smallTitle {
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
 
         &>*:not(.ellipsis, span, .editHandle, a) {
             &:not(select):last-child {

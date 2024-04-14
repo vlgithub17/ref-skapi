@@ -4,82 +4,75 @@ br
 br
 
 main#create
-    form.wrap
-        img(src="@/assets/img/logo/logo.png" style="width:193px;")
+    router-link(to="/my-services")
+        img(src="@/assets/img/logo/symbol-logo.png" style="width: 40px;")
 
-        br
-        br
+    .bottomLineTitle Create a New Service
 
-        section
-            .title Create a New Service
+    p
+        span 1.&nbsp;
+        span Choose a plan that suits your needs:
+
+    br
+
+    section.planWrap
+        .infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
+            .mode Trial Mode
+            .price $0
 
             .line
 
-            p
-                span 1.&nbsp;
-                span Choose a plan that suits your needs:
+            ul
+                li Provides 10k user accounts
+                li 4 GB of database
+                li 50 GB of file storage
+                li.warning All the users and data will be deleted every 7 days
+        .infoBox(:class="{'checked' : serviceMode == 'standard'}" @click="serviceMode='standard'")
+            .mode Standard Mode
+            .price $19
 
-            br
+            .line
 
-        section
-            .planWrap
-                .infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
-                    .mode Trial Mode
-                    .price $0
+            ul
+                li Provides 10k user accounts
+                li 4GB of database
+                li 50GB each for file storage and hosting storage
+                li Real-time data
 
-                    .line
+            ul
+                li Automated emails and sending newsletters
+                li 1GB of email storage
+                li Subdomain hosting
+        .infoBox(:class="{'checked' : serviceMode == 'premium'}" @click="serviceMode='premium'")
+            .mode Premium Mode
+            .price $89
 
-                    ul
-                        li Provides 10k user accounts
-                        li 4 GB of database
-                        li 50 GB of file storage
-                        li.warning All the users and data will be deleted every 7 days
-                .infoBox(:class="{'checked' : serviceMode == 'standard'}" @click="serviceMode='standard'")
-                    .mode Standard Mode
-                    .price $19
+            .line
 
-                    .line
+            ul
+                li 100k user accounts
+                li 100GB of database
+                li 1TB each for file storage and hosting storage
+                li Real-time data
 
-                    ul
-                        li Provides 10k user accounts
-                        li 4GB of database
-                        li 50GB each for file storage and hosting storage
-                        li Real-time data
+            ul
+                li Automated emails and sending newsletters
+                li 10GB of email storage
+                li Subdomain hosting
+                li unlimited use with pay-as-you-go when exceeding the limit
 
-                    ul
-                        li Automated emails and sending newsletters
-                        li 1GB of email storage
-                        li Subdomain hosting
-                .infoBox(:class="{'checked' : serviceMode == 'premium'}" @click="serviceMode='premium'")
-                    .mode Premium Mode
-                    .price $89
+    p Selected Plan: #[b {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
 
-                    .line
+    br
 
-                    ul
-                        li 100k user accounts
-                        li 100GB of database
-                        li 1TB each for file storage and hosting storage
-                        li Real-time data
+    p
+        span 2.&nbsp;
+        span Choose a name for your service and #[b create]:
 
-                    ul
-                        li Automated emails and sending newsletters
-                        li 10GB of email storage
-                        li Subdomain hosting
-                        li unlimited use with pay-as-you-go when exceeding the limit
-        
-        p Selected Plan: #[b {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
+    form.inputWrap
+        input#serviceName(type="text" @input='(e)=>{newServiceName=e.target.value;error="";}' placeholder="Your service name" required)
+        button.final(type="submit") Create
 
-        br
-
-        p
-            span 2.&nbsp;
-            span Choose a name for your service and click on Create:
-
-        .inputWrap
-            input#serviceName(type="text" @input='(e)=>{newServiceName=e.target.value;error="";}' placeholder="Your service name" required)
-            button.final(type="submit") Create
-        
 
 br
 br
@@ -109,20 +102,10 @@ let serviceMode = ref('standard');
 
 <style scoped lang="less">
 #create {
-    width: 100%;
-    padding: 0 8px;
+    max-width: 1000px;
+    padding: 0 20px;
+    margin: 0 auto;
 
-    .wrap {
-        max-width: 900px;
-        margin: 0 auto 0;
-    }
-    .title {
-        display: inline-block;
-        color: rgba(0, 0, 0, 0.80);
-        font-size: 28px;
-        font-weight: 700;
-        margin-right: 1rem;
-    }
     .line {
         width: 100%;
         height: 1px;
@@ -131,12 +114,14 @@ let serviceMode = ref('standard');
         margin: 28px 0;
     }
 }
+
 .inputWrap {
     display: flex;
     gap: 8px;
     margin-top: 8px;
     flex-wrap: wrap;
 }
+
 input {
     display: block;
     flex-grow: 1;
@@ -144,15 +129,18 @@ input {
     border-radius: 8px;
     padding: 12px 15px;
 }
+
 p {
     display: flex;
+    font-weight: normal;
 }
+
 .planWrap {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 20px;
-    
+
     .infoBox {
         width: 280px;
         flex-grow: 1;
@@ -166,8 +154,9 @@ p {
                 }
             }
         }
+
         &.checked {
-            background-color: rgba(41,63,230,0.02);
+            background-color: rgba(41, 63, 230, 0.02);
             box-shadow: 0 0 0 4px #A5AFFF inset !important;
 
             li {
@@ -177,6 +166,7 @@ p {
             }
         }
     }
+
     .price {
         position: relative;
         display: inline-block;
@@ -195,12 +185,13 @@ p {
             color: var(--black-4);
         }
     }
+
     ul {
         padding: 0;
         margin: 0;
         list-style: none;
         line-height: 1.4rem;
-        
+
         li {
             position: relative;
             color: rgba(0, 0, 0, 0.60);

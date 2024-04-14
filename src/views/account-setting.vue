@@ -21,16 +21,17 @@ br
                         input(type="submit" hidden)
                     span.material-symbols-outlined.cancel(@click="modifyMode = false;") close
 
-            template(v-else)
+            div(v-else)
                 .ellipsis {{ user.email }}&nbsp;
                 span.editHandle(@click="editEmail") [CHANGE]
-
-        .state
-            .smallTitle
-            Checkbox(v-if="user.email_verified" v-model="newsletterSubscribed" :disabled="!user.email_verified") I agree to receive newsletters from Skapi.
+            
+            div(v-if="user.email_verified")
+                Checkbox(v-model="newsletterSubscribed" :disabled="!user.email_verified") I agree to receive newsletters from Skapi.
             .iconClick(v-else style="color:var(--caution-color);" @click="proceedVerification = true;")
                 .material-symbols-outlined.fill(style='font-size:24px;') error
                 span &nbsp;Click to verify your email address
+            
+            
             
         br
         
@@ -109,9 +110,9 @@ let changeEmail = async () => {
     catch (err) {
         updatingValue.value = false;
         nextTick(() => {
-            document.getElementById('modifyCors').focus();
-            document.getElementById('modifyCors').setCustomValidity(err.message);
-            document.getElementById('modifyCors').reportValidity();
+            emailInp.value.focus();
+            emailInp.value.setCustomValidity(err.message);
+            emailInp.value.reportValidity();
         });
     }
 }

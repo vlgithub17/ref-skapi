@@ -26,7 +26,7 @@ br
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(type="button" @click="router.push('/account-setting')") Cancel
+            button.noLine.warning(type="button" @click="router.push('/account-setting')") Cancel
             button.unFinished.warning(type="submit") Delete
 
 </template>
