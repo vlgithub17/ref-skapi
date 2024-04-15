@@ -23,6 +23,8 @@
                 span.name Hosting
     main.right 
         router-view
+div(v-else style='text-align: center;margin-top: 100px;')
+    img.loading(src="@/assets/img/loading.png")
 </template>
 
 <script setup lang="ts">

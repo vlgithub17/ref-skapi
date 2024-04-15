@@ -39,6 +39,11 @@ hr {
     height: 1px;
     border: 0;
     margin: 1rem 0;
+
+    // height: 1px;
+    // background: rgba(0, 0, 0, 0.10);
+    // box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
+    // margin: 28px 0;
 }
 
 b {
@@ -59,7 +64,30 @@ a {
 p {
     line-height: 1.5;
 }
+select {
+    box-sizing: border-box;
+    padding: 4px;
+    margin: 0;
+    outline: none;
+    border: 0;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    background-color: rgba(0, 0, 0, 0.05);
+    font-family: inherit;
+    font-weight: normal;
 
+    &:disabled {
+        opacity: 0.5;
+    }
+
+    &:not(:disabled) {
+        cursor: pointer;
+    }
+
+    &:not(:disabled):hover {
+        text-decoration: underline;
+    }
+}
 input {
     height: 44px;
     border: 0;
@@ -70,8 +98,8 @@ input {
     &.big {
         background-color: white;
         width: 100%;
-        margin-top: 8px;
-        padding: 12px 15px;
+        // padding: 12px 15px;
+        padding: 12px 4px 12px 10px;
         border-radius: 8px;
         outline: 1px solid rgba(0, 0, 0, 0.5);
         &:hover {
@@ -83,18 +111,6 @@ input {
         &.disabled {
             background-color: rgba(0, 0, 0, 0.05);
         }
-    }
-
-    &:user-invalid {
-        outline: 2px solid var(--caution-color);
-    }
-
-    &:disabled {
-        opacity: 0.5;
-    }
-
-    &:user-invalid {
-        outline: 2px solid var(--caution-color);
     }
 
     &:disabled {
@@ -119,15 +135,15 @@ input {
     // }
 }
 form {
-    // >label {
-    //     margin-bottom: 16px;
-    // }
-
     label:not(._checkbox) {
         display: block;
         color: var(--black-6);
         font-size: 16px;
         font-weight: 700;
+
+        input {
+            margin-top: 8px;
+        }
     }
 
     a {
@@ -151,7 +167,7 @@ button {
     position: relative;
     overflow: hidden;
 
-    &:not(.disabled):hover::before {
+    &:not(.disabled, .noLine):hover::before {
         content: '';
         position: absolute;
         top: 0;
@@ -161,11 +177,17 @@ button {
         background-color: rgba(0,0,0,0.04);
         display: block;
     }
+
     &.noLine {
         border: 0;
         
         &.warning {
             color: var(--caution-color);
+        }
+
+        &:first-child {
+            padding-left: 10px;
+            background-color: unset;
         }
     }
 

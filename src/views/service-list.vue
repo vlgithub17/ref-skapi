@@ -5,16 +5,15 @@ main#serviceList
 
         hr
         
-        p
-            | Manage your web services.
-            br
-            | Create new service to get started.
+        p Create a new service to get started.
 
-        router-link.iconClick(to="/create")
-            .material-symbols-outlined.fill add_circle
-            span &nbsp;&nbsp;Create a New Service
+        .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
+            .material-symbols-outlined.fill warning
+            router-link(to="/account-setting") Please verify your email address to create services.
+        form(@submit.prevent="createService" style='display: flex;gap: 8px;width: 480px;max-width: 100%;' :class='{disabled: !user?.email_verified}')
+            input.big(placeholder="New service name" required v-model="newServiceName")
+            button.final(type="submit" style='flex-shrink: 0;') Create
 
-        br
         br
 
     .tableWrap(style="margin-top:.5rem")
@@ -91,9 +90,9 @@ main#serviceList
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { watch } from 'vue';
+import { watch, ref } from 'vue';
 import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
-import { loginState } from '@/code/user';
+import { loginState, user } from '@/code/user';
 import type Service from '@/code/service';
 import Table from '@/components/table.vue';
 
@@ -107,6 +106,11 @@ watch(loginState, nv => {
 
 let goServiceDashboard = (service: { [key: string]: any }) => {
     router.push('/my-services/' + service.id);
+}
+
+let newServiceName = ref('')
+let createService = ()=>{
+    router.push('/create/' + newServiceName.value);
 }
 
 let calculateUserPercentage = (users: number, plan: string, formatStr = false) => {

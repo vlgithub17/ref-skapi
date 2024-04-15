@@ -151,14 +151,12 @@
             font-weight: 600;
         }
 
-        &>*:not(.ellipsis, span, .editHandle, a) {
-            &:not(select):last-child {
-                min-height: 44px;
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                margin: 4px 0;
-            }
+        &>*:not(.ellipsis, span, .editHandle, a, select):not(:first-child) {
+            min-height: 44px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 4px 0;
         }
 
         .editValue {
@@ -168,7 +166,7 @@
             position: relative;
             flex-wrap: nowrap !important;
             margin: 4px 0;
-            
+
             .loading {
                 vertical-align: middle;
                 margin-right: 10px;

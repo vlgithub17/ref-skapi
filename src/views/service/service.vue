@@ -171,7 +171,7 @@ section.infoBox
             .smallTitle Secret Key
             template(v-if="modifyMode.api_key")
                 form.editValue(@submit.prevent="changeApiKey")
-                    input.big(ref="focus_key" :disabled="updatingValue.api_key || null" type="text" minlength="4" maxlength="256" placeholder='Maximum 256 characters, At least 6 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
+                    input.big(ref="focus_key" :disabled="updatingValue.api_key || null" type="text" minlength="4" maxlength="256" placeholder='Maximum 256 characters, At least 4 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
 
                     template(v-if="updatingValue.api_key")
                         img.loading(src="@/assets/img/loading.png")
@@ -188,7 +188,13 @@ section.infoBox
             select(@change="(e) => changeCreateUserMode(e.target.value)" :value="currentService.service.prevent_signup ? 'admin' : 'anyone'" :disabled='updatingValue.prevent_signup')
                 option(value="admin") Only admin allowed
                 option(value="anyone") Anyone allowed
+        
+        hr
 
+        div(style="text-align:right")
+            router-link.iconClick(to='/delete-service' style='color:var(--caution-color);font-size:0.66rem;')
+                .material-symbols-outlined.fill(style='font-size:24px;') cancel
+                span &nbsp;Delete Service
     //- .infoValue(:class="{'nonClickable' : !user?.email_verified}" style='display: flex;align-items: center;min-height:44px;')
     //-     .smallTitle Disable/Enable
     //-     Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
@@ -327,31 +333,6 @@ let changeCreateUserMode = (value: string) => {
 </script>
 
 <style lang="less" scoped>
-select {
-    box-sizing: border-box;
-    padding: 4px;
-    margin: 0;
-    outline: none;
-    border: 0;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    background-color: rgba(0, 0, 0, 0.05);
-    font-family: inherit;
-    font-weight: normal;
-
-    &:disabled {
-        opacity: 0.5;
-    }
-
-    &:not(:disabled) {
-        cursor: pointer;
-    }
-
-    &:not(:disabled):hover {
-        text-decoration: underline;
-    }
-}
-
 .question {
     display: inline-block;
     font-size: 14px;

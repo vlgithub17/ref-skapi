@@ -95,6 +95,12 @@ br
 
             br
 
+            .error(v-if="error")
+                .material-symbols-outlined.fill error
+                span {{ error }}
+
+            br
+
             .bottom
                 template(v-if="promiseRunning")
                     img.loading(src="@/assets/img/loading.png")
@@ -105,7 +111,7 @@ br
     template(v-else-if="step === 3")
         p Your password has been successfully changed. Please login with the new password.
 
-        div(style="display:block;text-align:right")
+        div(style="text-align:right")
             button.final(@click="router.replace('/login')") Login
 
     br
@@ -221,27 +227,6 @@ form {
     >label {
         margin-bottom: 16px;
     }
-
-    // label {
-    //     display: block;
-    //     color: var(--black-6);
-    //     font-size: 16px;
-    //     font-weight: 700;
-    // }
-
-    // input {
-    //     width: 100%;
-    //     margin-top: 8px;
-    //     padding: 12px 15px;
-    //     border-radius: 8px;
-    //     background-color: rgba(0, 0, 0, 0.05);
-    // }
-
-    // a {
-    //     font-size: 16px;
-    //     text-decoration: none;
-    //     color: var(--main-color);
-    // }
 
     .bottom {
         min-height: 44px;

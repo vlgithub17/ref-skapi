@@ -17,7 +17,7 @@ br
             input.big(type="email" 
             :value='form.email' 
             @input="e=> { form.email = e.target.value; }"
-            placeholder="Enter your email" 
+            placeholder="your@email.com" 
             required)
 
 
@@ -27,7 +27,8 @@ br
             ref="passwordField" 
             @input="e=> { form.password = e.target.value; e.target.setCustomValidity(''); error = '' }"
             minlength="6"
-            placeholder="Create a password" 
+            maxlength="60"
+            placeholder="At least 6 characters" 
             required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
@@ -41,7 +42,7 @@ br
             ref="confirmPasswordField" 
             @input="e=> { form.password_confirm = e.target.value; e.target.setCustomValidity(''); error = '' }"
             @change="validatePassword"
-            placeholder="Confirm the password" 
+            placeholder="Enter your password again to confirm" 
             required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
@@ -69,6 +70,9 @@ br
                 .signup 
                     | Have an account?&nbsp;
                     RouterLink(:to="{name: 'login'}") Login
+        
+        br
+        br
 </template>
 
 <script setup lang="ts">

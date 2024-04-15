@@ -20,7 +20,7 @@ br
 
             label
                 | Code
-                input(
+                input.big(
                 type="text"
                 @input="(e) => { error = ''; }"
                 name='code'
@@ -46,7 +46,7 @@ br
                 template(v-if="promiseRunning")
                     img.loading(src="@/assets/img/loading.png")
                 template(v-else)
-                    button.noLine(type="button" @click="router.push('/account-setting')") Back
+                    router-link(to='/account-setting') Back
                     button.final(type="submit") Submit
 
     template(v-else-if="step === 2")
@@ -54,7 +54,7 @@ br
 
         br
 
-        div(style="display:block;text-align:center")
+        div(style="text-align:right")
             button.final(@click="router.push('/account-setting')") Confirm
 
 br
@@ -131,27 +131,6 @@ let verifyEmail = e => {
 form {
     >label {
         margin-bottom: 16px;
-    }
-
-    label {
-        display: block;
-        color: var(--black-6);
-        font-size: 16px;
-        font-weight: 700;
-    }
-
-    input {
-        width: 100%;
-        margin-top: 8px;
-        padding: 12px 15px;
-        border-radius: 8px;
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-
-    a {
-        font-size: 16px;
-        text-decoration: none;
-        color: var(--main-color);
     }
 
     .resend {

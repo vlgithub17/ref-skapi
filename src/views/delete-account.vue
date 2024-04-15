@@ -35,7 +35,7 @@ br
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine.warning(type="button" @click="router.push('/account-setting')") Cancel
-            | &nbsp;
+            | &nbsp;&nbsp;
             button.final.warning(type="submit" :class="{disabled: !iUnderstand}") Delete
             
     br

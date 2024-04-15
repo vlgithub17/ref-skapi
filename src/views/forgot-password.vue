@@ -124,7 +124,7 @@ br
     template(v-else-if="step === 4")
         p Your password has been successfully changed. Please login with the new password.
         
-        div(style="display:block;text-align:right")
+        div(style="text-align:right")
             button.final(@click="router.replace('/login')") Login
 
     br
@@ -150,7 +150,7 @@ let error = ref('');
 let promiseRunning = ref(false);
 let resending = ref(false);
 let showPassword = ref(false);
-let showSuccess = ref(true);
+
 let newPasswordField = ref(null);
 let confirmNewPasswordField = ref(null);
 let email = '';
@@ -259,27 +259,6 @@ form {
     >label {
         margin-bottom: 16px;
     }
-
-    // label {
-    //     display: block;
-    //     color: var(--black-6);
-    //     font-size: 16px;
-    //     font-weight: 700;
-    // }
-
-    // input {
-    //     width: 100%;
-    //     margin-top: 8px;
-    //     padding: 12px 15px;
-    //     border-radius: 8px;
-    //     background-color: rgba(0, 0, 0, 0.05);
-    // }
-
-    // a {
-    //     font-size: 16px;
-    //     text-decoration: none;
-    //     color: var(--main-color);
-    // }
 
     .resend {
         font-size: 16px;

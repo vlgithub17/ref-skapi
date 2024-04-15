@@ -12,7 +12,7 @@ br
         .infoValue(style='margin-bottom:0;')
             .smallTitle Email
             template(v-if="modifyMode")
-                form.editValue(@submit.prevent="changeEmail")
+                form.editValue(@submit.prevent="changeEmail" style='margin-bottom:12px;')
                     input.big(type="email" ref='emailInp' spellcheck="false" :value="inputEmail" @input="(e) => {e.target.setCustomValidity('');inputEmail = e.target.value;}" placeholder="your@email.com" required)
 
                     template(v-if="updatingValue")
@@ -21,26 +21,24 @@ br
                         input(type="submit" hidden)
                     span.material-symbols-outlined.cancel(@click="modifyMode = false;") close
 
-            div(v-else)
+            div(v-else style='margin-bottom:12px;')
                 .ellipsis {{ user.email }}&nbsp;
                 span.editHandle(@click="editEmail") [CHANGE]
-            
+
             div(v-if="user.email_verified")
-                Checkbox(v-model="newsletterSubscribed" :disabled="!user.email_verified") I agree to receive newsletters from Skapi.
+                Checkbox(v-model="newsletterSubscribed" :disabled="!user.email_verified") Receive newsletters from Skapi.
             .iconClick(v-else style="color:var(--caution-color);" @click="proceedVerification = true;")
                 .material-symbols-outlined.fill(style='font-size:24px;') error
                 span &nbsp;Click to verify your email address
             
-            
-            
         br
         
-        .state
+        .state(style='margin-bottom:2rem;')
             .smallTitle Password 
             .ellipsis ******...&nbsp;
             router-link.editHandle(to='/change-password') [CHANGE]
 
-        hr(style="background:rgba(0,0,0,0.15);height:1px;border:0;margin:1rem 0")
+        hr
 
         div(style="text-align:right")
             router-link.iconClick(to='/delete-account' style='color:var(--caution-color);font-size:0.66rem;')

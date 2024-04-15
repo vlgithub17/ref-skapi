@@ -9,7 +9,7 @@ export let loginState = computed(() => !!user?.user_id);
 export let customer = null;
 
 watch(() => user?.user_id, (u, ou) => {
-    while(serviceIdList.length > 0) {
+    while (serviceIdList.length > 0) {
         serviceIdList.pop();
     }
     for (let k in serviceList) {
@@ -18,13 +18,13 @@ watch(() => user?.user_id, (u, ou) => {
     callServiceList.value = true;
 
     if (u) {
-        if (u !== ou) {        
+        if (u !== ou) {
             skapi.getUsers({
                 searchFor: "user_id",
                 value: u
             }).then(async uInfo => {
                 if (uInfo.list[0].services) {
-                    for(let k of uInfo.list[0].services.reverse()) {
+                    for (let k of uInfo.list[0].services.reverse()) {
                         serviceIdList.push(k);
                     }
 
@@ -47,23 +47,23 @@ watch(() => user?.user_id, (u, ou) => {
 }, { immediate: true });
 
 export let updateUser = () => {
-    return skapi.getProfile().then(u => {
+    return skapi.getProfile().then((u: any) => {
         for (let k in user) {
             delete user[k]
         }
         if (u) {
             for (let k in u) {
-                user[k] = u[k]
+                user[k] = u[k];
             }
 
             let getCustomer = async () => {
                 let misc = JSON.parse(user?.misc || null);
-            
+
                 if (misc?.stripe_customer_id) {
                     // stripe_customer_id exists
-            
+
                     let customer_id = misc.stripe_customer_id;
-            
+
                     // get customer info, and update customer.value
                     customer = skapi.clientSecretRequest({
                         clientSecretName: 'stripe_test',
@@ -74,10 +74,10 @@ export let updateUser = () => {
                         }
                     });
                 }
-            
+
                 else {
                     // stripe_customer_id does not exist
-            
+
                     // create customer, save customer id in user misc
                     customer = skapi.clientSecretRequest({
                         clientSecretName: 'stripe_test',
@@ -92,9 +92,9 @@ export let updateUser = () => {
                             email: user.email
                         }
                     })
-            
+
                     // update customer id in user misc
-                    user = await skapi.updateProfile({
+                    skapi.updateProfile({
                         misc: JSON.stringify({ stripe_customer_id: (await customer).id })
                     });
                 }

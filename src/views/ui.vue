@@ -8,6 +8,7 @@ main
     button.noLine .noLine
     br
     br
+    button.final.warning .final.warning
     button.unFinished.warning .unFinished.warning
     button.noLine.warning .noLine.warning
     br
@@ -17,6 +18,7 @@ main
     button.noLine.disabled .noLine.disabled
     br
     br
+    button.final.disabled.warning .final.disabled.warning
     button.unFinished.disabled.warning .unFinished.disabled.warning
     button.noLine.disabled.warning .noLine.disabled.warning
 
@@ -57,11 +59,11 @@ main
     p Form submit is on the right side:
 
     form(style='width:400px;')
-        label(style='margin-bottom:1rem;')
+        label
             | Input
             input.big(placeholder="Enter something")
         
-        label(style='margin-bottom:1rem;')
+        label
             | Input
             input.big(placeholder="Enter something")
 
@@ -76,11 +78,11 @@ main
     p Use &lt;a&gt; for additional form option:
 
     form(style='width:400px;')
-        label(style='margin-bottom:1rem;')
+        label
             | Input
             input.big(placeholder="Enter something")
         
-        label(style='margin-bottom:1rem;')
+        label
             | Input
             input.big(placeholder="Enter something")
 
@@ -101,5 +103,10 @@ main
 main {
     margin: 0 auto;
     max-width: 1000px;
+}
+form {
+    >label {
+        margin-bottom: 16px;
+    }
 }
 </style>

@@ -1,11 +1,12 @@
 <template lang="pug">
-label._checkbox(:class="{'nonClickable' : disabled}" :style='{opacity: disabled ? ".5" : "1"}')
+label._checkbox(:class="{'nonClickable' : disabled}" :style='{opacity: disabled ? ".5" : "1", "align-items": hasSlotContent ? "flex-start" : "center"}')
     input(type="checkbox" :checked='modelValue' @input="e=>{modelValue = e.target.checked;$emit('update:modelValue', e.target.checked)}" :disabled="disabled" :name="name" hidden)
-    span.material-symbols-outlined.fill {{ modelValue ? 'check_box' : 'check_box_outline_blank' }}
+    span.material-symbols-outlined.fill(:style='{"margin-top": hasSlotContent ? "-3px" : null}') {{ modelValue ? 'check_box' : 'check_box_outline_blank' }}
     div
         slot
 </template>
 <script setup>
+import {ref, onMounted, useSlots } from 'vue';
 let { disabled, modelValue = ref(false), name } = defineProps({
     disabled: Boolean,
     modelValue: {
@@ -13,6 +14,11 @@ let { disabled, modelValue = ref(false), name } = defineProps({
         default: false
     },
     name: String
+});
+const slots = useSlots();
+let hasSlotContent = ref(false);
+onMounted(() => {
+    hasSlotContent.value = !!slots.default && slots.default().length > 0;
 });
 </script>
 <style lang="less" scoped>

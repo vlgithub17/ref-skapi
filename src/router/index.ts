@@ -78,7 +78,7 @@ const router = createRouter(
       component: () => import('@/views/success.vue')
     },
     {
-      path: '/create',
+      path: '/create/:name',
       name: 'create',
       component: Create,
       beforeEnter: checkUser

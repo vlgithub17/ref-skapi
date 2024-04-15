@@ -14,7 +14,7 @@ br
     form(@submit.prevent="login")
         label
             | Email
-            input.big(type="email" @input="e=> { form.email = e.target.value; error='';}" :disabled="promiseRunning" placeholder="E.g. someone@gmail.com" required)
+            input.big(type="email" @input="e=> { form.email = e.target.value; error='';}" :disabled="promiseRunning" placeholder="your@email.com" required)
 
         label.passwordInput
             | Password
