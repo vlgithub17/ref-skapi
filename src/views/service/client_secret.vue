@@ -43,57 +43,52 @@ br
 br
 br
 
-Table
-    template(v-slot:head)
-        tr
-            th.center(style="width:80px")
-                | Secure
-                .resizer
-            th(style="width:30%")
-                | Name
-                .resizer
-            th
-                | $CLIENT_SECRET
-                //- .resizer
-            th.center(style="width:80px")
+form(@submit.prevent)
+    Table
+        template(v-slot:head)
+            tr
+                th.center(style="width:70px; padding:0")
+                    | Secure
+                    .resizer
+                th(style="width:30%")
+                    | Name
+                    .resizer
+                th
+                    | $CLIENT_SECRET
+                    //- .resizer
+                th.center(style="width:80px; padding:0")
 
-    template(v-slot:body)
-        tr(v-if="loading")
-            td(colspan=4).
-                Loading keys ... &nbsp;
-                #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-        //- tr(v-if="!addMode")
-            td(colspan=4)
-                .iconClick(@click="addKey")
-                    .material-symbols-outlined.fill add_circle
-                    span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Add Key
-        tr(v-if="!client_key.length") 
-            td(colspan=4) No Client Secret Key
-        tr(v-for="(key, index) in client_key")
-            template(v-if="editMode && key.edit")
-                td.center 
-                    Checkbox(v-model="key.secure")
-                td  
-                    input#keyName(type="text" v-model="key.name" required placeholder="Name")
-                td
-                    input(type="text" v-model="key.key" required placeholder="CLIENT_SECRET...")
-                td.center.buttonWrap
-                    template(v-if="updating")
-                        img.loading(src="@/assets/img/loading.png")
-                    template(v-else)
-                        label.material-symbols-outlined.clickable.save(@click="key.edit=false;editMode=false;" style="color:var(--main-color)") done
-                            input(type="submit" hidden)
-                        .material-symbols-outlined.clickable.cancel(@click="key.edit=false;editMode=false;") close
-            template(v-else)  
-                td.center 
-                    .material-symbols-outlined.bold(v-if="key.secure") check
-                td.overflow {{ key.name }}
-                td.overflow {{ key.key }}
-                td.center.buttonWrap
-                    template(v-if="!editMode")
-                        .material-symbols-outlined.fill.clickable.hide(@click="key.edit=true;editMode=true;") edit
-                        //- .material-symbols-outlined.fill.clickable.hide(@click="client_key.splice(index, 1);") delete
-                        .material-symbols-outlined.fill.clickable.hide(@click="deleteClientKey = true;deleteIndex = index;") delete
+        template(v-slot:body)
+            tr(v-if="loading")
+                td(colspan=4).
+                    Loading keys ... &nbsp;
+                    #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+            tr(v-else-if="!client_key.length") 
+                td(colspan=4) No Client Secret Key
+            tr(v-for="(key, index) in client_key")
+                template(v-if="editMode && key.edit || addMode && key.edit")
+                    td.center 
+                        Checkbox(v-model="key.secure")
+                    td  
+                        input#keyName(type="text" v-model="key.name" placeholder="Name" required)
+                    td(style="padding-right:0")
+                        input(type="text" v-model="key.key" placeholder="CLIENT_SECRET..." required)
+                    td.center.buttonWrap
+                        template(v-if="updating")
+                            img.loading(src="@/assets/img/loading.png")
+                        template(v-else)
+                            label.material-symbols-outlined.clickable.save(@click="saveKey(key)" style="color:var(--main-color)") done
+                                input(type="submit" hidden)
+                            .material-symbols-outlined.clickable.cancel(@click="cancelKey(key, index)") close
+                template(v-else)  
+                    td.center 
+                        .material-symbols-outlined.bold(v-if="key.secure") check
+                    td.overflow {{ key.name }}
+                    td.overflow {{ key.key }}
+                    td.center.buttonWrap
+                        template(v-if="!editMode")
+                            .material-symbols-outlined.fill.clickable.icon.hide(@click="key.edit=true;editMode=true;console.log(addMode)") edit
+                            .material-symbols-outlined.fill.clickable.icon.hide(@click="deleteClientKey = true;deleteIndex = index;") delete
 
 Modal(:open="deleteClientKey")
     h4(style='margin:.5em 0 0;') Delete Client Secret
@@ -124,6 +119,7 @@ import { currentService } from '@/views/service/main';
 
 let loading = ref(false);
 let updating = ref(false);
+let addMode = ref(false);
 let editMode = ref(false);
 let deleteClientKey = ref(false);
 let deleteIndex = '';
@@ -144,10 +140,30 @@ let client_key = ref([
 
 let addKey = () => {
     client_key.value.unshift({edit: true, secure:false, name:'', key:''});
-    editMode.value = true;
+    addMode.value = true;
     nextTick(() => {
         document.getElementById('keyName').focus();
     })
+}
+
+let cancelKey = (key, index) => {
+    if(addMode.value) {
+        client_key.value.splice(index, 1);
+        addMode.value = false;
+    } else {
+        key.edit = false;
+        editMode.value = false;
+    }
+}
+
+let saveKey = (key) => {
+    if(addMode.value) {
+        key.edit = false;
+        addMode.value = false;
+    } else {
+        key.edit = false;
+        editMode.value = false;
+    }
 }
 console.log(currentService)
 </script>
@@ -173,11 +189,15 @@ table {
             display: none;
         }
     }
+    td, th {
+        padding: 0 10px;
+    }
 }
 .buttonWrap {
     display: flex;
     height: 60px;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     padding: 0;
 }
@@ -204,6 +224,17 @@ table {
 
     &:hover::after {
         display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    input {
+        border-radius: 0;
+    }
+    table {
+        td {
+            padding: 0 4px;
+        }
     }
 }
 </style>

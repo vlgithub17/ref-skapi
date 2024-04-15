@@ -4,22 +4,22 @@
         br
         nav.left
             router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
-                span.material-symbols-outlined.icon.fill.nohover home
+                span.material-symbols-outlined.fill.nohover home
                 span.name Dashboard
             router-link.router(:to="`/my-services/${currentService.id}/users`" :class="{'active': route.name == 'users'}")
-                span.material-symbols-outlined.icon.fill.nohover supervisor_account
+                span.material-symbols-outlined.fill.nohover supervisor_account
                 span.name Users
             router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
-                span.material-symbols-outlined.icon.fill.nohover database
+                span.material-symbols-outlined.fill.nohover database
                 span.name Database
             router-link.router(:to="`/my-services/${currentService.id}/clientsecret`" :class="{'active': route.name == 'clientsecret'}")
-                span.material-symbols-outlined.icon.fill.nohover key
+                span.material-symbols-outlined.fill.nohover key
                 span.name Client Secret
             router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
-                span.material-symbols-outlined.icon.fill.nohover email
+                span.material-symbols-outlined.fill.nohover email
                 span.name Mail
             router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting'}")
-                span.material-symbols-outlined.icon.fill.nohover language
+                span.material-symbols-outlined.fill.nohover language
                 span.name Hosting
     main.right 
         router-view
@@ -101,7 +101,7 @@ watch(serviceList, nv => {
         vertical-align: middle;
     }
 
-    .icon {
+    .material-symbols-outlined {
         font-size: 32px;
     }
 

@@ -46,7 +46,7 @@ main#subscription
             .line 
 
             .planWrap
-                .infoBox
+                //- .infoBox
                     .mode Trial Mode
                     .price $0
 
@@ -121,15 +121,7 @@ const route = useRoute();
 
 let serviceId = route.path.split('/')[2];
 
-let service = {
-    active: 1,
-    name: 'service name',
-    cors: 'service cors',
-    timestamp: 1709102706561,
-    group: 1,
-    service: 'ap226E8TXhYtbcXRgi5D',
-    users: 10
-}
+
 </script>
 
 <style scoped lang="less">

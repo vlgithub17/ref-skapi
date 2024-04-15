@@ -5,7 +5,7 @@ br
 
 main#create
     router-link(to="/my-services")
-        img(src="@/assets/img/logo/symbol-logo.png" style="width: 40px;")
+        img(src="@/assets/img/logo/logo.png" style="width: 193px;")
 
     .bottomLineTitle Create a New Service
 
@@ -15,7 +15,7 @@ main#create
 
     br
 
-    section.planWrap
+    section.planWrap(:class="{'disabled' : promiseRunning}")
         .infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
             .mode Trial Mode
             .price $0
@@ -69,9 +69,12 @@ main#create
         span 2.&nbsp;
         span Choose a name for your service and #[b create]:
 
-    form.inputWrap
-        input#serviceName(type="text" @input='(e)=>{newServiceName=e.target.value;error="";}' placeholder="Your service name" required)
-        button.final(type="submit") Create
+    form.inputWrap(@submit.prevent="createService")
+        input#serviceName(type="text" @input='(e)=>{newServiceName=e.target.value;}' :disabled="promiseRunning" placeholder="Your service name" required)
+        div(v-if="promiseRunning" style="width:108px;display:flex;align-items:center")
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.final(type="submit") Create
 
 
 br
@@ -82,8 +85,12 @@ br
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { ref } from 'vue';
-import { callServiceList } from '@/views/service-list'
+import { nextTick, ref } from 'vue';
+import { callServiceList, serviceIdList, serviceList } from '@/views/service-list'
+import { skapi } from '@/code/admin';
+import { user, customer } from '@/code/user';
+import { currentService } from './service/main';
+import Service from '@/code/service';
 
 const router = useRouter();
 const route = useRoute();
@@ -97,7 +104,101 @@ let service = {
     service: 'ap226E8TXhYtbcXRgi5D',
     users: 10
 }
+let promiseRunning = ref(false);
 let serviceMode = ref('standard');
+let newServiceName = '';
+
+let createService = () => {
+    promiseRunning.value = true;
+
+    Service.create({ name: newServiceName })
+    .then(async(s) => {
+        if(serviceMode.value == 'trial') {
+            newServiceName = '';
+            serviceIdList.push(s.id);
+            serviceList[s.id] = s;
+            promiseRunning.value = false;
+            location.href = '/my-services';
+        } else {
+            let service_info = s;
+            let ticket_id = serviceMode.value;
+            await createSubscription(ticket_id, service_info);
+            await getSubscription(service_info);
+            newServiceName = '';
+            promiseRunning.value = false;
+            router.push('/my-services');
+        }
+    }).catch(err => {
+        promiseRunning.value = false;
+        console.log(err);
+    })
+}
+
+let getSubscription = async(service_info) => {
+    if(service_info?.service?.subs_id) {
+        let subs_id = service_info.service.subs_id.split('#');
+    
+        if (subs_id.length < 2) {
+            alert('Service does not have a subscription');
+            return;
+        }
+    
+        let SUBSCRIPTION_ID = subs_id[0];
+    
+        skapi.clientSecretRequest({
+            clientSecretName: 'stripe_test',
+            url: `https://api.stripe.com/v1/subscriptions/${SUBSCRIPTION_ID}`,
+            method: 'GET',
+            headers: {
+                Authorization: 'Bearer $CLIENT_SECRET',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+        }).then(res => {
+            service_info.subscription = res;
+            serviceList[s.id].subscription = res;
+        }).catch(err => {
+            console.log(err.message);
+        });
+    }
+}
+
+let createSubscription = async (ticket_id, service_info) => {
+    let resolvedCustomer = await customer;
+    let product = JSON.parse(import.meta.env.VITE_PRODUCT);
+    let customer_id = resolvedCustomer.id;
+    let currentUrl = window.location;
+
+    let response = await skapi.clientSecretRequest({
+        clientSecretName: 'stripe_test',
+        url: 'https://api.stripe.com/v1/checkout/sessions',
+        method: 'POST',
+        headers: {
+            Authorization: 'Bearer $CLIENT_SECRET',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: {
+            client_reference_id: user.user_id,
+            customer: customer_id,
+            'customer_update[name]': 'auto',
+            'customer_update[address]': 'auto',
+            'subscription_data[metadata][service]': service_info.id,
+            'subscription_data[metadata][owner]': user.user_id,
+            'mode': 'subscription',
+            'subscription_data[description]': 'Subscription Plan of service ID: ' + service_info.id,
+            cancel_url: currentUrl.origin + '/myServices',
+            "line_items[0][quantity]": 1,
+            'line_items[0][price]': product[ticket_id],
+            "success_url": currentUrl.origin + '/my-services?checkout_id={CHECKOUT_SESSION_ID}&service_id=' + service_info.id + '&ticket_id=' + ticket_id,
+            'tax_id_collection[enabled]': true,
+        }
+    });
+    if (response.error) {
+        alert(response.error.message);
+        return;
+    }
+
+    window.location = response.url;
+};
 </script>
 
 <style scoped lang="less">

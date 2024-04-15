@@ -14,12 +14,13 @@ br
     form(@submit.prevent="login")
         label
             | Email
-            input(type="email" @input="e=> { form.email = e.target.value; error='';}" placeholder="E.g. someone@gmail.com" required)
+            input(type="email" @input="e=> { form.email = e.target.value; error='';}" :disabled="promiseRunning" placeholder="E.g. someone@gmail.com" required)
 
         label.passwordInput
             | Password
             input(:type='showPassword ? "text" : "password"'
             @input="(e)=>{form.password = e.target.value; error='';}" 
+            :disabled="promiseRunning"
             name="password" placeholder="Enter password" required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")

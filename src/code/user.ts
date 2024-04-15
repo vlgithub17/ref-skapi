@@ -6,6 +6,8 @@ import Service from "./service";
 export let user: { [key: string]: any } = reactive({});
 export let loginState = computed(() => !!user?.user_id);
 
+export let customer = null;
+
 watch(() => user?.user_id, (u, ou) => {
     while(serviceIdList.length > 0) {
         serviceIdList.pop();
@@ -53,6 +55,51 @@ export let updateUser = () => {
             for (let k in u) {
                 user[k] = u[k]
             }
+
+            let getCustomer = async () => {
+                let misc = JSON.parse(user?.misc || null);
+            
+                if (misc?.stripe_customer_id) {
+                    // stripe_customer_id exists
+            
+                    let customer_id = misc.stripe_customer_id;
+            
+                    // get customer info, and update customer.value
+                    customer = skapi.clientSecretRequest({
+                        clientSecretName: 'stripe_test',
+                        url: `https://api.stripe.com/v1/customers/${customer_id}`,
+                        method: 'GET',
+                        headers: {
+                            Authorization: 'Bearer $CLIENT_SECRET'
+                        }
+                    });
+                }
+            
+                else {
+                    // stripe_customer_id does not exist
+            
+                    // create customer, save customer id in user misc
+                    customer = skapi.clientSecretRequest({
+                        clientSecretName: 'stripe_test',
+                        url: 'https://api.stripe.com/v1/customers',
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            Authorization: 'Bearer $CLIENT_SECRET'
+                        },
+                        data: {
+                            name: user.name || user.email,
+                            email: user.email
+                        }
+                    })
+            
+                    // update customer id in user misc
+                    user = await skapi.updateProfile({
+                        misc: JSON.stringify({ stripe_customer_id: (await customer).id })
+                    });
+                }
+            };
+            getCustomer();
         }
     });
 }

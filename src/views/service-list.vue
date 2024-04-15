@@ -101,6 +101,8 @@ import Table from '@/components/table.vue';
 
 const router = useRouter();
 
+console.log(serviceList)
+
 watch(loginState, nv => {
     if (!nv) {
         router.push('/login');
