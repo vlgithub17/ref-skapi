@@ -87,8 +87,6 @@ main#serviceList
                             // host storage
                             .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
                             .percent(v-else :class="getClass(serviceList[id], 'host')") {{ serviceList[id].plan === 'Trial' ? 'N/A' : calculateHostPercentage(serviceList[id].storageInfo.host, serviceList[id].plan) + '%' }}
-br
-br
 </template>
 
 <script setup lang="ts">

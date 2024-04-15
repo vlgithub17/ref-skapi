@@ -139,7 +139,7 @@ section.infoBox
             .smallTitle Service Name
             template(v-if="modifyMode.name")
                 form.editValue(@submit.prevent="changeName")
-                    input(type="text" ref="focus_name" placeholder="Maximum 40 characters" maxlength="40" :value='inputName' @input="(e) => inputName = e.target.value" required)
+                    input.big(type="text" ref="focus_name" placeholder="Maximum 40 characters" maxlength="40" :value='inputName' @input="(e) => inputName = e.target.value" required)
 
                     template(v-if="updatingValue.name")
                         img.loading(src="@/assets/img/loading.png")
@@ -155,7 +155,7 @@ section.infoBox
             .smallTitle CORS
             template(v-if="modifyMode.cors")
                 form.editValue(@submit.prevent="changeCors")
-                    input#modifyCors(ref="focus_cors" :disabled="updatingValue.cors || null" type="text" placeholder='https://your.domain.com, http://second.domain.net, ...' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
+                    input#modifyCors.big(ref="focus_cors" :disabled="updatingValue.cors || null" type="text" placeholder='https://your.domain.com, http://second.domain.net, ...' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
 
                     template(v-if="updatingValue.cors")
                         img.loading(src="@/assets/img/loading.png")
@@ -171,7 +171,7 @@ section.infoBox
             .smallTitle Secret Key
             template(v-if="modifyMode.api_key")
                 form.editValue(@submit.prevent="changeApiKey")
-                    input(ref="focus_key" :disabled="updatingValue.api_key || null" type="text" minlength="4" maxlength="256" placeholder='Maximum 256 characters, At least 6 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
+                    input.big(ref="focus_key" :disabled="updatingValue.api_key || null" type="text" minlength="4" maxlength="256" placeholder='Maximum 256 characters, At least 6 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
 
                     template(v-if="updatingValue.api_key")
                         img.loading(src="@/assets/img/loading.png")

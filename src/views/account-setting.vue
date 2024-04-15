@@ -13,7 +13,7 @@ br
             .smallTitle Email
             template(v-if="modifyMode")
                 form.editValue(@submit.prevent="changeEmail")
-                    input(type="email" ref='emailInp' spellcheck="false" :value="inputEmail" @input="(e) => {e.target.setCustomValidity('');inputEmail = e.target.value;}" placeholder="your@email.com" required)
+                    input.big(type="email" ref='emailInp' spellcheck="false" :value="inputEmail" @input="(e) => {e.target.setCustomValidity('');inputEmail = e.target.value;}" placeholder="your@email.com" required)
 
                     template(v-if="updatingValue")
                         img.loading(src="@/assets/img/loading.png")

@@ -14,7 +14,7 @@ br
     form(@submit.prevent="signup")
         label
             | Email
-            input(type="email" 
+            input.big(type="email" 
             :value='form.email' 
             @input="e=> { form.email = e.target.value; }"
             placeholder="Enter your email" 
@@ -23,7 +23,7 @@ br
 
         label.passwordInput
             | Password
-            input(:type='showPassword ? "text" : "password"'
+            input.big(:type='showPassword ? "text" : "password"'
             ref="passwordField" 
             @input="e=> { form.password = e.target.value; e.target.setCustomValidity(''); error = '' }"
             minlength="6"
@@ -37,7 +37,7 @@ br
 
         label.passwordInput
             | Confirm password
-            input(:type='showPassword ? "text" : "password"'
+            input.big(:type='showPassword ? "text" : "password"'
             ref="confirmPasswordField" 
             @input="e=> { form.password_confirm = e.target.value; e.target.setCustomValidity(''); error = '' }"
             @change="validatePassword"
@@ -141,25 +141,6 @@ let signup = (e) => {
 form {
     >label {
         margin-bottom: 16px;
-    }
-
-    label {
-        display: block;
-        color: var(--black-6);
-        font-size: 16px;
-        font-weight: 700;
-    }
-
-    input {
-        width: 100%;
-        margin-top: 8px;
-        padding: 12px 15px;
-        border-radius: 8px;
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-
-    a {
-        font-size: 16px;
     }
 
     .actions {

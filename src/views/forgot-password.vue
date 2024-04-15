@@ -21,7 +21,7 @@ br
 
             label
                 | Email
-                input(type="email" 
+                input.big(type="email" 
                 :value="email"
                 @input="(e) => { email = e.target.value; error = ''; }"
                 placeholder="Enter your email address" 
@@ -39,7 +39,7 @@ br
                 template(v-if="promiseRunning")
                     img.loading(src="@/assets/img/loading.png")
                 template(v-else)
-                    button.noLine(type="button" @click="router.push('/login')") Back to Login
+                    router-link(to='/login') Back to Login
                     button.unFinished(type="submit") Continue
 
     template(v-else-if="step === 2")
@@ -49,7 +49,7 @@ br
 
             label
                 | Code
-                input(
+                input.big(
                 type="text"
                 :value="code"
                 @input="(e) => { code = e.target.value; error = ''; }"
@@ -72,7 +72,7 @@ br
             br
 
             .bottom
-                button.noLine(type="button" @click="back") Back
+                a.clickable(@click="back") Back
                 button.unFinished(type="submit") Continue
 
     template(v-else-if="step === 3")
@@ -83,7 +83,7 @@ br
 
             label.passwordInput(style="margin-bottom:16px")
                 | New password
-                input(
+                input.big(
                 :type='showPassword ? "text" : "password"'
                 ref="newPasswordField" 
                 :value="newPassword"
@@ -99,7 +99,7 @@ br
 
             label.passwordInput
                 | Confirm new password
-                input(
+                input.big(
                 :type='showPassword ? "text" : "password"'
                 ref="confirmNewPasswordField"
                 :value="newPasswordConfirm"
@@ -260,26 +260,27 @@ form {
         margin-bottom: 16px;
     }
 
-    label {
-        display: block;
-        color: var(--black-6);
-        font-size: 16px;
-        font-weight: 700;
-    }
+    // label {
+    //     display: block;
+    //     color: var(--black-6);
+    //     font-size: 16px;
+    //     font-weight: 700;
+    // }
 
-    input {
-        width: 100%;
-        margin-top: 8px;
-        padding: 12px 15px;
-        border-radius: 8px;
-        background-color: rgba(0, 0, 0, 0.05);
-    }
+    // input {
+    //     width: 100%;
+    //     margin-top: 8px;
+    //     padding: 12px 15px;
+    //     border-radius: 8px;
+    //     background-color: rgba(0, 0, 0, 0.05);
+    // }
 
-    a {
-        font-size: 16px;
-        text-decoration: none;
-        color: var(--main-color);
-    }
+    // a {
+    //     font-size: 16px;
+    //     text-decoration: none;
+    //     color: var(--main-color);
+    // }
+
     .resend {
         font-size: 16px;
         .click {

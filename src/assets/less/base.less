@@ -67,14 +67,28 @@ input {
     font-size: 0.8rem;
     font-weight: 400;
 
-    &:not(.lineInput):focus {
-        outline: 2px solid var(--main-color);
+    &.big {
+        background-color: white;
+        width: 100%;
+        margin-top: 8px;
+        padding: 12px 15px;
         border-radius: 8px;
+        outline: 1px solid rgba(0, 0, 0, 0.5);
+        &:hover {
+            outline: 1px solid var(--main-color);
+        }
+        &:focus, &:active {
+            outline: 2px solid var(--main-color);
+        }
+        &.disabled {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
     }
 
-    &.lineInput {
+    &.line {
         outline: none;
-
+        border-bottom: 1px solid;
+        height: 1.5rem;
         &:focus {
             border-bottom: 2px solid var(--main-color) !important;
         }
@@ -85,8 +99,24 @@ input {
     // &::-webkit-search-cancel-button,
     // &::-webkit-search-results-button,
     // &::-webkit-search-results-decoration{
-    //     // display:none;
+    //     display:none;
     // }
+}
+form {
+    // >label {
+    //     margin-bottom: 16px;
+    // }
+
+    label:not(._checkbox) {
+        display: block;
+        color: var(--black-6);
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    a {
+        font-size: 16px;
+    }
 }
 
 button {
@@ -102,97 +132,43 @@ button {
     font-family: inherit;
     user-select: none;
     outline: none;
+    position: relative;
+    overflow: hidden;
 
+    &:not(.disabled):hover::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.04);
+        display: block;
+    }
     &.noLine {
         border: 0;
-        padding-left: 0;
-
-        &:not(.disabled, .warning):hover {
-            color: #6776FF;
-        }
-
-        &:not(.disabled, .warning):active {
-            color: #2C3CB6;
-        }
-
-        &:not(.warning).disabled {
-            color: rgba(0, 0, 0, 0.2);
-        }
-
+        
         &.warning {
             color: var(--caution-color);
-
-            &:not(.disabled):hover {
-                color: #FF7E7E;
-            }
-
-            &:not(.disabled):active {
-                color: #D54040;
-            }
-
-            &.disabled {
-                color: #F0AFAF;
-            }
         }
     }
 
     &.unFinished {
-        border: 2px solid var(--main-color);
-
-        &:not(.disabled, .warning):hover {
-            background-color: rgba(0, 0, 0, 0.025);
-        }
-
-        &:not(.disabled, .warning):active {
-            background-color: #BEC4ED;
-        }
-
-        &:not(.warning).disabled {
-            border: 2px solid rgba(0, 0, 0, 0.2);
-            color: rgba(0, 0, 0, 0.2) !important;
-        }
+        border: 2px solid currentColor;
 
         &.warning {
-            border: 2px solid var(--caution-color);
-            color: var(--caution-color) !important;
-
-            &:not(.disabled):hover {
-                background-color: #F0E0E0;
-            }
-
-            &:not(.disabled):active {
-                background-color: #F0C7C7;
-            }
-
-            &.disabled {
-                border: 2px solid #F0AFAF;
-                color: #F0AFAF !important;
-            }
+            color: var(--caution-color);
         }
     }
 
     &.final {
         border: 0;
-        background-color: var(--main-color) !important;
-        color: #fff !important;
+        background-color: var(--main-color);
+        color: #fff;
 
-        &:not(.disabled):hover {
-            background-color: #4F61E9 !important;
+        &.warning {
+            background-color: var(--caution-color);
         }
-
-        &:not(.disabled):active {
-            box-shadow: 0 0 0 2px #A5AFFF inset;
-        }
-
-        &.disabled {
-            background-color: rgba(0, 0, 0, 0.2) !important;
-            color: rgba(0, 0, 0, 0.2) !important;
-        }
-    }
-
-    &.disabled {
-        user-select: none;
-        cursor: default;
     }
 }
 
@@ -201,8 +177,8 @@ body {
     margin: 0;
     padding: 0;
     background-color: #fafaff;
-    // font-family: "Radio Canada", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: "Radio Canada", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    // font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-weight: 300;
 
     font-optical-sizing: auto;
