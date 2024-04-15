@@ -50,7 +50,7 @@ br
                     .material-symbols-outlined.fill visibility_off
 
         .actions 
-            Checkbox(v-model="form.subscribe") I agree to receive newsletters from Skapi.
+            Checkbox(v-model="form.subscribe" style='font-weight:unset;') I agree to receive newsletters from Skapi.
 
         br
 
@@ -65,7 +65,7 @@ br
                 img.loading(src="@/assets/img/loading.png")
 
             template(v-else)
-                button.final Sign Up
+                button.final Sign-up
                 .signup 
                     | Have an account?&nbsp;
                     RouterLink(:to="{name: 'login'}") Login
@@ -160,8 +160,6 @@ form {
 
     a {
         font-size: 16px;
-        text-decoration: none;
-        color: var(--main-color);
     }
 
     .actions {

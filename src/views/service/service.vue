@@ -130,16 +130,16 @@ section.infoBox
             .material-symbols-outlined.empty help 
             span Help
         br
-        
-            
+
+
     hr
-    
+
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
         .infoValue
             .smallTitle Service Name
             template(v-if="modifyMode.name")
                 form.editValue(@submit.prevent="changeName")
-                    input(type="text" placeholder="Maximum 40 characters" maxlength="40" :value='inputName' @input="(e) => inputName = e.target.value" required)
+                    input(type="text" ref="focus_name" placeholder="Maximum 40 characters" maxlength="40" :value='inputName' @input="(e) => inputName = e.target.value" required)
 
                     template(v-if="updatingValue.name")
                         img.loading(src="@/assets/img/loading.png")
@@ -155,7 +155,7 @@ section.infoBox
             .smallTitle CORS
             template(v-if="modifyMode.cors")
                 form.editValue(@submit.prevent="changeCors")
-                    input#modifyCors(:disabled="updatingValue.cors || null" type="text" placeholder='https://your.domain.com, http://second.domain.net, ...' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
+                    input#modifyCors(ref="focus_cors" :disabled="updatingValue.cors || null" type="text" placeholder='https://your.domain.com, http://second.domain.net, ...' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
 
                     template(v-if="updatingValue.cors")
                         img.loading(src="@/assets/img/loading.png")
@@ -167,12 +167,11 @@ section.infoBox
                 .smallValue {{ currentService.service.cors || '*' }}&nbsp;
                 span.editHandle(@click="editCors" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
 
-
         .infoValue
             .smallTitle Secret Key
             template(v-if="modifyMode.api_key")
                 form.editValue(@submit.prevent="changeApiKey")
-                    input(:disabled="updatingValue.api_key || null" type="text" minlength="2" maxlength="256" placeholder='Maximum 256 characters, At least 2 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
+                    input(ref="focus_key" :disabled="updatingValue.api_key || null" type="text" minlength="4" maxlength="256" placeholder='Maximum 256 characters, At least 6 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
 
                     template(v-if="updatingValue.api_key")
                         img.loading(src="@/assets/img/loading.png")
@@ -180,24 +179,24 @@ section.infoBox
                         input(type="submit" hidden)
                     span.material-symbols-outlined.cancel(@click="modifyMode.api_key = false;") close
 
-            template(v-else)
-                .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 1) + '*'.repeat(currentService.service.api_key.length - 1) : 'No Secret Key' }}&nbsp;
+            div(v-else)
+                .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 2) + '*'.repeat(currentService.service.api_key.length - 2) + '...' : 'No Secret Key' }}&nbsp;
                 span.editHandle(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
 
-        .infoValue
+        .infoValue(style='display:flex;align-items:center;min-height:44px;')
             .smallTitle User Signup
             select(@change="(e) => changeCreateUserMode(e.target.value)" :value="currentService.service.prevent_signup ? 'admin' : 'anyone'" :disabled='updatingValue.prevent_signup')
                 option(value="admin") Only admin allowed
                 option(value="anyone") Anyone allowed
 
-        .infoValue 
-            .smallTitle Disable/Enable
-            Toggle(:disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
+    //- .infoValue(:class="{'nonClickable' : !user?.email_verified}" style='display: flex;align-items: center;min-height:44px;')
+    //-     .smallTitle Disable/Enable
+    //-     Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
 br
 </template>
 
 <script setup lang="ts">
-import { nextTick, reactive } from 'vue';
+import { nextTick, reactive, ref } from 'vue';
 import { currentService } from '@/views/service/main';
 import { user } from '@/code/user';
 import Code from '@/components/code.vue';
@@ -220,15 +219,17 @@ let updatingValue = reactive({
     api_key: false,
     prevent_signup: false
 });
+let focus_name = ref();
+let focus_cors = ref();
+let focus_key = ref();
 
 // edit/change name
 let editName = () => {
-    if (user.email_verified) {
-        inputName = currentService.service.name;
-        modifyMode.name = true;
-    } else {
-        return false;
-    }
+    inputName = currentService.service.name;
+    modifyMode.name = true;
+    nextTick(() => {
+        focus_name.value.focus();
+    });
 }
 let changeName = () => {
     if (currentService.service.name !== inputName) {
@@ -256,15 +257,16 @@ let changeName = () => {
 let editCors = () => {
     inputCors = currentService.service.cors === '*' ? '' : currentService.service.cors;
     modifyMode.cors = true;
+    nextTick(() => {
+        focus_cors.value.focus();
+    });
 }
 let changeCors = () => {
     updatingValue.cors = true;
-
     currentService.updateService({
         cors: inputCors
     }).then(() => {
         updatingValue.cors = false;
-        currentService.service.cors = inputCors;
         modifyMode.cors = false;
     }).catch(err => {
         updatingValue.cors = false;
@@ -280,6 +282,9 @@ let changeCors = () => {
 let editApiKey = () => {
     inputKey = currentService.service.api_key;
     modifyMode.api_key = true;
+    nextTick(() => {
+        focus_key.value.focus();
+    });
 }
 let changeApiKey = () => {
     let previous = currentService.service.api_key;
@@ -324,13 +329,13 @@ let changeCreateUserMode = (value: string) => {
 <style lang="less" scoped>
 select {
     box-sizing: border-box;
-    padding: 0;
+    padding: 4px;
     margin: 0;
     outline: none;
     border: 0;
+    border-radius: 4px;
     font-size: 0.8rem;
-    margin-left: -2px;
-    background-color: white;
+    background-color: rgba(0, 0, 0, 0.05);
     font-family: inherit;
     font-weight: normal;
 

@@ -288,14 +288,22 @@ export default class Service {
         let to_update: { [key: string]: any; } = {};
 
         if ('cors' in params) {
-            let cors = params.cors.split(',').map((c) => c.trim());
-            let service_cors = (this.service.cors || '').split(',').map((c) => c.trim());
-            for (let c of cors) {
-                if (!service_cors.includes(c)) {
-                    to_update.cors = cors;
-                    break;
+            params.cors = params.cors.trim();
+            // if cors have , at the end, remove it
+            while (params.cors[params.cors.length - 1] === ',') {
+                if (params.cors[params.cors.length - 1] === ',') {
+                    params.cors = params.cors.slice(0, -1);
+                    params.cors = params.cors.trim();
                 }
             }
+
+            let cors = params.cors.split(',').map((c) => c.trim());
+            let service_cors = (this.service.cors || '').split(',').map((c) => c.trim());
+            if (cors.length === service_cors.length && cors.every((v, i) => v === service_cors[i])) {
+                return this.service
+            }
+
+            to_update.cors = cors;
         }
 
         if ('name' in params && params.name !== this.service.name) {
@@ -307,8 +315,10 @@ export default class Service {
         }
 
         if (Object.keys(to_update).length) {
-            await skapi.util.request(this.admin_private_endpoint + 'register-service', Object.assign({ execute: 'update', service: this.id, owner: this.owner }, to_update), { auth: true });
-            Object.assign(this.service, to_update);
+            let srv = await skapi.util.request(this.admin_private_endpoint + 'register-service', Object.assign({ execute: 'update', service: this.id, owner: this.owner }, to_update), { auth: true });
+            for (let k in srv) {
+                this.service[k] = srv[k];
+            }
         }
 
         return this.service;

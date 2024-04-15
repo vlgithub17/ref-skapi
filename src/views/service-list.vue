@@ -12,7 +12,7 @@ main#serviceList
 
         router-link.iconClick(to="/create")
             .material-symbols-outlined.fill add_circle
-            span &nbsp;&nbsp;Create New Service
+            span &nbsp;&nbsp;Create a New Service
 
         br
         br
