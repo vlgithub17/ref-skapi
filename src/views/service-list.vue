@@ -101,8 +101,6 @@ import Table from '@/components/table.vue';
 
 const router = useRouter();
 
-console.log(serviceList)
-
 watch(loginState, nv => {
     if (!nv) {
         router.push('/login');
@@ -119,10 +117,10 @@ let calculateUserPercentage = (users: number, plan: string, formatStr = false) =
             return users;
         }
         else if (users < 1000000) {
-            return Math.round(users / 1000) + 'k';
+            return Math.round((users / 1000) * 100) / 100 + 'k';
         }
         else {
-            return Math.round(users / 1000000) + 'M';
+            return Math.round((users / 1000000) * 100) / 100 + 'M';
         }
     }
     switch (plan) {
