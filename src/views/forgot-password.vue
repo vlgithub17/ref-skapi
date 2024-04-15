@@ -125,7 +125,7 @@ br
         p Your password has been successfully changed. Please login with the new password.
         
         div(style="display:block;text-align:right")
-            button.final(@click="router.push('/login')") Login
+            button.final(@click="router.replace('/login')") Login
 
     br
     br

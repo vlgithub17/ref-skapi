@@ -47,9 +47,9 @@ Table
     template(v-slot:head)
         tr
             th.center(style="width:80px")
-                | Public
+                | Secure
                 .resizer
-            th
+            th(style="width:30%")
                 | Name
                 .resizer
             th
@@ -72,11 +72,11 @@ Table
         tr(v-for="(key, index) in client_key")
             template(v-if="editMode && key.edit")
                 td.center 
-                    Checkbox(v-model="key.public")
+                    Checkbox(v-model="key.secure")
                 td  
-                    input#keyName(type="text" v-model="key.name" required)
+                    input#keyName(type="text" v-model="key.name" required placeholder="Name")
                 td
-                    input(type="text" v-model="key.key" required)
+                    input(type="text" v-model="key.key" required placeholder="CLIENT_SECRET...")
                 td.center.buttonWrap
                     template(v-if="updating")
                         img.loading(src="@/assets/img/loading.png")
@@ -86,7 +86,7 @@ Table
                         .material-symbols-outlined.clickable.cancel(@click="key.edit=false;editMode=false;") close
             template(v-else)  
                 td.center 
-                    .material-symbols-outlined.fill(v-if="key.public") check
+                    .material-symbols-outlined.bold(v-if="key.secure") check
                 td.overflow {{ key.name }}
                 td.overflow {{ key.key }}
                 td.center.buttonWrap
@@ -130,20 +130,20 @@ let deleteIndex = '';
 let client_key = ref([
     {
         edit: false,
-        public: true,
+        secure: true,
         name: 'test1',
         key: 'dssdlfkjsdakdsjfaiw'
     },
     {
         edit: false,
-        public: false,
+        secure: false,
         name: 'test2',
         key: 'sdfsdfsafjssdfasdfasfdassjfaiw'
     }
 ]);
 
 let addKey = () => {
-    client_key.value.unshift({edit: true, public:false, name:'', key:''});
+    client_key.value.unshift({edit: true, secure:false, name:'', key:''});
     editMode.value = true;
     nextTick(() => {
         document.getElementById('keyName').focus();
