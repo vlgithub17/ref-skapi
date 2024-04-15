@@ -74,7 +74,7 @@ Table
                 td.center 
                     Checkbox(v-model="key.public")
                 td  
-                    input(type="text" v-model="key.name" required)
+                    input#keyName(type="text" v-model="key.name" required)
                 td
                     input(type="text" v-model="key.key" required)
                 td.center.buttonWrap
@@ -90,9 +90,10 @@ Table
                 td.overflow {{ key.name }}
                 td.overflow {{ key.key }}
                 td.center.buttonWrap
-                    .material-symbols-outlined.fill.clickable.hide(@click="key.edit=true;editMode=true;") edit
-                    //- .material-symbols-outlined.fill.clickable.hide(@click="client_key.splice(index, 1);") delete
-                    .material-symbols-outlined.fill.clickable.hide(@click="deleteClientKey = true;deleteIndex = index;") delete
+                    template(v-if="!editMode")
+                        .material-symbols-outlined.fill.clickable.hide(@click="key.edit=true;editMode=true;") edit
+                        //- .material-symbols-outlined.fill.clickable.hide(@click="client_key.splice(index, 1);") delete
+                        .material-symbols-outlined.fill.clickable.hide(@click="deleteClientKey = true;deleteIndex = index;") delete
 
 Modal(:open="deleteClientKey")
     h4(style='margin:.5em 0 0;') Delete Client Secret
@@ -109,6 +110,7 @@ Modal(:open="deleteClientKey")
             button.noLine.warning(@click="deleteClientKey = false") Cancel
             button.unFinished.warning(@click="client_key.splice(deleteIndex, 1);deleteClientKey = false;") Delete
 
+br
 </template>
 <script setup>
 import Table from '@/components/table.vue';
@@ -116,7 +118,7 @@ import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
 
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import { user } from '@/code/user';
 import { currentService } from '@/views/service/main';
 
@@ -143,6 +145,9 @@ let client_key = ref([
 let addKey = () => {
     client_key.value.unshift({edit: true, public:false, name:'', key:''});
     editMode.value = true;
+    nextTick(() => {
+        document.getElementById('keyName').focus();
+    })
 }
 console.log(currentService)
 </script>
