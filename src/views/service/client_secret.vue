@@ -36,7 +36,7 @@ br
     span.editHandle(v-if="editMode" @click="editMode = false;" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [SAVE]
     span.editHandle(v-else @click="editMode = true;" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
 
-.iconClick(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode}")
+.iconClick(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}")
     .material-symbols-outlined.fill add_circle
     span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Add Key
 
@@ -86,8 +86,8 @@ form(@submit.prevent)
                     td.overflow {{ key.name }}
                     td.overflow {{ key.key }}
                     td.center.buttonWrap
-                        template(v-if="!editMode")
-                            .material-symbols-outlined.fill.clickable.icon.hide(@click="key.edit=true;editMode=true;console.log(addMode)") edit
+                        template(v-if="!editMode && !addMode")
+                            .material-symbols-outlined.fill.clickable.icon.hide(@click="key.edit=true;editMode=true;") edit
                             .material-symbols-outlined.fill.clickable.icon.hide(@click="deleteClientKey = true;deleteIndex = index;") delete
 
 Modal(:open="deleteClientKey")
@@ -121,6 +121,7 @@ let loading = ref(false);
 let updating = ref(false);
 let addMode = ref(false);
 let editMode = ref(false);
+let sendingEmail = ref(false);
 let deleteClientKey = ref(false);
 let deleteIndex = '';
 let client_key = ref([

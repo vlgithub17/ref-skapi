@@ -118,15 +118,15 @@ let createService = () => {
             serviceIdList.push(s.id);
             serviceList[s.id] = s;
             promiseRunning.value = false;
-            location.href = '/my-services';
+            location.href = '/my-services/' + s.id;
         } else {
             let service_info = s;
             let ticket_id = serviceMode.value;
             await createSubscription(ticket_id, service_info);
-            await getSubscription(service_info);
-            newServiceName = '';
-            promiseRunning.value = false;
-            router.push('/my-services');
+            // await getSubscription(service_info);
+            // newServiceName = '';
+            // promiseRunning.value = false;
+            // router.push('/my-services/' + service_info.id);
         }
     }).catch(err => {
         promiseRunning.value = false;
@@ -188,7 +188,8 @@ let createSubscription = async (ticket_id, service_info) => {
             cancel_url: currentUrl.origin + '/myServices',
             "line_items[0][quantity]": 1,
             'line_items[0][price]': product[ticket_id],
-            "success_url": currentUrl.origin + '/my-services?checkout_id={CHECKOUT_SESSION_ID}&service_id=' + service_info.id + '&ticket_id=' + ticket_id,
+            // "success_url": currentUrl.origin + '/my-services?checkout_id={CHECKOUT_SESSION_ID}&service_id=' + service_info.id + '&ticket_id=' + ticket_id,
+            "success_url" : currentUrl.origin + '/my-services/' + service_info.id,
             'tax_id_collection[enabled]': true,
         }
     });

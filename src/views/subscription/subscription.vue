@@ -229,7 +229,8 @@ let createSubscription = async (ticket_id, service_info) => {
             cancel_url: currentUrl.origin + '/subscription/' + service_info.id,
             "line_items[0][quantity]": 1,
             'line_items[0][price]': product[ticket_id],
-            "success_url": currentUrl.origin + '/my-services/' + service_info.id + '?checkout_id={CHECKOUT_SESSION_ID}&service_id=' + service_info.id + '&ticket_id=' + ticket_id,
+            // "success_url": currentUrl.origin + '/my-services/' + service_info.id + '?checkout_id={CHECKOUT_SESSION_ID}&service_id=' + service_info.id + '&ticket_id=' + ticket_id,
+            "success_url": currentUrl.origin + '/my-services/' + service_info.id,
             'tax_id_collection[enabled]': true,
         }
     });
@@ -295,8 +296,8 @@ let updateSubscription = async (ticket_id) => {
         return;
     }
 
-    promiseRunning.value = false;
     if(openDowngrade.value) {
+        promiseRunning.value = false;
         location.href = '/my-services/' + serviceList[serviceId].id;
     }
 }
