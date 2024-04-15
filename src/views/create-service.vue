@@ -69,8 +69,6 @@ main#create
 
 br
 br
-br
-br
 </template>
 
 <script setup lang="ts">

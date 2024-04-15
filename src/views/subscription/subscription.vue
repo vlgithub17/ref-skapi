@@ -23,12 +23,12 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
             .infoBox
                 .mode
                     | Standard
-                    small(style='font-weight:300') {{serviceList[serviceId].plan == 'Standard' ? '  (Current Plan)' : ''}}
+                    small(style='font-weight:300') {{serviceList[serviceId].plan == 'Standard' && serviceList[serviceId].service.plan !== 'Canceled' ? '  (Current Plan)' : ''}}
 
-                template(v-if="serviceList[serviceId].plan !== 'Standard'")
+                template(v-if="serviceList[serviceId].plan !== 'Standard' || serviceList[serviceId].service.plan == 'Canceled'")
                     .price $19
                     br
-                    button.final(v-if="serviceList[serviceId].plan == 'Trial'" @click="changeMode='standard';openUpgrade=true;console.log(serviceList[serviceId])") Upgrade
+                    button.final(v-if="serviceList[serviceId].plan == 'Trial' || serviceList[serviceId].service.plan === 'Canceled'" @click="changeMode='standard';openUpgrade=true;console.log(serviceList[serviceId])") Upgrade
                     button.final(v-else-if="serviceList[serviceId].plan == 'Premium'" @click="changeMode='standard';openDowngrade=true;") Downgrade
                 
                 hr
@@ -46,9 +46,9 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
             .infoBox
                 .mode
                     | Premium
-                    small(style='font-weight:300') {{serviceList[serviceId].plan == 'Premium' ? '  (Current Plan)' : ''}}
+                    small(style='font-weight:300') {{serviceList[serviceId].plan == 'Premium' && serviceList[serviceId].service.plan !== 'Canceled' ? '  (Current Plan)' : ''}}
                 
-                template(v-if="serviceList[serviceId].plan !== 'Premium'")
+                template(v-if="serviceList[serviceId].plan !== 'Premium' || serviceList[serviceId].service.plan == 'Canceled'")
                     .price $89
                     br
                     button.final(@click="changeMode='premium';openUpgrade=true;") Upgrade
@@ -65,7 +65,7 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                     li Automated emails and sending newsletters
                     li 10GB of email storage
                     li Subdomain hosting
-                    li unlimited use with pay-as-you-go when exceeding the limit
+                    li unlimited use with pay-as-you-go when exceeding the limit (currently free for limited time)
 
 div(v-else style="text-align:center")
     img.loading(src="@/assets/img/loading.png")
