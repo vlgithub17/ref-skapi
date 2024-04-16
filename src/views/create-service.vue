@@ -10,17 +10,15 @@ main#create
     .bottomLineTitle Create a New Service
 
     p
-        span 1.&nbsp;
-        span Choose a plan that suits your needs:
-
-    br
+        | Choose a plan for your service&nbsp;
+        span(style='font-weight:normal') "{{newServiceName}}"
 
     section.planWrap(:class="{'disabled' : promiseRunning}")
         .infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
             .mode Trial Mode
             .price $0
 
-            .line
+            hr
 
             ul
                 li Provides 10k user accounts
@@ -31,7 +29,7 @@ main#create
             .mode Standard Mode
             .price $19
 
-            .line
+            hr
 
             ul
                 li Provides 10k user accounts
@@ -47,7 +45,7 @@ main#create
             .mode Premium Mode
             .price $89
 
-            .line
+            hr
 
             ul
                 li 100k user accounts
@@ -61,24 +59,14 @@ main#create
                 li Subdomain hosting
                 li unlimited use with pay-as-you-go when exceeding the limit
 
-    p Selected Plan: #[b {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
 
-    br
-
-    p
-        span 2.&nbsp;
-        span Choose a name for your service and #[b create]:
-
-    form.inputWrap(@submit.prevent="createService")
-        input#serviceName(type="text" @input='(e)=>{newServiceName=e.target.value;}' :disabled="promiseRunning" placeholder="Your service name" required)
+    p(style='font-size: 16px;display: flex;justify-content: center;') Selected Plan:&nbsp; #[b(style='color:var(--main-color)') {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
+    .inputWrap(@submit.prevent="createService")
         div(v-if="promiseRunning" style="width:108px;display:flex;align-items:center")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.final(type="submit") Create
+            button.final(type="submit" @click='createService') Create
 
-
-br
-br
 br
 br
 </template>
@@ -94,7 +82,7 @@ import Service from '@/code/service';
 
 const router = useRouter();
 const route = useRoute();
-
+let serviceNameInp = ref();
 let service = {
     active: 1,
     name: 'service name',
@@ -106,60 +94,27 @@ let service = {
 }
 let promiseRunning = ref(false);
 let serviceMode = ref('standard');
-let newServiceName = '';
+let newServiceName = route.params.name as string;
 
 let createService = () => {
     promiseRunning.value = true;
 
     Service.create({ name: newServiceName })
-    .then(async(s) => {
-        if(serviceMode.value == 'trial') {
-            newServiceName = '';
-            serviceIdList.push(s.id);
-            serviceList[s.id] = s;
-            promiseRunning.value = false;
-            location.href = '/my-services/' + s.id;
-        } else {
-            let service_info = s;
-            let ticket_id = serviceMode.value;
-            await createSubscription(ticket_id, service_info);
-            // await getSubscription(service_info);
-            // newServiceName = '';
-            // promiseRunning.value = false;
-            // router.push('/my-services/' + service_info.id);
-        }
-    }).catch(err => {
-        promiseRunning.value = false;
-        console.log(err);
-    })
-}
-
-let getSubscription = async(service_info) => {
-    if(service_info?.service?.subs_id) {
-        let subs_id = service_info.service.subs_id.split('#');
-    
-        if (subs_id.length < 2) {
-            alert('Service does not have a subscription');
-            return;
-        }
-    
-        let SUBSCRIPTION_ID = subs_id[0];
-    
-        skapi.clientSecretRequest({
-            clientSecretName: 'stripe_test',
-            url: `https://api.stripe.com/v1/subscriptions/${SUBSCRIPTION_ID}`,
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer $CLIENT_SECRET',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-        }).then(res => {
-            service_info.subscription = res;
-            serviceList[s.id].subscription = res;
+        .then(async (s) => {
+            if (serviceMode.value == 'trial') {
+                serviceIdList.push(s.id);
+                serviceList[s.id] = s;
+                promiseRunning.value = false;
+                location.href = '/my-services/' + s.id;
+            } else {
+                let service_info = s;
+                let ticket_id = serviceMode.value;
+                await createSubscription(ticket_id, service_info);
+            }
         }).catch(err => {
-            console.log(err.message);
-        });
-    }
+            alert(err.message);
+            promiseRunning.value = false;
+        })
 }
 
 let createSubscription = async (ticket_id, service_info) => {
@@ -188,8 +143,7 @@ let createSubscription = async (ticket_id, service_info) => {
             cancel_url: currentUrl.origin + '/myServices',
             "line_items[0][quantity]": 1,
             'line_items[0][price]': product[ticket_id],
-            // "success_url": currentUrl.origin + '/my-services?checkout_id={CHECKOUT_SESSION_ID}&service_id=' + service_info.id + '&ticket_id=' + ticket_id,
-            "success_url" : currentUrl.origin + '/my-services/' + service_info.id,
+            "success_url": currentUrl.origin + '/my-services/' + service_info.id,
             'tax_id_collection[enabled]': true,
         }
     });
@@ -205,16 +159,8 @@ let createSubscription = async (ticket_id, service_info) => {
 <style scoped lang="less">
 #create {
     max-width: 1000px;
-    padding: 0 20px;
+    padding: 0 8px;
     margin: 0 auto;
-
-    .line {
-        width: 100%;
-        height: 1px;
-        background: rgba(0, 0, 0, 0.10);
-        box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
-        margin: 28px 0;
-    }
 }
 
 .inputWrap {
@@ -222,19 +168,13 @@ let createSubscription = async (ticket_id, service_info) => {
     gap: 8px;
     margin-top: 8px;
     flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
 }
 
 input {
-    display: block;
+    width: unset;
     flex-grow: 1;
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
-    padding: 12px 15px;
-}
-
-p {
-    display: flex;
-    font-weight: normal;
 }
 
 .planWrap {
@@ -323,6 +263,12 @@ p {
                 }
             }
         }
+    }
+}
+
+@media (max-width: 480px) {
+    button {
+        width: 100%;
     }
 }
 </style>

@@ -14,20 +14,21 @@ br
     form(@submit.prevent="signup")
         label
             | Email
-            input(type="email" 
+            input.big(type="email" 
             :value='form.email' 
             @input="e=> { form.email = e.target.value; }"
-            placeholder="Enter your email" 
+            placeholder="your@email.com" 
             required)
 
 
         label.passwordInput
             | Password
-            input(:type='showPassword ? "text" : "password"'
+            input.big(:type='showPassword ? "text" : "password"'
             ref="passwordField" 
             @input="e=> { form.password = e.target.value; e.target.setCustomValidity(''); error = '' }"
             minlength="6"
-            placeholder="Create a password" 
+            maxlength="60"
+            placeholder="At least 6 characters" 
             required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
@@ -37,11 +38,11 @@ br
 
         label.passwordInput
             | Confirm password
-            input(:type='showPassword ? "text" : "password"'
+            input.big(:type='showPassword ? "text" : "password"'
             ref="confirmPasswordField" 
             @input="e=> { form.password_confirm = e.target.value; e.target.setCustomValidity(''); error = '' }"
             @change="validatePassword"
-            placeholder="Confirm the password" 
+            placeholder="Enter your password again to confirm" 
             required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
@@ -69,6 +70,9 @@ br
                 .signup 
                     | Have an account?&nbsp;
                     RouterLink(:to="{name: 'login'}") Login
+        
+        br
+        br
 </template>
 
 <script setup lang="ts">
@@ -141,25 +145,6 @@ let signup = (e) => {
 form {
     >label {
         margin-bottom: 16px;
-    }
-
-    label {
-        display: block;
-        color: var(--black-6);
-        font-size: 16px;
-        font-weight: 700;
-    }
-
-    input {
-        width: 100%;
-        margin-top: 8px;
-        padding: 12px 15px;
-        border-radius: 8px;
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-
-    a {
-        font-size: 16px;
     }
 
     .actions {

@@ -14,11 +14,11 @@ br
     form(@submit.prevent="login")
         label
             | Email
-            input(type="email" @input="e=> { form.email = e.target.value; error='';}" :disabled="promiseRunning" placeholder="E.g. someone@gmail.com" required)
+            input.big(type="email" @input="e=> { form.email = e.target.value; error='';}" :disabled="promiseRunning" placeholder="your@email.com" required)
 
         label.passwordInput
             | Password
-            input(:type='showPassword ? "text" : "password"'
+            input.big(:type='showPassword ? "text" : "password"'
             @input="(e)=>{form.password = e.target.value; error='';}" 
             :disabled="promiseRunning"
             name="password" placeholder="Enter password" required)
@@ -121,25 +121,6 @@ let login = (e) => {
 form {
     >label {
         margin-bottom: 16px;
-    }
-
-    label {
-        display: block;
-        color: var(--black-6);
-        font-size: 16px;
-        font-weight: 700;
-    }
-
-    input {
-        width: 100%;
-        margin-top: 8px;
-        padding: 12px 15px;
-        border-radius: 8px;
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-
-    a {
-        font-size: 16px;
     }
 
     .actions {

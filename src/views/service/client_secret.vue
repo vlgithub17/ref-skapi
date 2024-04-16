@@ -30,11 +30,7 @@ p.
 
 p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
 
-br
-
-//- div(style="text-align:right")
-    span.editHandle(v-if="editMode" @click="editMode = false;" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [SAVE]
-    span.editHandle(v-else @click="editMode = true;" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
+hr
 
 .iconClick(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}")
     .material-symbols-outlined.fill add_circle
@@ -43,20 +39,20 @@ br
 br
 br
 
-form(@submit.prevent)
+form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
     Table
         template(v-slot:head)
             tr
-                th.center(style="width:70px; padding:0")
-                    | Secure
+                th.center(style="width:48px; padding:0")
+                    .material-symbols-outlined lock
                     .resizer
-                th(style="width:30%")
+                th(style="width:26%")
                     | Name
                     .resizer
                 th
                     | $CLIENT_SECRET
                     //- .resizer
-                th.center(style="width:80px; padding:0")
+                th.center(style="width:66px; padding:0")
 
         template(v-slot:body)
             tr(v-if="loading")
@@ -70,9 +66,9 @@ form(@submit.prevent)
                     td.center 
                         Checkbox(v-model="key.secure")
                     td  
-                        input#keyName(type="text" v-model="key.name" placeholder="Name" required)
-                    td(style="padding-right:0")
-                        input(type="text" v-model="key.key" placeholder="CLIENT_SECRET..." required)
+                        input#keyName.line(type="text" v-model="key.name" placeholder="myapi" required maxlength="16")
+                    td
+                        input.line(type="text" v-model="key.key" placeholder="string1234..." required)
                     td.center.buttonWrap
                         template(v-if="updating")
                             img.loading(src="@/assets/img/loading.png")
@@ -84,11 +80,11 @@ form(@submit.prevent)
                     td.center 
                         .material-symbols-outlined.bold(v-if="key.secure") check
                     td.overflow {{ key.name }}
-                    td.overflow {{ key.key }}
+                    td.overflow {{ key.key ? key.key.slice(0,2) + '*'.repeat(key.key.length - 2) : '' }}
                     td.center.buttonWrap
                         template(v-if="!editMode && !addMode")
                             .material-symbols-outlined.fill.clickable.icon.hide(@click="key.edit=true;editMode=true;") edit
-                            .material-symbols-outlined.fill.clickable.icon.hide(@click="deleteClientKey = true;deleteIndex = index;") delete
+                            .material-symbols-outlined.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
 
 Modal(:open="deleteClientKey")
     h4(style='margin:.5em 0 0;') Delete Client Secret
@@ -96,14 +92,16 @@ Modal(:open="deleteClientKey")
 
     div(style='font-size:.8rem;')
         p.
-            Are you sure you want to clear the current client secret key?
+            Are you sure you want to delete #[b "{{deleteClientKey}}"]?
+            #[br]
+            This action cannot be undone.
     br
     div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
         template(v-if='sendingEmail')
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine.warning(@click="deleteClientKey = false") Cancel
-            button.unFinished.warning(@click="client_key.splice(deleteIndex, 1);deleteClientKey = false;") Delete
+            button.final.warning(@click="client_key.splice(deleteIndex, 1);deleteClientKey = false;") Delete
 
 br
 </template>
@@ -113,7 +111,7 @@ import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
 
-import { ref, computed, nextTick } from 'vue';
+import { ref, nextTick } from 'vue';
 import { user } from '@/code/user';
 import { currentService } from '@/views/service/main';
 
@@ -166,15 +164,10 @@ let saveKey = (key) => {
         editMode.value = false;
     }
 }
-console.log(currentService)
 </script>
 <style scoped lang="less">
 input {
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.05);
-    color: rgba(0, 0, 0, 0.8);
-    border-radius: 8px;
-    padding: 0 12px;
 }
 table {
     form {
@@ -191,14 +184,13 @@ table {
         }
     }
     td, th {
-        padding: 0 10px;
+        padding: 0 4px 0 10px;
     }
 }
 .buttonWrap {
     display: flex;
     height: 60px;
     align-items: center;
-    justify-content: center;
     gap: 8px;
     padding: 0;
 }
@@ -227,15 +219,9 @@ table {
         display: block;
     }
 }
-
-@media (max-width: 480px) {
-    input {
-        border-radius: 0;
-    }
-    table {
-        td {
-            padding: 0 4px;
-        }
+@media (pointer: coarse) {
+    .hide {
+        display: block !important;
     }
 }
 </style>

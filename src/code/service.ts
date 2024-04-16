@@ -136,6 +136,8 @@ export default class Service {
         host: null
     })
 
+    subscriptionFetched = ref(false);
+
     constructor(id: string, service: ServiceObj, endpoints: string[]) {
         this.id = id;
         this.admin_private_endpoint = endpoints[0];
@@ -153,6 +155,7 @@ export default class Service {
             else {
                 this.service.plan = this.plan;
             }
+            this.subscriptionFetched.value = true;
         });
         this.getStorageInfo();
     }

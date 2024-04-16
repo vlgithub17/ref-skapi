@@ -56,6 +56,11 @@ const router = createRouter(
       component: () => import('@/views/forgot-password.vue')
     },
     {
+      path: '/ui',
+      name: 'ui',
+      component: () => import('@/views/ui.vue')
+    },
+    {
       path: '/change-password',
       name: 'change-password',
       component: () => import('@/views/change-password.vue'),
@@ -73,7 +78,7 @@ const router = createRouter(
       component: () => import('@/views/success.vue')
     },
     {
-      path: '/create',
+      path: '/create/:name',
       name: 'create',
       component: Create,
       beforeEnter: checkUser

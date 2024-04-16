@@ -3,75 +3,35 @@ br
 br
 br
 
-main#subscription
-    img(src="@/assets/img/logo/logo.png" style="width:193px;")
+main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
+    router-link(:to="'/my-services/' + serviceId ")
+        img(src="@/assets/img/logo/logo.png" style="width:193px;")
 
-    br
     br
     br
 
     section
-        .title Current Subscription
+        .bottomLineTitle Subscription Plan
 
-        .line 
-
-        template(v-if="serviceList[serviceId]")
-            .smallTitle Service Plan
-            .smallValue {{ serviceList[serviceId].plan }}
-
-            br
-
-            .smallTitle Service Name
-            .smallValue {{ serviceList[serviceId].service.name }}
-
-            br
-
-            .smallTitle Service ID
-            .smallValue {{ serviceList[serviceId].id }}
-
-        template(v-else)
-            div(style="text-align:center")
-                br
-                br
-                img.loading(src="@/assets/img/loading.png")
-
-    br
-    br
+        p
+            | Update your subscription plan for service&nbsp;
+            span(style='font-weight:normal') "{{ serviceList[serviceId].service.name }}"
     br
 
-    section(v-if="serviceList[serviceId]")
-        .title Subscription Plans
-
-        .line 
-
+    section
         .planWrap
-            //- .infoBox
-                .mode Trial Mode
-                .price $0
-
-                br
-
-                button.final.disabled(v-if="serviceList[serviceId].plan == 'Trial'") Current Plan
-                div(v-else style="height:44px")
-
-                .line
-
-                ul
-                    li Provides 10k user accounts
-                    li 4 GB of database
-                    li 50 GB of file storage
-                    li.warning All the users and data will be deleted every 7 days
             .infoBox
-                .mode Standard Mode
-                .price $19
+                .mode
+                    | Standard
+                    small(style='font-weight:300') {{serviceList[serviceId].plan == 'Standard' && serviceList[serviceId].service.plan !== 'Canceled' ? '  (Current Plan)' : ''}}
 
-                br
-
-                button.final.disabled(v-if="serviceList[serviceId].plan == 'Standard'") Current Plan
-                button.final(v-else-if="serviceList[serviceId].plan == 'Trial'" @click="changeMode='standard';openUpgrade=true;console.log(serviceList[serviceId])") Upgrade
-                button.final(v-else-if="serviceList[serviceId].plan == 'Premium'" @click="changeMode='standard';openDowngrade=true;") Downgrade
-
-                .line
+                template(v-if="serviceList[serviceId].plan !== 'Standard' || serviceList[serviceId].service.plan == 'Canceled'")
+                    .price $19
+                    br
+                    button.final(v-if="serviceList[serviceId].plan == 'Trial' || serviceList[serviceId].service.plan === 'Canceled'" @click="changeMode='standard';openUpgrade=true;console.log(serviceList[serviceId])") Upgrade
+                    button.final(v-else-if="serviceList[serviceId].plan == 'Premium'" @click="changeMode='standard';openDowngrade=true;") Downgrade
+                
+                hr
 
                 ul
                     li Provides 10k user accounts
@@ -84,15 +44,16 @@ main#subscription
                     li 1GB of email storage
                     li Subdomain hosting
             .infoBox
-                .mode Premium Mode
-                .price $89
+                .mode
+                    | Premium
+                    small(style='font-weight:300') {{serviceList[serviceId].plan == 'Premium' && serviceList[serviceId].service.plan !== 'Canceled' ? '  (Current Plan)' : ''}}
+                
+                template(v-if="serviceList[serviceId].plan !== 'Premium' || serviceList[serviceId].service.plan == 'Canceled'")
+                    .price $89
+                    br
+                    button.final(@click="changeMode='premium';openUpgrade=true;") Upgrade
 
-                br
-
-                button.final.disabled(v-if="serviceList[serviceId].plan == 'Premium'") Current Plan
-                button.final(v-else @click="changeMode='premium';openUpgrade=true;") Upgrade
-
-                .line
+                hr
 
                 ul
                     li 100k user accounts
@@ -104,7 +65,10 @@ main#subscription
                     li Automated emails and sending newsletters
                     li 10GB of email storage
                     li Subdomain hosting
-                    li unlimited use with pay-as-you-go when exceeding the limit
+                    li unlimited use with pay-as-you-go when exceeding the limit (currently free for limited time)
+
+div(v-else style="text-align:center")
+    img.loading(src="@/assets/img/loading.png")
 
 Modal(:open="openUpgrade")
     h4(style='margin:.5em 0 0;') Upgrade Plan
@@ -112,7 +76,7 @@ Modal(:open="openUpgrade")
     hr
 
     div(style='font-size:.8rem;')
-        p Do you truly wish to upgrade your plan?
+        p Would you like to upgrade your service plan to {{ changeMode }}?
 
     br
 
@@ -130,15 +94,9 @@ Modal(:open="openDowngrade")
 
     div(style='font-size:.8rem;')
         p. 
-            Do you really want to downgrade your plan? 
+            Would you like to downgrade your plan to standard?
             #[br]
-            #[br]
-            If you downgrade, 
-            #[br]
-            you won't have access to some features of your current plan. 
-            #[br]
-            #[br]
-            Plan changes are only possible once per day.
+            You will loose access to some features of your current plan.
 
     br
 
@@ -171,13 +129,22 @@ let openDowngrade = ref(false);
 let promiseRunning = ref(false);
 let changeMode = ''
 
+let dateFormat = (timestamp: number) => {
+    let currentDate = new Date(timestamp);
+    let year = currentDate.getFullYear();
+    let month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+    let day = ('0' + currentDate.getDate()).slice(-2);
+    let dateStr = `${year}-${month}-${day}`;
+
+    return dateStr;
+}
 let upgrade = () => {
     promiseRunning.value = true;
 
-    if(serviceList[serviceId].plan == 'Trial' || serviceList[serviceId].plan == 'Standard' || serviceList[serviceId].plan == 'Free Standard') {
+    if (serviceList[serviceId].plan == 'Trial' || serviceList[serviceId].plan == 'Standard' || serviceList[serviceId].plan == 'Free Standard') {
         createSubscription(changeMode, serviceList[serviceId]);
     } else {
-        if(serviceList[serviceId].service.active == -1) {
+        if (serviceList[serviceId].service.active == -1) {
             createSubscription(changeMode, serviceList[serviceId]);
         } else {
             updateSubscription(changeMode);
@@ -188,12 +155,12 @@ let upgrade = () => {
 let downgrade = () => {
     promiseRunning.value = true;
 
-    if(serviceList[serviceId].service.users > 10000 || serviceList[serviceId].storageInfo.email > 1073741824 || serviceList[serviceId].storageInfo.host > 53687091200 || serviceList[serviceId].storageInfo.cloud > 53687091200 || serviceList[serviceId].storageInfo.database > 4294967296) {
+    if (serviceList[serviceId].service.users > 10000 || serviceList[serviceId].storageInfo.email > 1073741824 || serviceList[serviceId].storageInfo.host > 53687091200 || serviceList[serviceId].storageInfo.cloud > 53687091200 || serviceList[serviceId].storageInfo.database > 4294967296) {
         promiseRunning.value = false;
         return false;
     }
 
-    if(serviceList[serviceId].service.active == -1) {
+    if (serviceList[serviceId].service.active == -1) {
         createSubscription(changeMode, serviceList[serviceId]);
     } else {
         updateSubscription(changeMode);
@@ -241,7 +208,7 @@ let createSubscription = async (ticket_id, service_info) => {
 
     window.location = response.url;
     promiseRunning.value = false;
-    if(openDowngrade.value) {
+    if (openDowngrade.value) {
         location.href = '/my-services/' + service_info.id;
     }
 }
@@ -265,7 +232,7 @@ let updateSubscription = async (ticket_id) => {
     let product = JSON.parse(import.meta.env.VITE_PRODUCT);
     let dataObj = {};
 
-    if(serviceList[serviceId]?.subscription?.cancel_at_period_end) {
+    if (serviceList[serviceId]?.subscription?.cancel_at_period_end) {
         dataObj = {
             'items[0][id]': SUBSCRIPTION_ITEM_ID,
             'items[0][price]': product[ticket_id],
@@ -296,7 +263,7 @@ let updateSubscription = async (ticket_id) => {
         return;
     }
 
-    if(openDowngrade.value) {
+    if (openDowngrade.value) {
         promiseRunning.value = false;
         location.href = '/my-services/' + serviceList[serviceId].id;
     }
@@ -306,36 +273,32 @@ let updateSubscription = async (ticket_id) => {
 <style scoped lang="less">
 #subscription {
     max-width: 1000px;
-    padding: 0 20px;
+    // padding: 0 20px;
+    padding: 0 8px;
     margin: 0 auto;
 
-    .title {
-        color: rgba(0, 0, 0, 0.80);
-        font-size: 28px;
-        font-weight: 700;
-        // margin-top: 28px;
+    .textIndent {
+        padding: 0 12px; // = total 20px padding
     }
-    .line {
-        width: 100%;
-        height: 1px;
-        background: rgba(0, 0, 0, 0.10);
-        box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
-        margin: 28px 0;
-    }
+}
+.mode {
+    font-weight: normal;
 }
 .smallValue {
     margin-top: 8px;
 }
+
 .planWrap {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 20px;
-    
+
     .infoBox {
         width: 280px;
         flex-grow: 1;
     }
+
     .price {
         position: relative;
         display: inline-block;
@@ -354,12 +317,13 @@ let updateSubscription = async (ticket_id) => {
             color: var(--black-4);
         }
     }
+
     ul {
         padding: 0;
         margin: 0;
         list-style: none;
         line-height: 28px;
-        
+
         li {
             position: relative;
             color: rgba(0, 0, 0, 0.60);
