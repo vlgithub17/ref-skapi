@@ -1,9 +1,7 @@
 <template lang="pug">
-h2 Client Secret
+h3 Using 3rd party APIs
 
-hr
-
-p If you are using 3rd party API's that requires a client secret key, you can add them here and safely make requests from your website without exposing your client secret key.
+p If you wish to use a 3rd party API that requires a client secret key in your website, you can add them here and safely make requests from your website without exposing your client secret key.
 
 Code
     pre.
@@ -29,6 +27,10 @@ p.
     and the placeholder: #[b "$CLIENT_SECRET"] will be replaced to the actual client secret key.
 
 p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
+
+br
+
+h2 Client Secret
 
 hr
 

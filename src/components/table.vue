@@ -21,6 +21,15 @@ if (resizable) {
         await nextTick();
         // Check if slot is rendered
         if (slots.head) {
+            if (resizable) {
+                let heads = thead.value.querySelectorAll('th');
+                for (let h of heads) {
+                    if (h instanceof HTMLElement) {
+                        h.style.width = window.getComputedStyle(h).width;
+                    }
+                }
+            }
+
             setResize(thead.value);
         }
     });
@@ -36,7 +45,8 @@ if (resizable) {
 
 let resizers_arr: Element[] = [];
 let setResize = (el: HTMLElement) => {
-    let resizers = el.querySelectorAll('th > span.resizer');
+
+    let resizers = el.querySelectorAll('th > .resizer');
     for (let i = 0; i < resizers.length; i++) {
         (resizers[i] as HTMLElement).addEventListener('mousedown', mousedown);
         resizers_arr.push(resizers[i]);
@@ -87,6 +97,7 @@ let mouseMoveHandler = (e) => {
 }
 
 .customTbl {
+    min-width: 100%;
     width: 0;
     border-collapse: collapse;
     table-layout: fixed;
