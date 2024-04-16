@@ -66,7 +66,7 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                     li 10GB of email storage
                     li Subdomain hosting
                     li unlimited use with pay-as-you-go when exceeding the limit (currently free for limited time)
-
+ 
 div(v-else style="text-align:center")
     img.loading(src="@/assets/img/loading.png")
 
@@ -106,6 +106,7 @@ Modal(:open="openDowngrade")
         template(v-else)
             button.noLine(@click="openDowngrade = false") Cancel
             button.final(@click="downgrade") Downgrade
+
 br
 br
 br

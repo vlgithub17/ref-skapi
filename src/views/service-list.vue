@@ -114,24 +114,36 @@ let createService = ()=>{
 }
 
 let calculateUserPercentage = (users: number, plan: string, formatStr = false) => {
-    let formatUserCount = (users: number) => {
-        if (users < 1000) {
-            return users;
+    let getUserUnit = (user:number) => {
+        let units = ['k', 'M', 'B', 'T'];
+        let result = '';
+
+        for (let i = units.length - 1; i >= 0; i--) {
+            let unitValue = Math.pow(10, (i + 1) * 3);
+            if (user >= unitValue) {
+                if (i === 0) {
+                    result = user.toString();
+                } else {
+                    result = (user / unitValue).toFixed(2) + units[i];
+                }
+                break;
+            }
         }
-        else if (users < 1000000) {
-            return Math.round((users / 1000) * 100) / 100 + 'k';
+
+        if (result === '') {
+            result = user.toString();
         }
-        else {
-            return Math.round((users / 1000000) * 100) / 100 + 'M';
-        }
+
+        return result;
     }
+
     switch (plan) {
         case 'Trial':
         case 'Standard':
         case 'Free Standard':
-            return formatStr ? `${formatUserCount(Math.ceil(users / 10000))}/10k` : Math.ceil(users / 10000);
+            return formatStr ? `${getUserUnit(users)}/10k` : ((users / 10000) * 100).toFixed(2);
         case 'Premium':
-            return formatStr ? `${formatUserCount(Math.ceil(users / 10000))}/100k` : Math.ceil(users / 10000);
+            return formatStr ? `${getUserUnit(users)}/100k` : ((users / 100000) * 100).toFixed(2);
         default:
             return formatStr ? 'N/A' : 0;
     }
