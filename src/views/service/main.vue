@@ -84,14 +84,14 @@ watch(serviceList, nv => {
 .router {
     display: block;
     padding: 12px;
-    border-radius: 8px;
+    border-radius: 6px;
     text-decoration: none;
     color: var(--main-color);
     white-space: nowrap;
 
     &.active {
         background: #293FE60D;
-        box-shadow: -1px -1px 0px 0px rgba(0, 0, 0, 0.15) inset;
+        box-shadow: -1px -1px 0px 0px rgba(0, 0, 0, 0.1) inset;
 
         .name {
             font-weight: 700;
