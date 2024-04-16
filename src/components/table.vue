@@ -8,40 +8,50 @@
             slot(name='body')
 </template>
 <script setup lang="ts">
-import { ref, onMounted, nextTick, useSlots, onBeforeUnmount } from 'vue';
+import { ref, onMounted, nextTick, useSlots, onBeforeUnmount, watchEffect } from 'vue';
 let { resizable } = defineProps({
     resizable: Boolean
 });
 
 let thead = ref(null);
 let slots = useSlots();
-if (resizable) {
-    onMounted(async () => {
-        // Wait for next DOM update cycle
-        await nextTick();
-        // Check if slot is rendered
-        if (slots.head) {
-            if (resizable) {
-                let heads = thead.value.querySelectorAll('th');
-                for (let h of heads) {
-                    if (h instanceof HTMLElement) {
-                        h.style.width = window.getComputedStyle(h).width;
-                    }
+
+let setupResize = async () => {
+    // Wait for next DOM update cycle
+    await nextTick();
+    // Check if slot is rendered
+    if (slots.head) {
+        if (resizable) {
+            let heads = thead.value.querySelectorAll('th');
+            for (let h of heads) {
+                if (h instanceof HTMLElement) {
+                    h.style.width = window.getComputedStyle(h).width;
                 }
             }
-
-            setResize(thead.value);
         }
-    });
 
-    onBeforeUnmount(() => {
-        resizers_arr.forEach((resizer) => {
-            resizer.removeEventListener('mousedown', mousedown);
-            resizer.removeEventListener('mouseup', mouseup);
-        });
-        document.removeEventListener('mousemove', mouseMoveHandler);
-    });
+        setResize(thead.value);
+    }
 }
+let removeSetup = () => {
+    resizers_arr.forEach((resizer) => {
+        resizer.removeEventListener('mousedown', mousedown);
+        resizer.removeEventListener('mouseup', mouseup);
+    });
+    document.removeEventListener('mousemove', mouseMoveHandler);
+}
+
+if (resizable) {
+    onBeforeUnmount(removeSetup);
+}
+
+let hasSlotContent = ref(false);
+watchEffect(() => {
+    hasSlotContent.value = !!slots.default && slots.head().length > 0;
+    if (resizable) {
+        setupResize();
+    }
+});
 
 let resizers_arr: Element[] = [];
 let setResize = (el: HTMLElement) => {
