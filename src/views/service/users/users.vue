@@ -75,14 +75,14 @@ br
         .iconClick.square(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill mark_email_unread
             span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Invite User
-    
+
 
 Table(:class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
     template(v-slot:head)
         tr
-            th.center(style="width:48px; padding:0")
-                .resizer
-            th.center(style="width:48px; padding:0")
+            th.center(style='width:80px;padding:0')
+                .iconClick.square(style='color:black')
+                    .material-symbols-outlined.fill checklist_rtl
                 .resizer
             th.overflow(style="width:200px")
                 | Email
@@ -109,15 +109,14 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
 
     template(v-slot:body)
         tr
-            td(colspan=9).
+            td(colspan=8).
                 Loading Users ... &nbsp;
                 #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
         tr
-            td(colspan=9) No Users
+            td(colspan=8) No Users
         tr
-            td.center(style="padding:0")
+            td.center.optionCol(style="padding:0")
                 .material-symbols-outlined.fill delete
-            td.center(style="padding:0")
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com
             td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
@@ -127,9 +126,8 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td.center(style='font-size:1rem') {{ Countries.KR.flag }}
             td.center.overflow -
         tr
-            td.center(style="padding:0")
+            td.center.optionCol(style="padding:0")
                 .material-symbols-outlined.fill delete
-            td.center(style="padding:0")
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com
             td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
@@ -139,9 +137,8 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td.center(style='font-size:1rem') {{ Countries.KR.flag }}
             td.center.overflow -
         tr
-            td.center(style="padding:0")
+            td.center.optionCol(style="padding:0")
                 .material-symbols-outlined.fill delete
-            td.center(style="padding:0")
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com
             td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
@@ -151,9 +148,8 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td.center(style='font-size:1rem') {{ Countries.KR.flag }}
             td.center.overflow -
         tr
-            td.center(style="padding:0")
+            td.center.optionCol(style="padding:0")
                 .material-symbols-outlined.fill delete
-            td.center(style="padding:0")
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com
             td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
@@ -163,9 +159,8 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td.center(style='font-size:1rem') {{ Countries.KR.flag }}
             td.center.overflow -
         tr
-            td.center(style="padding:0")
+            td.center.optionCol(style="padding:0")
                 .material-symbols-outlined.fill delete
-            td.center(style="padding:0")
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com
             td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
@@ -175,9 +170,8 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td.center(style='font-size:1rem') {{ Countries.KR.flag }}
             td.center.overflow -
         tr
-            td.center(style="padding:0")
+            td.center.optionCol(style="padding:0")
                 .material-symbols-outlined.fill delete
-            td.center(style="padding:0")
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com
             td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
@@ -188,10 +182,10 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td.center.overflow -
 
         tr
-            td(colspan=9).
+            td(colspan=8).
         tr
-            td(colspan=9).
-        
+            td(colspan=8).
+
 
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square
@@ -221,9 +215,16 @@ import { Countries } from '@/code/countries';
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    flex-direction:row-reverse;
+    flex-direction: row-reverse;
+
     &>* {
         margin: 8px 0;
+    }
+}
+
+.optionCol {
+    &>*:first-child {
+        margin-right: 8px;
     }
 }
 </style>
