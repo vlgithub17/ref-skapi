@@ -242,7 +242,7 @@ let getClass = (serviceClass: Service, what: string) => {
 
 <style lang="less" scoped>
 #serviceList {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 

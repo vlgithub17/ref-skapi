@@ -8,35 +8,55 @@
             slot(name='body')
 </template>
 <script setup lang="ts">
-import { ref, onMounted, nextTick, useSlots, onBeforeUnmount } from 'vue';
+import { ref, onMounted, nextTick, useSlots, onBeforeUnmount, watchEffect } from 'vue';
 let { resizable } = defineProps({
     resizable: Boolean
 });
 
 let thead = ref(null);
 let slots = useSlots();
-if (resizable) {
-    onMounted(async () => {
-        // Wait for next DOM update cycle
-        await nextTick();
-        // Check if slot is rendered
-        if (slots.head) {
-            setResize(thead.value);
-        }
-    });
 
-    onBeforeUnmount(() => {
-        resizers_arr.forEach((resizer) => {
-            resizer.removeEventListener('mousedown', mousedown);
-            resizer.removeEventListener('mouseup', mouseup);
-        });
-        document.removeEventListener('mousemove', mouseMoveHandler);
-    });
+let setupResize = async () => {
+    // Wait for next DOM update cycle
+    await nextTick();
+    // Check if slot is rendered
+    if (slots.head) {
+        if (resizable) {
+            let heads = thead.value.querySelectorAll('th');
+            for (let h of heads) {
+                if (h instanceof HTMLElement) {
+                    h.style.width = window.getComputedStyle(h).width;
+                }
+            }
+        }
+
+        setResize(thead.value);
+    }
 }
+let removeSetup = () => {
+    resizers_arr.forEach((resizer) => {
+        resizer.removeEventListener('mousedown', mousedown);
+        resizer.removeEventListener('mouseup', mouseup);
+    });
+    document.removeEventListener('mousemove', mouseMoveHandler);
+}
+
+if (resizable) {
+    onBeforeUnmount(removeSetup);
+}
+
+let hasSlotContent = ref(false);
+watchEffect(() => {
+    hasSlotContent.value = !!slots.default && slots.head().length > 0;
+    if (resizable) {
+        setupResize();
+    }
+});
 
 let resizers_arr: Element[] = [];
 let setResize = (el: HTMLElement) => {
-    let resizers = el.querySelectorAll('th > span.resizer');
+
+    let resizers = el.querySelectorAll('th > .resizer');
     for (let i = 0; i < resizers.length; i++) {
         (resizers[i] as HTMLElement).addEventListener('mousedown', mousedown);
         resizers_arr.push(resizers[i]);
@@ -70,7 +90,10 @@ let mouseMoveHandler = (e) => {
     }
 
     pageXMouseMoveDiff = e.pageX - pageXMouseDown;
-    currentHeadCol.style.width = `${currentHeadColWidth + pageXMouseMoveDiff}px`;
+    let val = currentHeadColWidth + pageXMouseMoveDiff;
+    if (val > 64) {
+        currentHeadCol.style.width = `${currentHeadColWidth + pageXMouseMoveDiff}px`;
+    }
 };
 
 
@@ -87,6 +110,7 @@ let mouseMoveHandler = (e) => {
 }
 
 .customTbl {
+    min-width: 100%;
     width: 0;
     border-collapse: collapse;
     table-layout: fixed;
@@ -128,11 +152,13 @@ let mouseMoveHandler = (e) => {
             .resizer {
                 position: absolute;
                 top: 50%;
-                right: -2px;
+                right: 0;
                 transform: translateY(-50%);
-                width: 4px;
+                width: 8px;
+                border-right: 2px solid rgba(0, 0, 0, 0.1);
+                border-left: 6px solid transparent;
                 height: 20px;
-                background-color: rgba(0, 0, 0, 0.1);
+
 
                 &.contrast {
                     background-color: #fff !important;

@@ -10,28 +10,53 @@
     cursor: pointer;
     font-weight: bold;
     font-size: 0.8rem;
+    position: relative;
+    &>*{
+        vertical-align: middle;
+    }
+
+    &.square {
+        padding: 4px 8px;
+    }
 
     &:hover {
         text-decoration: none;
     }
 
-    &:hover .material-symbols-outlined::before {
-        box-shadow: inset 0 0 0 4px;
+    &:hover.square::before {
+        box-shadow: inset 0 0 0 100vw;
+    }
+
+    &:hover:not(.square) .material-symbols-outlined::before {
+        box-shadow: inset 0 0 0 100vw;
+    }
+
+    &.square::before {
+        position: absolute;
+        content: '';
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+        opacity: .1;
     }
 
     .material-symbols-outlined {
         position: relative;
         font-size: 1.5rem;
+    }
 
-        &::before {
+    &:not(.square) {
+        .material-symbols-outlined::before {
             position: absolute;
             content: '';
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            border-radius: 50%;
-            opacity: .2;
+            border-radius: 100%;
+            opacity: .1;
         }
     }
 }

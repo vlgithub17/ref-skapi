@@ -37,7 +37,6 @@ import Sticky from '@/components/sticky.vue';
 
 const router = useRouter();
 const route = useRoute();
-serviceMainLoaded.value = false;
 
 let serviceId = route.path.split('/')[2];
 
@@ -65,7 +64,7 @@ watch(serviceList, nv => {
 <style lang="less" scoped>
 #serviceMain {
     position: relative;
-    max-width: 1400px;
+    max-width: 1600px;
     display: flex;
     flex-wrap: nowrap;
     margin: 0 auto;
@@ -85,14 +84,14 @@ watch(serviceList, nv => {
 .router {
     display: block;
     padding: 12px;
-    border-radius: 8px;
+    border-radius: 6px;
     text-decoration: none;
     color: var(--main-color);
     white-space: nowrap;
 
     &.active {
         background: #293FE60D;
-        box-shadow: -1px -1px 0px 0px rgba(0, 0, 0, 0.15) inset;
+        box-shadow: -1px -1px 0px 0px rgba(0, 0, 0, 0.1) inset;
 
         .name {
             font-weight: 700;
