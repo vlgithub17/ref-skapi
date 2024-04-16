@@ -64,55 +64,18 @@
                         .material-symbols-outlined.mid arrow_drop_down
                     .moreVert(@click.stop style="--moreVert-left:0;display:none")
                         .inner
-                            .more.customCheckBox
-                                input#userID(type="checkbox" :checked="filterOptions.userID" @change="filterOptions.userID = !filterOptions.userID")
-                                label(for="userID")
-                                    .material-symbols-outlined.mid.check check
-                                    span User ID
-                            .more.customCheckBox
-                                input#name(type="checkbox" :checked="filterOptions.name" @change="filterOptions.name = !filterOptions.name")
-                                label(for="name")
-                                    .material-symbols-outlined.mid.check check
-                                    span Name
-                            .more.customCheckBox
-                                input#block(type="checkbox" :checked="filterOptions.block" @change="filterOptions.block = !filterOptions.block")
-                                label(for="block")
-                                    .material-symbols-outlined.mid.check check
-                                    span Block/Unblock
-                            .more.customCheckBox
-                                input#status(type="checkbox" :checked="filterOptions.status" @change="filterOptions.status = !filterOptions.status")
-                                label(for="status")
-                                    .material-symbols-outlined.mid.check check
-                                    span Status
-                            .more.customCheckBox
-                                input#email(type="checkbox" :checked="filterOptions.email" @change="filterOptions.email = !filterOptions.email")
-                                label(for="email")
-                                    .material-symbols-outlined.mid.check check
-                                    span Email
-                            .more.customCheckBox
-                                input#address(type="checkbox" :checked="filterOptions.address" @change="filterOptions.address = !filterOptions.address")
-                                label(for="address")
-                                    .material-symbols-outlined.mid.check check
-                                    span Address
-                            .more.customCheckBox
-                                input#gender(type="checkbox" :checked="filterOptions.gender" @change="filterOptions.gender = !filterOptions.gender")
-                                label(for="gender")
-                                    .material-symbols-outlined.mid.check check
-                                    span Gender
-                            .more.customCheckBox
-                                input#locale(type="checkbox" :checked="filterOptions.locale" @change="filterOptions.locale = !filterOptions.locale")
-                                label(for="locale")
-                                    .material-symbols-outlined.mid.check check
-                                    span Locale
-                            .more.customCheckBox
-                                input#timestamp(type="checkbox" :checked="filterOptions.timestamp" @change="filterOptions.timestamp = !filterOptions.timestamp")
-                                label(for="timestamp")
-                                    .material-symbols-outlined.mid.check check
-                                    span Date Created   
-
+                            Checkbox(v-model="filterOptions.userID") User ID
+                            Checkbox(v-model="filterOptions.name") Name
+                            Checkbox(v-model="filterOptions.block") Block/Unblock
+                            Checkbox(v-model="filterOptions.status") Status
+                            Checkbox(v-model="filterOptions.email") Email
+                            Checkbox(v-model="filterOptions.address") Address
+                            Checkbox(v-model="filterOptions.gender") Gender
+                            Checkbox(v-model="filterOptions.locale") Locale
+                            Checkbox(v-model="filterOptions.timestamp") Date Created 
                 .material-symbols-outlined.clickable.refresh cached
-                .material-symbols-outlined.clickable.fill.create(@click="inviteDialog.showModal();") mail
-                .material-symbols-outlined.clickable.fill.create(@click="createDialog.showModal();") person_add
+                .material-symbols-outlined.clickable.fill.create(@click="openInviteUser=true") mail
+                .material-symbols-outlined.clickable.fill.create(@click="openCreateUser=true") person_add
                 .menu(@click.stop="(e)=>{showDropDown(e)}")
                     .material-symbols-outlined.mid.clickable more_vert
                     .moreVert(@click.stop style="--moreVert-left:0;display:none")
@@ -200,30 +163,132 @@
                             br
                             p There are no users matching your search terms.
 
-    Invite(ref="inviteDialog" @close="inviteDialog.close();" @load="(e)=>inviteDialog = e")
-    Create(ref="createDialog" @close="createDialog.close();" @load="(e)=>createDialog = e")
+Modal(:open="openInviteUser")
+    h4(style='margin:.5em 0 0;') Invite User
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            Invitation Email includes a temporary password and the acception link. 
+            #[br]
+            User must accept the invitation within 7 days.
+            #[br]
+            For more information, refer:&nbsp;
+            #[a(href="https://docs.skapi.com/email/email-templates.html" target="_blank" style='white-space: nowrap') E-Mail Templates]
+
+    br
+
+    form#inviteForm(@submit.prevent="inviteUser")
+        input(hidden name="service" :value="currentService.id")
+
+        label
+            | User's Email 
+            input.big(
+                type="email"
+                @input="e => email = e.target.value"
+                title="Please enter a valid email address." 
+                placeholder="anonymous@anonymous.com"
+                required
+            )
+        br
+
+        label
+            | Name 
+            input.big(
+                @input="e => name = e.target.value"
+                placeholder="User's Name" 
+                required
+            )
+
+        br
+
+        label
+            | Redirect URL 
+            input.big(
+                @input="e => redirect = e.target.value"
+                placeholder="URL to redirect when accepted. (optional)"
+                type='url'
+            )
+
+        br
+
+        .error(v-if="error")
+            .material-symbols-outlined.mid error
+            span {{ error }}
+
+        br
+
+        .buttonWrap
+            template(v-if="promiseRunning")
+                img.loading(src="@/assets/img/loading.png")
+            template(v-else)
+                button.noLine(@click="error='';openInviteUser=false") Cancel 
+                button.final(type="submit") Create User
+
+Modal(:open="openCreateUser" style="width:478px")
+    h4(style='margin:.5em 0 0;') Create User
+
+    hr
+
+    form#createForm(@submit.prevent="createUser")
+        input(hidden name="service" :value="currentService.id")
+
+        label User's Email 
+            input.big(
+                type="email"
+                @input="e => email = e.target.value"
+                title="Please enter a valid email address." 
+                placeholder="anonymous@anonymous.com"
+                required
+            )
+        br
+
+        label Name 
+            input.big(
+                @input="e => name = e.target.value"
+                placeholder="User's Name" 
+                required
+            )
+
+        br
+
+        label Password 
+            input.big(
+                @input="e => password = e.target.value"
+                placeholder="User's Password"
+                type='Password'
+                minlength="6"
+                required
+            )
+
+        br
+
+        .error(v-if="error")
+            .material-symbols-outlined.mid error
+            span {{ error }}
+
+        br
+
+        .buttonWrap
+            template(v-if="promiseRunning")
+                img.loading(src="@/assets/img/loading.png")
+            template(v-else)
+                button.noLine(@click="error='';openCreateUser=false") Cancel 
+                button.final(type="submit") Create User
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, nextTick } from 'vue';
 import { showDropDown } from '@/assets/js/event.js'
-import Calendar from '@/components/calendar.vue';
-import Invite from '@/views/service/users/dialog/invite-user.vue'
-import Create from '@/views/service/users/dialog/create-user.vue'
-import Pager from '@/code/pager'
-import { skapi } from '@/code/admin';
 import { currentService, serviceUsers } from '@/views/service/main';
+import { skapi } from '@/code/admin';
+import Pager from '@/code/pager'
+import Modal from '@/components/modal.vue';
+import Checkbox from '@/components/checkbox.vue';
+import Calendar from '@/components/calendar.vue';
 
 console.log(serviceUsers.value)
-
-// if( !serviceUsers.length ) {
-//     Pager.init({
-//         id: 'user_id',
-//         sortBy: 'user_id',
-//         order: 'desc',
-//         resultsPerPage: 10
-//     })
-// }
 
 let searchFor = ref('timestamp');
 let searchText = ref('');
@@ -231,9 +296,15 @@ let showCalendar = ref(false);
 let showFilter = ref(false);
 let searchDropDown = ref(null);
 let checkDropDown = ref(null);
-let inviteDialog = ref(null);
-let createDialog = ref(null);
 let showUserSetting = ref(false);
+let openInviteUser = ref(false);
+let openCreateUser = ref(false);
+let promiseRunning = ref(false);
+let name: '';
+let email: '';
+let password: '';
+let redirect: '';
+let error = ref('');
 // let users = ref([
 //     {
 //         access_group: 1,
@@ -259,6 +330,60 @@ let filterOptions = ref({
     locale: false,
     timestamp: false
 });
+
+// let inviteUser = () => {
+//     promiseRunning.value = true;
+//     error.value = '';
+//     skapi.signup({
+//         email,
+//         name,
+//         access_group: 1,
+//         service: currentService.id
+//     }, {
+//         signup_confirmation: redirect || false
+//     }).then((res) => {
+//         promiseRunning.value = false;
+//         openInviteUser.value = false;
+//     }).catch((err) => {
+//         if (err.code === 'EXISTS') {
+//             skapi.resendInvitation({
+//                 redirect: redirect || '',
+//                 email,
+//                 service: currentService.id
+//             }).then(() => {
+//                 promiseRunning.value = false;
+//                 openInviteUser.value = false;
+//             }).catch((err) => {
+//                 promiseRunning.value = false;
+//                 error.value = err.message;
+//             });
+//         }
+//         else {
+//             promiseRunning.value = false;
+//             error.value = err.message;
+//         }
+//     });
+// }
+
+// let createUser = () => {
+//     promiseRunning.value = true;
+//     error.value = '';
+//     skapi.signup({
+//         email,
+//         name,
+//         password,
+//         service: currentService.id
+//     }).then((res) => {
+//         console.log(res);
+//         promiseRunning.value = false;
+//         document.getElementById('modalForm').reset();
+//         email = ''; name = ''; password = '';
+//         openCreateUser.value = false;
+//     }).catch((err) => {
+//         promiseRunning.value = false;
+//         error.value = err.message;
+//     });
+// }
 
 let searchForChange = (e) => {
     searchFor.value = e.target.value;
@@ -330,55 +455,6 @@ let handledateClick = (startDate, endDate) => {
     document.querySelector('#searchInput').focus();
 }
 
-// table
-let prevX, prevW, nextW = 0;
-let prevCol, nextCol = null;
-let widthSum = 0;
-
-nextTick(() => {
-    let ths = document.getElementsByTagName('th');
-    let thsArr = Array.from(ths);
-
-    thsArr.forEach((e) => {
-        let widthStyle = window.getComputedStyle(e).width;
-        e.style.width = widthStyle;
-        widthSum += widthStyle;
-    });
-})
-
-let mouseMoveHandler = function (e) {
-    let dx = e.clientX - prevX;
-    let ths = document.getElementsByTagName('th');
-    let thsArr = Array.from(ths);
-
-    thsArr.forEach((e) => {
-        widthSum += e.offsetWidth;
-    });
-
-    if ((widthSum < window.innerWidth || dx < 0) && (prevW + dx > 100 && nextW - dx > 100)) {
-        prevCol.style.width = `${prevW + dx}px`;
-        nextCol.style.width = `${nextW - dx}px`;
-    }
-};
-
-let mousedown = function (e) {
-    console.log(e)
-    prevCol = e.target.parentNode;
-    nextCol = prevCol.nextSibling;
-
-    let prevStyles = window.getComputedStyle(e.target.parentNode);
-    let nextStyles = window.getComputedStyle(prevCol.nextSibling);
-
-    prevX = e.clientX;
-    prevW = parseInt(prevStyles.width, 10);
-    nextW = parseInt(nextStyles.width, 10);
-    document.addEventListener('mousemove', mouseMoveHandler);
-};
-
-document.addEventListener('mouseup', function () {
-    document.removeEventListener('mousemove', mouseMoveHandler);
-});
-
 </script>
 
 <style lang="less" scoped>
@@ -429,6 +505,13 @@ document.addEventListener('mouseup', function () {
             color: rgba(0, 0, 0, 0.8);
             cursor: pointer;
         }
+    }
+}
+#inviteForm, #createForm {
+    .buttonWrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 }
 .customCheckBox {
