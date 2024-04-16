@@ -115,7 +115,7 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
         tr
             td(colspan=8) No Users
         tr
-            td.center.optionCol(style="padding:0")
+            td.center.optionCol.overflow(style="padding:0")
                 .material-symbols-outlined.fill delete
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com
@@ -126,7 +126,7 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td.center(style='font-size:1rem') {{ Countries.KR.flag }}
             td.center.overflow -
         tr
-            td.center.optionCol(style="padding:0")
+            td.center.optionCol.overflow(style="padding:0")
                 .material-symbols-outlined.fill delete
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com
@@ -137,7 +137,7 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td.center(style='font-size:1rem') {{ Countries.KR.flag }}
             td.center.overflow -
         tr
-            td.center.optionCol(style="padding:0")
+            td.center.optionCol.overflow(style="padding:0")
                 .material-symbols-outlined.fill delete
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com
@@ -148,7 +148,7 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td.center(style='font-size:1rem') {{ Countries.KR.flag }}
             td.center.overflow -
         tr
-            td.center.optionCol(style="padding:0")
+            td.center.optionCol.overflow(style="padding:0")
                 .material-symbols-outlined.fill delete
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com
@@ -159,7 +159,7 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td.center(style='font-size:1rem') {{ Countries.KR.flag }}
             td.center.overflow -
         tr
-            td.center.optionCol(style="padding:0")
+            td.center.optionCol.overflow(style="padding:0")
                 .material-symbols-outlined.fill delete
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com
@@ -170,7 +170,7 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td.center(style='font-size:1rem') {{ Countries.KR.flag }}
             td.center.overflow -
         tr
-            td.center.optionCol(style="padding:0")
+            td.center.optionCol.overflow(style="padding:0")
                 .material-symbols-outlined.fill delete
                 .material-symbols-outlined.fill account_circle
             td.overflow user@email.com

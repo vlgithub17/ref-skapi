@@ -90,7 +90,10 @@ let mouseMoveHandler = (e) => {
     }
 
     pageXMouseMoveDiff = e.pageX - pageXMouseDown;
-    currentHeadCol.style.width = `${currentHeadColWidth + pageXMouseMoveDiff}px`;
+    let val = currentHeadColWidth + pageXMouseMoveDiff;
+    if (val > 64) {
+        currentHeadCol.style.width = `${currentHeadColWidth + pageXMouseMoveDiff}px`;
+    }
 };
 
 
@@ -152,10 +155,10 @@ let mouseMoveHandler = (e) => {
                 right: 0;
                 transform: translateY(-50%);
                 width: 8px;
-                border-right: 2px solid rgba(0,0,0,0.1);
+                border-right: 2px solid rgba(0, 0, 0, 0.1);
                 border-left: 6px solid transparent;
                 height: 20px;
-                
+
 
                 &.contrast {
                     background-color: #fff !important;
