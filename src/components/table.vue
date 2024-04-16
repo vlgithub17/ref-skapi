@@ -149,11 +149,13 @@ let mouseMoveHandler = (e) => {
             .resizer {
                 position: absolute;
                 top: 50%;
-                right: -2px;
+                right: 0;
                 transform: translateY(-50%);
-                width: 4px;
+                width: 8px;
+                border-right: 2px solid rgba(0,0,0,0.1);
+                border-left: 6px solid transparent;
                 height: 20px;
-                background-color: rgba(0, 0, 0, 0.1);
+                
 
                 &.contrast {
                     background-color: #fff !important;

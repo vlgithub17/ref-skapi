@@ -67,14 +67,14 @@ br
     div(style='flex-grow: 1;text-align:right')
         .iconClick.square(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill refresh
-            span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Refresh
+            span &nbsp;&nbsp;Refresh
     div
         .iconClick.square(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill person_add
-            span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Create User
+            span &nbsp;&nbsp;Create User
         .iconClick.square(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill mark_email_unread
-            span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Invite User
+            span &nbsp;&nbsp;Invite User
 
 
 Table(:class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
@@ -188,12 +188,12 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
 
 
 .tableMenu(style='display:block;text-align:center;')
-    .iconClick.square
+    .iconClick.square.arrow
         .material-symbols-outlined.bold chevron_left
-        span Previous
+        span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
-    .iconClick.square
-        span Next
+    .iconClick.square.arrow
+        span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
 br
 br
@@ -226,5 +226,12 @@ import { Countries } from '@/code/countries';
     &>*:first-child {
         margin-right: 8px;
     }
+}
+.iconClick {
+    font-size: 0.7rem;
+}
+.iconClick.arrow {
+    padding:0;
+    font-size: 0.8rem;
 }
 </style>
