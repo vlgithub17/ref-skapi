@@ -189,12 +189,13 @@ section.infoBox
                 option(value="admin") Only admin allowed
                 option(value="anyone") Anyone allowed
         
-        hr
+        template(v-if="currentService.plan == 'Trial' || currentService.service.active < 0 || currentService?.subscription?.status == 'canceled'")
+            hr
 
-        div(style="text-align:right")
-            router-link.iconClick(to='/delete-service' style='color:var(--caution-color);font-size:0.66rem;')
-                .material-symbols-outlined.fill(style='font-size:24px;') cancel
-                span &nbsp;Delete Service
+            div(style="text-align:right")
+                router-link.iconClick(to='/delete-service' style='color:var(--caution-color);font-size:0.66rem;')
+                    .material-symbols-outlined.fill(style='font-size:24px;') cancel
+                    span &nbsp;Delete Service
     //- .infoValue(:class="{'nonClickable' : !user?.email_verified}" style='display: flex;align-items: center;min-height:44px;')
     //-     .smallTitle Disable/Enable
     //-     Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
