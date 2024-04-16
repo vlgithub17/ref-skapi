@@ -70,35 +70,35 @@ section.infoBox
 
     .state 
         .smallTitle Users 
-        .smallValue {{ currentService.service.users }} / 
+        .smallValue {{ getUserUnit(currentService.service.users) }} / 
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 10K
             span(v-else-if="currentService.plan == 'Premium'") 100K
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
     .state 
         .smallTitle Database 
-        .smallValue {{ (currentService.storageInfo.database || '0') + 'B' }} / 
+        .smallValue {{ getfileSize(currentService.storageInfo.database) }} / 
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 4GB
             span(v-else-if="currentService.plan == 'Premium'") 100GB
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
     .state 
         .smallTitle File Storage
-        .smallValue {{ (currentService.storageInfo.cloud || '0') + 'B' }} / 
+        .smallValue {{ getfileSize(currentService.storageInfo.cloud) }} / 
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
             span(v-else-if="currentService.plan == 'Premium'") 1TB
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
     .state 
         .smallTitle Email Storage
-        .smallValue {{ (currentService.storageInfo.email || '0') + 'B' }} / 
+        .smallValue {{ getfileSize(currentService.storageInfo.email) }} / 
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 1GB
             span(v-else-if="currentService.plan == 'Premium'") 10GB
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
     .state 
         .smallTitle Hosting
-        .smallValue {{ (currentService.storageInfo.host || '0') + 'B' }} / 
+        .smallValue {{ getfileSize(currentService.storageInfo.host) }} / 
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
             span(v-else-if="currentService.plan == 'Premium'") 1TB
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
@@ -308,6 +308,39 @@ let changeApiKey = () => {
         throw err;
     });
 }
+
+let getUserUnit = (user:number) => {
+    let units = ['k', 'M', 'B', 'T'];
+    let result = '';
+
+    for (let i = units.length - 1; i >= 0; i--) {
+        let unitValue = Math.pow(10, (i + 1) * 3);
+        if (user >= unitValue) {
+            if (i === 0) {
+                result = user.toString();
+            } else {
+                result = (user / unitValue).toFixed(2) + units[i];
+            }
+            break;
+        }
+    }
+
+    if (result === '') {
+        result = user.toString();
+    }
+
+    return result;
+}
+
+let getfileSize = (s: any) => {
+    if(s == 0 || s == null) {
+        return '0 bytes'
+    } else {
+        let unit = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
+        let e = Math.floor(Math.log(s) / Math.log(1024));
+        return (s / Math.pow(1024, e)).toFixed(2) + " " + unit[e];
+    }
+};
 
 let dateFormat = (timestamp: number) => {
     let currentDate = new Date(timestamp);
