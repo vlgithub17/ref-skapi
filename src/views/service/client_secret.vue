@@ -83,7 +83,7 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                     td.overflow {{ key.key ? key.key.slice(0,2) + '*'.repeat(key.key.length - 2) : '' }}
                     td.center.buttonWrap
                         template(v-if="!editMode && !addMode")
-                            .material-symbols-outlined.fill.clickable.icon.hide(@click="key.edit=true;editMode=true;") edit
+                            .material-symbols-outlined.fill.clickable.icon.hide(@click="editKey(key)") edit
                             .material-symbols-outlined.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
 
 Modal(:open="deleteClientKey")
@@ -136,6 +136,7 @@ let client_key = ref([
         key: 'sdfsdfsafjssdfasdfasfdassjfaiw'
     }
 ]);
+let edit_key_origin = {};
 
 let addKey = () => {
     client_key.value.unshift({edit: true, secure:false, name:'', key:''});
@@ -145,11 +146,23 @@ let addKey = () => {
     })
 }
 
+let editKey = (key) => {
+    key.edit = true;
+    editMode.value = true;
+    edit_key_origin.name = key.name;
+    edit_key_origin.key = key.key;
+}
+
 let cancelKey = (key, index) => {
     if(addMode.value) {
         client_key.value.splice(index, 1);
         addMode.value = false;
     } else {
+        if(edit_key_origin.name !== key.name || edit_key_origin.key !== key.key) {
+            key.name = edit_key_origin.name;
+            key.key = edit_key_origin.key;
+        }
+
         key.edit = false;
         editMode.value = false;
     }

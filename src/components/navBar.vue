@@ -24,7 +24,7 @@ nav#navBar(ref="navBar")
                                 .inner
                                     .account {{ user.email }}
                                     ul.menu
-                                        li
+                                        li(@click="openBillingPage")
                                             .material-symbols-outlined.fill credit_card
                                             span Billing
                                         li(@click="navigateToPage")
@@ -34,19 +34,26 @@ nav#navBar(ref="navBar")
                                             .material-symbols-outlined.fill logout
                                             span Logout
                                     .policy
-                                        router-link(to="public/pp.html" target="_blank") Terms of service • Privacy policy
+                                        router-link(to="/pp.html" target="_blank") Terms of service • Privacy policy
                 template(v-else)
                     li
                         router-link.ser(to="/login") Login
                     li
                         router-link.sign(to="/signup") Sign-up
+
+#proceeding(v-if="running")   
+    .inner    
+        img.loading(src="@/assets/img/loading.png")
+        br
+        br
+        h4 Page Loading
 </template>
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { onMounted, ref } from 'vue';
 import { skapi } from '@/code/admin';
-import { loginState, user, updateUser } from '@/code/user';
+import { loginState, user, updateUser, customer } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
 
 const router = useRouter();
@@ -55,6 +62,30 @@ const route = useRoute();
 console.log(route.path.split('/')[1])
 let navBar = ref(null);
 let moreVert = ref(null);
+let running = ref(false);
+
+let openBillingPage = async() => {
+    running.value = true;
+
+    let resolvedCustomer = await customer;
+
+    skapi.clientSecretRequest({
+        clientSecretName: 'stripe_test',
+        url: `https://api.stripe.com/v1/billing_portal/sessions`,
+        method: 'POST',
+        headers: {
+            Authorization: 'Bearer $CLIENT_SECRET',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: {
+            customer: resolvedCustomer.id,
+            return_url: window.location.origin + route.path
+        }
+    }).then(response => {
+        window.location = response.url;
+        // running.value = false;
+    });
+}
 
 let navigateToPage = () => {
     moreVert.value.style.display = 'none';
@@ -75,6 +106,30 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
+#proceeding {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255,255,255,0.5);
+    z-index: 9999999;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    .loading {
+        width: 2rem;
+        height: 2rem;
+        filter: grayscale(1);
+    }
+    h4 {
+        color: #fff;
+    }
+}
+
 #navBar {
     position: fixed;
     left: 0;
