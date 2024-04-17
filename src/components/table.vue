@@ -173,7 +173,7 @@ let setResize = async () => {
         background-color: #f0f0f0;
         text-align: left;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        box-shadow: inset 0px -3px 3px -3px rgba(0, 0, 0, 0.2);
+        box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
 
         tr {
             height: 60px;
@@ -200,13 +200,21 @@ let setResize = async () => {
             .resizer {
                 position: absolute;
                 top: 50%;
-                right: 0;
+                right: -6px;
                 transform: translateY(-50%);
-                width: 8px;
-                border-right: 2px solid rgba(0, 0, 0, 0.1);
-                border-left: 6px solid transparent;
-                height: 20px;
+                width: 12px; // enough width for user to grab
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
 
+                &::before {
+                    content: '';
+                    display: block;
+                    height: 100%;
+                    width: 2px;
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+
+                height: 20px;
 
                 &.contrast {
                     background-color: #fff !important;
