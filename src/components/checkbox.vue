@@ -39,7 +39,8 @@ label._checkbox {
     }
 
     input:checked+* {
-        color: var(--main-color);
+        // color: var(--main-color);
+        color: inherit;
     }
 }
 </style>

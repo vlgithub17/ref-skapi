@@ -58,6 +58,21 @@ hr
 p Search and manage your service users.
 
 form(@submit.prevent="createService" style='display: flex;gap: 8px;width: 480px;max-width: 100%;')
+    .customSelect(@click.stop="(e)=>{showDropDown(e)}" style="padding: 0 1rem;")
+        button
+            span {{ searchFor }}
+            span.material-symbols-outlined arrow_drop_down
+        .moreVert(style="--moreVert-left:0;width:100%;display:none")
+            .inner
+                .more(value="timestamp" @click="searchFor = 'timestamp';searchText = ''") Date Created
+                .more(value="user_id" @click="searchFor = 'user_id';searchText = ''") User ID
+                .more(value="email" @click="searchFor = 'email';searchText = ''") Email
+                .more(value="phone_number" @click="searchFor = 'phone_number';searchText = ''") phone_number
+                .more(value="address" @click="searchFor = 'address';searchText = ''") Address
+                .more(value="gender" @click="searchFor = 'gender';searchText = ''") Gender
+                .more(value="name" @click="searchFor = 'name';searchText = ''") Name
+                .more(value="locale" @click="searchFor = 'locale';searchText = ''") Locale
+                .more(value="birthdate" @click="searchFor = 'birthdate';searchText = ''") Birth Date
     input.big(placeholder="Search" type='search')
     button.final(type="submit" style='flex-shrink: 0;') Search
 
@@ -69,10 +84,10 @@ br
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh
     div
-        .iconClick.square(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+        .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill person_add
             span &nbsp;&nbsp;Create User
-        .iconClick.square(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+        .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill mark_email_unread
             span &nbsp;&nbsp;Invite User
 
@@ -81,110 +96,63 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
     template(v-slot:head)
         tr
             th.center(style='width:80px;padding:0')
-                .iconClick.square(style='color:black')
+                .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" style='color:black')
                     .material-symbols-outlined.fill checklist_rtl
+                    .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal")
+                        .inner(style="padding:.5rem 1rem .5rem .5rem")
+                            Checkbox(v-model="filterOptions.userID" style="display:flex;") User ID
+                            Checkbox(v-model="filterOptions.name" style="display:flex") Name
+                            Checkbox(v-model="filterOptions.email" style="display:flex") Email
+                            Checkbox(v-model="filterOptions.address" style="display:flex") Address
+                            Checkbox(v-model="filterOptions.gender" style="display:flex") Gender
+                            Checkbox(v-model="filterOptions.locale" style="display:flex") Locale
+                            Checkbox(v-model="filterOptions.timestamp" style="display:flex") Date Created 
                 .resizer
-            th.overflow(style="width:200px")
+            th.overflow(v-if="filterOptions.email" style="width:200px")
                 | Email
                 .resizer
-            th.overflow(style="width:160px")
+            th.overflow(v-if="filterOptions.userID" style="width:160px")
                 | User ID
                 .resizer
-            th.overflow(style="width:160px")
+            th.overflow(v-if="filterOptions.name" style="width:160px")
                 | Name
                 .resizer
-            th.overflow(style="width:200px")
+            th.overflow(v-if="filterOptions.timestamp" style="width:200px")
                 | Sign Up Date
                 .resizer
-            th.overflow(style="width:160px")
+            th.overflow(v-if="filterOptions.address" style="width:160px")
                 | Address
                 .resizer
-            th.center.overflow(style="width:96px;")
+            th.center.overflow(v-if="filterOptions.locale" style="width:96px;")
                 | Locale
                 .resizer
-            th.center.overflow(style="width:96px;")
+            th.center.overflow(v-if="filterOptions.gender" style="width:96px;")
                 | Gender
                 .resizer
 
 
     template(v-slot:body)
-        tr
-            td(colspan=8).
+        tr(v-if="loading")
+            td#loading(:colspan="colspan").
                 Loading Users ... &nbsp;
                 #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-        tr
-            td(colspan=8) No Users
-        tr
-            td.center.optionCol.overflow(style="padding:0")
-                .material-symbols-outlined.fill delete
-                .material-symbols-outlined.fill account_circle
-            td.overflow user@email.com
-            td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
-            td.overflow Jimmy Gibberman
-            td.overflow 1/19/2024, 4:12:41 PM
-            td.overflow -
-            td.center(style='font-size:1rem') {{ Countries.KR.flag }}
-            td.center.overflow -
-        tr
-            td.center.optionCol.overflow(style="padding:0")
-                .material-symbols-outlined.fill delete
-                .material-symbols-outlined.fill account_circle
-            td.overflow user@email.com
-            td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
-            td.overflow Jimmy Gibberman
-            td.overflow 1/19/2024, 4:12:41 PM
-            td.overflow -
-            td.center(style='font-size:1rem') {{ Countries.KR.flag }}
-            td.center.overflow -
-        tr
-            td.center.optionCol.overflow(style="padding:0")
-                .material-symbols-outlined.fill delete
-                .material-symbols-outlined.fill account_circle
-            td.overflow user@email.com
-            td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
-            td.overflow Jimmy Gibberman
-            td.overflow 1/19/2024, 4:12:41 PM
-            td.overflow -
-            td.center(style='font-size:1rem') {{ Countries.KR.flag }}
-            td.center.overflow -
-        tr
-            td.center.optionCol.overflow(style="padding:0")
-                .material-symbols-outlined.fill delete
-                .material-symbols-outlined.fill account_circle
-            td.overflow user@email.com
-            td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
-            td.overflow Jimmy Gibberman
-            td.overflow 1/19/2024, 4:12:41 PM
-            td.overflow -
-            td.center(style='font-size:1rem') {{ Countries.KR.flag }}
-            td.center.overflow -
-        tr
-            td.center.optionCol.overflow(style="padding:0")
-                .material-symbols-outlined.fill delete
-                .material-symbols-outlined.fill account_circle
-            td.overflow user@email.com
-            td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
-            td.overflow Jimmy Gibberman
-            td.overflow 1/19/2024, 4:12:41 PM
-            td.overflow -
-            td.center(style='font-size:1rem') {{ Countries.KR.flag }}
-            td.center.overflow -
-        tr
-            td.center.optionCol.overflow(style="padding:0")
-                .material-symbols-outlined.fill delete
-                .material-symbols-outlined.fill account_circle
-            td.overflow user@email.com
-            td.overflow 08a688a9-13b4-4e82-9d32-fd574bea4dc3
-            td.overflow Jimmy Gibberman
-            td.overflow 1/19/2024, 4:12:41 PM
-            td.overflow -
-            td.center(style='font-size:1rem') {{ Countries.KR.flag }}
-            td.center.overflow -
-
-        tr
-            td(colspan=8).
-        tr
-            td(colspan=8).
+        tr(v-if="serviceUsers === null")
+            td#noUsers(:colspan="colspan") No Users
+        template(v-if="serviceUsers.length")
+            tr(v-for="(user, index) in serviceUsers")
+                td.center.optionCol.overflow(style="padding:0")
+                    .material-symbols-outlined.fill.icon delete
+                    .material-symbols-outlined.fill.icon account_circle
+                td.overflow(v-if="filterOptions.email") {{ user.email }}
+                td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
+                td.overflow(v-if="filterOptions.name") {{ user.name }}
+                td.overflow(v-if="filterOptions.timestamp") {{ user.timestamp }}
+                td.overflow(v-if="filterOptions.address") {{ user.address || '-' }}
+                td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
+                td.center.overflow(v-if="filterOptions.gender") -
+            tr(v-if="serviceUsers.length < 10" v-for="i in (10 - serviceUsers.length)" :key="'extra-' + i")
+                td(:colspan="colspan")
+        
 
 
 .tableMenu(style='display:block;text-align:center;')
@@ -195,22 +163,231 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
     .iconClick.square.arrow
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
-br
-br
 
+Modal(:open="openInviteUser")
+    h4(style='margin:.5em 0 0;') Invite User
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            Invitation Email includes a temporary password and the acception link. 
+            #[br]
+            User must accept the invitation within 7 days.
+            #[br]
+            For more information, refer:&nbsp;
+            #[a(href="https://docs.skapi.com/email/email-templates.html" target="_blank" style='white-space: nowrap') E-Mail Templates]
+
+    br
+
+    form#inviteForm(@submit.prevent="inviteUser")
+        input(hidden name="service" :value="currentService.id")
+
+        label
+            | User's Email 
+            input.big(
+                type="email"
+                @input="e => email = e.target.value"
+                title="Please enter a valid email address." 
+                placeholder="anonymous@anonymous.com"
+                required
+            )
+        br
+
+        label
+            | Name 
+            input.big(
+                @input="e => name = e.target.value"
+                placeholder="User's Name" 
+                required
+            )
+
+        br
+
+        label
+            | Redirect URL 
+            input.big(
+                @input="e => redirect = e.target.value"
+                placeholder="URL to redirect when accepted. (optional)"
+                type='url'
+            )
+
+        br
+
+        .error(v-if="error")
+            .material-symbols-outlined.mid error
+            span {{ error }}
+
+        br
+
+        .buttonWrap
+            template(v-if="promiseRunning")
+                img.loading(src="@/assets/img/loading.png")
+            template(v-else)
+                button.noLine(@click="error='';openInviteUser=false") Cancel 
+                button.final(type="submit") Create User
+
+Modal(:open="openCreateUser" style="width:478px")
+    h4(style='margin:.5em 0 0;') Create User
+
+    hr
+
+    form#createForm(@submit.prevent="createUser")
+        input(hidden name="service" :value="currentService.id")
+
+        label User's Email 
+            input.big(
+                type="email"
+                @input="e => email = e.target.value"
+                title="Please enter a valid email address." 
+                placeholder="anonymous@anonymous.com"
+                required
+            )
+        br
+
+        label Name 
+            input.big(
+                @input="e => name = e.target.value"
+                placeholder="User's Name" 
+                required
+            )
+
+        br
+
+        label Password 
+            input.big(
+                @input="e => password = e.target.value"
+                placeholder="User's Password"
+                type='Password'
+                minlength="6"
+                required
+            )
+
+        br
+
+        .error(v-if="error")
+            .material-symbols-outlined.mid error
+            span {{ error }}
+
+        br
+
+        .buttonWrap
+            template(v-if="promiseRunning")
+                img.loading(src="@/assets/img/loading.png")
+            template(v-else)
+                button.noLine(@click="error='';openCreateUser=false") Cancel 
+                button.final(type="submit") Create User
+
+br
+br
 </template>
 <script setup>
 import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
+import Checkbox from '@/components/checkbox.vue';
+import Modal from '@/components/modal.vue';
 
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, watch } from 'vue';
 import { user } from '@/code/user';
+import { showDropDown } from '@/assets/js/event.js'
 import { currentService } from '@/views/service/main';
-
 import { Countries } from '@/code/countries';
 
+let serviceUsers = ref([
+    {
+        access_group: 1,
+        approved: "by_skapi:approved:1705046812570",
+        email: "sdfsf@dsflf.ccc",
+        locale: "KR",
+        name: "slfk",
+        records: 0,
+        service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
+        subscribers: 0,
+        timestamp: 1705046815700,
+        user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+    },
+    {
+        access_group: 1,
+        approved: "by_skapi:approved:1705046812570",
+        email: "sdfsf@dsflf.ccc",
+        locale: "KR",
+        name: "slfk",
+        records: 0,
+        service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
+        subscribers: 0,
+        timestamp: 1705046815700,
+        user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+    },
+    {
+        access_group: 1,
+        approved: "by_skapi:approved:1705046812570",
+        email: "sdfsf@dsflf.ccc",
+        locale: "KR",
+        name: "slfk",
+        records: 0,
+        service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
+        subscribers: 0,
+        timestamp: 1705046815700,
+        user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+    },
+    {
+        access_group: 1,
+        approved: "by_skapi:approved:1705046812570",
+        email: "sdfsf@dsflf.ccc",
+        locale: "KR",
+        name: "slfk",
+        records: 0,
+        service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
+        subscribers: 0,
+        timestamp: 1705046815700,
+        user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+    },
+    {
+        access_group: 1,
+        approved: "by_skapi:approved:1705046812570",
+        email: "sdfsf@dsflf.ccc",
+        locale: "KR",
+        name: "slfk",
+        records: 0,
+        service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
+        subscribers: 0,
+        timestamp: 1705046815700,
+        user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+    }
+])
+let filterOptions = ref({
+    userID: true,
+    name: true,
+    email: true,
+    address: false,
+    gender: false,
+    locale: false,
+    timestamp: false
+});
+let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
+let searchFor = ref('timestamp');
+let loading = ref(false);
+let openInviteUser = ref(false);
+let openCreateUser = ref(false);
+let promiseRunning = ref(false);
+let name = '';
+let email = '';
+let password = '';
+let redirect = '';
+let error = ref('');
+
+watch(filterOptions.value, nv => {
+    colspan = Object.values(filterOptions.value).filter(value => value).length + 1;
+}, { immediate: true })
 </script>
 <style scoped lang="less">
+#inviteForm, #createForm {
+    .buttonWrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
 .tableMenu {
     display: flex;
     flex-wrap: wrap;

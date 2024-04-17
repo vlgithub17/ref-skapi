@@ -21,7 +21,7 @@ nav#navBar(ref="navBar")
                         .prof(@click.stop="(e)=>{showDropDown(e)}")
                             .material-symbols-outlined.fill(style="margin: 0 .5rem 0 1rem;font-size:32px;") account_circle
                             .moreVert.profile(ref="moreVert" @click.stop style="--moreVert-right:0;display:none")
-                                .inner
+                                .inner(style="padding:0")
                                     .account {{ user.email }}
                                     ul.menu
                                         li(@click="openBillingPage")
