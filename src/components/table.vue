@@ -8,68 +8,81 @@
             slot(name='body')
 </template>
 <script setup lang="ts">
-import { ref, onMounted, nextTick, useSlots, onBeforeUnmount, watchEffect } from 'vue';
+import { ref, onMounted, nextTick, useSlots, onBeforeUnmount } from 'vue';
 let { resizable } = defineProps({
     resizable: Boolean
 });
 
 let thead = ref(null);
 let slots = useSlots();
+let heads: any[] = [];
 
-let setupResize = async () => {
-    // Wait for next DOM update cycle
-    await nextTick();
-    // Check if slot is rendered
-    if (slots.head) {
-        if (resizable) {
-            let heads = thead.value.querySelectorAll('th');
-            for (let h of heads) {
-                if (h instanceof HTMLElement) {
-                    h.style.width = window.getComputedStyle(h).width;
-                }
-            }
-        }
+let observer: MutationObserver = null;
+let resizers_arr: Element[] = [];
 
-        setResize(thead.value);
-    }
-}
 let removeSetup = () => {
     resizers_arr.forEach((resizer) => {
         resizer.removeEventListener('mousedown', mousedown);
-        resizer.removeEventListener('mouseup', mouseup);
     });
     document.removeEventListener('mousemove', mouseMoveHandler);
+    document.removeEventListener('mouseup', mouseup);
 }
 
 if (resizable) {
-    onBeforeUnmount(removeSetup);
-}
+    onMounted(async () => {
+        // Check if slot is rendered
+        if (slots.head) {
+            if (resizable) {
 
-let hasSlotContent = ref(false);
-watchEffect(() => {
-    hasSlotContent.value = !!slots.default && slots.head().length > 0;
-    if (resizable) {
-        setupResize();
-    }
-});
+                await setResize();
 
-let resizers_arr: Element[] = [];
-let setResize = (el: HTMLElement) => {
+                // Create a MutationObserver to watch for changes in the 'thead' element
+                observer = new MutationObserver((mutationsList) => {
+                    for (let mutation of mutationsList) {
+                        type MutationType = 'childList' | 'attributes';
+                        let type = mutation.type as MutationType;
 
-    let resizers = el.querySelectorAll('th > .resizer');
-    for (let i = 0; i < resizers.length; i++) {
-        (resizers[i] as HTMLElement).addEventListener('mousedown', mousedown);
-        resizers_arr.push(resizers[i]);
-    }
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseup);
+                        if (type === 'childList') {
+                            setResize();
+                        }
+                        // if (mutation.type === 'attributes') {
+                        //     console.log('The ' + mutation.attributeName + ' attribute was modified.');
+                        // }
+                    }
+                });
+
+                // Start observing the 'thead' element for configured mutations
+                observer.observe(thead.value, {
+                    // attributes: true,
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
+    });
+    onBeforeUnmount(() => {
+        removeSetup();
+        if (observer) {
+            observer.disconnect();
+        }
+    });
 }
 
 let currentHeadCol: HTMLElement = null;
 let pageXMouseDown = 0;
 let pageXMouseMoveDiff = 0;
 let currentHeadColWidth = 0;
+let headFullWidth = 0;
+let thTotal = 0;
+let currentSiblingHeadWidth = 0;
+
 let mousedown = (e: MouseEvent) => {
+    let el = thead.value;
+    headFullWidth = parseFloat(window.getComputedStyle(el).width);
+    thTotal = heads.reduce((acc, cur) => {
+        return acc + parseFloat(cur.width);
+    }, 0);
+
     pageXMouseDown = e.pageX;
     let currentTarget = e.currentTarget as HTMLElement;
     currentHeadCol = currentTarget.parentNode as HTMLElement;
@@ -77,6 +90,7 @@ let mousedown = (e: MouseEvent) => {
     if (isNaN(currentHeadColWidth)) {
         return;
     }
+    currentSiblingHeadWidth = parseFloat(window.getComputedStyle(currentHeadCol.nextElementSibling as HTMLElement).width);
 };
 
 let mouseup = () => {
@@ -91,11 +105,44 @@ let mouseMoveHandler = (e) => {
 
     pageXMouseMoveDiff = e.pageX - pageXMouseDown;
     let val = currentHeadColWidth + pageXMouseMoveDiff;
+
     if (val > 64) {
+        if (thTotal < headFullWidth) {
+            let nextTh = currentHeadCol.nextElementSibling as HTMLElement;
+            let newSiblingWidth = currentSiblingHeadWidth - pageXMouseMoveDiff;
+            if (newSiblingWidth > 64) {
+                nextTh.style.width = `${newSiblingWidth}px`;
+            }
+        }
         currentHeadCol.style.width = `${currentHeadColWidth + pageXMouseMoveDiff}px`;
     }
 };
 
+
+let setResize = async () => {
+    // - initiallize start
+    removeSetup();
+    await nextTick();
+    heads = [];
+    let el = thead.value;
+    let th = el.querySelectorAll('th');
+
+    for (let i = 0; i < th.length - 1; i++) {
+        let style = window.getComputedStyle(th[i]);
+        th[i].style.width = style.width;
+    }
+
+    resizers_arr = [];
+    // - initiallize end
+
+    let resizers = el.querySelectorAll('th > .resizer');
+    for (let i = 0; i < resizers.length; i++) {
+        (resizers[i] as HTMLElement).addEventListener('mousedown', mousedown);
+        resizers_arr.push(resizers[i]);
+    }
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseup);
+}
 
 </script>
 <style lang="less">
