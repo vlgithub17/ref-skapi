@@ -8,7 +8,7 @@
             slot(name='body')
 </template>
 <script setup lang="ts">
-import { ref, onMounted, nextTick, useSlots, onBeforeUnmount, watchEffect } from 'vue';
+import { ref, onMounted, nextTick, useSlots, onBeforeUnmount } from 'vue';
 let { resizable } = defineProps({
     resizable: Boolean
 });
@@ -16,53 +16,55 @@ let { resizable } = defineProps({
 let thead = ref(null);
 let slots = useSlots();
 
-let setupResize = async () => {
-    // Wait for next DOM update cycle
-    await nextTick();
-    // Check if slot is rendered
-    if (slots.head) {
-        if (resizable) {
-            let heads = thead.value.querySelectorAll('th');
-            for (let h of heads) {
-                if (h instanceof HTMLElement) {
-                    h.style.width = window.getComputedStyle(h).width;
-                }
-            }
-        }
+let observer: MutationObserver = null;
+let resizers_arr: Element[] = [];
 
-        setResize(thead.value);
-    }
-}
 let removeSetup = () => {
     resizers_arr.forEach((resizer) => {
         resizer.removeEventListener('mousedown', mousedown);
-        resizer.removeEventListener('mouseup', mouseup);
     });
     document.removeEventListener('mousemove', mouseMoveHandler);
+    document.removeEventListener('mouseup', mouseup);
 }
 
 if (resizable) {
-    onBeforeUnmount(removeSetup);
-}
+    onMounted(async () => {
+        // Check if slot is rendered
+        if (slots.head) {
+            if (resizable) {
 
-let hasSlotContent = ref(false);
-watchEffect(() => {
-    hasSlotContent.value = !!slots.default && slots.head().length > 0;
-    if (resizable) {
-        setupResize();
-    }
-});
+                await setResize();
 
-let resizers_arr: Element[] = [];
-let setResize = (el: HTMLElement) => {
+                // Create a MutationObserver to watch for changes in the 'thead' element
+                observer = new MutationObserver((mutationsList, observer) => {
+                    for (let mutation of mutationsList) {
+                        type MutationType = 'childList' | 'attributes';
+                        let type = mutation.type as MutationType;
 
-    let resizers = el.querySelectorAll('th > .resizer');
-    for (let i = 0; i < resizers.length; i++) {
-        (resizers[i] as HTMLElement).addEventListener('mousedown', mousedown);
-        resizers_arr.push(resizers[i]);
-    }
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseup);
+                        if (type === 'childList') {
+                            setResize();
+                        }
+                        // if (mutation.type === 'attributes') {
+                        //     console.log('The ' + mutation.attributeName + ' attribute was modified.');
+                        // }
+                    }
+                });
+
+                // Start observing the 'thead' element for configured mutations
+                observer.observe(thead.value, {
+                    // attributes: true,
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
+    });
+    onBeforeUnmount(() => {
+        removeSetup();
+        if (observer) {
+            observer.disconnect();
+        }
+    });
 }
 
 let currentHeadCol: HTMLElement = null;
@@ -96,6 +98,29 @@ let mouseMoveHandler = (e) => {
     }
 };
 
+let setResize = async () => {
+    // - initiallize start
+    removeSetup();
+    await nextTick();
+    let el = thead.value;
+    let heads = el.querySelectorAll('th');
+    for (let h of heads) {
+        if (h instanceof HTMLElement) {
+            h.style.width = window.getComputedStyle(h).width;
+        }
+    }
+
+    resizers_arr = [];
+    // - initiallize end
+
+    let resizers = el.querySelectorAll('th > .resizer');
+    for (let i = 0; i < resizers.length; i++) {
+        (resizers[i] as HTMLElement).addEventListener('mousedown', mousedown);
+        resizers_arr.push(resizers[i]);
+    }
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseup);
+}
 
 </script>
 <style lang="less">
