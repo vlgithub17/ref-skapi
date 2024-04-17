@@ -3,39 +3,9 @@
     .timeWrap
         .timeNav 
             input#here(type="date" hidden)
-            input.year(type="text" pattern="[0-9]+" minlength="4" :value="currentYear" @input="(e) => currentYear = e.target.value" @change="updateCalendar")
-            .customSelect(@click="showDropDown")
-                button(style="height:unset")
-                    span {{ monthObj[currentMonth] }}
-                    .material-symbols-outlined.mid arrow_drop_down
-                .moreVert(style="--moreVert-left:0;display:none")
-                    .inner
-                        .more(v-for="(m,i) in monthObj" :value="i" @click="updateCalendar(i)") {{ m }}
-                        //- .more(value="1") February
-                        //- .more(value="2") March
-                        //- .more(value="3") April
-                        //- .more(value="4") May
-                        //- .more(value="5") June
-                        //- .more(value="6") July
-                        //- .more(value="7") August
-                        //- .more(value="8") September
-                        //- .more(value="9") October
-                        //- .more(value="10") November
-                        //- .more(value="11") December
-                //- select.month(v-model="currentMonth" @change="updateCalendar")
-                //-     option(value="0") January
-                //-     option(value="1") February
-                //-     option(value="2") March
-                //-     option(value="3") April
-                //-     option(value="4") May
-                //-     option(value="5") June
-                //-     option(value="6") July
-                //-     option(value="7") August
-                //-     option(value="8") September
-                //-     option(value="9") October
-                //-     option(value="10") November
-                //-     option(value="11") December
-                //- .material-symbols-outlined.mid.search.selectArrowDown(style="right:0") arrow_drop_down
+            input.big.year(type="text" pattern="[0-9]+" minlength="4" :value="currentYear" @input="(e) => currentYear = e.target.value" @change="updateCalendar")
+            select(style='background-color:transparent' @change="(e) => updateCalendar(e.target.value)")
+                option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
             .goback
                 .material-symbols-outlined.prev(@click="prevTime") arrow_back_ios
                 .material-symbols-outlined.next(@click="nextTime") arrow_forward_ios
@@ -58,9 +28,6 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import { showDropDown } from '@/assets/js/event.js'
-
-showDropDown();
 
 let activeTime = ref(false);
 let startDate = ref('');
@@ -120,8 +87,8 @@ onMounted(() => {
     }
 })
 
-let updateCalendar = (i) => {
-    currentMonth.value = i
+let updateCalendar = (value) => {
+    currentMonth.value = value;
     thisMonth = new Date(currentYear.value, currentMonth.value, 1);
     renderCalender(thisMonth);
 }
@@ -216,19 +183,19 @@ let createdDate = (date) => {
                 }
             }
 
-            .year {
-                // flex-grow: 1;
-                // width: 25%;
-                width: 80px;
-                font-size: 0.8rem;
-                border: 1px solid rgba(0,0,0,0.05);
-                background-color: rgba(0,0,0,0.02);
-                padding: 4px 0;
-                margin-right: 14px;
-                border-radius: 4px;
-            }
+            // .year {
+            //     // flex-grow: 1;
+            //     // width: 25%;
+            //     width: 80px;
+            //     font-size: 0.8rem;
+            //     border: 1px solid rgba(0,0,0,0.05);
+            //     background-color: rgba(0,0,0,0.02);
+            //     padding: 4px 0;
+            //     margin-right: 14px;
+            //     border-radius: 4px;
+            // }
 
-            .customSelect {
+            select {
                 flex-grow: 1;
             }
 
