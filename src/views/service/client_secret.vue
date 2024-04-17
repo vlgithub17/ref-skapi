@@ -1,7 +1,9 @@
 <template lang="pug">
 h3 Using 3rd party APIs
 
-p If you wish to use a 3rd party API that requires a client secret key in your website, you can add them here and safely make requests from your website without exposing your client secret key.
+p.
+    If you wish to use a 3rd party API that requires a client secret key in your website,
+    you can register them here and safely make requests from your website without exposing your client secret key.
 
 Code
     pre.
@@ -33,6 +35,8 @@ br
 h2 Client Secret
 
 hr
+
+p Register your client secret keys here.
 
 .iconClick(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}")
     .material-symbols-outlined.fill add_circle

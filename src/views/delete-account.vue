@@ -9,7 +9,7 @@ br
 
     .bottomLineTitle Delete Account
 
-    p Once you delete your account you will not be able to recover it.
+    p Once your account is deleted, you will not be able to recover it.
     
     p Please note:
     ul
@@ -36,7 +36,7 @@ br
         template(v-else)
             button.noLine.warning(type="button" @click="router.push('/account-setting')") Cancel
             | &nbsp;&nbsp;
-            button.final.warning(type="submit" :class="{disabled: !iUnderstand}") Delete
+            button.final.warning(:class="{disabled: !iUnderstand}") Delete
             
     br
     br

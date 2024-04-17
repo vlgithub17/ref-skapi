@@ -24,12 +24,12 @@ br
     p Are you sure you want to delete your service "#[b {{currentService.service.name}}]"?
 
     Checkbox(v-model="iUnderstand" :disabled="promiseRunning")
-        b I agree to delete my service "#[b {{currentService.service.name}}]"
+        b I agree to delete my service "{{currentService.service.name}}".
 
     br
     br
     br
-
+    
     .bottom
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
@@ -64,11 +64,9 @@ let deleteService = () => {
             window.location = url;
         })
         .catch(err => {
-            alert(err.message);
-        })
-        .finally(() => {
             promiseRunning.value = false;
-        })
+            alert(err.message);
+        });
 }
 </script>
 
