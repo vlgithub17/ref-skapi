@@ -30,8 +30,11 @@ watch(() => user?.user_id, (u, ou) => {
 
                     for (let serviceId of serviceIdList) {
                         Service.load(serviceId).then(serviceObj => {
-                            serviceList[serviceId] = serviceObj;
-                            callServiceList.value = false;
+                            if (serviceObj) {
+                                // can be null if service is deleted
+                                serviceList[serviceId] = serviceObj;
+                                callServiceList.value = false;
+                            }
                         })
                     }
                 }

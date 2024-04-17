@@ -35,7 +35,7 @@ export type ServiceObj = {
     client_secret?: { [key: string]: string },
     auth_client_secret?: string[],
     plan: '-' | 'Trial' | 'Standard' | 'Premium' | 'Unlimited' | 'Free Standard' | 'Canceled' | 'Suspended' | string
-};
+}; import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
 
 type SubscriptionObj = {
     application: null
@@ -281,6 +281,19 @@ export default class Service {
         return this.service;
     }
 
+    async deleteService(): Promise<void> {
+        try {
+            await skapi.util.request(this.admin_private_endpoint + 'register-service', {
+                service: this.id,
+                owner: this.owner,
+                execute: 'delete'
+            }, { auth: true });
+        } catch (err: any) {
+            alert(err.message);
+        }
+        // need servicelist removal from outside
+    }
+
     async updateService(
         params: {
             name?: string;
@@ -470,8 +483,10 @@ export default class Service {
         if (typeof id === 'string') {
             let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: id }, { auth: true });
             for (let region in service) {
-                let serviceClass = new Service(id, service[region][0], [admin_private_endpoint, record_private_endpoint, admin_public_endpoint]);
-                return serviceClass;
+                if (service[region][0]) {
+                    let serviceClass = new Service(id, service[region][0], [admin_private_endpoint, record_private_endpoint, admin_public_endpoint]);
+                    return serviceClass;
+                }
             }
         }
     }

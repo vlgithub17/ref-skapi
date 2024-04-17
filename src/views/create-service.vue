@@ -73,16 +73,15 @@ br
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { nextTick, ref } from 'vue';
-import { callServiceList, serviceIdList, serviceList } from '@/views/service-list'
+import { ref } from 'vue';
+import { serviceIdList, serviceList } from '@/views/service-list'
 import { skapi } from '@/code/admin';
 import { user, customer } from '@/code/user';
-import { currentService } from './service/main';
 import Service from '@/code/service';
 
 const router = useRouter();
 const route = useRoute();
-let serviceNameInp = ref();
+
 let service = {
     active: 1,
     name: 'service name',
