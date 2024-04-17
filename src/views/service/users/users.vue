@@ -57,13 +57,13 @@ hr
 
 p Search and manage your service users.
 
-form(@submit.prevent="createService" style='display: flex;gap: 8px;width: 480px;max-width: 100%;')
-    .customSelect(@click.stop="(e)=>{showDropDown(e)}" style="padding: 0 1rem;")
+form#searchForm(@submit.prevent="searchUsers")
+    .customSelect(@click.stop="(e)=>{showDropDown(e)}")
         button
             span {{ searchFor }}
             span.material-symbols-outlined arrow_drop_down
-        .moreVert(style="--moreVert-left:0;width:100%;display:none")
-            .inner
+        .moreVert(style="--moreVert-left:0;display:none")
+            .inner(style="padding:0.8rem;padding-right:1rem")
                 .more(value="timestamp" @click="searchFor = 'timestamp';searchText = ''") Date Created
                 .more(value="user_id" @click="searchFor = 'user_id';searchText = ''") User ID
                 .more(value="email" @click="searchFor = 'email';searchText = ''") Email
@@ -73,8 +73,18 @@ form(@submit.prevent="createService" style='display: flex;gap: 8px;width: 480px;
                 .more(value="name" @click="searchFor = 'name';searchText = ''") Name
                 .more(value="locale" @click="searchFor = 'locale';searchText = ''") Locale
                 .more(value="birthdate" @click="searchFor = 'birthdate';searchText = ''") Birth Date
-    input.big(placeholder="Search" type='search')
+    input.big#searchInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
+    input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchText" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+    input.big#searchInput(v-else-if="searchFor === 'email'" type="email" placeholder="Search public email address" v-model="searchText")
+    input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchText")
+    input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchText")
+    input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchText")
+    input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchText")
+    input.big#searchInput(v-else-if="searchFor === 'locale'" type="text" placeholder="2 digit country code e.g. KR" v-model="searchText")
+    .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')" @click.stop="showCalendar = !showCalendar") calendar_today
+    .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale' && !searchText" @click.stop="showLocale = !showLocale") arrow_drop_down
     button.final(type="submit" style='flex-shrink: 0;') Search
+    Calendar(v-if="showCalendar" @click.stop @dateClicked="handledateClick" alwaysEmit='true')
 
 br
 
@@ -286,6 +296,7 @@ import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
+import Calendar from '@/components/calendar.vue';
 
 import { ref, nextTick, watch } from 'vue';
 import { user } from '@/code/user';
@@ -359,14 +370,17 @@ let filterOptions = ref({
     userID: true,
     name: true,
     email: true,
-    address: false,
-    gender: false,
-    locale: false,
-    timestamp: false
+    address: true,
+    gender: true,
+    locale: true,
+    timestamp: true
 });
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
 let searchFor = ref('timestamp');
+let searchText = ref('');
 let loading = ref(false);
+let showCalendar = ref(false);
+let showLocale = ref(false);
 let openInviteUser = ref(false);
 let openCreateUser = ref(false);
 let promiseRunning = ref(false);
@@ -376,17 +390,57 @@ let password = '';
 let redirect = '';
 let error = ref('');
 
+let handledateClick = (startDate, endDate) => {
+    if (startDate == null && endDate == null) {
+        searchText.value = ''
+        // showCalendar.value = true;
+    } else {
+        searchText.value = (startDate || '') + ' ~ ' + (endDate || '');
+        // showCalendar.value = false;
+    }
+    document.querySelector('#searchInput').focus();
+}
+
 watch(filterOptions.value, nv => {
     colspan = Object.values(filterOptions.value).filter(value => value).length + 1;
 }, { immediate: true })
 </script>
 <style scoped lang="less">
+#searchForm {
+    position:relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 480px;
+    max-width: 100%;
+
+    .big {
+        padding-right: 1rem;
+    }
+    .icon {
+        position: absolute;
+        top: 50%;
+        right: 125px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        z-index: 9999;
+    }
+}
 #inviteForm, #createForm {
     .buttonWrap {
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
+}
+#calendar,
+#localeSelector {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    max-width: 100%;
+    margin-top: 8px;
+    z-index: 1;
 }
 .tableMenu {
     display: flex;

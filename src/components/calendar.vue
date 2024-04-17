@@ -4,7 +4,9 @@
         .timeNav 
             input#here(type="date" hidden)
             input.year(type="text" pattern="[0-9]+" minlength="4" :value="currentYear" @input="(e) => currentYear = e.target.value" @change="updateCalendar")
-            .customSelect(@click="showDropDown")
+            select(style='background-color:transparent' @change="(e) => updateCalendar(e.target.value)")
+                option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
+            //.customSelect(@click="showDropDown")
                 button(style="height:unset")
                     span {{ monthObj[currentMonth] }}
                     .material-symbols-outlined.mid arrow_drop_down
@@ -58,9 +60,9 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import { showDropDown } from '@/assets/js/event.js'
+// import { showDropDown } from '@/assets/js/event.js'
 
-showDropDown();
+// showDropDown();
 
 let activeTime = ref(false);
 let startDate = ref('');
@@ -120,8 +122,8 @@ onMounted(() => {
     }
 })
 
-let updateCalendar = (i) => {
-    currentMonth.value = i
+let updateCalendar = (value) => {
+    currentMonth.value = value;
     thisMonth = new Date(currentYear.value, currentMonth.value, 1);
     renderCalender(thisMonth);
 }
