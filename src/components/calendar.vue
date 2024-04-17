@@ -28,9 +28,6 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-// import { showDropDown } from '@/assets/js/event.js'
-
-// showDropDown();
 
 let activeTime = ref(false);
 let startDate = ref('');

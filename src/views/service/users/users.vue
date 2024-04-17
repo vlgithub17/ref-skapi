@@ -75,17 +75,18 @@ form#searchForm(@submit.prevent="searchUsers")
                 .more(value="birthdate" @click="searchFor = 'birthdate';searchText = ''") Birth Date
     .search
         input.big#searchInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
-        input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchText" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-        input.big#searchInput(v-else-if="searchFor === 'email'" type="email" placeholder="Search public email address" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'locale'" type="text" placeholder="2 digit country code e.g. KR" v-model="searchText")
+        input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchText" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+        input.big#searchInput(v-else-if="searchFor === 'email'" type="email" placeholder="Search public email address" v-model="searchText")
         .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')" @click.stop="showCalendar = !showCalendar") calendar_today
         .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale' && !searchText" @click.stop="showLocale = !showLocale") arrow_drop_down
         button.final(type="submit" style='flex-shrink: 0;') Search
         Calendar(v-if="showCalendar" @click.stop @dateClicked="handledateClick" alwaysEmit='true')
+        Locale(v-if="showLocale" @countryClicked="handleCountryClick")
 
 br
 
@@ -143,17 +144,20 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
 
 
     template(v-slot:body)
-        tr(v-if="loading")
+        tr(v-if="fetching")
             td#loading(:colspan="colspan").
                 Loading Users ... &nbsp;
                 #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-        tr(v-if="serviceUsers === null")
+        tr(v-if="serviceUsers !== null && !serviceUsers.length")
             td#noUsers(:colspan="colspan") No Users
-        template(v-if="serviceUsers.length")
+        template(v-if="serviceUsers && serviceUsers.length")
             tr(v-for="(user, index) in serviceUsers")
                 td.center.optionCol.overflow(style="padding:0")
-                    .material-symbols-outlined.fill.icon delete
-                    .material-symbols-outlined.fill.icon account_circle
+                    .material-symbols-outlined.fill.icon(@click="openDeleteUser = true") delete
+                    template(v-if="user.approved.includes('suspended')")
+                        .material-symbols-outlined.fill.icon(@click="openUnblockUser = true") no_accounts
+                    template(v-else)
+                        .material-symbols-outlined.fill.icon(@click="openBlockUser = true") account_circle
                 td.overflow(v-if="filterOptions.email") {{ user.email }}
                 td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
                 td.overflow(v-if="filterOptions.name") {{ user.name }}
@@ -231,7 +235,7 @@ Modal(:open="openInviteUser")
 
         br
 
-        .buttonWrap
+        div(style="display: flex; align-items: center; justify-content: space-between;")
             template(v-if="promiseRunning")
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
@@ -282,12 +286,72 @@ Modal(:open="openCreateUser" style="width:478px")
 
         br
 
-        .buttonWrap
+        div(style="display: flex; align-items: center; justify-content: space-between;")
             template(v-if="promiseRunning")
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
                 button.noLine(@click="error='';openCreateUser=false") Cancel 
                 button.final(type="submit") Create User
+
+Modal(:open="openBlockUser")
+    h4(style='margin:.5em 0 0;') Block User
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            This action will block user from your service.
+            #[br]
+            The user will not be able to access your service anymore.
+
+    br
+
+    div(style="display: flex; align-items: center; justify-content: space-between;")
+        template(v-if="promiseRunning")
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine(@click="openBlockUser=false") Cancel 
+            button.final(type="submit") Block
+
+Modal(:open="openUnblockUser")
+    h4(style='margin:.5em 0 0;') Unblock User
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            This action will unblock user from your service. 
+            #[br]
+            The user will have access to your service.
+
+    br
+
+    div(style="display: flex; align-items: center; justify-content: space-between;")
+        template(v-if="promiseRunning")
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine(@click="openUnblockUser=false") Cancel 
+            button.final(type="submit") Unblock  
+
+Modal(:open="openDeleteUser")
+    h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete User
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            This action will delete user account and all the user's data, 
+            #[br]
+            This action cannot be undone.
+
+    br
+
+    div(style="display: flex; align-items: center; justify-content: space-between;")
+        template(v-if="promiseRunning")
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine(@click="openDeleteUser=false") Cancel 
+            button.unFinished.warning(type="submit") Delete  
 
 br
 br
@@ -298,75 +362,116 @@ import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
 import Calendar from '@/components/calendar.vue';
+import Locale from '@/components/locale.vue';
+import Pager from '@/code/pager'
 
 import { ref, nextTick, watch } from 'vue';
+import { skapi } from '@/code/admin';
 import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
-import { currentService } from '@/views/service/main';
+import { currentService, serviceUsers } from '@/views/service/main';
 import { Countries } from '@/code/countries';
 
-let serviceUsers = ref([
-    {
-        access_group: 1,
-        approved: "by_skapi:approved:1705046812570",
-        email: "sdfsf@dsflf.ccc",
-        locale: "KR",
-        name: "slfk",
-        records: 0,
-        service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-        subscribers: 0,
-        timestamp: 1705046815700,
-        user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-    },
-    {
-        access_group: 1,
-        approved: "by_skapi:approved:1705046812570",
-        email: "sdfsf@dsflf.ccc",
-        locale: "KR",
-        name: "slfk",
-        records: 0,
-        service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-        subscribers: 0,
-        timestamp: 1705046815700,
-        user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-    },
-    {
-        access_group: 1,
-        approved: "by_skapi:approved:1705046812570",
-        email: "sdfsf@dsflf.ccc",
-        locale: "KR",
-        name: "slfk",
-        records: 0,
-        service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-        subscribers: 0,
-        timestamp: 1705046815700,
-        user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-    },
-    {
-        access_group: 1,
-        approved: "by_skapi:approved:1705046812570",
-        email: "sdfsf@dsflf.ccc",
-        locale: "KR",
-        name: "slfk",
-        records: 0,
-        service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-        subscribers: 0,
-        timestamp: 1705046815700,
-        user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-    },
-    {
-        access_group: 1,
-        approved: "by_skapi:approved:1705046812570",
-        email: "sdfsf@dsflf.ccc",
-        locale: "KR",
-        name: "slfk",
-        records: 0,
-        service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-        subscribers: 0,
-        timestamp: 1705046815700,
-        user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-    }
-])
+let userPage = null;
+let fetching = ref(false);
+
+if(serviceUsers.value !== null && !serviceUsers.value.length) {
+    serviceUsers.value = Pager.init({
+        id: 'user_id',
+        sortBy: 'timestamp',
+        order: 'desc',
+        resultsPerPage: 10
+    })
+    
+    userPage = serviceUsers.value;
+
+    fetching.value = true;
+
+    skapi.getUsers({
+        service: currentService.id,
+        searchFor: 'timestamp',
+        condition: '<=',
+        value: new Date().getTime()
+    }, { limit: 50 }).then(u => {
+        console.log(u)
+        // if (u.endOfList) {
+        //     userPage.endOfList = true;
+        // }
+        // userPage.insertItems(u.list).then(_ => {
+        //     // to avoid watch trigger
+        //     if (currentPage.value === 1) {
+        //         getPage(1);
+        //     }
+        //     else {
+        //         currentPage.value = 1;
+        //     }
+        //     fetching.value = false;
+        // });
+    })
+}
+
+// let serviceUsers = ref([
+//     {
+//         access_group: 1,
+//         approved: "by_skapi:approved:1705046812570",
+//         email: "sdfsf@dsflf.ccc",
+//         locale: "KR",
+//         name: "slfk",
+//         records: 0,
+//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
+//         subscribers: 0,
+//         timestamp: 1705046815700,
+//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+//     },
+//     {
+//         access_group: 1,
+//         approved: "by_skapi:approved:1705046812570",
+//         email: "sdfsf@dsflf.ccc",
+//         locale: "KR",
+//         name: "slfk",
+//         records: 0,
+//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
+//         subscribers: 0,
+//         timestamp: 1705046815700,
+//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+//     },
+//     {
+//         access_group: 1,
+//         approved: "by_skapi:approved:1705046812570",
+//         email: "sdfsf@dsflf.ccc",
+//         locale: "KR",
+//         name: "slfk",
+//         records: 0,
+//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
+//         subscribers: 0,
+//         timestamp: 1705046815700,
+//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+//     },
+//     {
+//         access_group: 1,
+//         approved: "by_skapi:approved:1705046812570",
+//         email: "sdfsf@dsflf.ccc",
+//         locale: "KR",
+//         name: "slfk",
+//         records: 0,
+//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
+//         subscribers: 0,
+//         timestamp: 1705046815700,
+//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+//     },
+//     {
+//         access_group: 1,
+//         approved: "by_skapi:approved:1705046812570",
+//         email: "sdfsf@dsflf.ccc",
+//         locale: "KR",
+//         name: "slfk",
+//         records: 0,
+//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
+//         subscribers: 0,
+//         timestamp: 1705046815700,
+//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
+//     }
+// ])
 let filterOptions = ref({
     userID: true,
     name: true,
@@ -379,11 +484,13 @@ let filterOptions = ref({
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
 let searchFor = ref('timestamp');
 let searchText = ref('');
-let loading = ref(false);
 let showCalendar = ref(false);
 let showLocale = ref(false);
 let openInviteUser = ref(false);
 let openCreateUser = ref(false);
+let openBlockUser = ref(false);
+let openUnblockUser = ref(false);
+let openDeleteUser = ref(false);
 let promiseRunning = ref(false);
 let name = '';
 let email = '';
@@ -394,11 +501,14 @@ let error = ref('');
 let handledateClick = (startDate, endDate) => {
     if (startDate == null && endDate == null) {
         searchText.value = ''
-        // showCalendar.value = true;
     } else {
         searchText.value = (startDate || '') + ' ~ ' + (endDate || '');
-        // showCalendar.value = false;
     }
+    document.querySelector('#searchInput').focus();
+}
+let handleCountryClick = (key) => {
+    searchText.value = key;
+    showLocale.value = false;
     document.querySelector('#searchInput').focus();
 }
 
@@ -431,13 +541,6 @@ watch(filterOptions.value, nv => {
         transform: translateY(-50%);
         cursor: pointer;
         z-index: 9999;
-    }
-}
-#inviteForm, #createForm {
-    .buttonWrap {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
     }
 }
 #calendar,
