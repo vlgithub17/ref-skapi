@@ -110,9 +110,10 @@ let mouseMoveHandler = (e) => {
         if (thTotal < headFullWidth) {
             let nextTh = currentHeadCol.nextElementSibling as HTMLElement;
             let newSiblingWidth = currentSiblingHeadWidth - pageXMouseMoveDiff;
-            if (newSiblingWidth > 64) {
-                nextTh.style.width = `${newSiblingWidth}px`;
+            if (newSiblingWidth < 64) {
+                return;
             }
+            nextTh.style.width = `${newSiblingWidth}px`;
         }
         currentHeadCol.style.width = `${currentHeadColWidth + pageXMouseMoveDiff}px`;
     }
