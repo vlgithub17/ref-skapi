@@ -7,7 +7,7 @@
                     button
                         span {{ searchFor }}
                         span.material-symbols-outlined arrow_drop_down
-                    .moreVert(style="--moreVert-left:0;width:100%;display:none")
+                    .moreVert(@click.stop style="--moreVert-left:0;width:100%;display:none")
                         .inner
                             .more(value="timestamp" @click="searchFor = 'timestamp';searchText = ''") Date Created
                             .more(value="user_id" @click="searchFor = 'user_id';searchText = ''") User ID

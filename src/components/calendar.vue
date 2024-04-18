@@ -3,8 +3,8 @@
     .timeWrap
         .timeNav 
             input#here(type="date" hidden)
-            input.big.year(type="text" pattern="[0-9]+" minlength="4" :value="currentYear" @input="(e) => currentYear = e.target.value" @change="updateCalendar")
-            select(style='background-color:transparent' @change="(e) => updateCalendar(e.target.value)")
+            input.big.year(type="text" pattern="[0-9]+" minlength="4" :value="currentYear" @input="(e) => currentYear = e.target.value" @change="(e) => updateCalendar(e, 'year')")
+            select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
                 option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
             .goback
                 .material-symbols-outlined.prev(@click="prevTime") arrow_back_ios
@@ -21,9 +21,9 @@
             .dates  
                 div(v-for="date in dates" :key="date.key" :class="date.classes" @click="createdDate(date)") {{ date.day }}
     .timeSettingWrap(:class="{ active: activeTime }")
-        .start {{ startDate }}
+        .start(@click.stop="activeStart = true;" :class="{'active' : activeStart}") {{ startDate }}
         span ~
-        .end {{ endDate }}
+        .end(@click.stop="activeEnd = true;" :class="{'active' : activeEnd}") {{ endDate }}
 </template>
 
 <script setup>
@@ -48,6 +48,8 @@ let endYear = currentYear.value + 5;   // 현재 년도에서 5년 후까지 표
 let years = ref(Array.from({ length: endYear - startYear + 1 }, (_, index) => startYear + index));
 let dates = ref([]);
 let visibleYears = ref([]);
+let activeStart = ref(false);
+let activeEnd = ref(false);
 
 
 function renderCalender(thisMonth) {
@@ -87,8 +89,13 @@ onMounted(() => {
     }
 })
 
-let updateCalendar = (value) => {
-    currentMonth.value = value;
+let updateCalendar = (e, what) => {
+    if(what == 'year') {
+        currentYear.value = e.target.value;
+    } else if(what == 'month') {
+        currentMonth.value = e.target.value;
+    }
+
     thisMonth = new Date(currentYear.value, currentMonth.value, 1);
     renderCalender(thisMonth);
 }
@@ -115,13 +122,27 @@ let createdDate = (date) => {
 
     activeTime.value = true;
 
-    if (!startDate.value) {
+    if ((!startDate.value && !activeEnd.value) || (activeStart.value && !activeEnd.value)) {
         startDate.value = formattedDate;
-    } else if (!endDate.value) {
-        endDate.value = formattedDate;
+
         if (endDate.value < startDate.value) {
             startDate.value = null;
             endDate.value = null;
+            activeStart.value = false;
+        }
+        if (activeStart.value) {
+            activeStart.value = false;
+        }
+    } else if (!endDate.value || activeEnd.value) {
+        endDate.value = formattedDate;
+        
+        if (endDate.value < startDate.value) {
+            startDate.value = null;
+            endDate.value = null;
+            activeEnd.value = false;
+        }
+        if (activeEnd.value) {
+            activeEnd.value = false;
         }
         if (!props?.alwaysEmit) {
             emit('dateClicked', startDate.value, endDate.value);
@@ -133,6 +154,10 @@ let createdDate = (date) => {
     if (props?.alwaysEmit) {
         emit('dateClicked', startDate.value, endDate.value); // 칼랜더를 닫히게 하지 않고 계속 아웃풋이 나오게 하는건 어떤가요?
     }
+}
+
+let chooseDate = () => {
+    activeStart.value = true;
 }
 </script>
 
@@ -298,6 +323,12 @@ let createdDate = (date) => {
             background: rgba(0, 0, 0, 0.05);
             font-size: 0.8rem;
             opacity: 0.4;
+            cursor: pointer;
+
+            &.active {
+                outline: 2px solid var(--main-color);
+                opacity: 1;
+            }
         }
 
         span {

@@ -57,7 +57,7 @@ form#searchForm(@submit.prevent="searchUsers")
         button
             span {{ searchFor == 'timestamp' ? 'date created' : searchFor }}
             span.material-symbols-outlined arrow_drop_down
-        .moreVert(style="--moreVert-left:0;display:none")
+        .moreVert(@click.stop style="--moreVert-left:0;display:none")
             .inner(style="padding:0.8rem;padding-right:1rem")
                 .more(value="timestamp" @click="searchFor = 'timestamp';searchText = ''") Date Created
                 .more(value="user_id" @click="searchFor = 'user_id';searchText = ''") User ID
@@ -69,7 +69,7 @@ form#searchForm(@submit.prevent="searchUsers")
                 .more(value="locale" @click="searchFor = 'locale';searchText = ''") Locale
                 .more(value="birthdate" @click="searchFor = 'birthdate';searchText = ''") Birth Date
     .search
-        input.big#searchInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText")
+        input.big.clickInput#searchInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="showCalendar = !showCalendar" :class="{'focus' : showCalendar}" type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
         input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchText")
@@ -143,8 +143,11 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
             td#loading(:colspan="colspan").
                 Loading Users ... &nbsp;
                 #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-        tr(v-if="serviceUsers !== null && !serviceUsers.length")
-            td#noUsers(:colspan="colspan") No Users
+        template(v-if="serviceUsers !== null && !serviceUsers.length")
+            tr
+                td#noUsers(:colspan="colspan") No Users
+            tr(v-for="i in 9")
+                td(:colspan="colspan")
         template(v-if="serviceUsers && serviceUsers.length")
             tr(v-for="(user, index) in serviceUsers")
                 td.center.optionCol.overflow(style="padding:0")
@@ -389,6 +392,7 @@ if(serviceUsers.value !== null && !serviceUsers.value.length) {
         value: new Date().getTime()
     }, { limit: 50 }).then(u => {
         console.log(u)
+        fetching.value = false;
         // if (u.endOfList) {
         //     userPage.endOfList = true;
         // }
@@ -569,5 +573,16 @@ watch(filterOptions.value, nv => {
 .iconClick.arrow {
     padding:0;
     font-size: 0.8rem;
+}
+.clickInput {
+    cursor: pointer;
+    outline: 1px solid rgba(0, 0, 0, 0.5);
+
+    &.focus {
+        outline: 2px solid var(--main-color) !important;
+    }
+    &:focus {
+        outline: 1px solid rgba(0, 0, 0, 0.5);
+    }
 }
 </style>
