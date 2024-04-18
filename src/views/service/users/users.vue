@@ -3,7 +3,7 @@
 h3 User Authentication
 
 p.
-    The example below shows how to setup a basic form to sign up users in your website.
+    The example below shows how to setup a basic sign-up / login form for your website.
 
 Code
     pre.
@@ -24,9 +24,6 @@ Code
 
 br
 
-p.
-    Similar to the signup form, the login form below is a basic example of how to setup a login form.
-
 Code
     pre.
         #[span(style="color:#999") &lt;!-- login.html --&gt;]
@@ -44,10 +41,8 @@ Code
             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Login"]#[span(style="color:#999") &gt;]
         #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
 p.
-    Once the user have logged in for the first time, they will be listed on your user list.
-p.
-    There are tons of other features for user authentications.
-    For more details, please refer to the #[a(href="https://docs.skapi.com/authentication/create-account.html" target="_blank") Documentation]
+    Once the user have logged in for the first time, they will be listed on your #[b Users] section below.
+p For more details, please refer to the #[a(href="https://docs.skapi.com/authentication/create-account.html" target="_blank") Documentation]
 
 br
 

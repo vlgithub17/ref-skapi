@@ -193,7 +193,7 @@ section.infoBox
             hr
 
             div(style="text-align:right")
-                router-link.iconClick(to='/delete-service' style='color:var(--caution-color);font-size:0.66rem;')
+                router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
                     .material-symbols-outlined.fill(style='font-size:24px;') cancel
                     span &nbsp;Delete Service
     //- .infoValue(:class="{'nonClickable' : !user?.email_verified}" style='display: flex;align-items: center;min-height:44px;')
@@ -208,8 +208,6 @@ import { currentService } from '@/views/service/main';
 import { user } from '@/code/user';
 import Code from '@/components/code.vue';
 import Toggle from '@/components/toggle.vue';
-
-console.log(currentService)
 
 let inputName = '';
 let inputCors = '';

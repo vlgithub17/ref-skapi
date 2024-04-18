@@ -9,12 +9,12 @@
             router-link.router(:to="`/my-services/${currentService.id}/users`" :class="{'active': route.name == 'users'}")
                 span.material-symbols-outlined.fill.nohover supervisor_account
                 span.name Users
-            router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
-                span.material-symbols-outlined.fill.nohover database
-                span.name Database
             router-link.router(:to="`/my-services/${currentService.id}/clientsecret`" :class="{'active': route.name == 'clientsecret'}")
                 span.material-symbols-outlined.fill.nohover key
                 span.name Client Secret
+            router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
+                span.material-symbols-outlined.fill.nohover database
+                span.name Database
             router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
                 span.material-symbols-outlined.fill.nohover email
                 span.name Mail

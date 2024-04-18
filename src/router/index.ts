@@ -4,6 +4,7 @@ import LandingPage from '@/views/landing.vue'
 import Login from '@/views/login.vue'
 import Signup from '@/views/signup.vue'
 import Create from '@/views/create-service.vue'
+import DeleteService from '@/views/delete-service.vue'
 import Subscription from '@/views/subscription/subscription.vue'
 import AccountSetting from '@/views/account-setting.vue'
 import MyServices from '@/views/service-list.vue'
@@ -81,6 +82,12 @@ const router = createRouter(
       path: '/create/:name',
       name: 'create',
       component: Create,
+      beforeEnter: checkUser
+    },
+    {
+      path: '/delete-service/:id',
+      name: 'delete-service',
+      component: DeleteService,
       beforeEnter: checkUser
     },
     {

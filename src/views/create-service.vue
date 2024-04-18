@@ -10,8 +10,9 @@ main#create
     .bottomLineTitle Create a New Service
 
     p
-        | Choose a plan for your service&nbsp;
-        span(style='font-weight:normal') "{{newServiceName}}"
+        | Choose a plan for your service "
+        span(style='font-weight:normal') {{newServiceName}}
+        | "
 
     section.planWrap(:class="{'disabled' : promiseRunning}")
         .infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
@@ -73,16 +74,15 @@ br
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { nextTick, ref } from 'vue';
-import { callServiceList, serviceIdList, serviceList } from '@/views/service-list'
+import { ref } from 'vue';
+import { serviceIdList, serviceList } from '@/views/service-list'
 import { skapi } from '@/code/admin';
 import { user, customer } from '@/code/user';
-import { currentService } from './service/main';
 import Service from '@/code/service';
 
 const router = useRouter();
 const route = useRoute();
-let serviceNameInp = ref();
+
 let service = {
     active: 1,
     name: 'service name',
@@ -104,7 +104,6 @@ let createService = () => {
             if (serviceMode.value == 'trial') {
                 serviceIdList.push(s.id);
                 serviceList[s.id] = s;
-                promiseRunning.value = false;
                 location.href = '/my-services/' + s.id;
             } else {
                 let service_info = s;
@@ -112,8 +111,8 @@ let createService = () => {
                 await createSubscription(ticket_id, service_info);
             }
         }).catch(err => {
-            alert(err.message);
             promiseRunning.value = false;
+            alert(err.message);
         })
 }
 
