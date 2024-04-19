@@ -7,6 +7,10 @@ import { useRoute, useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { updateUser } from './code/user';
 import { callServiceList } from './views/service-list';
+import { hideMoreVert } from '@/assets/js/event.js'
+
+const router = useRouter();
+const route = useRoute();
 
 let loaded = ref(false);
 callServiceList.value = true;
@@ -15,6 +19,5 @@ updateUser().finally(() => {
     loaded.value = true;
 });
 
-const router = useRouter();
-const route = useRoute();
+hideMoreVert();
 </script>

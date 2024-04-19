@@ -8,18 +8,23 @@ let showDropDown = (e) => {
 
         let getMoreVert = getCustomSelect[i].lastChild;
         getMoreVert.style.display = 'none'
+        console.log('a')
     }
     
     let getMoreVert = currentTarget.lastChild;
     if (getMoreVert.style.display === 'none') {
         getMoreVert.style.display = 'block';
+        console.log('b')
     } else {
         getMoreVert.style.display = 'none'
+        console.log('c')
     }
 }
 
 let hideMoreVert = () => {
+    console.log('d')
     document.addEventListener('click', (e) => {
+        console.log('hide')
         let getMoreVert = document.getElementsByClassName('moreVert');
         for (let i = 0; i < getMoreVert.length; i++) {
             getMoreVert[i].style.display = 'none'

@@ -1,29 +1,55 @@
 <template lang="pug">
-#calendar(@click.stop)
-    .timeWrap
-        .timeNav 
-            input#here(type="date" hidden)
-            input.big.year(type="text" pattern="[0-9]+" minlength="4" :value="currentYear" @input="(e) => currentYear = e.target.value" @change="updateCalendar")
-            select(style='background-color:transparent' @change="(e) => updateCalendar(e.target.value)")
-                option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
-            .goback
-                .material-symbols-outlined.prev(@click="prevTime") arrow_back_ios
-                .material-symbols-outlined.next(@click="nextTime") arrow_forward_ios
-        .timeCont 
-            .days 
-                .day Mo
-                .day Tu
-                .day We
-                .day Th
-                .day Fr
-                .day Sa
-                .day Su
-            .dates  
-                div(v-for="date in dates" :key="date.key" :class="date.classes" @click="createdDate(date)") {{ date.day }}
-    .timeSettingWrap(:class="{ active: activeTime }")
-        .start {{ startDate }}
-        span ~
-        .end {{ endDate }}
+.moreVert
+    .inner(@click.stop style="padding:0")
+        .timeWrap
+            .timeNav 
+                input#here(type="date" hidden)
+                input.big.year(type="text" pattern="[0-9]+" minlength="4" :value="currentYear" @input="(e) => currentYear = e.target.value" @change="(e) => updateCalendar(e, 'year')")
+                select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
+                    option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
+                .goback
+                    .material-symbols-outlined.prev(@click="prevTime") arrow_back_ios
+                    .material-symbols-outlined.next(@click="nextTime") arrow_forward_ios
+            .timeCont 
+                .days 
+                    .day Mo
+                    .day Tu
+                    .day We
+                    .day Th
+                    .day Fr
+                    .day Sa
+                    .day Su
+                .dates  
+                    div(v-for="date in dates" :key="date.key" :class="date.classes" @click="createdDate(date)") {{ date.day }}
+        .timeSettingWrap(:class="{'active' : activeTime}")
+            .start(@click.stop="activeStart = true; activeEnd = false;" :class="{'active' : activeStart}") {{ startDate }}
+            span ~
+            .end(@click.stop="activeEnd = true; activeStart = false;" :class="{'active' : activeEnd}") {{ endDate }}
+//- #calendar(@click.stop)
+//-     .timeWrap
+//-         .timeNav 
+//-             input#here(type="date" hidden)
+//-             input.big.year(type="text" pattern="[0-9]+" minlength="4" :value="currentYear" @input="(e) => currentYear = e.target.value" @change="(e) => updateCalendar(e, 'year')")
+//-             select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
+//-                 option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
+//-             .goback
+//-                 .material-symbols-outlined.prev(@click="prevTime") arrow_back_ios
+//-                 .material-symbols-outlined.next(@click="nextTime") arrow_forward_ios
+//-         .timeCont 
+//-             .days 
+//-                 .day Mo
+//-                 .day Tu
+//-                 .day We
+//-                 .day Th
+//-                 .day Fr
+//-                 .day Sa
+//-                 .day Su
+//-             .dates  
+//-                 div(v-for="date in dates" :key="date.key" :class="date.classes" @click="createdDate(date)") {{ date.day }}
+//-     .timeSettingWrap(:class="{'active' : activeTime}")
+//-         .start(@click.stop="activeStart = true; activeEnd = false;" :class="{'active' : activeStart}") {{ startDate }}
+//-         span ~
+//-         .end(@click.stop="activeEnd = true; activeStart = false;" :class="{'active' : activeEnd}") {{ endDate }}
 </template>
 
 <script setup>
@@ -48,6 +74,8 @@ let endYear = currentYear.value + 5;   // 현재 년도에서 5년 후까지 표
 let years = ref(Array.from({ length: endYear - startYear + 1 }, (_, index) => startYear + index));
 let dates = ref([]);
 let visibleYears = ref([]);
+let activeStart = ref(false);
+let activeEnd = ref(false);
 
 
 function renderCalender(thisMonth) {
@@ -87,8 +115,13 @@ onMounted(() => {
     }
 })
 
-let updateCalendar = (value) => {
-    currentMonth.value = value;
+let updateCalendar = (e, what) => {
+    if(what == 'year') {
+        currentYear.value = e.target.value;
+    } else if(what == 'month') {
+        currentMonth.value = e.target.value;
+    }
+
     thisMonth = new Date(currentYear.value, currentMonth.value, 1);
     renderCalender(thisMonth);
 }
@@ -115,13 +148,27 @@ let createdDate = (date) => {
 
     activeTime.value = true;
 
-    if (!startDate.value) {
+    if ((!startDate.value && !activeEnd.value) || (activeStart.value && !activeEnd.value)) {
         startDate.value = formattedDate;
-    } else if (!endDate.value) {
+
+        if (endDate.value && (endDate.value < startDate.value)) {
+            startDate.value = null;
+            endDate.value = null;
+            activeStart.value = false;
+        }
+        if (activeStart.value) {
+            activeStart.value = false;
+        }
+    } else if (!endDate.value || activeEnd.value) {
         endDate.value = formattedDate;
+
         if (endDate.value < startDate.value) {
             startDate.value = null;
             endDate.value = null;
+            activeEnd.value = false;
+        }
+        if (activeEnd.value) {
+            activeEnd.value = false;
         }
         if (!props?.alwaysEmit) {
             emit('dateClicked', startDate.value, endDate.value);
@@ -137,173 +184,339 @@ let createdDate = (date) => {
 </script>
 
 <style lang="less" scoped>
-#calendar {
-    width: 340px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    background: #FAFAFA;
-    box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);
+.timeWrap {
+    padding: 1.4rem;
 
-    .infiniteScroll {
-        position: relative;
-        width: 65px;
-        padding: 5px;
-        cursor: pointer;
-    }
-
-    .timeWrap {
-        padding: 1.4rem;
-
-        .timeNav {
-            display: flex;
-            flex-wrap: nowrap;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 28px;
-
-            * {
-                text-align: center;
-            }
-
-            .goback {
-                display: flex;
-                flex-wrap: nowrap;
-                align-items: center;
-                justify-content: end;
-                padding: 0 7px 0 14px;
-
-                * {
-                    cursor: pointer;
-                    font-size: 0.9rem;
-                    user-select: none;
-                }
-
-                .prev {
-                    margin-right: 10px;
-                }
-            }
-
-            // .year {
-            //     // flex-grow: 1;
-            //     // width: 25%;
-            //     width: 80px;
-            //     font-size: 0.8rem;
-            //     border: 1px solid rgba(0,0,0,0.05);
-            //     background-color: rgba(0,0,0,0.02);
-            //     padding: 4px 0;
-            //     margin-right: 14px;
-            //     border-radius: 4px;
-            // }
-
-            select {
-                flex-grow: 1;
-            }
-
-            .month {
-                background-color: unset;
-                border: 0;
-                cursor: pointer;
-                font-size: 0.9rem;
-            }
-        }
-
-        .timeCont {
-            .days {
-                display: flex;
-                flex-wrap: nowrap;
-                margin-bottom: 15px;
-
-                .day {
-                    text-align: center;
-                    width: calc(100% / 7);
-                    color: rgba(0, 0, 0, 0.25);
-                    font-size: 0.7rem;
-                    font-weight: 500;
-                }
-            }
-
-            .dates {
-                display: flex;
-                flex-wrap: wrap;
-
-                .date {
-                    position: relative;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    text-align: center;
-                    font-size: 0.7rem;
-                    width: calc(100% / 7);
-                    line-height: 32px;
-                    cursor: pointer;
-
-                    &::before {
-                        position: absolute;
-                        content: '';
-                        width: 32px;
-                        height: 32px;
-                        background-color: rgba(41, 63, 230, 0.05);
-                        transition: all 0.3s;
-                        border-radius: 4px;
-                        opacity: 0;
-                    }
-
-                    &:hover::before {
-                        opacity: 1;
-                    }
-
-                    &.prev,
-                    &.next {
-                        color: rgba(0, 0, 0, 0.2);
-                    }
-                }
-            }
-        }
-    }
-
-    .timeSettingWrap {
-        position: relative;
-        padding: 20px;
+    .timeNav {
         display: flex;
         flex-wrap: nowrap;
         align-items: center;
         justify-content: center;
+        margin-bottom: 28px;
 
-        &::after {
-            position: absolute;
-            content: '';
-            width: 100%;
-            height: 1px;
-            top: 0;
-            left: 0;
-            background: rgba(0, 0, 0, 0.10);
-            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.06);
+        * {
+            text-align: center;
         }
 
-        &.active {
+        .goback {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: end;
+            padding: 0 7px 0 14px;
 
-            .start,
-            .end {
-                opacity: 1;
+            * {
+                cursor: pointer;
+                font-size: 0.9rem;
+                user-select: none;
+            }
+
+            .prev {
+                margin-right: 10px;
             }
         }
 
-        .start,
-        .end {
-            width: 130px;
-            height: 40px;
-            text-align: center;
-            line-height: 40px;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.05);
-            font-size: 0.8rem;
-            opacity: 0.4;
+        // .year {
+        //     // flex-grow: 1;
+        //     // width: 25%;
+        //     width: 80px;
+        //     font-size: 0.8rem;
+        //     border: 1px solid rgba(0,0,0,0.05);
+        //     background-color: rgba(0,0,0,0.02);
+        //     padding: 4px 0;
+        //     margin-right: 14px;
+        //     border-radius: 4px;
+        // }
+
+        select {
+            flex-grow: 1;
         }
 
-        span {
-            font-size: 1rem;
-            padding: 0 10px;
+        .month {
+            background-color: unset;
+            border: 0;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+    }
+
+    .timeCont {
+        .days {
+            display: flex;
+            flex-wrap: nowrap;
+            margin-bottom: 15px;
+
+            .day {
+                text-align: center;
+                width: calc(100% / 7);
+                color: rgba(0, 0, 0, 0.25);
+                font-size: 0.7rem;
+                font-weight: 500;
+            }
+        }
+
+        .dates {
+            display: flex;
+            flex-wrap: wrap;
+
+            .date {
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                font-size: 0.7rem;
+                width: calc(100% / 7);
+                line-height: 32px;
+                cursor: pointer;
+
+                &::before {
+                    position: absolute;
+                    content: '';
+                    width: 32px;
+                    height: 32px;
+                    background-color: rgba(41, 63, 230, 0.05);
+                    transition: all 0.3s;
+                    border-radius: 4px;
+                    opacity: 0;
+                }
+
+                &:hover::before {
+                    opacity: 1;
+                }
+
+                &.prev,
+                &.next {
+                    color: rgba(0, 0, 0, 0.2);
+                }
+            }
         }
     }
 }
+
+.timeSettingWrap {
+    position: relative;
+    padding: 20px;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+
+    &::after {
+        position: absolute;
+        content: '';
+        width: 100%;
+        height: 1px;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.10);
+        box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    &.active {
+
+        .start,
+        .end {
+            opacity: 1;
+        }
+    }
+
+    .start,
+    .end {
+        width: 130px;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.05);
+        font-size: 0.8rem;
+        opacity: 0.4;
+        cursor: pointer;
+
+        &.active {
+            outline: 2px solid var(--main-color);
+            opacity: 1;
+        }
+    }
+
+    span {
+        font-size: 1rem;
+        padding: 0 10px;
+    }
+}
+// #calendar {
+//     width: 340px;
+//     border-radius: 8px;
+//     border: 1px solid rgba(0, 0, 0, 0.15);
+//     background: #FAFAFA;
+//     box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);
+
+//     .infiniteScroll {
+//         position: relative;
+//         width: 65px;
+//         padding: 5px;
+//         cursor: pointer;
+//     }
+
+//     .timeWrap {
+//         padding: 1.4rem;
+
+//         .timeNav {
+//             display: flex;
+//             flex-wrap: nowrap;
+//             align-items: center;
+//             justify-content: center;
+//             margin-bottom: 28px;
+
+//             * {
+//                 text-align: center;
+//             }
+
+//             .goback {
+//                 display: flex;
+//                 flex-wrap: nowrap;
+//                 align-items: center;
+//                 justify-content: end;
+//                 padding: 0 7px 0 14px;
+
+//                 * {
+//                     cursor: pointer;
+//                     font-size: 0.9rem;
+//                     user-select: none;
+//                 }
+
+//                 .prev {
+//                     margin-right: 10px;
+//                 }
+//             }
+
+//             // .year {
+//             //     // flex-grow: 1;
+//             //     // width: 25%;
+//             //     width: 80px;
+//             //     font-size: 0.8rem;
+//             //     border: 1px solid rgba(0,0,0,0.05);
+//             //     background-color: rgba(0,0,0,0.02);
+//             //     padding: 4px 0;
+//             //     margin-right: 14px;
+//             //     border-radius: 4px;
+//             // }
+
+//             select {
+//                 flex-grow: 1;
+//             }
+
+//             .month {
+//                 background-color: unset;
+//                 border: 0;
+//                 cursor: pointer;
+//                 font-size: 0.9rem;
+//             }
+//         }
+
+//         .timeCont {
+//             .days {
+//                 display: flex;
+//                 flex-wrap: nowrap;
+//                 margin-bottom: 15px;
+
+//                 .day {
+//                     text-align: center;
+//                     width: calc(100% / 7);
+//                     color: rgba(0, 0, 0, 0.25);
+//                     font-size: 0.7rem;
+//                     font-weight: 500;
+//                 }
+//             }
+
+//             .dates {
+//                 display: flex;
+//                 flex-wrap: wrap;
+
+//                 .date {
+//                     position: relative;
+//                     display: flex;
+//                     align-items: center;
+//                     justify-content: center;
+//                     text-align: center;
+//                     font-size: 0.7rem;
+//                     width: calc(100% / 7);
+//                     line-height: 32px;
+//                     cursor: pointer;
+
+//                     &::before {
+//                         position: absolute;
+//                         content: '';
+//                         width: 32px;
+//                         height: 32px;
+//                         background-color: rgba(41, 63, 230, 0.05);
+//                         transition: all 0.3s;
+//                         border-radius: 4px;
+//                         opacity: 0;
+//                     }
+
+//                     &:hover::before {
+//                         opacity: 1;
+//                     }
+
+//                     &.prev,
+//                     &.next {
+//                         color: rgba(0, 0, 0, 0.2);
+//                     }
+//                 }
+//             }
+//         }
+//     }
+
+//     .timeSettingWrap {
+//         position: relative;
+//         padding: 20px;
+//         display: flex;
+//         flex-wrap: nowrap;
+//         align-items: center;
+//         justify-content: center;
+
+//         &::after {
+//             position: absolute;
+//             content: '';
+//             width: 100%;
+//             height: 1px;
+//             top: 0;
+//             left: 0;
+//             background: rgba(0, 0, 0, 0.10);
+//             box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.06);
+//         }
+
+//         &.active {
+
+//             .start,
+//             .end {
+//                 opacity: 1;
+//             }
+//         }
+
+//         .start,
+//         .end {
+//             width: 130px;
+//             height: 40px;
+//             text-align: center;
+//             line-height: 40px;
+//             border-radius: 8px;
+//             background: rgba(0, 0, 0, 0.05);
+//             font-size: 0.8rem;
+//             opacity: 0.4;
+//             cursor: pointer;
+
+//             &.active {
+//                 outline: 2px solid var(--main-color);
+//                 opacity: 1;
+//             }
+//         }
+
+//         span {
+//             font-size: 1rem;
+//             padding: 0 10px;
+//         }
+//     }
+// }
 </style>
