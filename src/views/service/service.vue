@@ -124,13 +124,20 @@ section.infoBox
     .error(v-if='!user?.email_verified')
         .material-symbols-outlined.fill warning
         router-link(to="/account-setting") Please verify your email address to modify settings.
+
+    .error(v-else-if='currentService.service.active == 0')
+        .material-symbols-outlined.fill warning
+        span This service is currently disabled.
+
+    .error(v-else-if='currentService.service.active < 0')
+        .material-symbols-outlined.fill warning
+        span This service is currently suspended.
+
     .infoTitle(v-else style="margin-right: 1rem;")
         | Settings&nbsp;
         a.question(href='https://docs.skapi.com/security/security-settings.html' target="_blank")
             .material-symbols-outlined.empty help 
             span Help
-        br
-
 
     hr
 
@@ -188,7 +195,7 @@ section.infoBox
             select(@change="(e) => changeCreateUserMode(e.target.value)" :value="currentService.service.prevent_signup ? 'admin' : 'anyone'" :disabled='updatingValue.prevent_signup')
                 option(value="admin") Only admin allowed
                 option(value="anyone") Anyone allowed
-        
+
         template(v-if="currentService.plan == 'Trial' || currentService.service.active < 0 || currentService?.subscription?.status == 'canceled'")
             hr
 
@@ -196,9 +203,9 @@ section.infoBox
                 router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
                     .material-symbols-outlined.fill(style='font-size:24px;') cancel
                     span &nbsp;Delete Service
-    //- .infoValue(:class="{'nonClickable' : !user?.email_verified}" style='display: flex;align-items: center;min-height:44px;')
-    //-     .smallTitle Disable/Enable
-    //-     Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
+    .infoValue(:class="{'nonClickable' : !user?.email_verified || currentService.service.active < 0}" style='display: flex;align-items: center;min-height:44px;')
+        .smallTitle Disable/Enable
+        Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
 br
 </template>
 
@@ -308,7 +315,7 @@ let changeApiKey = () => {
     });
 }
 
-let getUserUnit = (user:number) => {
+let getUserUnit = (user: number) => {
     let units = ['k', 'M', 'B', 'T'];
     let result = '';
 
@@ -332,7 +339,7 @@ let getUserUnit = (user:number) => {
 }
 
 let getfileSize = (s: any) => {
-    if(s == 0 || s == null) {
+    if (s == 0 || s == null) {
         return '0 bytes'
     } else {
         let unit = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];

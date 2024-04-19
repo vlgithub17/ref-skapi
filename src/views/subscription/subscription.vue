@@ -23,14 +23,17 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
             .infoBox
                 .mode
                     | Standard
-                    small(style='font-weight:300') {{serviceList[serviceId].plan == 'Standard' && serviceList[serviceId].service.plan !== 'Canceled' ? '  (Current Plan)' : ''}}
+                    small(style='font-weight:300') {{availablePlans[0] === false ? '  (Current Plan)' : ''}}
 
-                template(v-if="serviceList[serviceId].plan !== 'Standard' || serviceList[serviceId].service.plan == 'Canceled'")
+                template(v-if="availablePlans[0]")
                     .price $19
                     br
-                    button.final(v-if="serviceList[serviceId].plan == 'Trial' || serviceList[serviceId].service.plan === 'Canceled'" @click="changeMode='standard';openUpgrade=true;console.log(serviceList[serviceId])") Upgrade
-                    button.final(v-else-if="serviceList[serviceId].plan == 'Premium'" @click="changeMode='standard';openDowngrade=true;") Downgrade
-                
+                    button.final(@click="()=>{upgradeOpt=availablePlans[0]; changeMode='standard';openUpgrade=availablePlans[0] === 1 ? 'Downgrade' : 'Upgrade';}") {{availablePlans[0] === 1 ? 'Downgrade' : 'Upgrade'}}
+                template(v-else-if="availablePlans[0] === null")
+                    .price $19
+                    br
+                    button.final.disabled N/A
+
                 hr
 
                 ul
@@ -46,13 +49,16 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
             .infoBox
                 .mode
                     | Premium
-                    small(style='font-weight:300') {{serviceList[serviceId].plan == 'Premium' && serviceList[serviceId].service.plan !== 'Canceled' ? '  (Current Plan)' : ''}}
-                
-                template(v-if="serviceList[serviceId].plan !== 'Premium' || serviceList[serviceId].service.plan == 'Canceled'")
+                    small(style='font-weight:300') {{availablePlans[1] === false ? '  (Current Plan)' : ''}}
+
+                template(v-if="availablePlans[1]")
                     .price $89
                     br
-                    button.final(@click="changeMode='premium';openUpgrade=true;") Upgrade
-
+                    button.final(@click="()=>{changeMode='premium';openUpgrade='Upgrade';upgradeOpt=availablePlans[1];}") Upgrade
+                template(v-if="availablePlans[1] === null")
+                    .price $89
+                    br
+                    button.final.disabled N/A
                 hr
 
                 ul
@@ -66,17 +72,20 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                     li 10GB of email storage
                     li Subdomain hosting
                     li unlimited use with pay-as-you-go when exceeding the limit (currently free for limited time)
- 
+
 div(v-else style="text-align:center")
     img.loading(src="@/assets/img/loading.png")
 
-Modal(:open="openUpgrade")
-    h4(style='margin:.5em 0 0;') Upgrade Plan
+Modal(:open="openUpgrade" style='max-width: 640px;')
+    h4(style='margin:.5em 0 0;') {{openUpgrade}} Plan
 
     hr
 
     div(style='font-size:.8rem;')
-        p Would you like to upgrade your service plan to {{ changeMode }}?
+        p.
+            Would you like to {{openUpgrade ? openUpgrade.toLowerCase() : ''}} your service plan to {{ changeMode }}?
+            #[br]
+            When the subscription plan is updated, proration of the remaining days will be calculated and the amount will be adjusted accordingly.
 
     br
 
@@ -85,28 +94,7 @@ Modal(:open="openUpgrade")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine(@click="openUpgrade = false") Cancel
-            button.final(@click="upgrade") Upgrade
-
-Modal(:open="openDowngrade")
-    h4(style='margin:.5em 0 0;') Downgrade Plan
-
-    hr
-
-    div(style='font-size:.8rem;')
-        p. 
-            Would you like to downgrade your plan to standard?
-            #[br]
-            You will loose access to some features of your current plan.
-
-    br
-
-    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='promiseRunning')
-            img.loading(src="@/assets/img/loading.png")
-        template(v-else)
-            button.noLine(@click="openDowngrade = false") Cancel
-            button.final(@click="downgrade") Downgrade
-
+            button.final(@click="upgrade") {{openUpgrade}}
 br
 br
 br
@@ -114,7 +102,7 @@ br
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { serviceList } from '@/views/service-list'
 import Modal from '@/components/modal.vue';
@@ -126,46 +114,50 @@ const route = useRoute();
 
 let serviceId = route.path.split('/')[2];
 let openUpgrade = ref(false);
-let openDowngrade = ref(false);
 let promiseRunning = ref(false);
 let changeMode = ''
+let upgradeOpt: any;
+let availablePlans = computed(() => {
+    // true = createSubs
+    // 1 = upgrade
+    // false = current plan
+    // null = not avail
 
-let dateFormat = (timestamp: number) => {
-    let currentDate = new Date(timestamp);
-    let year = currentDate.getFullYear();
-    let month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
-    let day = ('0' + currentDate.getDate()).slice(-2);
-    let dateStr = `${year}-${month}-${day}`;
+    // 1: 'Trial',
+    // 2: 'Standard',
+    // 3: 'Premium',
+    // 50: 'Unlimited',
+    // 51: 'Free Standard'
 
-    return dateStr;
-}
+    if (serviceList[serviceId]?.service.plan == 'Canceled') {
+        return [1, 1];
+    }
+    if (serviceList[serviceId]?.service.active === -1) { // suspended
+        return [true, true];
+    }
+    if (serviceList[serviceId]?.service.plan == 'Trial') {
+        return [true, true];
+    }
+    if (serviceList[serviceId]?.service.plan == 'Standard') {
+        return [false, 1];
+    }
+    if (serviceList[serviceId]?.service.plan == 'Premium') {
+        let notAvail = serviceList[serviceId].service.users > 10000 || serviceList[serviceId].storageInfo.email > 1073741824 || serviceList[serviceId].storageInfo.host > 53687091200 || serviceList[serviceId].storageInfo.cloud > 53687091200 || serviceList[serviceId].storageInfo.database > 4294967296
+        return [notAvail ? null : 1, false];
+    }
+
+    return [null, null];
+});
+
 let upgrade = () => {
-    promiseRunning.value = true;
-
-    if (serviceList[serviceId].plan == 'Trial' || serviceList[serviceId].plan == 'Standard' || serviceList[serviceId].plan == 'Free Standard') {
-        createSubscription(changeMode, serviceList[serviceId]);
-    } else {
-        if (serviceList[serviceId].service.active == -1) {
-            createSubscription(changeMode, serviceList[serviceId]);
-        } else {
-            updateSubscription(changeMode);
-        }
+    if (!upgradeOpt) {
+        return;
     }
-}
-
-let downgrade = () => {
-    promiseRunning.value = true;
-
-    if (serviceList[serviceId].service.users > 10000 || serviceList[serviceId].storageInfo.email > 1073741824 || serviceList[serviceId].storageInfo.host > 53687091200 || serviceList[serviceId].storageInfo.cloud > 53687091200 || serviceList[serviceId].storageInfo.database > 4294967296) {
-        promiseRunning.value = false;
-        return false;
+    if (upgradeOpt === true) {
+        return createSubscription(changeMode, serviceList[serviceId]);
     }
 
-    if (serviceList[serviceId].service.active == -1) {
-        createSubscription(changeMode, serviceList[serviceId]);
-    } else {
-        updateSubscription(changeMode);
-    }
+    updateSubscription(changeMode);
 }
 
 let createSubscription = async (ticket_id, service_info) => {
@@ -173,9 +165,7 @@ let createSubscription = async (ticket_id, service_info) => {
     let product = JSON.parse(import.meta.env.VITE_PRODUCT);
     let customer_id = resolvedCustomer.id;
     let currentUrl = window.location;
-
-    console.log(product)
-    console.log(ticket_id)
+    promiseRunning.value = true;
 
     let response = await skapi.clientSecretRequest({
         clientSecretName: 'stripe_test',
@@ -197,26 +187,21 @@ let createSubscription = async (ticket_id, service_info) => {
             cancel_url: currentUrl.origin + '/subscription/' + service_info.id,
             "line_items[0][quantity]": 1,
             'line_items[0][price]': product[ticket_id],
-            // "success_url": currentUrl.origin + '/my-services/' + service_info.id + '?checkout_id={CHECKOUT_SESSION_ID}&service_id=' + service_info.id + '&ticket_id=' + ticket_id,
             "success_url": currentUrl.origin + '/my-services/' + service_info.id,
             'tax_id_collection[enabled]': true,
         }
     });
-    if (response.error) {
-        alert(response.error.message);
-        return;
-    }
 
-    window.location = response.url;
-    promiseRunning.value = false;
-    if (openDowngrade.value) {
-        location.href = '/my-services/' + service_info.id;
+    if (response.error) {
+        promiseRunning.value = false;
+        alert(response.error.message);
     }
 }
 
 let updateSubscription = async (ticket_id) => {
-    let resolvedCustomer = await customer;
+    await customer;
     let subs_id = serviceList[serviceId].service.subs_id.split('#');
+    promiseRunning.value = true;
 
     if (!serviceList[serviceId].service.subs_id) {
         alert('Service does not have a subscription');
@@ -260,12 +245,10 @@ let updateSubscription = async (ticket_id) => {
     });
 
     if (response.error) {
-        alert(response.error.message);
-        return;
-    }
-
-    if (openDowngrade.value) {
         promiseRunning.value = false;
+        alert(response.error.message);
+    }
+    else {
         location.href = '/my-services/' + serviceList[serviceId].id;
     }
 }
@@ -282,9 +265,11 @@ let updateSubscription = async (ticket_id) => {
         padding: 0 12px; // = total 20px padding
     }
 }
+
 .mode {
     font-weight: normal;
 }
+
 .smallValue {
     margin-top: 8px;
 }
