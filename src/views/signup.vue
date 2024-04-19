@@ -137,7 +137,7 @@ let signup = (e) => {
 
 <style scoped lang="less">
 #signup {
-    max-width: 440px;
+    max-width: 480px;
     padding: 0 20px;
     margin: 0 auto;
 }

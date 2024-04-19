@@ -115,7 +115,6 @@ let mouseMoveHandler = (e) => {
     }
 };
 
-
 let setResize = async () => {
     // - initiallize start
     removeSetup();

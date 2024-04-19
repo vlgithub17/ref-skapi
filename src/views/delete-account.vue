@@ -81,7 +81,7 @@ let processDelete = async () => {
 
 <style scoped lang="less">
 #confirmation {
-    max-width: 600px;
+    max-width: 640px;
     padding: 0 20px;
     margin: 0 auto;
 

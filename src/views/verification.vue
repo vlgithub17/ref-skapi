@@ -90,7 +90,7 @@ let verifyEmail = e => {
 
 <style scoped lang="less">
 #verify {
-    max-width: 440px;
+    max-width: 640px;
     padding: 0 20px;
     margin: 0 auto;
 }

@@ -139,7 +139,7 @@ export default class Service {
 
     subscriptionFetched = ref(false);
     _orgPlan = '';
-
+    _subsPromise;
     constructor(id: string, service: ServiceObj, endpoints: string[]) {
         this.id = id;
         this.admin_private_endpoint = endpoints[0];
@@ -150,13 +150,13 @@ export default class Service {
         this.owner = service.owner;
         this.dateCreated = typeof service.timestamp === 'string' ? service.timestamp : new Date(service.timestamp).toDateString();
         this.plan = this.planCode[this.service.group];
-        this.getSubscription();
+        this._subsPromise = this.getSubscription();
         this.getStorageInfo();
     }
 
     setPlan = (subscription: SubscriptionObj) => {
         this._orgPlan = this.planCode[this.service.group];
-        if (subscription?.cancel_at_period_end || new Date().getTime() < (subscription?.canceled_at || 0)) {
+        if (subscription?.status === 'canceled' || subscription?.cancel_at_period_end || new Date().getTime() < (subscription?.canceled_at || 0)) {
             this.service.plan = 'Canceled';
         }
         else {
@@ -203,6 +203,8 @@ export default class Service {
     }
 
     async cancelSubscription(): Promise<SubscriptionObj> {
+        await this._subsPromise;
+        
         if (!Object.keys(this.subscription).length) {
             return null;
         }

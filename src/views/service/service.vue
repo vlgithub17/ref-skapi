@@ -40,6 +40,13 @@ section.infoBox
     .infoTitle(style="margin-right: 1rem;") Dashboard&nbsp;
 
     hr
+    .state 
+        .smallTitle State
+        .smallValue
+            span(v-if="currentService.service.active == 0") Disabled
+            span(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color);font-weight:normal") Suspended
+            span(v-else-if="currentService.service.active == 1" style='color: var(--text-green);font-weight:normal;') Running
+            span(v-else) -
 
     .state.nobreak
         .smallTitle Service ID
@@ -54,13 +61,6 @@ section.infoBox
     .state
         .smallTitle Date Created
         .smallValue {{ currentService.dateCreated }}
-
-    .state 
-        .smallTitle State
-        .smallValue
-            span(v-if="currentService.service.active == 0") Disabled
-            span(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color)") Suspended
-            span(v-else) Running
 
     .state 
         .smallTitle Host URL
@@ -105,10 +105,10 @@ section.infoBox
 
     br
 
-    .state 
+    .state
         .smallTitle Subscription
         .smallValue(:style='{fontWeight:currentService.service.plan == "Canceled" ? "normal" : null, color:currentService.service.plan == "Canceled" ? "var(--caution-color)" : null}')
-            | {{ currentService.service.plan }}&nbsp;
+            span {{ currentService.service.plan }}&nbsp;
             router-link.editHandle(:to='`/subscription/${currentService.id}`' @click="editCors") [CHANGE]
 
     .state 
@@ -196,16 +196,17 @@ section.infoBox
                 option(value="admin") Only admin allowed
                 option(value="anyone") Anyone allowed
 
-        template(v-if="currentService.plan == 'Trial' || currentService.service.active < 0 || currentService?.subscription?.status == 'canceled'")
-            hr
-
-            div(style="text-align:right")
-                router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
-                    .material-symbols-outlined.fill(style='font-size:24px;') cancel
-                    span &nbsp;Delete Service
-    .infoValue(:class="{'nonClickable' : !user?.email_verified || currentService.service.active < 0}" style='display: flex;align-items: center;min-height:44px;')
+    .infoValue(:class="{'nonClickable' : !user?.email_verified || currentService?.subscription?.status == 'canceled'}" style='display: flex;align-items: center;min-height:44px;')
         .smallTitle Disable/Enable
         Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
+    
+    template(v-if="currentService.plan == 'Trial' || currentService.service.active < 0 || currentService?.subscription?.status == 'canceled'")
+        hr
+
+        div(style="text-align:right")
+            router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
+                .material-symbols-outlined.fill(style='font-size:24px;') cancel
+                span &nbsp;Delete Service
 br
 </template>
 

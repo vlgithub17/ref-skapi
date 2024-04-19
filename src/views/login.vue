@@ -126,7 +126,7 @@ let login = (e) => {
 
 <style scoped lang="less">
 #login {
-    max-width: 440px;
+    max-width: 480px;
     padding: 0 20px;
     margin: 0 auto;
 }

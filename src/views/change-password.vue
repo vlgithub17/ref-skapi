@@ -185,7 +185,7 @@ let changePassword = async () => {
 
 <style scoped lang="less">
 #changePassword {
-    max-width: 440px;
+    max-width: 480px;
     padding: 0 20px;
     margin: 0 auto;
 }
