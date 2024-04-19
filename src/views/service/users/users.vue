@@ -54,22 +54,25 @@ p Search and manage your service users.
 
 form#searchForm(@submit.prevent="searchUsers")
     .customSelect(@click.stop="(e)=>{showDropDown(e)}")
-        button
+        button(type='button')
             span {{ searchFor == 'timestamp' ? 'date created' : searchFor }}
             span.material-symbols-outlined arrow_drop_down
-        .moreVert(@click.stop style="--moreVert-left:0;display:none")
+        .moreVert(style="--moreVert-left:0;display:none")
             .inner(style="padding:0.8rem;padding-right:1rem")
-                .more(value="timestamp" @click="searchFor = 'timestamp';searchText = ''") Date Created
-                .more(value="user_id" @click="searchFor = 'user_id';searchText = ''") User ID
-                .more(value="email" @click="searchFor = 'email';searchText = ''") Email
-                .more(value="phone_number" @click="searchFor = 'phone_number';searchText = ''") phone_number
-                .more(value="address" @click="searchFor = 'address';searchText = ''") Address
-                .more(value="gender" @click="searchFor = 'gender';searchText = ''") Gender
-                .more(value="name" @click="searchFor = 'name';searchText = ''") Name
-                .more(value="locale" @click="searchFor = 'locale';searchText = ''") Locale
-                .more(value="birthdate" @click="searchFor = 'birthdate';searchText = ''") Birth Date
+                .more(value="timestamp" @click="searchFor = 'timestamp';searchText = '';") Date Created
+                .more(value="user_id" @click="searchFor = 'user_id';searchText = '';") User ID
+                .more(value="email" @click="searchFor = 'email';searchText = '';") Email
+                .more(value="phone_number" @click="searchFor = 'phone_number';searchText = '';") phone_number
+                .more(value="address" @click="searchFor = 'address';searchText = '';") Address
+                .more(value="gender" @click="searchFor = 'gender';searchText = '';") Gender
+                .more(value="name" @click="searchFor = 'name';searchText = '';") Name
+                .more(value="locale" @click="searchFor = 'locale';searchText = '';") Locale
+                .more(value="birthdate" @click="searchFor = 'birthdate';searchText = '';") Birth Date
     .search
-        input.big.clickInput#searchInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="showCalendar = !showCalendar" :class="{'focus' : showCalendar}" type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
+        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="(e)=>{showDropDown(e)}")
+            input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
+            .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
+            Calendar(@dateClicked="handledateClick" alwaysEmit='true' style="--moreVert-left:0;display:none")
         input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchText")
@@ -77,10 +80,8 @@ form#searchForm(@submit.prevent="searchUsers")
         input.big#searchInput(v-else-if="searchFor === 'locale'" type="text" placeholder="2 digit country code e.g. KR" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchText" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
         input.big#searchInput(v-else-if="searchFor === 'email'" type="email" placeholder="Search public email address" v-model="searchText")
-        .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')" @click.stop="showCalendar = !showCalendar") calendar_today
         .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale' && !searchText" @click.stop="showLocale = !showLocale") arrow_drop_down
         button.final(type="submit" style='flex-shrink: 0;') Search
-        Calendar(v-if="showCalendar" @click.stop @dateClicked="handledateClick" alwaysEmit='true')
         Locale(v-if="showLocale" @countryClicked="handleCountryClick")
 
 br
@@ -373,41 +374,41 @@ import { Countries } from '@/code/countries';
 let userPage = null;
 let fetching = ref(false);
 
-if(serviceUsers.value !== null && !serviceUsers.value.length) {
-    serviceUsers.value = Pager.init({
-        id: 'user_id',
-        sortBy: 'timestamp',
-        order: 'desc',
-        resultsPerPage: 10
-    })
+// if(serviceUsers.value !== null && !serviceUsers.value.length) {
+//     serviceUsers.value = Pager.init({
+//         id: 'user_id',
+//         sortBy: 'timestamp',
+//         order: 'desc',
+//         resultsPerPage: 10
+//     })
     
-    userPage = serviceUsers.value;
+//     userPage = serviceUsers.value;
 
-    fetching.value = true;
+//     fetching.value = true;
 
-    skapi.getUsers({
-        service: currentService.id,
-        searchFor: 'timestamp',
-        condition: '<=',
-        value: new Date().getTime()
-    }, { limit: 50 }).then(u => {
-        console.log(u)
-        fetching.value = false;
-        // if (u.endOfList) {
-        //     userPage.endOfList = true;
-        // }
-        // userPage.insertItems(u.list).then(_ => {
-        //     // to avoid watch trigger
-        //     if (currentPage.value === 1) {
-        //         getPage(1);
-        //     }
-        //     else {
-        //         currentPage.value = 1;
-        //     }
-        //     fetching.value = false;
-        // });
-    })
-}
+//     skapi.getUsers({
+//         service: currentService.id,
+//         searchFor: 'timestamp',
+//         condition: '<=',
+//         value: new Date().getTime()
+//     }, { limit: 50 }).then(u => {
+//         console.log(u)
+//         fetching.value = false;
+//         // if (u.endOfList) {
+//         //     userPage.endOfList = true;
+//         // }
+//         // userPage.insertItems(u.list).then(_ => {
+//         //     // to avoid watch trigger
+//         //     if (currentPage.value === 1) {
+//         //         getPage(1);
+//         //     }
+//         //     else {
+//         //         currentPage.value = 1;
+//         //     }
+//         //     fetching.value = false;
+//         // });
+//     })
+// }
 
 // let serviceUsers = ref([
 //     {
@@ -539,7 +540,7 @@ watch(filterOptions.value, nv => {
         right: 125px;
         transform: translateY(-50%);
         cursor: pointer;
-        z-index: 9999;
+        user-select: none;
     }
 }
 #calendar,
@@ -575,14 +576,18 @@ watch(filterOptions.value, nv => {
     font-size: 0.8rem;
 }
 .clickInput {
-    cursor: pointer;
-    outline: 1px solid rgba(0, 0, 0, 0.5);
+    width: 100%;
 
-    &.focus {
-        outline: 2px solid var(--main-color) !important;
-    }
-    &:focus {
+    input {
+        cursor: pointer;
         outline: 1px solid rgba(0, 0, 0, 0.5);
+    
+        &.focus {
+            outline: 2px solid var(--main-color) !important;
+        }
+        &:focus {
+            outline: 1px solid rgba(0, 0, 0, 0.5);
+        }
     }
 }
 </style>
