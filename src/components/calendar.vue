@@ -20,7 +20,7 @@
                 .day Su
             .dates  
                 div(v-for="date in dates" :key="date.key" :class="date.classes" @click="createdDate(date)") {{ date.day }}
-    .timeSettingWrap(:class="{ active: activeTime }")
+    .timeSettingWrap(:class="{'active' : activeTime}")
         .start(@click.stop="activeStart = true;" :class="{'active' : activeStart}") {{ startDate }}
         span ~
         .end(@click.stop="activeEnd = true;" :class="{'active' : activeEnd}") {{ endDate }}
@@ -125,7 +125,7 @@ let createdDate = (date) => {
     if ((!startDate.value && !activeEnd.value) || (activeStart.value && !activeEnd.value)) {
         startDate.value = formattedDate;
 
-        if (endDate.value < startDate.value) {
+        if (endDate.value && (endDate.value < startDate.value)) {
             startDate.value = null;
             endDate.value = null;
             activeStart.value = false;
@@ -135,7 +135,7 @@ let createdDate = (date) => {
         }
     } else if (!endDate.value || activeEnd.value) {
         endDate.value = formattedDate;
-        
+
         if (endDate.value < startDate.value) {
             startDate.value = null;
             endDate.value = null;
