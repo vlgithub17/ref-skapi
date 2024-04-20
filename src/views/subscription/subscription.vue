@@ -290,7 +290,6 @@ let updateSubscription = async (ticket_id) => {
 <style scoped lang="less">
 #subscription {
     max-width: 1000px;
-    // padding: 0 20px;
     padding: 0 8px;
     margin: 0 auto;
 
