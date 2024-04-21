@@ -6,14 +6,14 @@
   "scripts": {
     "dev": "vite --host",
     "build": "node script.cjs; run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
+    "preview": "vite preview --host",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
     "less": "^4.2.0",
     "pug": "^3.0.2",
-    "skapi-js": "^1.0.81",
+    "skapi-js": "^1.0.84",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"
   },
