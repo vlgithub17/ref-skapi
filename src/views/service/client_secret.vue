@@ -39,7 +39,8 @@ hr
 .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
     .material-symbols-outlined.fill warning
     router-link(to="/account-setting") Please verify your email address to register client secret keys.
-
+    br
+    br
 template(v-else)
     p Register your client secret keys here.
 
