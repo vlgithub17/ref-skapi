@@ -1,45 +1,13 @@
 <template lang="pug">
-h2 Getting Started
-
-hr
-
-p Add the following code to your HTML website to get started:
-
-Code
-    pre.
-        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-            #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
-        #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-
-br
-
-h4 For SPA Projects:
-
-p 1. Install the package:
-
-Code
-    pre npm install skapi-js
-
-br
-
-p 2. Initialize Skapi from your main.js:
-
-Code
-    pre.
-        #[span(style="color:#999") // main.js]
-        #[span(style="color:#44E9FF") import] { Skapi } #[span(style="color:#44E9FF") from] #[span(style="color:#FFED91") "skapi-js"]
-        #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
-        #[span(style="color:#44E9FF") export] { skapi } #[span(style="color:#999") // Import the instance in your components]
-
-p For more details, please refer to the #[a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank") Documentation]
-
-br
-
 section.infoBox
-    .infoTitle(style="margin-right: 1rem;") Dashboard&nbsp;
+    .infoTitle(style="margin-right: 1rem;") Dashboard
 
     hr
+    
+    .state 
+        .smallTitle Service Name
+        .smallValue {{ currentService.service.name }}
+
     .state 
         .smallTitle State
         .smallValue
@@ -207,7 +175,47 @@ section.infoBox
             router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
                 .material-symbols-outlined.fill(style='font-size:24px;') cancel
                 span &nbsp;Delete Service
+
 br
+
+h2 Getting Started
+
+hr
+
+p Add the following code to your HTML website to get started:
+
+Code
+    pre.
+        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
+        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
+            #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
+        #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
+
+br
+
+h4 For SPA Projects:
+
+p 1. Install the package:
+
+Code
+    pre npm install skapi-js
+
+br
+
+p 2. Initialize Skapi from your main.js:
+
+Code
+    pre.
+        #[span(style="color:#999") // main.js]
+        #[span(style="color:#44E9FF") import] { Skapi } #[span(style="color:#44E9FF") from] #[span(style="color:#FFED91") "skapi-js"]
+        #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
+        #[span(style="color:#44E9FF") export] { skapi } #[span(style="color:#999") // Import the instance in your components]
+
+p For more details, please refer to the #[a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank") Documentation]
+
+br
+br
+
 </template>
 
 <script setup lang="ts">

@@ -165,10 +165,6 @@ footer {
     gap: 1rem;
 }
 
-.wordset {
-    display: inline-block;
-}
-
 .blue {
     background: linear-gradient(258deg, #4F95E9 8.82%, #4484D9 30.32%, #4C5DE3 51.82%, #3F4BD5 73.32%, #282CC7 94.81%, #4343E0 116.31%);
 }
