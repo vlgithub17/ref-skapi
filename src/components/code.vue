@@ -1,7 +1,7 @@
 <template lang="pug">
 ._codeWrap
     div(style="text-align:right")
-        .copy(@click="copy")
+        .copy(v-if='cpy_btn' @click="copy")
             span.copyMsg Copy code
             .material-symbols-outlined.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
     .code
@@ -9,6 +9,10 @@
 
 </template>
 <script setup>
+let props = defineProps(['hidecopy'])
+let cpy_btn = !props.hidecopy;
+
+console.log({props})
 let copy = (e) => {
     let allcopy = document.querySelectorAll('.copyMsg');
     for (let i = 0; i < allcopy.length; i++) {
