@@ -1,5 +1,5 @@
 <template lang="pug">
-.tableWrap
+.tableWrap(ref='full')
     table.customTbl(ref='table' :class='{resizable}' :style='{width: resizable ? "0" : "100%"}')
         thead(ref="thead")
             slot(name="head")
@@ -15,11 +15,10 @@ let { resizable } = defineProps({
 
 let thead = ref(null);
 let slots = useSlots();
-let heads: any[] = [];
 
 let observer: MutationObserver = null;
 let resizers_arr: Element[] = [];
-
+let full = ref(null);
 let removeSetup = () => {
     resizers_arr.forEach((resizer) => {
         resizer.removeEventListener('mousedown', mousedown);
@@ -27,13 +26,13 @@ let removeSetup = () => {
     document.removeEventListener('mousemove', mouseMoveHandler);
     document.removeEventListener('mouseup', mouseup);
 }
-
+let headFullWidth = 0;
 if (resizable) {
     onMounted(async () => {
         // Check if slot is rendered
+
         if (slots.head) {
             if (resizable) {
-
                 await setResize();
 
                 // Create a MutationObserver to watch for changes in the 'thead' element
@@ -72,16 +71,14 @@ let currentHeadCol: HTMLElement = null;
 let pageXMouseDown = 0;
 let pageXMouseMoveDiff = 0;
 let currentHeadColWidth = 0;
-let headFullWidth = 0;
+
 let thTotal = 0;
 let currentSiblingHeadWidth = 0;
 
 let mousedown = (e: MouseEvent) => {
     let el = thead.value;
-    headFullWidth = parseFloat(window.getComputedStyle(el).width);
-    thTotal = heads.reduce((acc, cur) => {
-        return acc + parseFloat(cur.width);
-    }, 0);
+
+    thTotal = parseFloat(window.getComputedStyle(el).width);
 
     pageXMouseDown = e.pageX;
     let currentTarget = e.currentTarget as HTMLElement;
@@ -107,24 +104,23 @@ let mouseMoveHandler = (e) => {
     let val = currentHeadColWidth + pageXMouseMoveDiff;
 
     if (val > 64) {
-        if (thTotal < headFullWidth) {
+        if (thTotal <= headFullWidth) {
             let nextTh = currentHeadCol.nextElementSibling as HTMLElement;
             let newSiblingWidth = currentSiblingHeadWidth - pageXMouseMoveDiff;
-            if (newSiblingWidth < 64) {
-                return;
+            if (newSiblingWidth > 64) {
+                nextTh.style.width = `${newSiblingWidth}px`;
             }
-            nextTh.style.width = `${newSiblingWidth}px`;
         }
         currentHeadCol.style.width = `${currentHeadColWidth + pageXMouseMoveDiff}px`;
     }
 };
 
-
 let setResize = async () => {
     // - initiallize start
     removeSetup();
     await nextTick();
-    heads = [];
+    headFullWidth = parseFloat(window.getComputedStyle(full.value).width);
+
     let el = thead.value;
     let th = el.querySelectorAll('th');
 

@@ -7,7 +7,7 @@ p Add the following code to your HTML website to get started:
 
 Code
     pre.
-        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script]#[span(style="color:#44E9FF") &nbsp;src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
+        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
         #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
             #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
         #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
@@ -40,6 +40,13 @@ section.infoBox
     .infoTitle(style="margin-right: 1rem;") Dashboard&nbsp;
 
     hr
+    .state 
+        .smallTitle State
+        .smallValue
+            span(v-if="currentService.service.active == 0") Disabled
+            span(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color);font-weight:normal") Suspended
+            span(v-else-if="currentService.service.active == 1" style='color: var(--text-green);font-weight:normal;') Running
+            span(v-else) -
 
     .state.nobreak
         .smallTitle Service ID
@@ -54,13 +61,6 @@ section.infoBox
     .state
         .smallTitle Date Created
         .smallValue {{ currentService.dateCreated }}
-
-    .state 
-        .smallTitle State
-        .smallValue
-            span(v-if="currentService.service.active == 0") Disabled
-            span(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color)") Suspended
-            span(v-else) Running
 
     .state 
         .smallTitle Host URL
@@ -105,10 +105,10 @@ section.infoBox
 
     br
 
-    .state 
+    .state
         .smallTitle Subscription
         .smallValue(:style='{fontWeight:currentService.service.plan == "Canceled" ? "normal" : null, color:currentService.service.plan == "Canceled" ? "var(--caution-color)" : null}')
-            | {{ currentService.service.plan }}&nbsp;
+            span {{ currentService.service.plan }}&nbsp;
             router-link.editHandle(:to='`/subscription/${currentService.id}`' @click="editCors") [CHANGE]
 
     .state 
@@ -124,13 +124,20 @@ section.infoBox
     .error(v-if='!user?.email_verified')
         .material-symbols-outlined.fill warning
         router-link(to="/account-setting") Please verify your email address to modify settings.
+
+    .error(v-else-if='currentService.service.active == 0')
+        .material-symbols-outlined.fill warning
+        span This service is currently disabled.
+
+    .error(v-else-if='currentService.service.active < 0')
+        .material-symbols-outlined.fill warning
+        span This service is currently suspended.
+
     .infoTitle(v-else style="margin-right: 1rem;")
         | Settings&nbsp;
         a.question(href='https://docs.skapi.com/security/security-settings.html' target="_blank")
             .material-symbols-outlined.empty help 
             span Help
-        br
-
 
     hr
 
@@ -188,17 +195,18 @@ section.infoBox
             select(@change="(e) => changeCreateUserMode(e.target.value)" :value="currentService.service.prevent_signup ? 'admin' : 'anyone'" :disabled='updatingValue.prevent_signup')
                 option(value="admin") Only admin allowed
                 option(value="anyone") Anyone allowed
-        
-        template(v-if="currentService.plan == 'Trial' || currentService.service.active < 0 || currentService?.subscription?.status == 'canceled'")
-            hr
 
-            div(style="text-align:right")
-                router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
-                    .material-symbols-outlined.fill(style='font-size:24px;') cancel
-                    span &nbsp;Delete Service
-    //- .infoValue(:class="{'nonClickable' : !user?.email_verified}" style='display: flex;align-items: center;min-height:44px;')
-    //-     .smallTitle Disable/Enable
-    //-     Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
+    .infoValue(:class="{'nonClickable' : !user?.email_verified || currentService?.subscription?.status == 'canceled'}" style='display: flex;align-items: center;min-height:44px;')
+        .smallTitle Disable/Enable
+        Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
+    
+    template(v-if="currentService.plan == 'Trial' || currentService.service.active < 0 || currentService?.subscription?.status == 'canceled'")
+        hr
+
+        div(style="text-align:right")
+            router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
+                .material-symbols-outlined.fill(style='font-size:24px;') cancel
+                span &nbsp;Delete Service
 br
 </template>
 
@@ -308,7 +316,7 @@ let changeApiKey = () => {
     });
 }
 
-let getUserUnit = (user:number) => {
+let getUserUnit = (user: number) => {
     let units = ['k', 'M', 'B', 'T'];
     let result = '';
 
@@ -332,7 +340,7 @@ let getUserUnit = (user:number) => {
 }
 
 let getfileSize = (s: any) => {
-    if(s == 0 || s == null) {
+    if (s == 0 || s == null) {
         return '0 bytes'
     } else {
         let unit = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];

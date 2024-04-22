@@ -3,47 +3,47 @@ br
 br
 br
 
-#confirmation 
+#verify
     router-link(to="/")
         img(src="@/assets/img/logo/symbol-logo.png" style="width: 40px;")
 
-    .bottomLineTitle Verify Your Email
+    .bottomLineTitle Enable Account
 
-    p Please check your inbox to verify your email address.
-    p The confirmation link has been sent to #[b {{decodedEmail}}].
+    p Please check your inbox to enable your account.
+    p The confirmation link has been sent to #[b {{email}}].
 
-    .resend
+    .resend 
         template(v-if="resending")
             .resending Email has been re-sent.
         template(v-else)
-            span Haven’t received the email?&nbsp;
+            | Haven’t received the email?&nbsp;
             span.click(@click="resend") Re-send
+br
+br
+
 </template>
 
 <script setup lang="ts">
+import { useRoute } from 'vue-router';
 import { skapi } from '@/code/admin';
 import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 
-const router = useRouter();
 const route = useRoute();
+let email = route.params.email;
 
-let email = window.location.search.split('=')[1];
-let decodedEmail = decodeURIComponent(email);
+skapi.recoverAccount('/login').catch(err => {
+    window.alert(err.message);
+});
+
 let resending = ref(false);
-
 let resend = () => {
+    skapi.recoverAccount('/login').catch(err => window.alert(err.message));
     resending.value = true;
-    console.log('resend!');
-    let redirectUrl = '/success'
-    skapi.resendSignupConfirmation(redirectUrl).then(res => {
-        console.log(res); // 'SUCCESS: Signup confirmation E-Mail has been sent.'
-    });
 }
 </script>
 
 <style scoped lang="less">
-#confirmation {
+#verify {
     max-width: 640px;
     padding: 0 20px;
     margin: 0 auto;

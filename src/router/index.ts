@@ -74,9 +74,19 @@ const router = createRouter(
       beforeEnter: checkUser
     },
     {
+      path: '/enable-account/:email',
+      name: 'enable-account',
+      component: () => import('@/views/enable-account.vue'),
+    },
+    {
       path: '/success',
       name: 'success',
       component: () => import('@/views/success.vue')
+    },
+    {
+      path: '/bye',
+      name: 'bye',
+      component: () => import('@/views/bye.vue')
     },
     {
       path: '/create/:name',

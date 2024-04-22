@@ -31,14 +31,15 @@ export type ServiceObj = {
             invitation: string
         }
     };
-    prevent_signup?: boolean,
-    client_secret?: { [key: string]: string },
-    auth_client_secret?: string[],
+    prevent_signup?: boolean;
+    client_secret?: { [key: string]: string };
+    auth_client_secret?: string[];
     plan: '-' | 'Trial' | 'Standard' | 'Premium' | 'Unlimited' | 'Free Standard' | 'Canceled' | 'Suspended' | string
 }; import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
 
 type SubscriptionObj = {
-    application: null
+    [key: string]: any;
+    application: null;
     application_fee_percent: null
     automatic_tax: { enabled: boolean, liability: null }
     billing_cycle_anchor: number
@@ -123,7 +124,7 @@ export default class Service {
         50: 'Unlimited',
         51: 'Free Standard'
     };
-    subscription?: SubscriptionObj | null;
+    subscription?: SubscriptionObj = reactive({});
     storageInfo: {
         cloud: number,
         database: number,
@@ -137,7 +138,8 @@ export default class Service {
     })
 
     subscriptionFetched = ref(false);
-
+    _orgPlan = '';
+    _subsPromise;
     constructor(id: string, service: ServiceObj, endpoints: string[]) {
         this.id = id;
         this.admin_private_endpoint = endpoints[0];
@@ -148,23 +150,30 @@ export default class Service {
         this.owner = service.owner;
         this.dateCreated = typeof service.timestamp === 'string' ? service.timestamp : new Date(service.timestamp).toDateString();
         this.plan = this.planCode[this.service.group];
-        this.getSubscription().then((subscription: SubscriptionObj) => {
-            if (subscription?.cancel_at_period_end || new Date().getTime() < (subscription?.canceled_at || 0)) {
-                this.service.plan = 'Canceled';
-            }
-            else {
-                this.service.plan = this.plan;
-            }
-            this.subscriptionFetched.value = true;
-        });
+        this._subsPromise = this.getSubscription();
         this.getStorageInfo();
     }
 
+    setPlan = (subscription: SubscriptionObj) => {
+        this._orgPlan = this.planCode[this.service.group];
+        if (subscription?.status === 'canceled' || subscription?.cancel_at_period_end || new Date().getTime() < (subscription?.canceled_at || 0)) {
+            this.service.plan = 'Canceled';
+        }
+        else {
+            this.service.plan = this.plan;
+        }
+        this.subscriptionFetched.value = true;
+    }
+
     async getSubscription(refresh = false): Promise<SubscriptionObj> {
-        if (this.subscription) {
+        if (Object.keys(this.subscription).length) {
             if (!refresh) {
                 return this.subscription;
             }
+        }
+
+        for (let k in this.subscription) {
+            delete this.subscription[k];
         }
 
         if (this.service?.subs_id) {
@@ -186,12 +195,50 @@ export default class Service {
                 },
             });
 
-            this.subscription = res;
-            return res;
+            Object.assign(this.subscription, res);
         }
 
-        this.subscription = null;
-        return null;
+        this.setPlan(this.subscription);
+        return this.subscription;
+    }
+
+    async cancelSubscription(): Promise<SubscriptionObj> {
+        await this._subsPromise;
+        
+        if (!Object.keys(this.subscription).length) {
+            return null;
+        }
+
+        for (let k in this.subscription) {
+            delete this.subscription[k];
+        }
+
+        if (this.service?.subs_id) {
+            let subs_id = this.service?.subs_id.split('#');
+
+            if (subs_id.length < 2) {
+                return;
+            }
+
+            let SUBSCRIPTION_ID = subs_id[0];
+
+            let res = await skapi.clientSecretRequest({
+                clientSecretName: 'stripe_test',
+                url: `https://api.stripe.com/v1/subscriptions/${SUBSCRIPTION_ID}`,
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer $CLIENT_SECRET'
+                },
+                data: {
+                    cancel_at_period_end: true
+                }
+            });
+
+            Object.assign(this.subscription, res);
+        }
+
+        this.setPlan(this.subscription);
+        return this.subscription;
     }
 
     async setServiceOption(opt: {

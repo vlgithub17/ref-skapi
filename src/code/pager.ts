@@ -131,7 +131,7 @@ export default class Pager {
         resultsPerPage?: number; // how many items per page
     }): Promise<Pager> {
         const worker = new Worker(
-            new URL('@/class/pager_worker.js', import.meta.url),
+            new URL('@/code/pager_worker.js', import.meta.url),
             { type: 'module' }
         );
 

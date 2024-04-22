@@ -23,14 +23,17 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
             .infoBox
                 .mode
                     | Standard
-                    small(style='font-weight:300') {{serviceList[serviceId].plan == 'Standard' && serviceList[serviceId].service.plan !== 'Canceled' ? '  (Current Plan)' : ''}}
+                    small(style='font-weight:300') {{availablePlans[0] === false ? '  (Current Plan)' : ''}}
 
-                template(v-if="serviceList[serviceId].plan !== 'Standard' || serviceList[serviceId].service.plan == 'Canceled'")
+                template(v-if="availablePlans[0]")
                     .price $19
                     br
-                    button.final(v-if="serviceList[serviceId].plan == 'Trial' || serviceList[serviceId].service.plan === 'Canceled'" @click="changeMode='standard';openUpgrade=true;console.log(serviceList[serviceId])") Upgrade
-                    button.final(v-else-if="serviceList[serviceId].plan == 'Premium'" @click="changeMode='standard';openDowngrade=true;") Downgrade
-                
+                    button.final(@click="()=>{changeMode='standard';subscrOpt=availablePlans[0];}") {{availablePlans[0]}}
+                template(v-else-if="availablePlans[0] === null")
+                    .price $19
+                    br
+                    button.final.disabled N/A
+
                 hr
 
                 ul
@@ -46,13 +49,16 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
             .infoBox
                 .mode
                     | Premium
-                    small(style='font-weight:300') {{serviceList[serviceId].plan == 'Premium' && serviceList[serviceId].service.plan !== 'Canceled' ? '  (Current Plan)' : ''}}
-                
-                template(v-if="serviceList[serviceId].plan !== 'Premium' || serviceList[serviceId].service.plan == 'Canceled'")
+                    small(style='font-weight:300') {{availablePlans[1] === false ? '  (Current Plan)' : ''}}
+
+                template(v-if="availablePlans[1]")
                     .price $89
                     br
-                    button.final(@click="changeMode='premium';openUpgrade=true;") Upgrade
-
+                    button.final(@click="()=>{changeMode='premium';subscrOpt=availablePlans[1];}") {{ availablePlans[1] }}
+                template(v-if="availablePlans[1] === null")
+                    .price $89
+                    br
+                    button.final.disabled N/A
                 hr
 
                 ul
@@ -66,37 +72,27 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                     li 10GB of email storage
                     li Subdomain hosting
                     li unlimited use with pay-as-you-go when exceeding the limit (currently free for limited time)
- 
+
+    br
+
+    div(v-if="serviceList[serviceId]?.service.plan !== 'Canceled'" style="text-align:right")
+        span.iconClick(@click='()=>openCancelplan=true' style='color:var(--caution-color);font-size:0.66rem;')
+            .material-symbols-outlined.fill(style='font-size:24px;') cancel
+            span &nbsp;Cancel Subscription
+
 div(v-else style="text-align:center")
     img.loading(src="@/assets/img/loading.png")
 
-Modal(:open="openUpgrade")
-    h4(style='margin:.5em 0 0;') Upgrade Plan
+Modal(:open="subscrOpt" style='max-width: 640px;')
+    h4(style='margin:.5em 0 0;') {{subscrOpt}} Plan
 
     hr
 
     div(style='font-size:.8rem;')
-        p Would you like to upgrade your service plan to {{ changeMode }}?
-
-    br
-
-    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='promiseRunning')
-            img.loading(src="@/assets/img/loading.png")
-        template(v-else)
-            button.noLine(@click="openUpgrade = false") Cancel
-            button.final(@click="upgrade") Upgrade
-
-Modal(:open="openDowngrade")
-    h4(style='margin:.5em 0 0;') Downgrade Plan
-
-    hr
-
-    div(style='font-size:.8rem;')
-        p. 
-            Would you like to downgrade your plan to standard?
+        p.
+            Would you like to {{subscrOpt ? subscrOpt.toLowerCase() : ''}} your service plan to {{ changeMode }}?
             #[br]
-            You will loose access to some features of your current plan.
+            If the subscription plan is updated before the renewal date, proration of the remaining days will be calculated and the amount will be adjusted accordingly.
 
     br
 
@@ -104,17 +100,33 @@ Modal(:open="openDowngrade")
         template(v-if='promiseRunning')
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(@click="openDowngrade = false") Cancel
-            button.final(@click="downgrade") Downgrade
+            button.noLine(@click="subscrOpt = false") Cancel
+            button.final(@click="upgrade") {{subscrOpt}}
 
-br
-br
-br
+Modal(:open="openCancelplan" style='max-width: 640px;')
+    h4(style='margin:.5em 0 0;') Cancel Plan
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            Would you like to cancel your service plan?
+            #[br]
+            When you cancel your subscription, the service will be available until the end of the current billing period, and the service will be terminated after the end of the period.
+
+    br
+
+    div(style='justify-content:space-between;display:flex;flex-direction:row-reverse; align-items:center;min-height:44px;flex-wrap:wrap;')
+        template(v-if='promiseRunning')
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.final.warning(@click="cancelSubs") Cancel Plan
+            button.noLine.warning(@click="openCancelplan = false" style='padding: 0 0.5rem;') No, I don't want to cancel my plan
 br
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { serviceList } from '@/views/service-list'
 import Modal from '@/components/modal.vue';
@@ -125,47 +137,57 @@ const router = useRouter();
 const route = useRoute();
 
 let serviceId = route.path.split('/')[2];
-let openUpgrade = ref(false);
-let openDowngrade = ref(false);
+let subscrOpt = ref(false);
 let promiseRunning = ref(false);
 let changeMode = ''
+let openCancelplan = ref(false);
 
-let dateFormat = (timestamp: number) => {
-    let currentDate = new Date(timestamp);
-    let year = currentDate.getFullYear();
-    let month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
-    let day = ('0' + currentDate.getDate()).slice(-2);
-    let dateStr = `${year}-${month}-${day}`;
+let availablePlans = computed(() => {
+    // true = createSubs
+    // 1 = upgrade
+    // false = current plan
+    // null = not avail
+    // r = resume
 
-    return dateStr;
+    // 1: 'Trial',
+    // 2: 'Standard',
+    // 3: 'Premium',
+    // 50: 'Unlimited',
+    // 51: 'Free Standard'
+    if (serviceList[serviceId]?.subscription?.status === 'canceled') {
+        return ['Subscribe', 'Subscribe'];
+    }
+    else if (serviceList[serviceId]?.service.plan == 'Canceled') {
+        return ['Resume', 'Resume'];
+    }
+    if (serviceList[serviceId]?.service.plan == 'Trial') {
+        return ['Subscribe', 'Subscribe'];
+    }
+    if (serviceList[serviceId]?.service.plan == 'Standard') {
+        return [false, 'Upgrade'];
+    }
+    if (serviceList[serviceId]?.service.plan == 'Premium') {
+        let notAvail = serviceList[serviceId].service.users > 10000 || serviceList[serviceId].storageInfo.email > 1073741824 || serviceList[serviceId].storageInfo.host > 53687091200 || serviceList[serviceId].storageInfo.cloud > 53687091200 || serviceList[serviceId].storageInfo.database > 4294967296
+        return [notAvail ? null : 'Downgrade', false];
+    }
+
+    return [null, null];
+});
+
+let cancelSubs = async () => {
+    await serviceList[serviceId].cancelSubscription();
+    location.href = '/my-services/' + serviceList[serviceId].id;
 }
+
 let upgrade = () => {
-    promiseRunning.value = true;
-
-    if (serviceList[serviceId].plan == 'Trial' || serviceList[serviceId].plan == 'Standard' || serviceList[serviceId].plan == 'Free Standard') {
-        createSubscription(changeMode, serviceList[serviceId]);
-    } else {
-        if (serviceList[serviceId].service.active == -1) {
-            createSubscription(changeMode, serviceList[serviceId]);
-        } else {
-            updateSubscription(changeMode);
-        }
+    if (!subscrOpt.value) {
+        return;
     }
-}
-
-let downgrade = () => {
-    promiseRunning.value = true;
-
-    if (serviceList[serviceId].service.users > 10000 || serviceList[serviceId].storageInfo.email > 1073741824 || serviceList[serviceId].storageInfo.host > 53687091200 || serviceList[serviceId].storageInfo.cloud > 53687091200 || serviceList[serviceId].storageInfo.database > 4294967296) {
-        promiseRunning.value = false;
-        return false;
+    if (subscrOpt.value === 'Subscribe') {
+        return createSubscription(changeMode, serviceList[serviceId]);
     }
 
-    if (serviceList[serviceId].service.active == -1) {
-        createSubscription(changeMode, serviceList[serviceId]);
-    } else {
-        updateSubscription(changeMode);
-    }
+    updateSubscription(changeMode);
 }
 
 let createSubscription = async (ticket_id, service_info) => {
@@ -173,9 +195,7 @@ let createSubscription = async (ticket_id, service_info) => {
     let product = JSON.parse(import.meta.env.VITE_PRODUCT);
     let customer_id = resolvedCustomer.id;
     let currentUrl = window.location;
-
-    console.log(product)
-    console.log(ticket_id)
+    promiseRunning.value = true;
 
     let response = await skapi.clientSecretRequest({
         clientSecretName: 'stripe_test',
@@ -193,30 +213,28 @@ let createSubscription = async (ticket_id, service_info) => {
             'subscription_data[metadata][service]': service_info.id,
             'subscription_data[metadata][owner]': user.user_id,
             'mode': 'subscription',
-            'subscription_data[description]': 'Subscription Plan of service ID: ' + service_info.id,
+            'subscription_data[description]': 'Subscription plan for service ID: "' + service_info.id + '"',
             cancel_url: currentUrl.origin + '/subscription/' + service_info.id,
             "line_items[0][quantity]": 1,
             'line_items[0][price]': product[ticket_id],
-            // "success_url": currentUrl.origin + '/my-services/' + service_info.id + '?checkout_id={CHECKOUT_SESSION_ID}&service_id=' + service_info.id + '&ticket_id=' + ticket_id,
             "success_url": currentUrl.origin + '/my-services/' + service_info.id,
             'tax_id_collection[enabled]': true,
         }
     });
-    if (response.error) {
-        alert(response.error.message);
-        return;
-    }
 
-    window.location = response.url;
-    promiseRunning.value = false;
-    if (openDowngrade.value) {
-        location.href = '/my-services/' + service_info.id;
+    if (response.error) {
+        promiseRunning.value = false;
+        alert(response.error.message);
+    }
+    else {
+        location.href = response.url;
     }
 }
 
 let updateSubscription = async (ticket_id) => {
-    let resolvedCustomer = await customer;
+    await customer;
     let subs_id = serviceList[serviceId].service.subs_id.split('#');
+    promiseRunning.value = true;
 
     if (!serviceList[serviceId].service.subs_id) {
         alert('Service does not have a subscription');
@@ -237,10 +255,10 @@ let updateSubscription = async (ticket_id) => {
         dataObj = {
             'items[0][id]': SUBSCRIPTION_ITEM_ID,
             'items[0][price]': product[ticket_id],
-            proration_behavior: 'create_prorations',
             'cancel_at_period_end': false
         }
-    } else {
+    }
+    else {
         dataObj = {
             'items[0][id]': SUBSCRIPTION_ITEM_ID,
             'items[0][price]': product[ticket_id],
@@ -260,21 +278,18 @@ let updateSubscription = async (ticket_id) => {
     });
 
     if (response.error) {
+        promiseRunning.value = false;
         alert(response.error.message);
         return;
     }
 
-    if (openDowngrade.value) {
-        promiseRunning.value = false;
-        location.href = '/my-services/' + serviceList[serviceId].id;
-    }
+    location.href = '/my-services/' + serviceList[serviceId].id;
 }
 </script>
 
 <style scoped lang="less">
 #subscription {
     max-width: 1000px;
-    // padding: 0 20px;
     padding: 0 8px;
     margin: 0 auto;
 
@@ -282,9 +297,11 @@ let updateSubscription = async (ticket_id) => {
         padding: 0 12px; // = total 20px padding
     }
 }
+
 .mode {
     font-weight: normal;
 }
+
 .smallValue {
     margin-top: 8px;
 }

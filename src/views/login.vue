@@ -29,14 +29,22 @@ br
                     .material-symbols-outlined.fill visibility_off
 
         .actions
-            Checkbox(style='font-weight:unset;' @change="(e)=>{setLocalStorage(e)}" :disabled='promiseRunning' v-model='remVal') Remember Me
+            Checkbox(style='font-weight:unset;' @change="(e)=>{setLocalspanStorage(e)}" :disabled='promiseRunning' v-model='remVal') Remember Me
             RouterLink(to="/forgot" :class='{disabled: promiseRunning}') Forgot Password?
 
         br
 
         .error(v-if="error")
             .material-symbols-outlined.fill error
-            span {{ error }}
+            div(v-if="enableAccount")
+                | {{ error }}
+                br
+                br
+            span(v-else) {{ error }}
+
+        .error(v-if="enableAccount" style="align-items: center;")
+            router-link(:to='"/enable-account/" + form.email') [Click Here]
+            span &nbsp;to enable your account.
 
         br
 
@@ -67,7 +75,7 @@ let form = {
     email: '',
     password: '',
 };
-
+let enableAccount = ref(false);
 let setLocalStorage = (e) => {
     localStorage.setItem('remember', e.target.checked ? 'true' : 'false');
 }
@@ -96,13 +104,18 @@ let login = (e) => {
         }
         if (err.code === "SIGNUP_CONFIRMATION_NEEDED") {
             router.push({ path: '/confirmation', query: { email: form.email } });
-        } else if (err.code === "USER_IS_DISABLED") {
-            error.value = "This account is disabled."
-        } else if (err.code === "INCORRECT_USERNAME_OR_PASSWORD") {
+        }
+        else if (err.code === "USER_IS_DISABLED") {
+            error.value = "This account is disabled.";
+            enableAccount.value = true;
+        }
+        else if (err.code === "INCORRECT_USERNAME_OR_PASSWORD") {
             error.value = "Incorrect email or password."
-        } else if (err.code === "NOT_EXISTS") {
+        }
+        else if (err.code === "NOT_EXISTS") {
             error.value = "Incorrect email or password."
-        } else {
+        }
+        else {
             error.value = err.message;
         }
     }).finally(() => {
@@ -113,7 +126,7 @@ let login = (e) => {
 
 <style scoped lang="less">
 #login {
-    max-width: 440px;
+    max-width: 480px;
     padding: 0 20px;
     margin: 0 auto;
 }
