@@ -69,10 +69,14 @@ form#searchForm(@submit.prevent="searchUsers")
                 .more(value="locale" @click="searchFor = 'locale';searchText = '';") Locale
                 .more(value="birthdate" @click="searchFor = 'birthdate';searchText = '';") Birth Date
     .search
-        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="(e)=>{showDropDown(e)}")
+        //- .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="(e)=>{showDropDown(e)}")
+        //-     input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
+        //-     .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
+        //-     Calendar(@dateClicked="handledateClick" alwaysEmit='true' style="--moreVert-left:0;display:none")
+        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="showCalendar = !showCalendar")
             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
             .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
-            Calendar(@dateClicked="handledateClick" alwaysEmit='true' style="--moreVert-left:0;display:none")
+            Calendar(:class="{'show': showCalendar}" @dateClicked="handledateClick" @close="showCalendar=false" alwaysEmit='true')
         input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchText")
@@ -360,7 +364,7 @@ import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
-import Calendar from '@/components/calendar.vue';
+import Calendar from '@/components/calendar copy.vue';
 import Locale from '@/components/locale.vue';
 import Pager from '@/code/pager'
 
@@ -472,6 +476,7 @@ let fetching = ref(false);
 //         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
 //     }
 // ])
+
 let filterOptions = ref({
     userID: true,
     name: true,
@@ -504,7 +509,7 @@ let handledateClick = (startDate, endDate) => {
     } else {
         searchText.value = (startDate || '') + ' ~ ' + (endDate || '');
     }
-    document.querySelector('#searchInput').focus();
+    // document.querySelector('#searchInput').focus();
 }
 let handleCountryClick = (key) => {
     searchText.value = key;
@@ -541,6 +546,7 @@ watch(filterOptions.value, nv => {
         transform: translateY(-50%);
         cursor: pointer;
         user-select: none;
+        // z-index: 99;
     }
 }
 #calendar,
