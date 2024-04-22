@@ -132,10 +132,17 @@ let createdDate = (e, date) => {
     let selectedMonth = currentMonth.value + 1
     let selectedDay = date.day
     let formattedDate = `${selectedYear}-${selectedMonth < 10 ? `0${selectedMonth}` : selectedMonth}-${selectedDay < 10 ? `0${selectedDay}` : selectedDay}`;
-
+    let resetClass = () => {
+        for(let i = 0; i < getDateClass.length; i ++ ) {
+            getDateClass[i].classList.remove('start');
+            getDateClass[i].classList.remove('period');
+            getDateClass[i].classList.remove('end');
+        }
+    }
     activeTime.value = true;
 
     if ((!startDate.value && !activeEnd.value) || (activeStart.value && !activeEnd.value)) {
+        resetClass();
         startDate.value = formattedDate;
         selectedStart = selectedDay;
         targetDate.classList.add('start');
@@ -143,11 +150,7 @@ let createdDate = (e, date) => {
         if (endDate.value && (endDate.value < startDate.value)) {
             startDate.value = null;
             endDate.value = null;
-            for(let i = 0; i < getDateClass.length; i ++ ) {
-                getDateClass[i].classList.remove('start');
-                getDateClass[i].classList.remove('period');
-                getDateClass[i].classList.remove('end');
-            }
+            resetClass();
             activeStart.value = false;
         }
         if (activeStart.value) {
@@ -166,11 +169,7 @@ let createdDate = (e, date) => {
         if (endDate.value < startDate.value) {
             startDate.value = null;
             endDate.value = null;
-            for(let i = 0; i < getDateClass.length; i ++ ) {
-                getDateClass[i].classList.remove('start');
-                getDateClass[i].classList.remove('period');
-                getDateClass[i].classList.remove('end');
-            }
+            resetClass();
             activeEnd.value = false;
         }
         if (activeEnd.value) {
