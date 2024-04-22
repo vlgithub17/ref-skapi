@@ -2,9 +2,9 @@
 
 .grad
     header(style='color:white;width:800px;')
-        h1(style='font-size: 4rem;margin-top:0') Skapi
+        h1(style='font-size: 4rem;margin:0') Skapi
         h1 The Serverless Backend =>
-        h3 Build Full-Stack Web Application Directly from Your HTML Frontend
+        h3 Build Full-Stack Web Application from Your HTML Frontend
         
         small For HTML Projects -
         Code(:hidecopy='true')
@@ -16,7 +16,7 @@
             pre npm i skapi-js@latest
 
         br
-
+        
         h4
             | Check out our&nbsp;
             a(href='https://docs.skapi.com/introduction/getting-started.html' target='_blank' style='color:yellow') Documentation
@@ -32,6 +32,7 @@
                 | &nbsp;for free and start building!
             router-link(to="signup")
                 button.final(style='background-color:white;color:black;width:136px') Sign-Up
+        
     section.intact
         br
         br
@@ -40,8 +41,8 @@
                 img(src="@/assets/img/landingpage/feature2.png")
             .desc
                 h2 Serverless Technology, #[span.wordset Scale without limits]
-                p Skapi requires no additional server between your #[span.wordset website and your clients.]
-                p Just import our API and start building immediately!
+                p Skapi requires no additional server between your #[span.wordset database and your website.]
+                p Just import the API and start building immediately!
         br
         br
         .explain.two
@@ -57,8 +58,8 @@
             .image
                 img(src="@/assets/img/landingpage/feature3.png")
             .desc
-                h2 External API Integration #[span(style='display:inline-block') Made Easy]
-                p Skapi provides an API bridge where your users can make secure request to your 3rd-party API services.
+                h2 3rd Party API Integration #[span(style='display:inline-block') Made Easy]
+                p Skapi provides the simplest solution to make secure requests to your 3rd-party APIs.
 
         br
         br
@@ -68,10 +69,12 @@
             .desc
                 h2 Compatible with #[span.wordset Any Frameworks]
                 p Skapi is compatible with vanilla HTML as well as any frontend framework, including React, Vue, Angular, and more.
+        br
+        br
 
+    section.ready
         br
         br
-    section.ready(style='width:calc(1600px + 1rem);')
         div
             h2 Ready to build your next big thing?
             p
@@ -83,6 +86,7 @@
         br
         br
         br
+
 footer
     img(src="@/assets/img/logo/logo-white.svg" style="height:1rem;")
     router-link(to="public/pp.html" target="_blank") Terms of service • Privacy policy
@@ -156,6 +160,7 @@ footer {
     justify-content: center;
     align-items: center;
     padding: 2rem 8px;
+    min-height: 100vh;
     flex-wrap: wrap;
     gap: 1rem;
 }
@@ -196,9 +201,9 @@ section {
 
 .ready {
     display: none;
+    width: 800px;
 }
-
-@media (max-width: 600px) {
+@media (max-width: 1650px) {
     .readyHead {
         display: none;
     }
@@ -206,6 +211,8 @@ section {
     .ready {
         display: block;
     }
+}
+@media (max-width: 600px) {
 
     .explain {
         position: relative;

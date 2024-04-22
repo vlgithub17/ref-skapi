@@ -61,7 +61,7 @@ br
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { skapi } from '@/code/admin'
-import { user } from '@/code/user'
+import { user, updateUser } from '@/code/user'
 import { ref } from 'vue';
 import Checkbox from '@/components/checkbox.vue';
 const router = useRouter();
@@ -88,15 +88,8 @@ let login = (e) => {
         password: form.password
     }
 
-    skapi.login(params).then(u => {
-        // Object.assign(user, u);
-        for (let k in user) {
-            delete user[k]
-        }
-        for (let k in u) {
-            user[k] = u[k]
-        }
-
+    skapi.login(params).then(async u => {
+        await updateUser(true);
         router.push('/my-services');
     }).catch(err => {
         for (let k in user) {

@@ -26,13 +26,13 @@ br
                 span.editHandle(@click="editEmail") [CHANGE]
 
             div(v-if="user.email_verified")
-                Checkbox(v-model="newsletterSubscribed" :disabled="!user.email_verified") Receive newsletters from Skapi.
-            .iconClick(v-else style="color:var(--caution-color);" @click="proceedVerification = true;")
+                Checkbox(v-model="emailSubscribed" :disabled="!user.email_verified || subing_email || emailSubscribed === null") Receive newsletters from Skapi.
+            .iconClick(v-else style="color:var(--caution-color);display:inline-flex" @click="proceedVerification = true;")
                 .material-symbols-outlined.fill(style='font-size:24px;') error
                 span &nbsp;Click to verify your email address
-            
+
         br
-        
+
         .state(style='margin-bottom:2rem;')
             .smallTitle Password 
             .ellipsis ******...&nbsp;
@@ -66,7 +66,7 @@ Modal(:open="proceedVerification")
 
 <script setup lang="ts">
 import { skapi } from '@/code/admin';
-import { user, updateUser } from '@/code/user';
+import { user, updateUser, emailSubscribed } from '@/code/user';
 import router from '@/router';
 import { computed, ref, nextTick, watch } from 'vue';
 import Modal from '@/components/modal.vue';
@@ -76,6 +76,7 @@ let updatingValue = ref(false);
 let inputEmail = '';
 let sendingEmail = ref(false);
 let emailInp = ref();
+let subing_email = ref(false);
 let editEmail = () => {
     inputEmail = user.email;
     modifyMode.value = true;
@@ -116,10 +117,22 @@ let changeEmail = async () => {
 }
 
 let proceedVerification = ref(false);
-let newsletterSubscribed = ref(false);
 
-watch(newsletterSubscribed, () => {
-    updateUser();
+watch(emailSubscribed, async (n, o) => {
+    if(o === null) return;
+
+    subing_email.value = true
+    if (n) {
+        await skapi.subscribeNewsletter({
+            group: 'authorized'
+        });
+    }
+    else {
+        await skapi.unsubscribeNewsletter({
+            group: 'authorized'
+        });
+    }
+    subing_email.value = false
 })
 </script>
 
