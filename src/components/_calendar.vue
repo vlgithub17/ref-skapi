@@ -55,7 +55,7 @@ let dates = ref([]);
 let visibleYears = ref([]);
 let activeStart = ref(false);
 let activeEnd = ref(false);
-let selectedStart, selectedEnd;
+let selectedStart, selectedEnd, startKey, endKey;
 
 let emit = defineEmits(['dateClicked', 'close']);
 let props = defineProps(['alwaysEmit', 'searchText']); // 임시로 만들어놓은 
@@ -86,7 +86,34 @@ let onMouseUp = () => {
     selectedInput = activeInput.id;
 }
 
-function renderCalender(thisMonth) {
+let checkCalendar = (c) => {
+    let getDateClass = document.querySelectorAll('.date');
+
+    if(startDate.value && endDate.value) {
+        let s = startDate.value.split('-');
+        let e = endDate.value.split('-');
+
+        if(s[0] !== e[0] || s[1] !== e[1]) {
+            if(c == 'start') {
+                goSelectedDate(s[0], s[1]);
+            } else {
+                goSelectedDate(e[0], e[1]);
+            }
+        } else {
+            if(c == 'create') {
+                console.log(s, e)
+                for(let i = parseInt(s[2]); i < parseInt(e[2])-1; i ++) {
+                    nextTick(() => {
+                        getDateClass[i].classList.add('period');
+                    })
+                    console.log(i)
+                }
+            }
+        }
+    }
+}
+
+let renderCalender = (thisMonth) => {
     dates.value.splice(0);
     currentYear.value = thisMonth.getFullYear();
     currentMonth.value = thisMonth.getMonth();
@@ -138,11 +165,13 @@ let updateCalendar = (e, what) => {
 let prevTime = () => {
     thisMonth = new Date(currentYear.value, currentMonth.value - 1, 1);
     renderCalender(thisMonth);
+    checkCalendar('create');
 }
 
 let nextTime = () => {
     thisMonth = new Date(currentYear.value, currentMonth.value + 1, 1);
     renderCalender(thisMonth);
+    checkCalendar('create');
 }
 
 let goSelectedDate = (y, m) => {
@@ -150,24 +179,8 @@ let goSelectedDate = (y, m) => {
     renderCalender(thisMonth);
 }
 
-let checkCalendar = (c) => {
-    if(startDate.value && endDate.value) {
-        let s = startDate.value.split('-');
-        let e = endDate.value.split('-');
-
-        if(s[0] !== e[0] || s[1] !== e[1]) {
-            if(c == 'start') {
-                goSelectedDate(s[0], s[1]);
-            } else {
-                goSelectedDate(e[0], e[1]);
-            }
-        }
-    }
-}
-
 let createdDate = (e, date) => {
     let getDateClass = document.querySelectorAll('.date');
-    console.log(getDateClass.key)
     let selectedYear = currentYear.value;
     let selectedMonth = currentMonth.value + 1;
     let selectedDay = date.day;
@@ -178,9 +191,10 @@ let createdDate = (e, date) => {
             if(endDate.value < startDate.value) {
                 startDate.value = endDate.value;
                 selectedStart = date.key;
+                // startKey = date.day;
                 for(let i = 0; i < getDateClass.length; i ++ ) {
                     getDateClass[i].classList.remove('start');
-                    // getDateClass[i].classList.remove('period');
+                    getDateClass[i].classList.remove('period');
                     getDateClass[i].classList.remove('end');
                 }
                 endDate.value = null;
@@ -190,10 +204,7 @@ let createdDate = (e, date) => {
                     onMouseUp();
                 })
             } else {
-                for(let i = selectedStart; i < selectedEnd; i ++) {
-                    // getDateClass[i].classList.add('period');
-                    // console.log(getDateClass)
-                }
+                checkCalendar('create');
             }
         }
     }
@@ -201,9 +212,10 @@ let createdDate = (e, date) => {
     if(selectedInput == 'start') {
         startDate.value = formattedDate;
         selectedStart = date.key;
+        // startKey = date.day;
         for(let i = 0; i < getDateClass.length; i ++ ) {
             getDateClass[i].classList.remove('start');
-            // getDateClass[i].classList.remove('period');
+            getDateClass[i].classList.remove('period');
         }
         checkDateRange(e, date);
         emit('dateClicked', startDate.value, endDate.value);
@@ -216,9 +228,10 @@ let createdDate = (e, date) => {
     } else if(selectedInput == 'end') {
         endDate.value = formattedDate;
         selectedEnd = date.key;
+        // endKey = date.day;
         for(let i = 0; i < getDateClass.length; i ++ ) {
             getDateClass[i].classList.remove('end');
-            // getDateClass[i].classList.remove('period');
+            getDateClass[i].classList.remove('period');
         }
         checkDateRange(e, date);
         emit('dateClicked', startDate.value, endDate.value);
