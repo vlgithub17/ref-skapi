@@ -3,7 +3,7 @@
     .timeWrap
         .timeNav 
             input#here(type="date" hidden)
-            input.big.year(type="text" pattern="[0-9]+" minlength="4" :value="currentYear" @input="(e) => currentYear = e.target.value" @change="(e) => updateCalendar(e, 'year')")
+            input.big.year(type="text" pattern="[0-9]+" minlength="4" :value="currentYear" @input.stop="(e) => currentYear = e.target.value" @change="(e) => updateCalendar(e, 'year')")
             select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
                 option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
             .goback
@@ -48,11 +48,7 @@ let thisMonth = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 let currentYear = ref(thisMonth.getFullYear());
 let currentMonth = ref(thisMonth.getMonth());
 let currentDate = thisMonth.getDate();
-let startYear = currentYear.value - 5; // 현재 년도에서 5년 전부터 시작
-let endYear = currentYear.value + 5;   // 현재 년도에서 5년 후까지 표시
-let years = ref(Array.from({ length: endYear - startYear + 1 }, (_, index) => startYear + index));
 let dates = ref([]);
-let visibleYears = ref([]);
 let activeStart = ref(false);
 let activeEnd = ref(false);
 let selectedStart, selectedEnd, startKey, endKey;
@@ -78,7 +74,11 @@ onBeforeUnmount(() => {
 })
 
 let closeCalendar = (e) => {
-    emit('close');
+    if (e.pointerId === -1) {
+        e.preventDefault();
+    } else {
+        emit('close');
+    }
 }
 
 let onMouseUp = () => {
@@ -88,25 +88,48 @@ let onMouseUp = () => {
 
 let checkCalendar = (c) => {
     let getDateClass = document.querySelectorAll('.date');
+    console.log(dates.value)
 
     if(startDate.value && endDate.value) {
         let s = startDate.value.split('-');
         let e = endDate.value.split('-');
 
+        console.log(s, e)
+
         if(s[0] !== e[0] || s[1] !== e[1]) {
             if(c == 'start') {
                 goSelectedDate(s[0], s[1]);
-            } else {
+            } else if(c == 'end') {
                 goSelectedDate(e[0], e[1]);
+            } else if(c == 'create') {
+                if((e[0] - s[0] == 1) || (e[1] - s[1] == 1) || (e[1] - s[1] > 1 && currentMonth.value + 1 == parseInt(e[1]))) {
+                    let startDay = new Date(currentYear.value, currentMonth.value, 0);
+                    let prevDate = startDay.getDate();  // 저번달 마지막 날짜
+                    let prevDay = startDay.getDay();    // 저번달 마지막 요일
+
+                    for(let i = prevDay; i <= (prevDay + parseInt(e[2]) - 2); i ++) {
+                        nextTick(() => {
+                            getDateClass[i].classList.add('period');
+                        })
+                    }
+                } else if(e[1] - s[1] > 1 && currentMonth.value + 1 !== parseInt(e[1])) {
+                    let endDay = new Date(currentYear.value, currentMonth.value + 1, 0);
+                    let nextDate = endDay.getDate();    // 이번달 마지막 날짜
+                    let nextDay = endDay.getDay();      // 이번달 마지막 요일
+
+                    for(let i = nextDay; i < nextDate; i ++) {
+                        nextTick(() => {
+                            getDateClass[i].classList.add('period');
+                        })
+                    }
+                }
             }
         } else {
             if(c == 'create') {
-                console.log(s, e)
                 for(let i = parseInt(s[2]); i < parseInt(e[2])-1; i ++) {
                     nextTick(() => {
                         getDateClass[i].classList.add('period');
                     })
-                    console.log(i)
                 }
             }
         }
@@ -126,6 +149,8 @@ let renderCalender = (thisMonth) => {
     let endDay = new Date(currentYear.value, currentMonth.value + 1, 0);
     let nextDate = endDay.getDate();    // 이번달 마지막 날짜
     let nextDay = endDay.getDay();      // 이번달 마지막 요일
+
+    console.log(nextDate, nextDay)
 
     for (let i = prevDate - prevDay + 1; i <= prevDate; i++) {
         dates.value.push({ day: i, classes: 'date prev disable', key: 'prev-' + i });
@@ -165,13 +190,11 @@ let updateCalendar = (e, what) => {
 let prevTime = () => {
     thisMonth = new Date(currentYear.value, currentMonth.value - 1, 1);
     renderCalender(thisMonth);
-    checkCalendar('create');
 }
 
 let nextTime = () => {
     thisMonth = new Date(currentYear.value, currentMonth.value + 1, 1);
     renderCalender(thisMonth);
-    checkCalendar('create');
 }
 
 let goSelectedDate = (y, m) => {
