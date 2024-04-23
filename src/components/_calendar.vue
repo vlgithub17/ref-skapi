@@ -19,17 +19,22 @@
                 .day Sa
                 .day Su
             .dates  
-                div(v-for="date in dates" :key="date.key" :class="date.classes" @click="(e) => createdDate(e, date)") {{ date.day }}
-    .timeSettingWrap(:class="{'active' : activeTime}")
+                div(v-for="date in dates" :key="date.key" :class="[date.classes, {'start' : (selectedStart == date.key), 'end' : (selectedEnd == date.key)}]" @click="(e) => createdDate(e, date)") {{ date.day }}
+    .timeSettingWrap
+        input.big#start(type="text" placeholder="Start" v-model="startDate" @click="checkCalendar('start')")
+        span ~
+        input.big#end(type="text" placeholder="End" v-model="endDate" @click="checkCalendar('end')")
+    //- .timeSettingWrap(:class="{'active' : activeTime}")
         .start(@click.stop="activeStart = true; activeEnd = false;" :class="{'active' : activeStart}") {{ startDate }}
         span ~
         .end(@click.stop="activeEnd = true; activeStart = false;" :class="{'active' : activeEnd}") {{ endDate }}
 </template>
 
 <script setup>
-import { onMounted, ref, onBeforeUnmount } from 'vue';
+import { onMounted, ref, onBeforeUnmount, nextTick } from 'vue';
 
 let activeTime = ref(false);
+let selectedInput = '';
 let startDate = ref('');
 let endDate = ref('');
 let monthObj = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -52,8 +57,21 @@ let activeStart = ref(false);
 let activeEnd = ref(false);
 let selectedStart, selectedEnd;
 
+let emit = defineEmits(['dateClicked', 'close']);
+let props = defineProps(['alwaysEmit', 'searchText']); // 임시로 만들어놓은 
+
+if(props.searchText) {
+    let searchDate = props.searchText.split(' ~ ');
+    startDate.value = searchDate[0];
+    endDate.value = searchDate[1];
+}
+
 onMounted(() => {
     document.addEventListener('click', closeCalendar);
+    document.getElementById("start").addEventListener('mouseup', onMouseUp);
+    document.getElementById("end").addEventListener('mouseup', onMouseUp);
+    document.getElementById('start').focus();
+    onMouseUp();
 })
 onBeforeUnmount(() => {
     document.removeEventListener('click', closeCalendar);
@@ -61,6 +79,11 @@ onBeforeUnmount(() => {
 
 let closeCalendar = (e) => {
     emit('close');
+}
+
+let onMouseUp = () => {
+    let activeInput = document.activeElement;
+    selectedInput = activeInput.id;
 }
 
 function renderCalender(thisMonth) {
@@ -82,7 +105,8 @@ function renderCalender(thisMonth) {
     }
 
     for (let i = 1; i <= nextDate; i++) {
-        dates.value.push({ day: i, classes: 'date current', key: 'current-' + i });
+        let currnetTimestamp = new Date(currentYear.value, currentMonth.value - 1, i);
+        dates.value.push({ day: i, classes: 'date current', key: currnetTimestamp.getTime() });
     }
 
     for (let i = 1; i <= (7 - nextDay == 7 ? 0 : 7 - nextDay); i++) {
@@ -121,77 +145,83 @@ let nextTime = () => {
     renderCalender(thisMonth);
 }
 
-let emit = defineEmits(['dateClicked', 'close']);
+let goSelectedDate = (y, m) => {
+    thisMonth = new Date(y, m - 1, 1);
+    renderCalender(thisMonth);
+}
 
-let props = defineProps(['alwaysEmit']); // 임시로 만들어놓은 props
+let checkCalendar = (c) => {
+    if(startDate.value && endDate.value) {
+        let s = startDate.value.split('-');
+        let e = endDate.value.split('-');
+
+        if(s[0] !== e[0] || s[1] !== e[1]) {
+            if(c == 'start') {
+                goSelectedDate(s[0], s[1]);
+            } else {
+                goSelectedDate(e[0], e[1]);
+            }
+        }
+    }
+}
 
 let createdDate = (e, date) => {
-    let targetDate = e.target;
     let getDateClass = document.querySelectorAll('.date');
+    console.log(getDateClass.key)
     let selectedYear = currentYear.value;
-    let selectedMonth = currentMonth.value + 1
-    let selectedDay = date.day
+    let selectedMonth = currentMonth.value + 1;
+    let selectedDay = date.day;
     let formattedDate = `${selectedYear}-${selectedMonth < 10 ? `0${selectedMonth}` : selectedMonth}-${selectedDay < 10 ? `0${selectedDay}` : selectedDay}`;
-    let resetClass = () => {
-        for(let i = 0; i < getDateClass.length; i ++ ) {
-            getDateClass[i].classList.remove('start');
-            getDateClass[i].classList.remove('period');
-            getDateClass[i].classList.remove('end');
+    
+    let checkDateRange = (e, date) => {
+        if (startDate.value && endDate.value) {
+            if(endDate.value < startDate.value) {
+                startDate.value = endDate.value;
+                selectedStart = date.key;
+                for(let i = 0; i < getDateClass.length; i ++ ) {
+                    getDateClass[i].classList.remove('start');
+                    // getDateClass[i].classList.remove('period');
+                    getDateClass[i].classList.remove('end');
+                }
+                endDate.value = null;
+
+                nextTick(() => {
+                    document.getElementById('end').focus();
+                    onMouseUp();
+                })
+            } else {
+                for(let i = selectedStart; i < selectedEnd; i ++) {
+                    // getDateClass[i].classList.add('period');
+                    // console.log(getDateClass)
+                }
+            }
         }
     }
-    activeTime.value = true;
 
-    if ((!startDate.value && !activeEnd.value) || (activeStart.value && !activeEnd.value)) {
-        resetClass();
+    if(selectedInput == 'start') {
         startDate.value = formattedDate;
-        selectedStart = selectedDay;
-        targetDate.classList.add('start');
+        selectedStart = date.key;
+        for(let i = 0; i < getDateClass.length; i ++ ) {
+            getDateClass[i].classList.remove('start');
+            // getDateClass[i].classList.remove('period');
+        }
+        checkDateRange(e, date);
+        emit('dateClicked', startDate.value, endDate.value);
 
-        if (endDate.value && (endDate.value < startDate.value)) {
-            startDate.value = null;
-            endDate.value = null;
-            resetClass();
-            activeStart.value = false;
-        }
-        if (activeStart.value) {
-            activeStart.value = false;
-        }
-    } else if (!endDate.value || activeEnd.value) {
+        nextTick(() => {
+            checkCalendar('end')
+            document.getElementById('end').focus();
+            onMouseUp();
+        })
+    } else if(selectedInput == 'end') {
         endDate.value = formattedDate;
-        selectedEnd = selectedDay;
-        targetDate.classList.add('end');
-
-        console.log(selectedStart, selectedEnd)
-        for(let i = selectedStart; i < (selectedEnd - 1); i ++) {
-            getDateClass[i].classList.add('period');
-        }
-
-        if (endDate.value < startDate.value) {
-            startDate.value = null;
-            endDate.value = null;
-            resetClass();
-            activeEnd.value = false;
-        }
-        if (activeEnd.value) {
-            activeEnd.value = false;
-        }
-        if (!props?.alwaysEmit) {
-            emit('dateClicked', startDate.value, endDate.value);
-        }
-    } else {
+        selectedEnd = date.key;
         for(let i = 0; i < getDateClass.length; i ++ ) {
-            getDateClass[i].classList.remove('start');
-            getDateClass[i].classList.remove('period');
             getDateClass[i].classList.remove('end');
+            // getDateClass[i].classList.remove('period');
         }
-
-        startDate.value = formattedDate;
-        selectedStart = selectedDay;
-        targetDate.classList.add('start');
-        endDate.value = null;
-    }
-    if (props?.alwaysEmit) {
-        emit('dateClicked', startDate.value, endDate.value); // 칼랜더를 닫히게 하지 않고 계속 아웃풋이 나오게 하는건 어떤가요?
+        checkDateRange(e, date);
+        emit('dateClicked', startDate.value, endDate.value);
     }
 }
 </script>
@@ -203,11 +233,11 @@ let createdDate = (e, date) => {
     border: 1px solid rgba(0, 0, 0, 0.15);
     background: #FAFAFA;
     box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);
-    opacity: 0;
+    // opacity: 0;
 
-    &.show {
-        opacity: 1;
-    }
+    // &.show {
+    //     opacity: 1;
+    // }
 
     .infiniteScroll {
         position: relative;
@@ -248,20 +278,16 @@ let createdDate = (e, date) => {
                 }
             }
 
-            // .year {
-            //     // flex-grow: 1;
-            //     // width: 25%;
-            //     width: 80px;
-            //     font-size: 0.8rem;
-            //     border: 1px solid rgba(0,0,0,0.05);
-            //     background-color: rgba(0,0,0,0.02);
-            //     padding: 4px 0;
-            //     margin-right: 14px;
-            //     border-radius: 4px;
-            // }
+            .year {
+                width: 80px;
+            }
 
             select {
                 flex-grow: 1;
+
+                -webkit-appearance:none; /* 크롬 */
+                -moz-appearance:none; /* 파이어폭스 */
+                appearance:none 
             }
 
             .month {
@@ -357,31 +383,31 @@ let createdDate = (e, date) => {
             box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.06);
         }
 
-        &.active {
+        // &.active {
 
-            .start,
-            .end {
-                opacity: 1;
-            }
-        }
+        //     .start,
+        //     .end {
+        //         opacity: 1;
+        //     }
+        // }
 
-        .start,
-        .end {
-            width: 130px;
-            height: 40px;
-            text-align: center;
-            line-height: 40px;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.05);
-            font-size: 0.8rem;
-            opacity: 0.4;
-            cursor: pointer;
+        // .start,
+        // .end {
+        //     width: 130px;
+        //     height: 40px;
+        //     text-align: center;
+        //     line-height: 40px;
+        //     border-radius: 8px;
+        //     background: rgba(0, 0, 0, 0.05);
+        //     font-size: 0.8rem;
+        //     opacity: 0.4;
+        //     cursor: pointer;
 
-            &.active {
-                outline: 2px solid var(--main-color);
-                opacity: 1;
-            }
-        }
+        //     &.active {
+        //         outline: 2px solid var(--main-color);
+        //         opacity: 1;
+        //     }
+        // }
 
         span {
             font-size: 1rem;
