@@ -21,9 +21,9 @@
             .dates  
                 div(v-for="date in dates" :key="date.key" :class="[date.classes, {'start' : (selectedStart == date.key), 'end' : (selectedEnd == date.key)}]" @click="(e) => createdDate(e, date)") {{ date.day }}
     .timeSettingWrap
-        input.big#start(type="text" placeholder="Start" v-model="startDate" @click="checkCalendar('start')")
+        input.big#start(type="text" placeholder="Start" readonly v-model="startDate" @click="checkCalendar('start')")
         span ~
-        input.big#end(type="text" placeholder="End" v-model="endDate" @click="checkCalendar('end')")
+        input.big#end(type="text" placeholder="End" readonly v-model="endDate" @click="checkCalendar('end')")
     //- .timeSettingWrap(:class="{'active' : activeTime}")
         .start(@click.stop="activeStart = true; activeEnd = false;" :class="{'active' : activeStart}") {{ startDate }}
         span ~
@@ -60,6 +60,16 @@ if(props.searchText) {
     let searchDate = props.searchText.split(' ~ ');
     startDate.value = searchDate[0];
     endDate.value = searchDate[1];
+
+    // let startDateSplit = startDate.value.split('-');
+    // let endDateSplit = endDate.value.split('-');
+    // let startTimestamp = new Date(Math.floor(startDateSplit[0]), Math.floor(startDateSplit[1]) - 1, Math.floor(startDateSplit[2])).getTime();
+    // let endTimestamp = new Date(Math.floor(endDateSplit[0]), Math.floor(endDateSplit[1]) - 1, Math.floor(endDateSplit[2])).getTime();
+
+    // nextTick(() => {
+    //     selectedStart = startTimestamp;
+    //     selectedEnd = endTimestamp;
+    // })
 }
 
 onMounted(() => {
@@ -71,6 +81,8 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
     document.removeEventListener('click', closeCalendar);
+    document.getElementById("start").removeEventListener('mouseup', onMouseUp);
+    document.getElementById("end").removeEventListener('mouseup', onMouseUp);
 })
 
 let closeCalendar = (e) => {
@@ -155,6 +167,61 @@ let renderCalender = (thisMonth) => {
     for (let i = prevDate - prevDay + 1; i <= prevDate; i++) {
         dates.value.push({ day: i, classes: 'date prev disable', key: 'prev-' + i });
     }
+
+    if(startDate.value && endDate.value) {
+        let s = startDate.value.split('-');
+        let e = endDate.value.split('-');
+        
+        if(s[0] !== e[0] || s[1] !== e[1]) {
+            console.log('s !== e')
+        } else {
+            console.log('s == e')
+        }
+    }
+
+    // if(startDate.value && endDate.value) {
+    //     let s = startDate.value.split('-');
+    //     let e = endDate.value.split('-');
+
+    //     if(s[0] !== e[0] || s[1] !== e[1]) {
+    //         if((e[0] - s[0] == 1) || (e[1] - s[1] == 1) && (e[1] - s[1] > 1 && currentMonth.value + 1 == parseInt(e[1]))) {
+    //             let startDay = new Date(currentYear.value, currentMonth.value, 0);
+    //             let prevDate = startDay.getDate();  // 저번달 마지막 날짜
+    //             let prevDay = startDay.getDay();    // 저번달 마지막 요일
+
+    //             if(prevDay > 1) {
+    //                 for(let i = 1; i <= (prevDay - 1); i ++) {
+    //                     let currnetTimestamp = new Date(currentYear.value, currentMonth.value - 1, i);
+    //                     dates.value.push({ day: i, classes: 'date current', key: currnetTimestamp.getTime() });
+    //                 }
+    //             }
+    //             for(let i = prevDay; i <= (prevDay + parseInt(e[2]) - 2); i ++) {
+    //                 let currnetTimestamp = new Date(currentYear.value, currentMonth.value - 1, i);
+    //                 dates.value.push({ day: i, classes: 'date current period', key: currnetTimestamp.getTime() });
+    //             }
+    //             for (let i = (prevDay + parseInt(e[2]) - 2) + 1; i <= nextDate; i++) {
+    //                 let currnetTimestamp = new Date(currentYear.value, currentMonth.value - 1, j);
+    //                 dates.value.push({ day: i, classes: 'date current', key: currnetTimestamp.getTime() });
+    //             }
+    //         } else if(e[1] - s[1] > 1 && currentMonth.value + 1 !== parseInt(e[1])) {
+    //             for (let i = 1; i <= nextDate; i++) {
+    //                 let currnetTimestamp = new Date(currentYear.value, currentMonth.value - 1, i);
+    //                 dates.value.push({ day: i, classes: 'date current period', key: currnetTimestamp.getTime() });
+    //             }
+    //         }
+    //     } else {
+    //         console.log('ddd')
+    //         // for (let i = 1; i <= nextDate; i++) {
+    //         //     let currnetTimestamp = new Date(currentYear.value, currentMonth.value - 1, i);
+    //         //     dates.value.push({ day: i, classes: 'date current', key: currnetTimestamp.getTime() });
+    //         // }
+    //     }
+    // } else {
+    //     for (let i = 1; i <= nextDate; i++) {
+    //         let currnetTimestamp = new Date(currentYear.value, currentMonth.value - 1, i);
+    //         dates.value.push({ day: i, classes: 'date current', key: currnetTimestamp.getTime() });
+    //     }
+    // }
 
     for (let i = 1; i <= nextDate; i++) {
         let currnetTimestamp = new Date(currentYear.value, currentMonth.value - 1, i);
@@ -419,31 +486,9 @@ let createdDate = (e, date) => {
             box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.06);
         }
 
-        // &.active {
-
-        //     .start,
-        //     .end {
-        //         opacity: 1;
-        //     }
-        // }
-
-        // .start,
-        // .end {
-        //     width: 130px;
-        //     height: 40px;
-        //     text-align: center;
-        //     line-height: 40px;
-        //     border-radius: 8px;
-        //     background: rgba(0, 0, 0, 0.05);
-        //     font-size: 0.8rem;
-        //     opacity: 0.4;
-        //     cursor: pointer;
-
-        //     &.active {
-        //         outline: 2px solid var(--main-color);
-        //         opacity: 1;
-        //     }
-        // }
+        input {
+            cursor: pointer;
+        }
 
         span {
             font-size: 1rem;

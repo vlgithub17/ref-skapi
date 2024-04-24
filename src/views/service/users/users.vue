@@ -378,41 +378,16 @@ import { Countries } from '@/code/countries';
 let userPage = null;
 let fetching = ref(false);
 
-// if(serviceUsers.value !== null && !serviceUsers.value.length) {
-//     serviceUsers.value = Pager.init({
-//         id: 'user_id',
-//         sortBy: 'timestamp',
-//         order: 'desc',
-//         resultsPerPage: 10
-//     })
-    
-//     userPage = serviceUsers.value;
-
-//     fetching.value = true;
-
-//     skapi.getUsers({
-//         service: currentService.id,
-//         searchFor: 'timestamp',
-//         condition: '<=',
-//         value: new Date().getTime()
-//     }, { limit: 50 }).then(u => {
-//         console.log(u)
-//         fetching.value = false;
-//         // if (u.endOfList) {
-//         //     userPage.endOfList = true;
-//         // }
-//         // userPage.insertItems(u.list).then(_ => {
-//         //     // to avoid watch trigger
-//         //     if (currentPage.value === 1) {
-//         //         getPage(1);
-//         //     }
-//         //     else {
-//         //         currentPage.value = 1;
-//         //     }
-//         //     fetching.value = false;
-//         // });
-//     })
-// }
+skapi.getUsers({
+    service: currentService.id,
+    searchFor: 'timestamp',
+    condition: '<=',
+    value: new Date().getTime()
+}, { limit: 50 }).then(u => {
+    console.log(u)
+    fetching.value = false;
+    serviceUsers.insertItems(u.list).then(r => console.log(r))
+})
 
 // let serviceUsers = ref([
 //     {
