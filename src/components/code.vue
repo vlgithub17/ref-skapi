@@ -12,7 +12,7 @@
 let props = defineProps(['hidecopy'])
 let cpy_btn = !props.hidecopy;
 
-console.log({props})
+// console.log({props})
 let copy = (e) => {
     let allcopy = document.querySelectorAll('.copyMsg');
     for (let i = 0; i < allcopy.length; i++) {

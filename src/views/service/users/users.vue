@@ -92,7 +92,7 @@ br
 
 .tableMenu
     div(style='flex-grow: 1;text-align:right')
-        .iconClick.square(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+        .iconClick.square(@click="refresh" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh
     div
@@ -144,17 +144,20 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
 
 
     template(v-slot:body)
-        tr(v-if="fetching")
-            td#loading(:colspan="colspan").
-                Loading Users ... &nbsp;
-                #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-        template(v-if="serviceUsers !== null && !serviceUsers.length")
+        template(v-if="callUserList")
+            tr
+                td#loading(:colspan="colspan").
+                    Loading Users ... &nbsp;
+                    #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+            tr(v-for="i in 9")
+                td(:colspan="colspan")
+        template(v-else-if="users == null || (!users.length && !callUserList)")
             tr
                 td#noUsers(:colspan="colspan") No Users
             tr(v-for="i in 9")
                 td(:colspan="colspan")
-        template(v-if="serviceUsers && serviceUsers.length")
-            tr(v-for="(user, index) in serviceUsers")
+        template(v-else-if="users.length && !callUserList") 
+            tr(v-for="(user, index) in users") 
                 td.center.optionCol.overflow(style="padding:0")
                     .material-symbols-outlined.fill.icon(@click="openDeleteUser = true") delete
                     template(v-if="user.approved.includes('suspended')")
@@ -168,17 +171,15 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
                 td.overflow(v-if="filterOptions.address") {{ user.address || '-' }}
                 td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
                 td.center.overflow(v-if="filterOptions.gender") -
-            tr(v-if="serviceUsers.length < 10" v-for="i in (10 - serviceUsers.length)" :key="'extra-' + i")
+            tr(v-if="users.length < 10" v-for="i in (10 - users.length)" :key="'extra-' + i")
                 td(:colspan="colspan")
         
-
-
 .tableMenu(style='display:block;text-align:center;')
-    .iconClick.square.arrow
+    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': currentPage === 1 || callUserList }")
         .material-symbols-outlined.bold chevron_left
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
-    .iconClick.square.arrow
+    .iconClick.square.arrow(@click="nextPage" :class="{'nonClickable': maxPage <= currentPage && userPage?.endOfList || callUserList }")
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
 
@@ -368,7 +369,7 @@ import Calendar from '@/components/_calendar.vue';
 import Locale from '@/components/locale.vue';
 import Pager from '@/code/pager'
 
-import { ref, nextTick, watch } from 'vue';
+import { ref, nextTick, watch, onUnmounted } from 'vue';
 import { skapi } from '@/code/admin';
 import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
@@ -376,82 +377,17 @@ import { currentService, serviceUsers } from '@/views/service/main';
 import { Countries } from '@/code/countries';
 
 let userPage = null;
-let fetching = ref(false);
-
-skapi.getUsers({
+let users = ref(null);
+let callUserList = ref(false);
+let currentPage = ref(1);
+let maxPage = ref(1);
+let defaultFetchParams = {
     service: currentService.id,
     searchFor: 'timestamp',
     condition: '<=',
     value: new Date().getTime()
-}, { limit: 50 }).then(u => {
-    console.log(u)
-    fetching.value = false;
-    serviceUsers.insertItems(u.list).then(r => console.log(r))
-})
-
-// let serviceUsers = ref([
-//     {
-//         access_group: 1,
-//         approved: "by_skapi:approved:1705046812570",
-//         email: "sdfsf@dsflf.ccc",
-//         locale: "KR",
-//         name: "slfk",
-//         records: 0,
-//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-//         subscribers: 0,
-//         timestamp: 1705046815700,
-//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-//     },
-//     {
-//         access_group: 1,
-//         approved: "by_skapi:approved:1705046812570",
-//         email: "sdfsf@dsflf.ccc",
-//         locale: "KR",
-//         name: "slfk",
-//         records: 0,
-//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-//         subscribers: 0,
-//         timestamp: 1705046815700,
-//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-//     },
-//     {
-//         access_group: 1,
-//         approved: "by_skapi:approved:1705046812570",
-//         email: "sdfsf@dsflf.ccc",
-//         locale: "KR",
-//         name: "slfk",
-//         records: 0,
-//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-//         subscribers: 0,
-//         timestamp: 1705046815700,
-//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-//     },
-//     {
-//         access_group: 1,
-//         approved: "by_skapi:approved:1705046812570",
-//         email: "sdfsf@dsflf.ccc",
-//         locale: "KR",
-//         name: "slfk",
-//         records: 0,
-//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-//         subscribers: 0,
-//         timestamp: 1705046815700,
-//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-//     },
-//     {
-//         access_group: 1,
-//         approved: "by_skapi:approved:1705046812570",
-//         email: "sdfsf@dsflf.ccc",
-//         locale: "KR",
-//         name: "slfk",
-//         records: 0,
-//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-//         subscribers: 0,
-//         timestamp: 1705046815700,
-//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-//     }
-// ])
-
+}
+let fetchParams = defaultFetchParams;
 let filterOptions = ref({
     userID: true,
     name: true,
@@ -478,6 +414,79 @@ let password = '';
 let redirect = '';
 let error = ref('');
 
+let getPage = (p) => {
+    let res = userPage.getPage(p);
+    userPage.maxPage = res.maxPage;
+    users.value = res.list;
+    maxPage.value = res.maxPage;
+}
+
+let refresh = async() => {
+    if (callUserList.value) {
+        return;
+    }
+    if (!searchText.value) {
+        fetchParams = defaultFetchParams;
+        fetchParams.value = new Date().getTime();
+    }
+
+    users.value = null;
+
+    serviceUsers[currentService.id] = await Pager.init({
+        id: 'user_id',
+        sortBy: 'timestamp',
+        order: 'desc',
+        resultsPerPage: 10
+    })
+
+    userPage = serviceUsers[currentService.id];
+    callUserList.value = true;
+
+    skapi.getUsers(fetchParams, { limit: 50 }).then(u => {
+        if (u.endOfList) {
+            userPage.endOfList = true;
+        }
+        userPage.insertItems(u.list).then(_ => {
+            // to avoid watch trigger
+            if (currentPage.value === 1) {
+                getPage(1);
+            }
+            else {
+                currentPage.value = 1;
+            }
+            callUserList.value = false;
+        });
+    });
+}
+
+if (!serviceUsers?.[currentService.id]) {
+    refresh();
+}
+else {
+    userPage = serviceUsers[currentService.id];
+    getPage(currentPage.value);
+}
+
+let nextPage = () => {
+    if (currentPage.value === maxPage.value && !userPage.endOfList) {
+        users.value = null;
+        callUserList.value = true;
+        skapi.getUsers(fetchParams, { fetchMore: true, limit: 50 }).then(u => {
+            if (u.endOfList) {
+                userPage.endOfList = true;
+            }
+            userPage.insertItems(u.list).then(_ => {
+                currentPage.value++;
+                callUserList.value = false;
+            });
+        });
+    }
+
+    else {
+        currentPage.value++;
+    }
+}
+
 let handledateClick = (startDate, endDate) => {
     if (startDate == null && endDate == null) {
         searchText.value = ''
@@ -486,15 +495,46 @@ let handledateClick = (startDate, endDate) => {
     }
     // document.querySelector('#searchInput').focus();
 }
+
 let handleCountryClick = (key) => {
     searchText.value = key;
     showLocale.value = false;
     document.querySelector('#searchInput').focus();
 }
 
+let createUser = () => {
+    promiseRunning.value = true;
+    error.value = '';
+    skapi.signup({
+        email,
+        name,
+        password,
+        service: currentService.id
+    }).then((res) => {
+        console.log(res)
+        openCreateUser.value = false;
+        promiseRunning.value = false;
+        refresh();
+    }).catch((err) => {
+        promiseRunning.value = false;
+        error.value = err.message;
+    });
+}
+
+onUnmounted(() => {
+    if (fetchParams.searchFor !== 'timestamp' || fetchParams?.condition !== '<=') {
+        // remove list if it's not defaultParams
+        delete serviceUsers[currentService.id];
+    }
+});
+
 watch(filterOptions.value, nv => {
     colspan = Object.values(filterOptions.value).filter(value => value).length + 1;
 }, { immediate: true })
+
+watch(currentPage, (page) => {
+    serviceUsers.getPage(page);
+});
 </script>
 <style scoped lang="less">
 #searchForm {
