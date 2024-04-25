@@ -204,7 +204,7 @@ Modal(:open="openInviteUser")
 
         label
             | User's Email 
-            input.big(
+            input.big#inviteUserEmail(
                 type="email"
                 @input="e => email = e.target.value"
                 title="Please enter a valid email address." 
@@ -243,7 +243,7 @@ Modal(:open="openInviteUser")
             template(v-if="promiseRunning")
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
-                button.noLine(@click="error='';openInviteUser=false") Cancel 
+                button.noLine(type="button" @click="closeModal") Cancel 
                 button.final(type="submit") Create User
 
 Modal(:open="openCreateUser" style="width:478px")
@@ -291,10 +291,10 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         div(style="display: flex; align-items: center; justify-content: space-between;")
-            template(v-if="promiseRunning")
+            div(v-if="promiseRunning" style="display:block; height:44px; text-align:center;")
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
-                button.noLine(@click="error='';openCreateUser=false") Cancel 
+                button.noLine(type="button" @click="closeModal") Cancel 
                 button.final(type="submit") Create User
 
 Modal(:open="openBlockUser")
@@ -314,7 +314,7 @@ Modal(:open="openBlockUser")
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(@click="openBlockUser=false") Cancel 
+            button.noLine(type="button" @click="openBlockUser=false") Cancel 
             button.final(type="submit") Block
 
 Modal(:open="openUnblockUser")
@@ -334,7 +334,7 @@ Modal(:open="openUnblockUser")
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(@click="openUnblockUser=false") Cancel 
+            button.noLine(type="button" @click="openUnblockUser=false") Cancel 
             button.final(type="submit") Unblock  
 
 Modal(:open="openDeleteUser")
@@ -354,7 +354,7 @@ Modal(:open="openDeleteUser")
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(@click="openDeleteUser=false") Cancel 
+            button.noLine(type="button" @click="openDeleteUser=false") Cancel 
             button.unFinished.warning(type="submit") Delete  
 
 br
@@ -369,7 +369,7 @@ import Calendar from '@/components/_calendar.vue';
 import Locale from '@/components/locale.vue';
 import Pager from '@/code/pager'
 
-import { ref, nextTick, watch, onUnmounted } from 'vue';
+import { ref, nextTick, watch, onUnmounted, onMounted } from 'vue';
 import { skapi } from '@/code/admin';
 import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
@@ -480,9 +480,7 @@ let nextPage = () => {
                 callUserList.value = false;
             });
         });
-    }
-
-    else {
+    } else {
         currentPage.value++;
     }
 }
@@ -493,7 +491,6 @@ let handledateClick = (startDate, endDate) => {
     } else {
         searchText.value = (startDate || '') + ' ~ ' + (endDate || '');
     }
-    // document.querySelector('#searchInput').focus();
 }
 
 let handleCountryClick = (key) => {
@@ -511,7 +508,8 @@ let createUser = () => {
         password,
         service: currentService.id
     }).then((res) => {
-        console.log(res)
+        console.log(res);
+        document.getElementById("createForm").reset();
         openCreateUser.value = false;
         promiseRunning.value = false;
         refresh();
@@ -519,6 +517,16 @@ let createUser = () => {
         promiseRunning.value = false;
         error.value = err.message;
     });
+}
+
+let closeModal = () => {
+    if(openInviteUser.value) {
+        document.getElementById("inviteForm").reset();
+        openInviteUser.value = false;
+    } else if(openCreateUser.value) {
+        document.getElementById("createForm").reset();
+        openCreateUser.value = false;
+    }
 }
 
 onUnmounted(() => {
@@ -533,8 +541,16 @@ watch(filterOptions.value, nv => {
 }, { immediate: true })
 
 watch(currentPage, (page) => {
-    serviceUsers.getPage(page);
+    getPage(page);
 });
+
+watch(openInviteUser, nv => {
+    if(nv) {
+        nextTick(() => {
+            document.getElementById('inviteUserEmail').focus();
+        })
+    }
+})
 </script>
 <style scoped lang="less">
 #searchForm {
