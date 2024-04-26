@@ -73,22 +73,22 @@ if(props.searchText) {
 }
 
 onMounted(() => {
-    document.addEventListener('click', closeCalendar);
+    document.addEventListener('mouseup', closeCalendar);
     document.getElementById("start").addEventListener('mouseup', onMouseUp);
     document.getElementById("end").addEventListener('mouseup', onMouseUp);
     document.getElementById('start').focus();
     onMouseUp();
 })
 onBeforeUnmount(() => {
-    document.removeEventListener('click', closeCalendar);
+    document.removeEventListener('mouseup', closeCalendar);
     document.getElementById("start").removeEventListener('mouseup', onMouseUp);
     document.getElementById("end").removeEventListener('mouseup', onMouseUp);
 })
 
 let closeCalendar = (e) => {
-    if (e.pointerId === -1) {
-        e.preventDefault();
-    } else {
+    let localeSelector = document.querySelector('#calendar');
+
+    if(!localeSelector.contains(e.target)) {
         emit('close');
     }
 }
@@ -110,11 +110,15 @@ let checkCalendar = (c) => {
 
         if(s[0] !== e[0] || s[1] !== e[1]) {
             if(c == 'start') {
+                console.log('3333333')
                 goSelectedDate(s[0], s[1]);
             } else if(c == 'end') {
+                console.log('44444444')
                 goSelectedDate(e[0], e[1]);
             } else if(c == 'create') {
+                console.log('55555555')
                 if((e[0] - s[0] == 1) || (e[1] - s[1] == 1) || (e[1] - s[1] > 1 && currentMonth.value + 1 == parseInt(e[1]))) {
+                    console.log('666666666')
                     let startDay = new Date(currentYear.value, currentMonth.value, 0);
                     let prevDate = startDay.getDate();  // 저번달 마지막 날짜
                     let prevDay = startDay.getDay();    // 저번달 마지막 요일
@@ -125,6 +129,7 @@ let checkCalendar = (c) => {
                         })
                     }
                 } else if(e[1] - s[1] > 1 && currentMonth.value + 1 !== parseInt(e[1])) {
+                    console.log('77777777')
                     let endDay = new Date(currentYear.value, currentMonth.value + 1, 0);
                     let nextDate = endDay.getDate();    // 이번달 마지막 날짜
                     let nextDay = endDay.getDay();      // 이번달 마지막 요일
@@ -137,7 +142,9 @@ let checkCalendar = (c) => {
                 }
             }
         } else {
+            console.log('88888888')
             if(c == 'create') {
+                console.log('99999999')
                 for(let i = parseInt(s[2]); i < parseInt(e[2])-1; i ++) {
                     nextTick(() => {
                         getDateClass[i].classList.add('period');
@@ -168,16 +175,16 @@ let renderCalender = (thisMonth) => {
         dates.value.push({ day: i, classes: 'date prev disable', key: 'prev-' + i });
     }
 
-    if(startDate.value && endDate.value) {
-        let s = startDate.value.split('-');
-        let e = endDate.value.split('-');
+    // if(startDate.value && endDate.value) {
+    //     let s = startDate.value.split('-');
+    //     let e = endDate.value.split('-');
         
-        if(s[0] !== e[0] || s[1] !== e[1]) {
-            console.log('s !== e')
-        } else {
-            console.log('s == e')
-        }
-    }
+    //     if(s[0] !== e[0] || s[1] !== e[1]) {
+    //         console.log('s !== e')
+    //     } else {
+    //         console.log('s == e')
+    //     }
+    // }
 
     // if(startDate.value && endDate.value) {
     //     let s = startDate.value.split('-');
@@ -185,6 +192,7 @@ let renderCalender = (thisMonth) => {
 
     //     if(s[0] !== e[0] || s[1] !== e[1]) {
     //         if((e[0] - s[0] == 1) || (e[1] - s[1] == 1) && (e[1] - s[1] > 1 && currentMonth.value + 1 == parseInt(e[1]))) {
+    //             console.log('1111111')
     //             let startDay = new Date(currentYear.value, currentMonth.value, 0);
     //             let prevDate = startDay.getDate();  // 저번달 마지막 날짜
     //             let prevDay = startDay.getDay();    // 저번달 마지막 요일
@@ -204,6 +212,7 @@ let renderCalender = (thisMonth) => {
     //                 dates.value.push({ day: i, classes: 'date current', key: currnetTimestamp.getTime() });
     //             }
     //         } else if(e[1] - s[1] > 1 && currentMonth.value + 1 !== parseInt(e[1])) {
+    //             console.log('2222222')
     //             for (let i = 1; i <= nextDate; i++) {
     //                 let currnetTimestamp = new Date(currentYear.value, currentMonth.value - 1, i);
     //                 dates.value.push({ day: i, classes: 'date current period', key: currnetTimestamp.getTime() });
@@ -211,10 +220,10 @@ let renderCalender = (thisMonth) => {
     //         }
     //     } else {
     //         console.log('ddd')
-    //         // for (let i = 1; i <= nextDate; i++) {
-    //         //     let currnetTimestamp = new Date(currentYear.value, currentMonth.value - 1, i);
-    //         //     dates.value.push({ day: i, classes: 'date current', key: currnetTimestamp.getTime() });
-    //         // }
+    //         for (let i = 1; i <= nextDate; i++) {
+    //             let currnetTimestamp = new Date(currentYear.value, currentMonth.value - 1, i);
+    //             dates.value.push({ day: i, classes: 'date current', key: currnetTimestamp.getTime() });
+    //         }
     //     }
     // } else {
     //     for (let i = 1; i <= nextDate; i++) {

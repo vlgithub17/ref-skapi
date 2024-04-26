@@ -84,9 +84,9 @@ form#searchForm(@submit.prevent="searchUsers")
         input.big#searchInput(v-else-if="searchFor === 'locale'" type="text" placeholder="2 digit country code e.g. KR" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchText" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
         input.big#searchInput(v-else-if="searchFor === 'email'" type="email" placeholder="Search public email address" v-model="searchText")
-        .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale' && !searchText" @click.stop="showLocale = !showLocale") arrow_drop_down
+        .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale'" @click.stop="showLocale = !showLocale") arrow_drop_down
         button.final(type="submit" style='flex-shrink: 0;') Search
-        Locale(v-if="showLocale" @countryClicked="handleCountryClick")
+        Locale(v-if="showLocale" @countryClicked="handleCountryClick" @close="showLocale=false" :searchText="searchText")
 
 br
 
@@ -431,7 +431,7 @@ let refresh = async() => {
     }
 
     users.value = null;
-
+     
     serviceUsers[currentService.id] = await Pager.init({
         id: 'user_id',
         sortBy: 'timestamp',
@@ -495,7 +495,7 @@ let handledateClick = (startDate, endDate) => {
 
 let handleCountryClick = (key) => {
     searchText.value = key;
-    showLocale.value = false;
+    // showLocale.value = false;
     document.querySelector('#searchInput').focus();
 }
 
