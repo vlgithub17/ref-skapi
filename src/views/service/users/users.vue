@@ -159,11 +159,11 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
         template(v-else-if="users.length && !callUserList") 
             tr(v-for="(user, index) in users") 
                 td.center.optionCol.overflow(style="padding:0")
-                    .material-symbols-outlined.fill.icon(@click="openDeleteUser = true") delete
+                    .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user.user_id;") delete
                     template(v-if="user.approved.includes('suspended')")
-                        .material-symbols-outlined.fill.icon(@click="openUnblockUser = true") no_accounts
+                        .material-symbols-outlined.fill.icon(@click="openUnblockUser = true; selectedUser = user.user_id;") no_accounts
                     template(v-else)
-                        .material-symbols-outlined.fill.icon(@click="openBlockUser = true") account_circle
+                        .material-symbols-outlined.fill.icon(@click="openBlockUser = true; selectedUser = user.user_id;") account_circle
                 td.overflow(v-if="filterOptions.email") {{ user.email }}
                 td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
                 td.overflow(v-if="filterOptions.name") {{ user.name }}
@@ -314,8 +314,8 @@ Modal(:open="openBlockUser")
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(type="button" @click="openBlockUser=false") Cancel 
-            button.final(type="submit") Block
+            button.noLine(type="button" @click="openBlockUser=false; selectedUser='';") Cancel 
+            button.final(type="button" @click="changeUserState('block')") Block
 
 Modal(:open="openUnblockUser")
     h4(style='margin:.5em 0 0;') Unblock User
@@ -334,8 +334,8 @@ Modal(:open="openUnblockUser")
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(type="button" @click="openUnblockUser=false") Cancel 
-            button.final(type="submit") Unblock  
+            button.noLine(type="button" @click="openUnblockUser=false; selectedUser='';") Cancel 
+            button.final(type="button" @click="changeUserState('unblock')") Unblock  
 
 Modal(:open="openDeleteUser")
     h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete User
@@ -354,8 +354,8 @@ Modal(:open="openDeleteUser")
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(type="button" @click="openDeleteUser=false") Cancel 
-            button.unFinished.warning(type="submit") Delete  
+            button.noLine(type="button" @click="openDeleteUser=false; selectedUser='';") Cancel 
+            button.unFinished.warning(type="button" @click="deleteUser") Delete  
 
 br
 br
@@ -408,6 +408,7 @@ let openBlockUser = ref(false);
 let openUnblockUser = ref(false);
 let openDeleteUser = ref(false);
 let promiseRunning = ref(false);
+let selectedUser = '';
 let name = '';
 let email = '';
 let password = '';
@@ -419,6 +420,7 @@ let getPage = (p) => {
     userPage.maxPage = res.maxPage;
     users.value = res.list;
     maxPage.value = res.maxPage;
+    console.log('ddd')
 }
 
 let refresh = async() => {
@@ -517,6 +519,37 @@ let createUser = () => {
         promiseRunning.value = false;
         error.value = err.message;
     });
+}
+
+let changeUserState = (state) => {
+    promiseRunning.value = true;
+
+    if(state == 'block') {
+        currentService.blockAccount(selectedUser).then(() => {
+            selectedUser = '';
+            promiseRunning.value = false;
+            openBlockUser.value = false;
+            getPage(currentPage.value);
+        }).catch(e => console.log(e));
+    } else if(state == 'unblock') {
+        currentService.unblockAccount(selectedUser).then(() => {
+            selectedUser = '';
+            promiseRunning.value = false;
+            openUnblockUser.value = false;
+            getPage(currentPage.value);
+        }).catch(e => console.log(e));
+    }
+}
+
+let deleteUser = () => {
+    promiseRunning.value = true;
+
+    currentService.deleteAccount(selectedUser).then(() => {
+        selectedUser = '';
+        promiseRunning.value = false;
+        openBlockUser.value = false;
+        getPage(currentPage.value);
+    }).catch(e => console.log(e));
 }
 
 let closeModal = () => {

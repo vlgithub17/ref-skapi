@@ -136,7 +136,7 @@ let renderCalender = (thisMonth) => {
     let nextDate = endDay.getDate();    // 이번달 마지막 날짜
     let nextDay = endDay.getDay();      // 이번달 마지막 요일
 
-    console.log(nextDate, nextDay)
+    // console.log(nextDate, nextDay)
 
     for (let i = prevDate - prevDay + 1; i <= prevDate; i++) {
         let prevTimestamp = new Date(currentMonth.value == 1 ? currentYear.value - 1 : currentYear.value, currentMonth.value - 2, i);

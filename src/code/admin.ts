@@ -13,7 +13,6 @@ export async function getEndpointUrl(dest: string, auth: boolean = true): Promis
     const get_ep = () => {
         switch (dest) {
             case 'delete-newsletter':
-            case 'block-account':
             case 'register-service':
             case 'get-services':
             case 'register-subdomain':
@@ -41,46 +40,6 @@ export async function getEndpointUrl(dest: string, auth: boolean = true): Promis
     return (get_ep()?.[auth ? 'private' : 'public'] || '') + dest;
 }
 
-export async function blockAccount(
-    service: string,
-    params: {
-        userId: string;
-    }
-): Promise<'SUCCESS'> {
-    await skapi.util.request(await getEndpointUrl('block-account'), { owner: skapi.user.user_id, service, block: params.userId }, { auth: true });
-    return 'SUCCESS';
-}
-
-export async function unblockAccount(
-    service: string,
-    params: {
-        userId: string;
-    }
-): Promise<'SUCCESS'> {
-    await skapi.util.request(await getEndpointUrl('block-account'), { owner: skapi.user.user_id, service, unblock: params.userId }, { auth: true });
-    return 'SUCCESS';
-}
-
-export async function deleteAccount(
-    service: string,
-    params: {
-        userId: string;
-    }
-): Promise<'SUCCESS'> {
-    await skapi.util.request('remove-account', { owner: skapi.user.user_id, service, delete: params.userId }, { auth: true });
-    return 'SUCCESS';
-}
-
-export async function deleteService(service: string): Promise<"The service has been successfully deleted."> {
-    await skapi.util.request(await getEndpointUrl('register-service'), {
-        service,
-        owner: skapi.user.user_id,
-        execute: 'delete'
-    }, { auth: true });
-
-    return 'The service has been successfully deleted.';
-}
-
 // get newsletter mail address
 export async function requestNewsletterSender(service: string, params: { groupNum: number }): Promise<string> {
     return skapi.util.request(await getEndpointUrl('request-newsletter-sender'), Object.assign({ service, owner: skapi.user.user_id }, skapi.util.extractFormData(params).data || {}), { auth: true });
@@ -96,21 +55,3 @@ export async function deleteNewsletter(
     return skapi.util.request(await getEndpointUrl('delete-newsletter'), Object.assign({ service, owner: skapi.user.user_id }, skapi.util.extractFormData(params).data || {}), { auth: true });
 }
 
-//send invitation email, when accepted, user will have their account created, and be redirected
-export async function resendInvitation(
-    service: string,
-    params: {
-        email: string,
-        redirect: string;
-    }
-): Promise<'SUCCESS: Invitation E-Mail has been sent.'> {
-    let p: any = skapi.util.extractFormData(params).data;
-    let resend = await skapi.util.request("confirm-signup", {
-        service,
-        owner: skapi.user.user_id,
-        is_invitation: p.email,
-        redirect: p.redirect
-    }, { auth: true });
-
-    return resend; // 'SUCCESS: Invitation E-Mail has been sent.'
-}
