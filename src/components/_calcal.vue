@@ -60,14 +60,18 @@ if(props.searchText) {
 onMounted(() => {
     document.addEventListener('mouseup', closeCalendar);
     document.getElementById("start").addEventListener('mouseup', onMouseUp);
+    document.getElementById("start").addEventListener('keydown', onKeyDown);
     document.getElementById("end").addEventListener('mouseup', onMouseUp);
+    document.getElementById("end").addEventListener('keydown', onKeyDown);
     document.getElementById('start').focus();
     onMouseUp();
 })
 onBeforeUnmount(() => {
     document.removeEventListener('mouseup', closeCalendar);
     document.getElementById("start").removeEventListener('mouseup', onMouseUp);
+    document.getElementById("start").removeEventListener('keydown', onKeyDown);
     document.getElementById("end").removeEventListener('mouseup', onMouseUp);
+    document.getElementById("end").removeEventListener('keydown', onKeyDown);
 })
 
 let closeCalendar = (e) => {
@@ -81,6 +85,33 @@ let closeCalendar = (e) => {
 let onMouseUp = () => {
     let activeInput = document.activeElement;
     selectedInput = activeInput.id;
+}
+
+let onKeyDown = (e) => {
+    let getDateClass = document.querySelectorAll('.date');
+    if(e.key == 'Backspace') {
+        if(selectedInput == 'start' && startDate.value) {
+            startDate.value = '';
+            selectedStart.value = '';
+            for(let i = 0; i < getDateClass.length; i ++) { 
+                nextTick(() => {
+                    getDateClass[i].classList.remove('period');
+                })
+            }
+            emit('dateClicked', startDate.value, endDate.value);
+        } else if(selectedInput == 'end' && endDate.value) {
+            endDate.value = '';
+            selectedEnd.value = '';
+            for(let i = 0; i < getDateClass.length; i ++) { 
+                nextTick(() => {
+                    getDateClass[i].classList.remove('period');
+                })
+            }
+            emit('dateClicked', startDate.value, endDate.value);
+        }
+    } else {
+        return false;
+    }
 }
 
 let checkCalendar = (c) => {
@@ -123,6 +154,11 @@ let checkCalendar = (c) => {
 
 let renderCalender = (thisMonth) => {
     let getDateClass = document.querySelectorAll('.date');
+
+    for(let i = 0; i < getDateClass.length; i ++) {
+        getDateClass[i].classList.add('period');
+    }
+
     dates.value.splice(0);
     currentYear.value = thisMonth.getFullYear();
     currentMonth.value = thisMonth.getMonth();
@@ -157,6 +193,8 @@ let renderCalender = (thisMonth) => {
         let s = startDate.value.split('-');
         let e = endDate.value.split('-');
 
+        console.log(parseInt(s[1]), parseInt(e[1]))
+
         if(parseInt(s[1]) == currentMonth.value + 1 || parseInt(e[1]) == currentMonth.value + 1) {
             console.log('here')
             console.log(selectedStart.value, selectedEnd.value)
@@ -169,10 +207,15 @@ let renderCalender = (thisMonth) => {
                     })
                 }
             }
+        } else if(parseInt(s[1]) < currentMonth.value + 1 && currentMonth.value + 1 < parseInt(e[1])) {
+            for(let i = 0; i < getDateClass.length; i ++) {
+                getDateClass[i].classList.add('period');
+            }
         } else {
             for(let i = 0; i < getDateClass.length; i ++) {
-                console.log('remove')
-                getDateClass[i].classList.remove('period');
+                if(getDateClass[i].classList.contains('period')) {
+                    getDateClass[i].classList.remove('period');
+                }
             }
         }
     }

@@ -159,11 +159,11 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
         template(v-else-if="users.length && !callUserList") 
             tr(v-for="(user, index) in users") 
                 td.center.optionCol.overflow(style="padding:0")
-                    .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user.user_id;") delete
+                    .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
                     template(v-if="user.approved.includes('suspended')")
-                        .material-symbols-outlined.fill.icon(@click="openUnblockUser = true; selectedUser = user.user_id;") no_accounts
+                        .material-symbols-outlined.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
                     template(v-else)
-                        .material-symbols-outlined.fill.icon(@click="openBlockUser = true; selectedUser = user.user_id;") account_circle
+                        .material-symbols-outlined.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
                 td.overflow(v-if="filterOptions.email") {{ user.email }}
                 td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
                 td.overflow(v-if="filterOptions.name") {{ user.name }}
@@ -365,7 +365,7 @@ import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
-import Calendar from '@/components/_calendar.vue';
+import Calendar from '@/components/_calcal.vue';
 import Locale from '@/components/locale.vue';
 import Pager from '@/code/pager'
 
@@ -423,7 +423,7 @@ let getPage = (p) => {
     console.log('ddd')
 }
 
-let refresh = async() => {
+let refresh = async(update) => {
     if (callUserList.value) {
         return;
     }
@@ -442,6 +442,7 @@ let refresh = async() => {
     })
 
     userPage = serviceUsers[currentService.id];
+
     callUserList.value = true;
 
     skapi.getUsers(fetchParams, { limit: 50 }).then(u => {
@@ -452,6 +453,16 @@ let refresh = async() => {
             // to avoid watch trigger
             if (currentPage.value === 1) {
                 getPage(1);
+            } 
+            else if (update) {
+                let pageCheck = userPage.getPage(1);
+                let max = pageCheck.maxPage;
+
+                if(max < update) {
+                    getPage(max);
+                } else {
+                    getPage(update);
+                }
             }
             else {
                 currentPage.value = 1;
@@ -525,31 +536,49 @@ let changeUserState = (state) => {
     promiseRunning.value = true;
 
     if(state == 'block') {
-        currentService.blockAccount(selectedUser).then(() => {
-            selectedUser = '';
-            promiseRunning.value = false;
-            openBlockUser.value = false;
-            getPage(currentPage.value);
-        }).catch(e => console.log(e));
+        selectedUser.access_group = -1;
+
+        currentService.blockAccount(selectedUser.user_id).then((r) => {
+            let toEdit = {}
+            for(let k in selectedUser) {
+                toEdit[k] = selectedUser[k];
+            }
+            userPage.editItem(toEdit).then((r) => {
+                selectedUser = '';
+                promiseRunning.value = false;
+                openBlockUser.value = false;
+                refresh(currentPage.value);
+            });
+        }).catch(e => alert(e.message));
     } else if(state == 'unblock') {
-        currentService.unblockAccount(selectedUser).then(() => {
-            selectedUser = '';
-            promiseRunning.value = false;
-            openUnblockUser.value = false;
-            getPage(currentPage.value);
-        }).catch(e => console.log(e));
+        selectedUser.access_group = 1;
+
+        currentService.unblockAccount(selectedUser.user_id).then((r) => {
+            let toEdit = {}
+            for(let k in selectedUser) {
+                toEdit[k] = selectedUser[k];
+            }
+            userPage.editItem(toEdit).then((r) => {
+                selectedUser = '';
+                promiseRunning.value = false;
+                openUnblockUser.value = false;
+                refresh(currentPage.value);
+            });
+        }).catch(e => alert(e.message));
     }
 }
 
 let deleteUser = () => {
     promiseRunning.value = true;
 
-    currentService.deleteAccount(selectedUser).then(() => {
-        selectedUser = '';
-        promiseRunning.value = false;
-        openBlockUser.value = false;
-        getPage(currentPage.value);
-    }).catch(e => console.log(e));
+    currentService.deleteAccount(selectedUser.user_id).then(() => {
+        userPage.deleteItem(selectedUser.user_id).then(() => {
+            selectedUser = '';
+            promiseRunning.value = false;
+            openDeleteUser.value = false;
+            refresh(currentPage.value);
+        })
+    }).catch(e => alert(e.message));
 }
 
 let closeModal = () => {
@@ -625,8 +654,6 @@ let searchUsers = () => {
         }
         refresh();
     }
-
-
 }
 
 onUnmounted(() => {
