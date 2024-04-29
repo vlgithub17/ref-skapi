@@ -529,14 +529,24 @@ let changeUserState = (state) => {
             selectedUser = '';
             promiseRunning.value = false;
             openBlockUser.value = false;
-            getPage(currentPage.value);
+            if (currentPage.value === 1) {
+                getPage(1);
+            }
+            else {
+                currentPage.value = 1;
+            }
         }).catch(e => console.log(e));
     } else if(state == 'unblock') {
         currentService.unblockAccount(selectedUser).then(() => {
             selectedUser = '';
             promiseRunning.value = false;
             openUnblockUser.value = false;
-            getPage(currentPage.value);
+            if (currentPage.value === 1) {
+                getPage(1);
+            }
+            else {
+                currentPage.value = 1;
+            }
         }).catch(e => console.log(e));
     }
 }
@@ -548,7 +558,12 @@ let deleteUser = () => {
         selectedUser = '';
         promiseRunning.value = false;
         openBlockUser.value = false;
-        getPage(currentPage.value);
+        if (currentPage.value === 1) {
+            getPage(1);
+        }
+        else {
+            currentPage.value = 1;
+        }
     }).catch(e => console.log(e));
 }
 
