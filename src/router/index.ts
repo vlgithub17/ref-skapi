@@ -74,6 +74,16 @@ const router = createRouter(
       beforeEnter: checkUser
     },
     {
+      path: '/signup_confirmed_template',
+      name: 'signup_confirmed',
+      component: () => import('@/views/signup_confirmed_template.vue'),
+    },
+    {
+      path: '/invitation_confirmed_template',
+      name: 'invitation_confirmed',
+      component: () => import('@/views/invitation_confirmed_template.vue'),
+    },
+    {
       path: '/enable-account/:email',
       name: 'enable-account',
       component: () => import('@/views/enable-account.vue'),

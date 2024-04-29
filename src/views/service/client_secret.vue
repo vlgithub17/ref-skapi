@@ -2,8 +2,8 @@
 h3 Using 3rd party APIs
 
 p.
-    If you wish to use a 3rd party API that requires a client secret key in your website,
-    you can register them here and safely make requests from your website without exposing your client secret key.
+    When using a 3rd party API that requires a client secret key in your website,
+    register them in Skapi and make secure requests to your APIs #[span.wordset without exposing] your #[span.wordset client secret key.]
 
 Code
     pre.
@@ -25,8 +25,10 @@ Code
 
 p.
     The example above shows how you can request #[b OpenAI]'s #[b DALL·E 3] in your project.
-    It is using the client secret key stored under the name: #[b "myapi"]
-    and the placeholder: #[b "$CLIENT_SECRET"] will be replaced to the actual client secret key.
+p.
+    It is using the client secret key stored under the name: "#[b myapi]".
+    #[br]
+    The placeholder: "#[b $CLIENT_SECRET]" will be replaced to the actual client secret key from the backend.
 
 p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
 
@@ -131,7 +133,6 @@ let addMode = ref(false);
 let editMode = ref(false);
 let deleteKeyLoad = ref(false);
 let deleteClientKey = ref(false);
-let editName = ref();
 let deleteIndex = '';
 let client_key = ref([
     // {

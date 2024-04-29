@@ -34,8 +34,25 @@ export type ServiceObj = {
     prevent_signup?: boolean;
     client_secret?: { [key: string]: string };
     auth_client_secret?: string[];
-    plan: '-' | 'Trial' | 'Standard' | 'Premium' | 'Unlimited' | 'Free Standard' | 'Canceled' | 'Suspended' | string
-}; import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
+    plan: '-' | 'Trial' | 'Standard' | 'Premium' | 'Unlimited' | 'Free Standard' | 'Canceled' | 'Suspended' | string;
+    template_welcome: {
+        subject: string,
+        url: string
+    };
+    template_verification: {
+        subject: string,
+        url: string
+    };
+    template_signup_confirmation: {
+        subject: string,
+        url: string
+    };
+    template_invitation: {
+        subject: string,
+        url: string
+    };
+};
+// import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
 
 type SubscriptionObj = {
     [key: string]: any;
@@ -204,7 +221,7 @@ export default class Service {
 
     async cancelSubscription(): Promise<SubscriptionObj> {
         await this._subsPromise;
-        
+
         if (!Object.keys(this.subscription).length) {
             return null;
         }
