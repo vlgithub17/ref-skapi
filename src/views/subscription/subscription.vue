@@ -75,7 +75,7 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
 
     br
 
-    div(v-if="serviceList[serviceId]?.service.plan !== 'Canceled'" style="text-align:right")
+    div(v-if="serviceList[serviceId]?.service.plan !== 'Canceled' && serviceList[serviceId]?.service.plan !== 'Trial'" style="text-align:right")
         span.iconClick(@click='()=>openCancelplan=true' style='color:var(--caution-color);font-size:0.66rem;')
             .material-symbols-outlined.fill(style='font-size:24px;') cancel
             span &nbsp;Cancel Subscription
@@ -175,6 +175,7 @@ let availablePlans = computed(() => {
 });
 
 let cancelSubs = async () => {
+    promiseRunning.value = true;
     await serviceList[serviceId].cancelSubscription();
     location.href = '/my-services/' + serviceList[serviceId].id;
 }

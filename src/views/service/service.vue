@@ -37,9 +37,14 @@ p For more details, please refer to the #[a(href="https://docs.skapi.com/introdu
 br
 
 section.infoBox
-    .infoTitle(style="margin-right: 1rem;") Dashboard&nbsp;
+    .infoTitle(style="margin-right: 1rem;") Dashboard
 
     hr
+    
+    .state 
+        .smallTitle Service Name
+        .smallValue {{ currentService.service.name }}
+
     .state 
         .smallTitle State
         .smallValue
@@ -207,7 +212,10 @@ section.infoBox
             router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
                 .material-symbols-outlined.fill(style='font-size:24px;') cancel
                 span &nbsp;Delete Service
+
 br
+br
+
 </template>
 
 <script setup lang="ts">

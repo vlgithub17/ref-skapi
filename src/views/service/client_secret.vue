@@ -2,8 +2,8 @@
 h3 Using 3rd party APIs
 
 p.
-    If you wish to use a 3rd party API that requires a client secret key in your website,
-    you can register them here and safely make requests from your website without exposing your client secret key.
+    When using a 3rd party API that requires a client secret key in your website,
+    register them in Skapi and make secure requests to your APIs #[span.wordset without exposing] your #[span.wordset client secret key.]
 
 Code
     pre.
@@ -25,8 +25,10 @@ Code
 
 p.
     The example above shows how you can request #[b OpenAI]'s #[b DALL·E 3] in your project.
-    It is using the client secret key stored under the name: #[b "myapi"]
-    and the placeholder: #[b "$CLIENT_SECRET"] will be replaced to the actual client secret key.
+p.
+    It is using the client secret key stored under the name: "#[b myapi]".
+    #[br]
+    The placeholder: "#[b $CLIENT_SECRET]" will be replaced to the actual client secret key from the backend.
 
 p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
 
@@ -36,14 +38,20 @@ h2 Client Secret
 
 hr
 
-p Register your client secret keys here.
+.error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
+    .material-symbols-outlined.fill warning
+    router-link(to="/account-setting") Please verify your email address to register client secret keys.
+    br
+    br
+template(v-else)
+    p Register your client secret keys here.
 
-.iconClick(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}")
-    .material-symbols-outlined.fill add_circle
-    span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Add Key
+    .iconClick(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}")
+        .material-symbols-outlined.fill add_circle
+        span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Add Key
 
-br
-br
+    br
+    br
 
 form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
     Table
@@ -61,20 +69,16 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                 th.center(style="width:66px; padding:0")
 
         template(v-slot:body)
-            tr(v-if="loading")
-                td(colspan=4).
-                    Loading keys ... &nbsp;
-                    #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-            tr(v-else-if="!client_key.length") 
+            tr(v-if="!client_key.length") 
                 td(colspan=4) No Client Secret Key
             tr(v-for="(key, index) in client_key")
                 template(v-if="editMode && key.edit || addMode && key.edit")
                     td.center 
-                        Checkbox(v-model="key.secure")
+                        Checkbox(v-model="key.secure" :disabled='updating')
                     td  
-                        input#keyName.line(type="text" v-model="key.name" placeholder="myapi" required maxlength="16")
+                        input#keyName.line(type="text" v-model="key.name" placeholder="myapi" required maxlength="16" @input="e=>e.target.setCustomValidity('')" :disabled='updating')
                     td
-                        input.line(type="text" v-model="key.key" placeholder="string1234..." required)
+                        input.line(type="text" v-model="key.key" placeholder="string1234..." required :disabled='updating')
                     td.center.buttonWrap
                         template(v-if="updating")
                             img.loading(src="@/assets/img/loading.png")
@@ -103,12 +107,15 @@ Modal(:open="deleteClientKey")
             This action cannot be undone.
     br
     div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='sendingEmail')
+        template(v-if='deleteKeyLoad')
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine.warning(@click="deleteClientKey = false") Cancel
-            button.final.warning(@click="client_key.splice(deleteIndex, 1);deleteClientKey = false;") Delete
+            button.final.warning(@click="delCliKey") Delete
 
+br
+br
+br
 br
 </template>
 <script setup>
@@ -121,31 +128,67 @@ import { ref, nextTick } from 'vue';
 import { user } from '@/code/user';
 import { currentService } from '@/views/service/main';
 
-let loading = ref(false);
 let updating = ref(false);
 let addMode = ref(false);
 let editMode = ref(false);
-let sendingEmail = ref(false);
+let deleteKeyLoad = ref(false);
 let deleteClientKey = ref(false);
 let deleteIndex = '';
 let client_key = ref([
-    {
-        edit: false,
-        secure: true,
-        name: 'test1',
-        key: 'dssdlfkjsdakdsjfaiw'
-    },
-    {
-        edit: false,
-        secure: false,
-        name: 'test2',
-        key: 'sdfsdfsafjssdfasdfasfdassjfaiw'
-    }
+    // {
+    //     edit: false,
+    //     secure: true,
+    //     name: 'test1',
+    //     key: 'dssdlfkjsdakdsjfaiw'
+    // },
 ]);
+let delCliKey = async () => {
+    deleteKeyLoad.value = true;
+
+    client_key.value.splice(deleteIndex, 1);
+
+    let authKeys = [];
+    let secKeys = {};
+    for (let i = 0; i < client_key.value.length; i++) {
+        let ck = client_key.value[i];
+
+        if (secKeys[ck.name] && secKeys[ck.name] !== ck.key) {
+            continue;
+        }
+
+        if (ck.secure && authKeys.indexOf(ck.name) === -1) {
+            authKeys.push(ck.name);
+        }
+
+        Object.assign(secKeys, {
+            [ck.name]: ck.key
+        });
+    }
+
+    await currentService.setServiceOption({
+        client_secret: secKeys,
+        auth_client_secret: authKeys,
+    });
+
+    deleteClientKey.value = false;
+    deleteKeyLoad.value = false;
+}
+
+if (currentService.service.client_secret) {
+    for (let key in currentService.service.client_secret) {
+        client_key.value.push({
+            edit: false,
+            secure: (currentService.service?.auth_client_secret || []).indexOf(key) !== -1,
+            name: key,
+            key: currentService.service.client_secret[key]
+        })
+    }
+}
+
 let edit_key_origin = {};
 
 let addKey = () => {
-    client_key.value.unshift({edit: true, secure:false, name:'', key:''});
+    client_key.value.unshift({ edit: true, secure: false, name: '', key: '' });
     addMode.value = true;
     nextTick(() => {
         document.getElementById('keyName').focus();
@@ -160,11 +203,11 @@ let editKey = (key) => {
 }
 
 let cancelKey = (key, index) => {
-    if(addMode.value) {
+    if (addMode.value) {
         client_key.value.splice(index, 1);
         addMode.value = false;
     } else {
-        if(edit_key_origin.name !== key.name || edit_key_origin.key !== key.key) {
+        if (edit_key_origin.name !== key.name || edit_key_origin.key !== key.key) {
             key.name = edit_key_origin.name;
             key.key = edit_key_origin.key;
         }
@@ -174,8 +217,40 @@ let cancelKey = (key, index) => {
     }
 }
 
-let saveKey = (key) => {
-    if(addMode.value) {
+let saveKey = async (key) => {
+    let authKeys = [];
+    let secKeys = {};
+    for (let i = 0; i < client_key.value.length; i++) {
+        let ck = client_key.value[i];
+
+        if (secKeys[ck.name] && secKeys[ck.name] !== ck.key) {
+            let el = document.getElementById('keyName');
+            el.focus();
+            el.setCustomValidity('The name is already in use.');
+            el.reportValidity();
+            return;
+        }
+
+        if (ck.secure && authKeys.indexOf(ck.name) === -1) {
+            authKeys.push(ck.name);
+        }
+
+        Object.assign(secKeys, {
+            [ck.name]: ck.key
+        });
+    }
+
+    // loading...
+    updating.value = true;
+    await currentService.setServiceOption({
+        client_secret: secKeys,
+        auth_client_secret: authKeys,
+    });
+
+    // loading end
+    updating.value = false;
+
+    if (addMode.value) {
         key.edit = false;
         addMode.value = false;
     } else {
@@ -188,24 +263,30 @@ let saveKey = (key) => {
 input {
     width: 100%;
 }
+
 table {
     form {
         display: block;
     }
+
     tr {
         &:hover {
             .hide {
                 display: block;
             }
         }
+
         .hide {
             display: none;
         }
     }
-    td, th {
+
+    td,
+    th {
         padding: 0 4px 0 10px;
     }
 }
+
 .buttonWrap {
     display: flex;
     height: 60px;
@@ -213,6 +294,7 @@ table {
     gap: 8px;
     padding: 0;
 }
+
 .save,
 .cancel {
     position: relative;
@@ -238,6 +320,7 @@ table {
         display: block;
     }
 }
+
 @media (pointer: coarse) {
     .hide {
         display: block !important;

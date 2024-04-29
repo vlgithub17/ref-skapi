@@ -1,4 +1,4 @@
-import { computed, reactive, watch } from "vue";
+import { computed, reactive, watch, ref } from "vue";
 import { skapi } from "./admin";
 import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
 import Service from "./service";
@@ -7,6 +7,7 @@ export let user: { [key: string]: any } = reactive({});
 export let loginState = computed(() => !!user?.user_id);
 
 export let customer = null;
+export let emailSubscribed = ref(null);
 
 watch(() => user?.user_id, (u, ou) => {
     while (serviceIdList.length > 0) {
@@ -19,6 +20,7 @@ watch(() => user?.user_id, (u, ou) => {
 
     if (u) {
         if (u !== ou) {
+            emailSubscribed.value = null;
             skapi.getUsers({
                 searchFor: "user_id",
                 value: u
@@ -49,7 +51,7 @@ watch(() => user?.user_id, (u, ou) => {
     }
 }, { immediate: true });
 
-export let updateUser = () => {
+export let updateUser = (customerCheck = false) => {
     return skapi.getProfile().then((u: any) => {
         for (let k in user) {
             delete user[k]
@@ -57,6 +59,14 @@ export let updateUser = () => {
         if (u) {
             for (let k in u) {
                 user[k] = u[k];
+            }
+
+            if (emailSubscribed.value === null) {
+                skapi.getNewsletterSubscription({
+                    group: 'authorized'
+                }).then(subs => {
+                    emailSubscribed.value = !!subs.length
+                });
             }
 
             let getCustomer = async () => {
@@ -102,7 +112,9 @@ export let updateUser = () => {
                     });
                 }
             };
-            getCustomer();
+            if (customerCheck) {
+                getCustomer();
+            }
         }
     });
 }

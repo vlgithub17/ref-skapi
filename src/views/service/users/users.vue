@@ -365,7 +365,7 @@ import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
-import Calendar from '@/components/_calcal.vue';
+import Calendar from '@/components/_calendar.vue';
 import Locale from '@/components/locale.vue';
 import Pager from '@/code/pager'
 
@@ -560,6 +560,73 @@ let closeModal = () => {
         document.getElementById("createForm").reset();
         openCreateUser.value = false;
     }
+}
+
+let searchUsers = () => {
+    if (!searchText.value) {
+        fetchParams = defaultFetchParams;
+        refresh();
+    } else if (searchFor.value === 'timestamp') {
+        let dates = searchText.value.split('~').map(d => d.trim());
+
+        let startDate = 0;
+        if (dates?.[0]) {
+            let st = new Date(dates[0]).getTime();
+            if (!isNaN(st)) {
+                startDate = st
+            }
+        }
+
+        let endDate = Date.now();
+        if (dates?.[1]) {
+            let ed = new Date(dates[1]).getTime();
+            if (!isNaN(endDate)) {
+                endDate = ed;
+            }
+        }
+
+        fetchParams = {
+            service: currentService.id,
+            searchFor: searchFor.value,
+            value: startDate,
+            range: endDate
+        }
+
+        refresh();
+    } else if (searchFor.value === 'user_id') {
+        fetchParams = {
+            service: currentService.id,
+            searchFor: 'user_id',
+            value: searchText.value
+        }
+
+        refresh();
+    } else if (searchFor.value === 'birthdate') {
+        let dates = searchText.value.split('~').map(d => d.trim());
+
+        let startDate = dates?.[0] || '1000-01-01';
+
+        let endDate = dates?.[1] || new Date().toISOString().substring(0, 10);
+
+        fetchParams = {
+            service: currentService.id,
+            searchFor: searchFor.value,
+            value: startDate,
+            range: endDate
+        }
+
+        refresh();
+    } else {
+        fetchParams = {
+            service: currentService.id,
+            searchFor: searchFor.value,
+            value: searchText.value,
+            condition: '>='
+        }
+        refresh();
+    }
+
+
 }
 
 onUnmounted(() => {

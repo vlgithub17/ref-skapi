@@ -1,166 +1,307 @@
 <template lang="pug">
-#mail
-    section.infoBox
-        .infoTitle Automated Emails
-        
-        br
-        br
+section.infoBox
+    .infoTitle Signup Confirmation&nbsp;
 
-        .smallValue Automated emails are sent to your users when certain events occur. You can customize the content of these emails by sending your customized version of the email to the addresses below. For more information refer the 
-            a(href="https://docs.skapi.com/email/email-templates.html" target="_blank" style="font-weight:700") Documentation
+    p.
+        Signup Confirmation is sent when the signup requires email verification or when the user tries to recover their disabled account.
+        #[span.wordset The email contains a link to activate the account.&nbsp;]
+    
+    small see #[a.wordset(href='https://docs.skapi.com/authentication/signup-confirmation.html' target="_blank") Signup Confirmation]
+    small &nbsp;|&nbsp;
+    small #[a.wordset(href='https://docs.skapi.com/user-account/disable-recover-account.html' target="_blank") Disable / Recover Account]
 
-        br
+    br
+    br
 
-        div(style="display:block; text-align:right")
-            .sentenceButton 
-                span Learn more about placeholder
+    small Required Placeholder
+    ul
+        li #[b ${link}] - Activation link url. You can append this to the href attribute of the anchor tag.
 
-        br
-
-        .mail
-            .title Welcome Email 
-            .desc The user receives this email when they signup, and have successfully verified their email, and logged in for the first time.
-            br
-            .endpoint 
-                .smallTitle Endpoint 
-                .copy.clickable(@click="copy")
-                    .material-symbols-outlined.fill file_copy
-            .smallValue service endpoint
-            br
-            .smallTitle Subject 
-            .smallValue service welcome email design
-
-        br
-
-        .mail
-            .title Verification Email
-            .desc The user receives this email when they verifes their email or when they request forgot password.
-            br
-            .endpoint 
-                .smallTitle Endpoint 
-                .copy.clickable(@click="copy")
-                    .material-symbols-outlined.fill file_copy
-            .smallValue service endpoint
-            br
-            .smallTitle Subject 
-            .smallValue service welcome email design
-            br
-            .smallTitle Required Placeholder
-            .smallValue ${code}
-        
-        br
-
-        .mail
-            .title Signup Confirmation Email
-            .desc The user receives this email when they are requested for confirmation on signup.
-            br
-            .endpoint 
-                .smallTitle Endpoint 
-                .copy.clickable(@click="copy")
-                    .material-symbols-outlined.fill file_copy 
-            .smallValue service endpoint
-            br
-            .smallTitle Subject 
-            .smallValue service welcome email design
-            br
-            .smallTitle Required Placeholder
-            .smallValue ${link}
-
-        br
-
-        .mail
-            .title Invitation Email
-            .desc The user receives this email when they are invited to the service.
-            br
-            .endpoint 
-                .smallTitle Endpoint 
-                .copy.clickable(@click="copy")
-                    .material-symbols-outlined.fill file_copy
-            .smallValue service endpoint
-            br
-            .smallTitle Subject 
-            .smallValue service welcome email design
-            br
-            .smallTitle Required Placeholder
-            .smallValue ${password}, ${email}
+    small Optional Placeholder
+    ul
+        li #[b ${email}] - User email
+        li #[b ${name}] - User name, normaled to users email if not provided
+        li #[b ${service_name}] - Service name
 
     br
 
-    section.infoBox
-        .infoTitle Automated Emails
+    .state
+        .smallTitle Template
+        a.ellipsis(:href='"mailto:" + email_templates.signup_confirmation' ) {{ email_templates.signup_confirmation }}
 
-        br
-        br
+    .state
+        .smallTitle Subject
+        .ellipsis {{ converter(signup_confirmation.subject, parseOpt.signup) }}
 
-        .smallValue Automated emails are sent to your users when certain events occur. You can customize the content of these emails by sending your customized version of the email to the addresses below. For more information refer the 
-            a(href="https://docs.skapi.com/email/newsletters.html" target="_blank" style="font-weight:700") Documentation
+    .state
+        .smallTitle Content
+        small.editHandle(:style='{color: parseOpt.signup ? "black" : null}' @click='parseOpt.signup = true') [Parsed]
+        span &nbsp;|&nbsp;
+        small.editHandle(:style='{color: !parseOpt.signup ? "black" : null}' @click='parseOpt.signup = false') [Original]
 
-        br
-        br
+    hr
 
-        .mail 
-            .title Public Newsletter
-            br
-            .endpoint 
-                .smallTitle Endpoint 
-                .copy.clickable(@click="copy")
-                    .material-symbols-outlined.fill file_copy
-            .smallValue service endpoint
-        br
+    .email
+        div(v-if='signup_confirmation.html === null') ...
+        div(v-else v-html='converter(signup_confirmation.html, parseOpt.signup)')
 
-        .mail
-            .title Service User Newsletter
-            br
-            .endpoint 
-                .smallTitle Endpoint 
-                .copy.clickable(@click="copy")
-                    .material-symbols-outlined.fill file_copy
-            .smallValue service endpoint
+br
+
+section.infoBox
+    .infoTitle Welcome Email&nbsp;
+
+    p.
+        Welcome Email is sent when the user successfully logs in after the signup confirmation.
+        If the signup did not require any signup confirmation, #[span.wordset Welcome Email will not be sent]
+
+    small Optional Placeholder
+    ul
+        li #[b ${email}] - User email
+        li #[b ${name}] - User name, normaled to users email if not provided
+        li #[b ${service_name}] - Service name
+
+    br
+
+    .state
+        .smallTitle Endpoint
+        a.ellipsis(:href='"mailto:" + email_templates.welcome' ) {{ email_templates.welcome }}
+    .state
+        .smallTitle Subject
+        .ellipsis {{ converter(welcome.subject, parseOpt.welcome) }}
+
+    .state
+        .smallTitle Content
+        small.editHandle(:style='{color: parseOpt.welcome ? "black" : null}' @click='parseOpt.welcome = true') [Parsed]
+        span &nbsp;|&nbsp;
+        small.editHandle(:style='{color: !parseOpt.welcome ? "black" : null}' @click='parseOpt.welcome = false') [Original]
+
+    hr
+
+    .email
+        div(v-if='welcome.html === null') ...
+        div(v-else v-html='converter(welcome.html, parseOpt.welcome)')
+
+br
+
+section.infoBox
+    .infoTitle Verification Email&nbsp;
+
+    p.
+        Verification Email is sent when the user requests to verify their email address or tries to reset their #[span.wordset forgotten password.]
+    
+    small.wordset See #[a(href='https://docs.skapi.com/user-account/email-verification.html' target="_blank") Verification Email]
+    small &nbsp;|&nbsp;
+    small #[a.wordset(href='https://docs.skapi.com/authentication/forgot-password.html' target="_blank") Forgot Password]
+
+    br
+    br
+
+    small Required Placeholder
+    ul
+        li #[b ${code}] - Verification code.
+
+    small Optional Placeholder
+    ul
+        li #[b ${email}] - User email
+        li #[b ${name}] - User name, normaled to users email if not provided
+        li #[b ${service_name}] - Service name
+
+    br
+
+    .state
+        .smallTitle Endpoint
+        a.ellipsis(:href='"mailto:" + email_templates.verification' ) {{ email_templates.verification }}
+    .state
+        .smallTitle Subject
+        .ellipsis {{ converter(verification.subject, parseOpt.verification) }}
+    .state
+        .smallTitle Content
+        small.editHandle(:style='{color: parseOpt.verification ? "black" : null}' @click='parseOpt.verification = true') [Parsed]
+        span &nbsp;|&nbsp;
+        small.editHandle(:style='{color: !parseOpt.verification ? "black" : null}' @click='parseOpt.verification = false') [Original]
+
+    hr
+
+    .email
+        div(v-if='verification.html === null') ...
+        div(v-else v-html='converter(verification.html, parseOpt.verification)')
+
+br
+
+section.infoBox
+    .infoTitle Invitation Email&nbsp;
+
+    p.
+        Invitation Email is sent when the user is invited to join the service.
+        You can invite new users to your service from the #[router-link(to='users') Users] page.
+        
+    p.
+        User can login with provided email and password after they accept the invitation by clicking on the link provided in the email.
+
+    br
+    br
+
+    small Required Placeholder
+    ul
+        li #[b ${link}] - Invitation accept link url. You can append this to the href attribute of the anchor tag.
+        li #[b ${email}] - User's login email
+        li #[b ${password}] - User's login password
+
+    small Optional Placeholder
+    ul
+        li #[b ${name}] - User name, normaled to users email if not provided
+        li #[b ${service_name}] - Service name
+
+    br
+
+    .state
+        .smallTitle Endpoint
+        a.ellipsis(:href='"mailto:" + email_templates.invitation' ) {{ email_templates.invitation }}
+    .state
+        .smallTitle Subject
+        .ellipsis {{ converter(invitation.subject, parseOpt.invitation) }}
+    .state
+        .smallTitle Content
+        small.editHandle(:style='{color: parseOpt.invitation ? "black" : null}' @click='parseOpt.invitation = true') [Parsed]
+        span &nbsp;|&nbsp;
+        small.editHandle(:style='{color: !parseOpt.invitation ? "black" : null}' @click='parseOpt.invitation = false') [Original]
+
+    hr
+
+    .email
+        div(v-if='invitation.html === null') ...
+        div(v-else v-html='converter(invitation.html, parseOpt.invitation, true)')
+
+br
+
 </template>
 
 <script setup lang="ts">
-let copy = (e) => {
-    let currentTarget = e.currentTarget;
-    let doc = document.createElement('textarea');
-    doc.textContent = e.currentTarget.previousSibling.parentNode.nextSibling.textContent;
-    document.body.append(doc);
-    doc.select();
-    document.execCommand('copy');
-    doc.remove();
+import { reactive } from 'vue';
+import { currentService } from './main';
+import { user } from '@/code/user';
+let service = currentService.service;
+let email_templates = currentService.service.email_triggers.template_setters;
 
-    e.currentTarget.classList.add('copied');
-    setTimeout(() => {
-        currentTarget.classList.remove('copied');
-    }, 1000);
+let parseOpt = reactive({});
+
+let converter = (html: string, parsed: boolean, inv: boolean) => {
+    if (!parsed) {
+        return html;
+    }
+    html = html.replaceAll('${code}', '123456');
+    html = html.replaceAll('${email}', user.email);
+    html = html.replaceAll('${name}', user.name || user.email);
+    html = html.replaceAll('${service_name}', service.name);
+    html = html.replaceAll('${link}', inv ? '/invitation_confirmed_template' : '/signup_confirmed_template');
+    html = html.replaceAll('${password}', 'abc123&&');
+    return html
 }
+
+let welcome = reactive({
+    subject: service?.template_welcome?.subject || "Thank you for joining ${service_name}",
+    html: null
+})
+
+if (!service.template_welcome.url) {
+    welcome.html = `
+<pre>
+<span style="font-weight: bold">Hello \${name}</span>
+Thank you for joining \${service_name}
+Your login email is: <span style="font-weight: bold">\${email}</span></pre>`;
+
+}
+else {
+    fetchHTML(service.template_welcome.url).then((html) => {
+        welcome.html = html;
+    });
+}
+
+let verification = reactive({
+    subject: service?.template_verification?.subject || '[${service_name}] Verification code',
+    html: null
+})
+
+if (!service?.template_verification?.url) {
+    verification.html = '<pre>Your verification code is <span style="font-weight: bold">${code}</span></pre>';
+}
+else {
+    fetchHTML(service.template_verification.url).then((html) => {
+        verification.html = html;
+    });
+}
+
+let signup_confirmation = reactive({
+    subject: service?.template_signup_confirmation?.subject || '[${service_name}] Signup Confirmation',
+    html: null
+})
+
+if (!service?.template_signup_confirmation?.url) {
+    signup_confirmation.html = `<pre>
+Please activate your account by clicking this <a href="\${link}" style="font-weight: bold">LINK</a>
+Your activation link is valid for 7 days.
+</pre>`;
+}
+
+else {
+    fetchHTML(service.template_signup_confirmation.url).then((html) => {
+        signup_confirmation.html = html;
+    });
+}
+
+let invitation = reactive({
+    subject: service?.template_invitation?.subject || '[${service_name}] Invitation',
+    html: null
+})
+
+if (!service?.template_invitation?.url) {
+    invitation.html = `
+<pre>
+Hello \${name}
+You are invited to \${service_name}
+You can accept the invitation by clicking on this <a href="\${link}" style="font-weight: bold">LINK</a>
+
+Your login e-mail is: <b>\${email}</b>
+Your account password is: <b>\${password}</b>
+
+Your activation link is valid for 7 days.
+</pre>`
+}
+else {
+    fetchHTML(service.template_invitation.url).then((html) => {
+        invitation.html = html;
+    });
+}
+
+async function fetchHTML(url: string) {
+    let res = await fetch(url);
+    let html = await res.text();
+    return html;
+}
+
 </script>
 
 <style lang="less" scoped>
-.smallTitle {
-    font-weight: 500;
-}
-.smallValue {
-    margin-top: 8px;
-}
-.endpoint {
+.email {
+    overflow-x: auto;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-.mail {
-    position: relative;
-    padding: 1.5rem;
-    background-color: rgba(0,0,0,0.03);
-    border-radius: 8px;
+    justify-content: center;
 
-    .title {
-        font-weight: 700;
-        // color: var(--black-6)
+    &>div {
+        max-width: 100%;
     }
-    .desc {
-        font-size: 0.8rem;
-        margin-top: 0.5rem;
-        // color: var(--black-4);
-    }
+}
+
+.plch {
+    font-weight: normal
+}
+
+ul {
+    margin-top: .5rem;
+}
+
+li {
+    margin-bottom: 8px;
+    font-size: .8rem;
 }
 </style>
