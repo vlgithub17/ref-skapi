@@ -156,7 +156,7 @@ let renderCalender = (thisMonth) => {
     let getDateClass = document.querySelectorAll('.date');
 
     for(let i = 0; i < getDateClass.length; i ++) {
-        getDateClass[i].classList.add('period');
+        getDateClass[i].classList.remove('period');
     }
 
     dates.value.splice(0);
@@ -210,12 +210,6 @@ let renderCalender = (thisMonth) => {
         } else if(parseInt(s[1]) < currentMonth.value + 1 && currentMonth.value + 1 < parseInt(e[1])) {
             for(let i = 0; i < getDateClass.length; i ++) {
                 getDateClass[i].classList.add('period');
-            }
-        } else {
-            for(let i = 0; i < getDateClass.length; i ++) {
-                if(getDateClass[i].classList.contains('period')) {
-                    getDateClass[i].classList.remove('period');
-                }
             }
         }
     }

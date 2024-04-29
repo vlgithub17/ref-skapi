@@ -454,16 +454,16 @@ let refresh = async(update) => {
             if (currentPage.value === 1) {
                 getPage(1);
             } 
-            else if (update) {
-                let pageCheck = userPage.getPage(1);
-                let max = pageCheck.maxPage;
+            // else if (update) {
+            //     let pageCheck = userPage.getPage(1);
+            //     let max = pageCheck.maxPage;
 
-                if(max < update) {
-                    getPage(max);
-                } else {
-                    getPage(update);
-                }
-            }
+            //     if(max < update) {
+            //         getPage(max);
+            //     } else {
+            //         getPage(update);
+            //     }
+            // }
             else {
                 currentPage.value = 1;
             }
@@ -536,9 +536,8 @@ let changeUserState = (state) => {
     promiseRunning.value = true;
 
     if(state == 'block') {
-        selectedUser.access_group = -1;
-
         currentService.blockAccount(selectedUser.user_id).then((r) => {
+            selectedUser.approved = 'by_admin:suspended:' + (new Date()).getTime();
             let toEdit = {}
             for(let k in selectedUser) {
                 toEdit[k] = selectedUser[k];
@@ -547,7 +546,7 @@ let changeUserState = (state) => {
                 selectedUser = '';
                 promiseRunning.value = false;
                 openBlockUser.value = false;
-                refresh(currentPage.value);
+                getPage(currentPage.value);
             });
         }).catch(e => alert(e.message));
     } else if(state == 'unblock') {
@@ -562,7 +561,7 @@ let changeUserState = (state) => {
                 selectedUser = '';
                 promiseRunning.value = false;
                 openUnblockUser.value = false;
-                refresh(currentPage.value);
+                getPage(currentPage.value);
             });
         }).catch(e => alert(e.message));
     }
@@ -576,7 +575,7 @@ let deleteUser = () => {
             selectedUser = '';
             promiseRunning.value = false;
             openDeleteUser.value = false;
-            refresh(currentPage.value);
+            getPage(currentPage.value);
         })
     }).catch(e => alert(e.message));
 }
