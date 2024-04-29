@@ -2,10 +2,10 @@
 
 .grad
     header(style='color:white;width:800px;')
-        h1(style='font-size: 4rem;margin-top:0') Skapi
+        img(src='@/assets/img/logo/logo-white.svg' style='height:3rem;')
         h1 The Serverless Backend =>
-        h3 Build Full-Stack Web Application Directly from Your HTML Frontend
-        
+        h3 Build Full-Stack Web Application from Your HTML Frontend
+
         small For HTML Projects -
         Code(:hidecopy='true')
             pre.
@@ -23,15 +23,23 @@
             | &nbsp;
             span.wordset to get started
         a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")    
-            button.final(style='background-color:white;color:black;width:136px') Read Docs
+            button.final(style='background-color:white;color:black;width:146px') Read Docs
 
-        .readyHead
+        .readyHead(v-if='user.user_id')
+            h4
+                | ...or go to&nbsp;
+                router-link(to='my-services' style='color:yellow') My Services
+                | &nbsp;and start building!
+            router-link(to="my-services")
+                button.final(style='background-color:white;color:black;width:146px') My Services
+        .readyHead(v-else)
             h4
                 | ...or&nbsp;
                 router-link(to='signup' style='color:yellow') Sign-up
                 | &nbsp;for free and start building!
             router-link(to="signup")
-                button.final(style='background-color:white;color:black;width:136px') Sign-Up
+                button.final(style='background-color:white;color:black;width:146px') Sign-Up
+
     section.intact
         br
         br
@@ -40,8 +48,8 @@
                 img(src="@/assets/img/landingpage/feature2.png")
             .desc
                 h2 Serverless Technology, #[span.wordset Scale without limits]
-                p Skapi requires no additional server between your #[span.wordset website and your clients.]
-                p Just import our API and start building immediately!
+                p Skapi requires no additional server between your #[span.wordset website and your users.]
+                p Just import the API and start building immediately!
         br
         br
         .explain.two
@@ -57,8 +65,8 @@
             .image
                 img(src="@/assets/img/landingpage/feature3.png")
             .desc
-                h2 External API Integration #[span(style='display:inline-block') Made Easy]
-                p Skapi provides an API bridge where your users can make secure request to your 3rd-party API services.
+                h2 3rd Party API Integration #[span(style='display:inline-block') Made Easy]
+                p Skapi provides the simplest solution to make secure requests to your 3rd-party APIs.
 
         br
         br
@@ -68,21 +76,32 @@
             .desc
                 h2 Compatible with #[span.wordset Any Frameworks]
                 p Skapi is compatible with vanilla HTML as well as any frontend framework, including React, Vue, Angular, and more.
+        br
+        br
 
+    section.ready
         br
         br
-    section.ready(style='width:calc(1600px + 1rem);')
-        div
+        div(v-if='user.user_id')
+            h2 Ready to build your next big thing?
+            p
+                | You are already signed in. Go to&nbsp;
+                router-link(to='my-services' style='color:yellow') My Services
+                | &nbsp;and start building!
+            router-link(to="my-services")
+                button.final(style='background-color:white;color:black;width:146px') My Services
+        div(v-else)
             h2 Ready to build your next big thing?
             p
                 router-link(to='signup' style='color:yellow') Sign-up
                 | &nbsp;for free and start building!
             router-link(to="signup")
-                button.final(style='background-color:white;color:black;width:136px') Sign-Up
+                button.final(style='background-color:white;color:black;width:146px') Sign-Up
         br
         br
         br
         br
+
 footer
     img(src="@/assets/img/logo/logo-white.svg" style="height:1rem;")
     router-link(to="public/pp.html" target="_blank") Terms of service • Privacy policy
@@ -92,6 +111,7 @@ footer
 
 <script setup lang="ts">
 import Code from '@/components/code.vue';
+import { user } from '@/code/user'
 </script>
 
 <style lang="less" scoped>
@@ -112,20 +132,60 @@ footer {
 
 .grad {
     // background:
-    //     linear-gradient(37deg, #00ffaa, rgba(255, 0, 0, 0) 70.71%),
-    //     linear-gradient(234deg, #000eff, rgba(0, 255, 0, 0) 70.71%),
-    //     linear-gradient(328deg, #000eff, rgba(0, 255, 0, 0) 70.71%),
-    //     linear-gradient(156deg, #fcd04b, #0000ff 70.71%);
+    //     linear-gradient(217deg, rgba(0, 255, 170, .66), rgba(255, 0, 0, 0) 70.71%),
+    //     linear-gradient(120deg,  rgba(0, 14, 255, .66), rgba(0, 255, 0, 0) 70.71%),
+    //     linear-gradient(148deg, rgba(0, 255, 0, 0), rgba(41, 63, 230, 1) 70.71%),
+    //     linear-gradient(45deg, #fcd04b, #293fe6 70.71%);
+    // background:
+    // linear-gradient(37deg, rgba(0, 255, 170, .66), rgba(255, 0, 0, 0) 70.71%),
+    // linear-gradient(300deg, rgba(0, 14, 255, .66), rgba(0, 255, 0, 0) 70.71%),
+    // linear-gradient(328deg, rgba(0, 255, 0, 0), rgba(41, 63, 230, 1) 70.71%),
+    // linear-gradient(225deg, #fcd04b, #293fe6 70.71%);
+    // background:
+    // linear-gradient(127deg, rgba(0, 255, 170, .66), rgba(255, 0, 0, 0) 70.71%),
+    // linear-gradient(30deg, rgba(0, 14, 255, .66), rgba(0, 255, 0, 0) 70.71%),
+    // linear-gradient(58deg, rgba(0, 255, 0, 0), rgba(41, 63, 230, 1) 70.71%),
+    // linear-gradient(315deg, #fcd04b, #293fe6 70.71%);
+
+
+
+    // background:
+    // linear-gradient(37deg, #00ffaa, rgba(255, 0, 0, 0) 70.71%),
+    // linear-gradient(234deg, #000eff, rgba(0, 255, 0, 0) 70.71%),
+    // linear-gradient(328deg, #000eff, rgba(0, 255, 0, 0) 70.71%),
+    // linear-gradient(156deg, #fcd04b, #0000ff 70.71%);
     // background:
     //     linear-gradient(217deg, rgba(0, 255, 170, 1), rgba(255, 0, 0, 0) 70.71%),
     //     linear-gradient(54deg, rgba(0, 14, 255, 1), rgba(0, 255, 0, 0) 70.71%),
     //     linear-gradient(148deg, rgba(0, 14, 255, 1), rgba(0, 255, 0, 0) 70.71%),
     //     linear-gradient(336deg, rgba(252, 208, 75, 1), rgba(0, 0, 255, 1) 70.71%);
+    // rgb(109 0 255)
+    //rgba(0, 255, 170, 0.8)
+    // 0034ff
+    // background:
+    //     linear-gradient(217deg, rgb(0, 0, 255), rgba(255, 0, 0, 0) 80%),
+    //     linear-gradient(54deg, rgba(0, 0, 255, 0.77), rgba(0, 255, 0, 0) 80%),
+    //     linear-gradient(336deg, rgba(0, 255, 170,1), rgba(252, 208, 75, 0.8) 80%);
+    // background:
+    //     linear-gradient(172deg, rgb(0, 0, 255), rgba(255, 0, 0, 0) 80%),
+    //     linear-gradient(9deg, rgba(0, 0, 255, 0.77), rgba(0, 255, 0, 0) 80%),
+    //     linear-gradient(291deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
+    // background:
+    // linear-gradient(352deg, rgb(0, 0, 255), rgba(255, 0, 0, 0) 80%),
+    // linear-gradient(189deg, rgba(0, 0, 255, 0.77), rgba(0, 255, 0, 0) 80%),
+    // linear-gradient(111deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
     background:
-        linear-gradient(217deg, rgba(0, 255, 170, 0.8), rgba(255, 0, 0, 0) 80%),
-        linear-gradient(54deg, rgba(0, 14, 255, 0.8), rgba(0, 255, 0, 0) 80%),
-        linear-gradient(148deg, rgba(0, 14, 255, 0.8), rgba(0, 255, 0, 0) 80%),
-        linear-gradient(336deg, rgba(252, 208, 75, 0.8), rgba(0, 0, 255, 0.8) 80%);
+        linear-gradient(32deg, rgb(0, 0, 255), rgba(255, 0, 0, 0) 80%),
+        linear-gradient(229deg, rgba(0, 0, 255, 0.77), rgba(0, 255, 0, 0) 80%),
+        linear-gradient(151deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
+    // background:
+    // linear-gradient(32deg, rgba(0, 0, 255, 0.6), rgba(255, 0, 0, 0) 80%),
+    // linear-gradient(229deg, rgba(0, 0, 255, 0.57), rgba(0, 255, 0, 0) 80%),
+    // linear-gradient(151deg, rgba(0, 255, 170, 0.8), rgba(252, 208, 75, 0.6) 80%);
+    // background:
+    // linear-gradient(32deg, rgba(0, 0, 200, 0.9), rgba(255, 0, 0, 0.2) 80%),
+    // linear-gradient(229deg, rgba(0, 0, 180, 0.9), rgba(0, 255, 0, 0.2) 80%),
+    // linear-gradient(151deg, rgba(0, 150, 120, 0.9), rgba(202, 158, 25, 0.6) 80%);
 
 }
 
@@ -145,7 +205,7 @@ footer {
     h3,
     h4 {
         color: white;
-        text-shadow: 1px 1px 1px #000;
+        text-shadow: 1px 1px 4px #000;
     }
 
     p {
@@ -156,16 +216,9 @@ footer {
     justify-content: center;
     align-items: center;
     padding: 2rem 8px;
+    min-height: 100vh;
     flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.wordset {
-    display: inline-block;
-}
-
-.blue {
-    background: linear-gradient(258deg, #4F95E9 8.82%, #4484D9 30.32%, #4C5DE3 51.82%, #3F4BD5 73.32%, #282CC7 94.81%, #4343E0 116.31%);
+    gap: 2rem;
 }
 
 .intact {
@@ -196,9 +249,10 @@ section {
 
 .ready {
     display: none;
+    width: 800px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 1650px) {
     .readyHead {
         display: none;
     }
@@ -206,6 +260,9 @@ section {
     .ready {
         display: block;
     }
+}
+
+@media (max-width: 600px) {
 
     .explain {
         position: relative;

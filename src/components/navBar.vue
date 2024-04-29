@@ -41,7 +41,7 @@ nav#navBar(ref="navBar")
                     li
                         router-link.sign(to="/signup") Sign-up
 
-#proceeding(v-if="running")   
+#proceeding(v-if="running")
     .inner    
         img.loading(src="@/assets/img/loading.png")
         br
@@ -152,6 +152,7 @@ onMounted(() => {
         justify-content: space-between;
 
         .left {
+            flex-shrink: 0;
             display: inline-block;
             vertical-align: middle;
 
@@ -185,7 +186,8 @@ onMounted(() => {
                 text-align: right;
                 margin: 0;
                 padding: 0;
-
+                white-space: nowrap;
+                
                 li {
                     display: inline-block;
                     vertical-align: middle;

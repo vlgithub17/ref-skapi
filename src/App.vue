@@ -15,7 +15,7 @@ const route = useRoute();
 let loaded = ref(false);
 callServiceList.value = true;
 
-updateUser().finally(() => {
+updateUser(true).finally(() => {
     loaded.value = true;
 });
 

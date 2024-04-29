@@ -1,5 +1,5 @@
 :root {
-    --main-color: #293FE6;
+    --main-color: #293fe6;
     --caution-color: #F04E4E;
     --black-8: rgba(0, 0, 0, 0.88);
     --black-6: rgba(0, 0, 0, 0.66);
@@ -64,6 +64,7 @@ a {
 p {
     line-height: 1.5;
 }
+
 select {
     box-sizing: border-box;
     padding: 4px;
@@ -88,6 +89,7 @@ select {
         text-decoration: underline;
     }
 }
+
 input {
     height: 44px;
     border: 0;
@@ -101,12 +103,16 @@ input {
         padding: 12px 10px;
         border-radius: 8px;
         outline: 1px solid rgba(0, 0, 0, 0.5);
+
         &:hover {
             outline: 1px solid var(--main-color);
         }
-        &:focus, &:active {
+
+        &:focus,
+        &:active {
             outline: 2px solid var(--main-color);
         }
+
         &.disabled {
             background-color: rgba(0, 0, 0, 0.05);
         }
@@ -120,6 +126,7 @@ input {
         outline: none;
         border-bottom: 1px solid;
         height: 1.5rem;
+
         &:focus {
             border-bottom: 2px solid var(--main-color) !important;
         }
@@ -133,6 +140,7 @@ input {
     //     display:none;
     // }
 }
+
 form {
     label:not(._checkbox) {
         display: block;
@@ -173,13 +181,13 @@ button {
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.04);
+        background-color: rgba(0, 0, 0, 0.04);
         display: block;
     }
 
     &.noLine {
         border: 0;
-        
+
         &.warning {
             color: var(--caution-color);
         }
@@ -191,7 +199,14 @@ button {
     }
 
     &.unFinished {
+        box-shadow: 1px 1px var(--black-4);
         border: 2px solid currentColor;
+
+        &:active {
+            box-shadow: unset;
+            left: 1px;
+            top: 1px;
+        }
 
         &.warning {
             color: var(--caution-color);
@@ -199,6 +214,14 @@ button {
     }
 
     &.final {
+        box-shadow: 1px 1px var(--black-4);
+
+        &:active {
+            box-shadow: unset;
+            left: 1px;
+            top: 1px;
+        }
+
         border: 0;
         background-color: var(--main-color);
         color: #fff;
