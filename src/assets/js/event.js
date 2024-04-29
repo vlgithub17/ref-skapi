@@ -21,15 +21,24 @@ let showDropDown = (e) => {
     }
 }
 
-let hideMoreVert = () => {
-    console.log('d')
-    document.addEventListener('click', (e) => {
-        console.log('hide')
-        let getMoreVert = document.getElementsByClassName('moreVert');
-        for (let i = 0; i < getMoreVert.length; i++) {
-            getMoreVert[i].style.display = 'none'
+let hideMoreVert = (e) => {
+    // let moreVert = document.querySelector('.moreVert');
+
+    // console.log(moreVert)
+
+    // if(!moreVert.contains(e.target)) {
+    //     console.log('hideMoreVert');
+    //     moreVert.style.display = 'none';
+    // }
+    let getMoreVert = document.getElementsByClassName('moreVert');
+
+    for (let i = 0; i < getMoreVert.length; i++) {
+        if(getMoreVert[i].style.display == 'block' && !getMoreVert[i].contains(e.target)) {
+            console.log('hideMoreVert');
+            console.log(getMoreVert[i].contains(e.target))
+            getMoreVert[i].style.display = 'none';
         }
-    })
+    }
 }
 
 let hideDialog = () => {

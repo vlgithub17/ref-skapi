@@ -69,10 +69,14 @@ form#searchForm(@submit.prevent="searchUsers")
                 .more(value="locale" @click="searchFor = 'locale';searchText = '';") Locale
                 .more(value="birthdate" @click="searchFor = 'birthdate';searchText = '';") Birth Date
     .search
-        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="(e)=>{showDropDown(e)}")
+        //- .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="(e)=>{showDropDown(e)}")
+        //-     input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
+        //-     .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
+        //-     Calendar(@dateClicked="handledateClick" alwaysEmit='true' style="--moreVert-left:0;display:none")
+        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="showCalendar = !showCalendar;")
             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
             .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
-            Calendar(@dateClicked="handledateClick" alwaysEmit='true' style="--moreVert-left:0;display:none")
+            Calendar(v-if="showCalendar" @dateClicked="handledateClick" @close="showCalendar=false" :searchText="searchText" alwaysEmit='true')
         input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchText")
@@ -80,15 +84,15 @@ form#searchForm(@submit.prevent="searchUsers")
         input.big#searchInput(v-else-if="searchFor === 'locale'" type="text" placeholder="2 digit country code e.g. KR" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchText" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
         input.big#searchInput(v-else-if="searchFor === 'email'" type="email" placeholder="Search public email address" v-model="searchText")
-        .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale' && !searchText" @click.stop="showLocale = !showLocale") arrow_drop_down
+        .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale'" @click.stop="showLocale = !showLocale") arrow_drop_down
         button.final(type="submit" style='flex-shrink: 0;') Search
-        Locale(v-if="showLocale" @countryClicked="handleCountryClick")
+        Locale(v-if="showLocale" @countryClicked="handleCountryClick" @close="showLocale=false" :searchText="searchText")
 
 br
 
 .tableMenu
     div(style='flex-grow: 1;text-align:right')
-        .iconClick.square(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+        .iconClick.square(@click="refresh" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh
     div
@@ -140,23 +144,26 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
 
 
     template(v-slot:body)
-        tr(v-if="fetching")
-            td#loading(:colspan="colspan").
-                Loading Users ... &nbsp;
-                #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-        template(v-if="serviceUsers !== null && !serviceUsers.length")
+        template(v-if="callUserList")
+            tr
+                td#loading(:colspan="colspan").
+                    Loading Users ... &nbsp;
+                    #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+            tr(v-for="i in 9")
+                td(:colspan="colspan")
+        template(v-else-if="users == null || (!users.length && !callUserList)")
             tr
                 td#noUsers(:colspan="colspan") No Users
             tr(v-for="i in 9")
                 td(:colspan="colspan")
-        template(v-if="serviceUsers && serviceUsers.length")
-            tr(v-for="(user, index) in serviceUsers")
+        template(v-else-if="users.length && !callUserList") 
+            tr(v-for="(user, index) in users") 
                 td.center.optionCol.overflow(style="padding:0")
-                    .material-symbols-outlined.fill.icon(@click="openDeleteUser = true") delete
+                    .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user.user_id;") delete
                     template(v-if="user.approved.includes('suspended')")
-                        .material-symbols-outlined.fill.icon(@click="openUnblockUser = true") no_accounts
+                        .material-symbols-outlined.fill.icon(@click="openUnblockUser = true; selectedUser = user.user_id;") no_accounts
                     template(v-else)
-                        .material-symbols-outlined.fill.icon(@click="openBlockUser = true") account_circle
+                        .material-symbols-outlined.fill.icon(@click="openBlockUser = true; selectedUser = user.user_id;") account_circle
                 td.overflow(v-if="filterOptions.email") {{ user.email }}
                 td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
                 td.overflow(v-if="filterOptions.name") {{ user.name }}
@@ -164,17 +171,15 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
                 td.overflow(v-if="filterOptions.address") {{ user.address || '-' }}
                 td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
                 td.center.overflow(v-if="filterOptions.gender") -
-            tr(v-if="serviceUsers.length < 10" v-for="i in (10 - serviceUsers.length)" :key="'extra-' + i")
+            tr(v-if="users.length < 10" v-for="i in (10 - users.length)" :key="'extra-' + i")
                 td(:colspan="colspan")
         
-
-
 .tableMenu(style='display:block;text-align:center;')
-    .iconClick.square.arrow
+    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': currentPage === 1 || callUserList }")
         .material-symbols-outlined.bold chevron_left
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
-    .iconClick.square.arrow
+    .iconClick.square.arrow(@click="nextPage" :class="{'nonClickable': maxPage <= currentPage && userPage?.endOfList || callUserList }")
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
 
@@ -199,7 +204,7 @@ Modal(:open="openInviteUser")
 
         label
             | User's Email 
-            input.big(
+            input.big#inviteUserEmail(
                 type="email"
                 @input="e => email = e.target.value"
                 title="Please enter a valid email address." 
@@ -238,7 +243,7 @@ Modal(:open="openInviteUser")
             template(v-if="promiseRunning")
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
-                button.noLine(@click="error='';openInviteUser=false") Cancel 
+                button.noLine(type="button" @click="closeModal") Cancel 
                 button.final(type="submit") Create User
 
 Modal(:open="openCreateUser" style="width:478px")
@@ -286,10 +291,10 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         div(style="display: flex; align-items: center; justify-content: space-between;")
-            template(v-if="promiseRunning")
+            div(v-if="promiseRunning" style="display:block; height:44px; text-align:center;")
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
-                button.noLine(@click="error='';openCreateUser=false") Cancel 
+                button.noLine(type="button" @click="closeModal") Cancel 
                 button.final(type="submit") Create User
 
 Modal(:open="openBlockUser")
@@ -309,8 +314,8 @@ Modal(:open="openBlockUser")
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(@click="openBlockUser=false") Cancel 
-            button.final(type="submit") Block
+            button.noLine(type="button" @click="openBlockUser=false; selectedUser='';") Cancel 
+            button.final(type="button" @click="changeUserState('block')") Block
 
 Modal(:open="openUnblockUser")
     h4(style='margin:.5em 0 0;') Unblock User
@@ -329,8 +334,8 @@ Modal(:open="openUnblockUser")
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(@click="openUnblockUser=false") Cancel 
-            button.final(type="submit") Unblock  
+            button.noLine(type="button" @click="openUnblockUser=false; selectedUser='';") Cancel 
+            button.final(type="button" @click="changeUserState('unblock')") Unblock  
 
 Modal(:open="openDeleteUser")
     h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete User
@@ -349,8 +354,8 @@ Modal(:open="openDeleteUser")
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(@click="openDeleteUser=false") Cancel 
-            button.unFinished.warning(type="submit") Delete  
+            button.noLine(type="button" @click="openDeleteUser=false; selectedUser='';") Cancel 
+            button.unFinished.warning(type="button" @click="deleteUser") Delete  
 
 br
 br
@@ -360,11 +365,11 @@ import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
-import Calendar from '@/components/calendar.vue';
+import Calendar from '@/components/_calcal.vue';
 import Locale from '@/components/locale.vue';
 import Pager from '@/code/pager'
 
-import { ref, nextTick, watch } from 'vue';
+import { ref, nextTick, watch, onUnmounted, onMounted } from 'vue';
 import { skapi } from '@/code/admin';
 import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
@@ -372,106 +377,17 @@ import { currentService, serviceUsers } from '@/views/service/main';
 import { Countries } from '@/code/countries';
 
 let userPage = null;
-let fetching = ref(false);
-
-// if(serviceUsers.value !== null && !serviceUsers.value.length) {
-//     serviceUsers.value = Pager.init({
-//         id: 'user_id',
-//         sortBy: 'timestamp',
-//         order: 'desc',
-//         resultsPerPage: 10
-//     })
-    
-//     userPage = serviceUsers.value;
-
-//     fetching.value = true;
-
-//     skapi.getUsers({
-//         service: currentService.id,
-//         searchFor: 'timestamp',
-//         condition: '<=',
-//         value: new Date().getTime()
-//     }, { limit: 50 }).then(u => {
-//         console.log(u)
-//         fetching.value = false;
-//         // if (u.endOfList) {
-//         //     userPage.endOfList = true;
-//         // }
-//         // userPage.insertItems(u.list).then(_ => {
-//         //     // to avoid watch trigger
-//         //     if (currentPage.value === 1) {
-//         //         getPage(1);
-//         //     }
-//         //     else {
-//         //         currentPage.value = 1;
-//         //     }
-//         //     fetching.value = false;
-//         // });
-//     })
-// }
-
-// let serviceUsers = ref([
-//     {
-//         access_group: 1,
-//         approved: "by_skapi:approved:1705046812570",
-//         email: "sdfsf@dsflf.ccc",
-//         locale: "KR",
-//         name: "slfk",
-//         records: 0,
-//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-//         subscribers: 0,
-//         timestamp: 1705046815700,
-//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-//     },
-//     {
-//         access_group: 1,
-//         approved: "by_skapi:approved:1705046812570",
-//         email: "sdfsf@dsflf.ccc",
-//         locale: "KR",
-//         name: "slfk",
-//         records: 0,
-//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-//         subscribers: 0,
-//         timestamp: 1705046815700,
-//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-//     },
-//     {
-//         access_group: 1,
-//         approved: "by_skapi:approved:1705046812570",
-//         email: "sdfsf@dsflf.ccc",
-//         locale: "KR",
-//         name: "slfk",
-//         records: 0,
-//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-//         subscribers: 0,
-//         timestamp: 1705046815700,
-//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-//     },
-//     {
-//         access_group: 1,
-//         approved: "by_skapi:approved:1705046812570",
-//         email: "sdfsf@dsflf.ccc",
-//         locale: "KR",
-//         name: "slfk",
-//         records: 0,
-//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-//         subscribers: 0,
-//         timestamp: 1705046815700,
-//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-//     },
-//     {
-//         access_group: 1,
-//         approved: "by_skapi:approved:1705046812570",
-//         email: "sdfsf@dsflf.ccc",
-//         locale: "KR",
-//         name: "slfk",
-//         records: 0,
-//         service: "ap210soCqAvRaYvQCmGr#5750ee2c-f7f7-43ff-b6a5-cce599d30101",
-//         subscribers: 0,
-//         timestamp: 1705046815700,
-//         user_id: "af5ebf3c-b308-4e4d-8939-d4227cfac7d4"
-//     }
-// ])
+let users = ref(null);
+let callUserList = ref(false);
+let currentPage = ref(1);
+let maxPage = ref(1);
+let defaultFetchParams = {
+    service: currentService.id,
+    searchFor: 'timestamp',
+    condition: '<=',
+    value: new Date().getTime()
+}
+let fetchParams = defaultFetchParams;
 let filterOptions = ref({
     userID: true,
     name: true,
@@ -492,11 +408,84 @@ let openBlockUser = ref(false);
 let openUnblockUser = ref(false);
 let openDeleteUser = ref(false);
 let promiseRunning = ref(false);
+let selectedUser = '';
 let name = '';
 let email = '';
 let password = '';
 let redirect = '';
 let error = ref('');
+
+let getPage = (p) => {
+    let res = userPage.getPage(p);
+    userPage.maxPage = res.maxPage;
+    users.value = res.list;
+    maxPage.value = res.maxPage;
+    console.log('ddd')
+}
+
+let refresh = async() => {
+    if (callUserList.value) {
+        return;
+    }
+    if (!searchText.value) {
+        fetchParams = defaultFetchParams;
+        fetchParams.value = new Date().getTime();
+    }
+
+    users.value = null;
+     
+    serviceUsers[currentService.id] = await Pager.init({
+        id: 'user_id',
+        sortBy: 'timestamp',
+        order: 'desc',
+        resultsPerPage: 10
+    })
+
+    userPage = serviceUsers[currentService.id];
+    callUserList.value = true;
+
+    skapi.getUsers(fetchParams, { limit: 50 }).then(u => {
+        if (u.endOfList) {
+            userPage.endOfList = true;
+        }
+        userPage.insertItems(u.list).then(_ => {
+            // to avoid watch trigger
+            if (currentPage.value === 1) {
+                getPage(1);
+            }
+            else {
+                currentPage.value = 1;
+            }
+            callUserList.value = false;
+        });
+    });
+}
+
+if (!serviceUsers?.[currentService.id]) {
+    refresh();
+}
+else {
+    userPage = serviceUsers[currentService.id];
+    getPage(currentPage.value);
+}
+
+let nextPage = () => {
+    if (currentPage.value === maxPage.value && !userPage.endOfList) {
+        users.value = null;
+        callUserList.value = true;
+        skapi.getUsers(fetchParams, { fetchMore: true, limit: 50 }).then(u => {
+            if (u.endOfList) {
+                userPage.endOfList = true;
+            }
+            userPage.insertItems(u.list).then(_ => {
+                currentPage.value++;
+                callUserList.value = false;
+            });
+        });
+    } else {
+        currentPage.value++;
+    }
+}
 
 let handledateClick = (startDate, endDate) => {
     if (startDate == null && endDate == null) {
@@ -504,17 +493,97 @@ let handledateClick = (startDate, endDate) => {
     } else {
         searchText.value = (startDate || '') + ' ~ ' + (endDate || '');
     }
-    document.querySelector('#searchInput').focus();
 }
+
 let handleCountryClick = (key) => {
     searchText.value = key;
-    showLocale.value = false;
+    // showLocale.value = false;
     document.querySelector('#searchInput').focus();
 }
+
+let createUser = () => {
+    promiseRunning.value = true;
+    error.value = '';
+    skapi.signup({
+        email,
+        name,
+        password,
+        service: currentService.id
+    }).then((res) => {
+        console.log(res);
+        document.getElementById("createForm").reset();
+        openCreateUser.value = false;
+        promiseRunning.value = false;
+        refresh();
+    }).catch((err) => {
+        promiseRunning.value = false;
+        error.value = err.message;
+    });
+}
+
+let changeUserState = (state) => {
+    promiseRunning.value = true;
+
+    if(state == 'block') {
+        currentService.blockAccount(selectedUser).then(() => {
+            selectedUser = '';
+            promiseRunning.value = false;
+            openBlockUser.value = false;
+            getPage(currentPage.value);
+        }).catch(e => console.log(e));
+    } else if(state == 'unblock') {
+        currentService.unblockAccount(selectedUser).then(() => {
+            selectedUser = '';
+            promiseRunning.value = false;
+            openUnblockUser.value = false;
+            getPage(currentPage.value);
+        }).catch(e => console.log(e));
+    }
+}
+
+let deleteUser = () => {
+    promiseRunning.value = true;
+
+    currentService.deleteAccount(selectedUser).then(() => {
+        selectedUser = '';
+        promiseRunning.value = false;
+        openBlockUser.value = false;
+        getPage(currentPage.value);
+    }).catch(e => console.log(e));
+}
+
+let closeModal = () => {
+    if(openInviteUser.value) {
+        document.getElementById("inviteForm").reset();
+        openInviteUser.value = false;
+    } else if(openCreateUser.value) {
+        document.getElementById("createForm").reset();
+        openCreateUser.value = false;
+    }
+}
+
+onUnmounted(() => {
+    if (fetchParams.searchFor !== 'timestamp' || fetchParams?.condition !== '<=') {
+        // remove list if it's not defaultParams
+        delete serviceUsers[currentService.id];
+    }
+});
 
 watch(filterOptions.value, nv => {
     colspan = Object.values(filterOptions.value).filter(value => value).length + 1;
 }, { immediate: true })
+
+watch(currentPage, (page) => {
+    getPage(page);
+});
+
+watch(openInviteUser, nv => {
+    if(nv) {
+        nextTick(() => {
+            document.getElementById('inviteUserEmail').focus();
+        })
+    }
+})
 </script>
 <style scoped lang="less">
 #searchForm {
@@ -541,6 +610,7 @@ watch(filterOptions.value, nv => {
         transform: translateY(-50%);
         cursor: pointer;
         user-select: none;
+        // z-index: 99;
     }
 }
 #calendar,
