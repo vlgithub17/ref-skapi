@@ -454,16 +454,6 @@ let refresh = async(update) => {
             if (currentPage.value === 1) {
                 getPage(1);
             } 
-            // else if (update) {
-            //     let pageCheck = userPage.getPage(1);
-            //     let max = pageCheck.maxPage;
-
-            //     if(max < update) {
-            //         getPage(max);
-            //     } else {
-            //         getPage(update);
-            //     }
-            // }
             else {
                 currentPage.value = 1;
             }
