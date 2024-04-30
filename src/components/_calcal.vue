@@ -49,12 +49,19 @@ let selectedStart = ref('');
 let selectedEnd = ref('');
 
 let emit = defineEmits(['dateClicked', 'close']);
-let props = defineProps(['alwaysEmit', 'searchText']); // 임시로 만들어놓은 
+let props = defineProps(['alwaysEmit', 'searchText', 'prevDateInfo']); // 임시로 만들어놓은 
 
-if(props.searchText) {
+if(props.searchText && props.prevDateInfo) {
     let searchDate = props.searchText.split(' ~ ');
-    startDate.value = searchDate[0];
-    endDate.value = searchDate[1];
+
+    nextTick(() => {
+        startDate.value = searchDate[0];
+        endDate.value = searchDate[1];
+        selectedStart.value = props.prevDateInfo.start;
+        selectedEnd.value = props.prevDateInfo.end;
+        periodDateSetting();
+        document.getElementById('end').focus();
+    })
 }
 
 onMounted(() => {
@@ -98,7 +105,7 @@ let onKeyDown = (e) => {
                     getDateClass[i].classList.remove('period');
                 })
             }
-            emit('dateClicked', startDate.value, endDate.value);
+            emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
         } else if(selectedInput == 'end' && endDate.value) {
             endDate.value = '';
             selectedEnd.value = '';
@@ -107,7 +114,7 @@ let onKeyDown = (e) => {
                     getDateClass[i].classList.remove('period');
                 })
             }
-            emit('dateClicked', startDate.value, endDate.value);
+            emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
         }
     } else {
         return false;
@@ -152,12 +159,8 @@ let checkCalendar = (c) => {
     }
 }
 
-let renderCalender = (thisMonth) => {
+let renderCalender = async(thisMonth) => {
     let getDateClass = document.querySelectorAll('.date');
-
-    for(let i = 0; i < getDateClass.length; i ++) {
-        getDateClass[i].classList.remove('period');
-    }
 
     dates.value.splice(0);
     currentYear.value = thisMonth.getFullYear();
@@ -188,32 +191,6 @@ let renderCalender = (thisMonth) => {
         let nextTimestamp = new Date(currentMonth.value == 12 ? currentYear.value + 1 : currentYear.value, currentMonth.value, i);
         dates.value.push({ day: i, classes: 'date next disable', time: nextTimestamp.getTime() });
     }
-
-    if(selectedStart.value && selectedEnd.value) {
-        let s = startDate.value.split('-');
-        let e = endDate.value.split('-');
-
-        console.log(parseInt(s[1]), parseInt(e[1]))
-
-        if(parseInt(s[1]) == currentMonth.value + 1 || parseInt(e[1]) == currentMonth.value + 1) {
-            console.log('here')
-            console.log(selectedStart.value, selectedEnd.value)
-            for(let i = 0; i < getDateClass.length; i ++) {
-                console.log(selectedStart.value < getDateClass[i].dataset.time)
-                if(selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
-                    console.log('add')
-                    nextTick(() => {
-                        getDateClass[i].classList.add('period');
-                    })
-                }
-            }
-        } else if(parseInt(s[1]) < currentMonth.value + 1 && currentMonth.value + 1 < parseInt(e[1])) {
-            for(let i = 0; i < getDateClass.length; i ++) {
-                getDateClass[i].classList.add('period');
-            }
-        }
-    }
-
 }
 renderCalender(thisMonth);
 
@@ -226,7 +203,29 @@ onMounted(() => {
     }
 })
 
-let updateCalendar = (e, what) => {
+let periodDateSetting = () => {    
+    if(selectedStart.value && selectedEnd.value) {
+        let getDateClass = document.querySelectorAll('.date');
+        let s = startDate.value.split('-');
+        let e = endDate.value.split('-');
+
+        if(parseInt(s[1]) == currentMonth.value + 1 || parseInt(e[1]) == currentMonth.value + 1) {
+            for(let i = 0; i < getDateClass.length; i ++) {
+                if(selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
+                    nextTick(() => {
+                        getDateClass[i].classList.add('period');
+                    })
+                }
+            }
+        } else if(parseInt(s[1]) < currentMonth.value + 1 && currentMonth.value + 1 < parseInt(e[1])) {
+            for(let i = 0; i < getDateClass.length; i ++) {
+                getDateClass[i].classList.add('period');
+            }
+        }
+    }
+}
+
+let updateCalendar = async(e, what) => {
     if(what == 'year') {
         currentYear.value = e.target.value;
     } else if(what == 'month') {
@@ -234,22 +233,43 @@ let updateCalendar = (e, what) => {
     }
 
     thisMonth = new Date(currentYear.value, currentMonth.value, 1);
-    renderCalender(thisMonth);
+    let getDateClass = document.querySelectorAll('.date');
+    for(let i = 0; i < getDateClass.length; i ++) {
+        getDateClass[i].classList.remove('period');
+    }
+    await renderCalender(thisMonth);
+    periodDateSetting();
 }
 
-let prevTime = () => {
+let prevTime = async() => {
     thisMonth = new Date(currentYear.value, currentMonth.value - 1, 1);
-    renderCalender(thisMonth);
+    let getDateClass = document.querySelectorAll('.date');
+    for(let i = 0; i < getDateClass.length; i ++) {
+        getDateClass[i].classList.remove('period');
+    }
+    await renderCalender(thisMonth);
+    periodDateSetting();
 }
 
-let nextTime = () => {
+let nextTime = async() => {
     thisMonth = new Date(currentYear.value, currentMonth.value + 1, 1);
-    renderCalender(thisMonth);
+    let getDateClass = document.querySelectorAll('.date');
+    for(let i = 0; i < getDateClass.length; i ++) {
+        getDateClass[i].classList.remove('period');
+    }
+    await renderCalender(thisMonth);
+    periodDateSetting();
 }
 
-let goSelectedDate = (y, m) => {
+let goSelectedDate = async(y, m) => {
+    console.log(y,m)
     thisMonth = new Date(y, m - 1, 1);
-    renderCalender(thisMonth);
+    let getDateClass = document.querySelectorAll('.date');
+    for(let i = 0; i < getDateClass.length; i ++) {
+        getDateClass[i].classList.remove('period');
+    }
+    await renderCalender(thisMonth);
+    periodDateSetting();
 }
 
 let createdDate = (e, date) => {
@@ -289,7 +309,7 @@ let createdDate = (e, date) => {
             getDateClass[i].classList.remove('period');
         }
         checkDateRange(e, date);
-        emit('dateClicked', startDate.value, endDate.value);
+        emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
 
         nextTick(() => {
             checkCalendar('end')
@@ -304,7 +324,7 @@ let createdDate = (e, date) => {
             getDateClass[i].classList.remove('period');
         }
         checkDateRange(e, date);
-        emit('dateClicked', startDate.value, endDate.value);
+        emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
     }
 }
 </script>
