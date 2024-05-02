@@ -418,10 +418,11 @@ let error = ref('');
 
 let getPage = (p) => {
     let res = userPage.getPage(p);
+
     userPage.maxPage = res.maxPage;
     users.value = res.list;
     maxPage.value = res.maxPage;
-    console.log(res.list)
+
     if(!res.list.length) {
         currentPage.value--;
     }
@@ -493,7 +494,8 @@ let nextPage = () => {
 }
 
 let handledateClick = (startDate, endDate, startTimestamp, endTimestamp) => {
-    if (startDate == null && endDate == null) {
+    console.log(startDate, endDate, startTimestamp, endTimestamp)
+    if (startDate == '' && endDate == '') {
         searchText.value = ''
     } else {
         searchText.value = (startDate || '') + ' ~ ' + (endDate || '');

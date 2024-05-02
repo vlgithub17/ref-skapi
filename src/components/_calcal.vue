@@ -124,8 +124,10 @@ let onKeyDown = (e) => {
                 goSelectedDate(e[0], e[1]);
                 // document.getElementById('end').focus();
             } else {
-                let s = startDate.value.split('-');
-                goSelectedDate(s[0], s[1]);
+                // let s = startDate.value.split('-');
+                // goSelectedDate(s[0], s[1]);
+                thisMonth = new Date(currentYear.value, currentMonth.value, 1);
+                renderCalender(thisMonth);
             }
             document.getElementById('start').focus();
         } else if(selectedInput == 'end' && endDate.value) {
@@ -142,8 +144,10 @@ let onKeyDown = (e) => {
                 goSelectedDate(s[0], s[1]);
                 // document.getElementById('start').focus();
             } else {
-                let e = endDate.value.split('-');
-                goSelectedDate(e[0], e[1]);
+                // let e = endDate.value.split('-');
+                // goSelectedDate(e[0], e[1]);
+                thisMonth = new Date(currentYear.value, currentMonth.value, 1);
+                renderCalender(thisMonth);
             }
             document.getElementById('end').focus();
         }
