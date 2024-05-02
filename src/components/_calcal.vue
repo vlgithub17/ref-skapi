@@ -60,7 +60,19 @@ if(props.searchText && props.prevDateInfo) {
         selectedStart.value = props.prevDateInfo.start;
         selectedEnd.value = props.prevDateInfo.end;
         periodDateSetting();
-        document.getElementById('end').focus();
+        if(!startDate.value) {
+            let e = endDate.value.split('-');
+            goSelectedDate(e[0], e[1]);
+            document.getElementById('start').focus();
+        } else if(!endDate.value) {
+            let s = startDate.value.split('-');
+            goSelectedDate(s[0], s[1]);
+            document.getElementById('end').focus();
+        } else {
+            let s = startDate.value.split('-');
+            goSelectedDate(s[0], s[1]);
+            document.getElementById('start').focus();
+        }
     })
 }
 
@@ -96,6 +108,7 @@ let onMouseUp = () => {
 
 let onKeyDown = (e) => {
     let getDateClass = document.querySelectorAll('.date');
+
     if(e.key == 'Backspace') {
         if(selectedInput == 'start' && startDate.value) {
             startDate.value = '';
@@ -106,6 +119,15 @@ let onKeyDown = (e) => {
                 })
             }
             emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
+            if(endDate.value) {
+                let e = endDate.value.split('-');
+                goSelectedDate(e[0], e[1]);
+                // document.getElementById('end').focus();
+            } else {
+                let s = startDate.value.split('-');
+                goSelectedDate(s[0], s[1]);
+            }
+            document.getElementById('start').focus();
         } else if(selectedInput == 'end' && endDate.value) {
             endDate.value = '';
             selectedEnd.value = '';
@@ -115,6 +137,15 @@ let onKeyDown = (e) => {
                 })
             }
             emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
+            if(startDate.value) {
+                let s = startDate.value.split('-');
+                goSelectedDate(s[0], s[1]);
+                // document.getElementById('start').focus();
+            } else {
+                let e = endDate.value.split('-');
+                goSelectedDate(e[0], e[1]);
+            }
+            document.getElementById('end').focus();
         }
     } else {
         return false;
@@ -123,14 +154,12 @@ let onKeyDown = (e) => {
 
 let checkCalendar = (c) => {
     let getDateClass = document.querySelectorAll('.date');
+    let s = startDate.value.split('-');
+    let e = endDate.value.split('-');
     console.log(dates.value)
+    console.log(s, e)
 
     if(startDate.value && endDate.value) {
-        let s = startDate.value.split('-');
-        let e = endDate.value.split('-');
-
-        console.log(s, e)
-
         if(s[0] !== e[0] || s[1] !== e[1]) {
             if(c == 'start') {
                 goSelectedDate(s[0], s[1]);
