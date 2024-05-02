@@ -240,7 +240,7 @@ Modal(:open="openInviteUser")
         br
 
         div(style="display: flex; align-items: center; justify-content: space-between;")
-            template(v-if="promiseRunning")
+            div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
                 button.noLine(type="button" @click="closeModal") Cancel 
@@ -291,7 +291,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         div(style="display: flex; align-items: center; justify-content: space-between;")
-            div(v-if="promiseRunning" style="display:block; height:44px; text-align:center;")
+            div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
                 button.noLine(type="button" @click="closeModal") Cancel 
@@ -311,7 +311,7 @@ Modal(:open="openBlockUser")
     br
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
-        template(v-if="promiseRunning")
+        div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine(type="button" @click="openBlockUser=false; selectedUser='';") Cancel 
@@ -331,7 +331,7 @@ Modal(:open="openUnblockUser")
     br
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
-        template(v-if="promiseRunning")
+        div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine(type="button" @click="openUnblockUser=false; selectedUser='';") Cancel 
@@ -351,7 +351,7 @@ Modal(:open="openDeleteUser")
     br
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
-        template(v-if="promiseRunning")
+        div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine(type="button" @click="openDeleteUser=false; selectedUser='';") Cancel 
@@ -421,7 +421,10 @@ let getPage = (p) => {
     userPage.maxPage = res.maxPage;
     users.value = res.list;
     maxPage.value = res.maxPage;
-    console.log('ddd')
+    console.log(res.list)
+    if(!res.list.length) {
+        currentPage.value--;
+    }
 }
 
 let refresh = async(update) => {
@@ -543,9 +546,8 @@ let changeUserState = (state) => {
             });
         }).catch(e => alert(e.message));
     } else if(state == 'unblock') {
-        selectedUser.access_group = 1;
-
         currentService.unblockAccount(selectedUser.user_id).then((r) => {
+            selectedUser.approved = 'by_admin:' + (new Date()).getTime();
             let toEdit = {}
             for(let k in selectedUser) {
                 toEdit[k] = selectedUser[k];
