@@ -288,7 +288,7 @@ async function fetchHTML(url: string) {
     justify-content: center;
 
     &>div {
-        max-width: 100%;
+        width: 100%;
     }
 }
 
