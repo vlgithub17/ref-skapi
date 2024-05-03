@@ -76,7 +76,7 @@ form#searchForm(@submit.prevent="searchUsers")
         .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="showCalendar = !showCalendar;")
             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
             .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
-            Calendar(v-if="showCalendar" @dateClicked="handledateClick" @close="showCalendar=false" :searchText="searchText" alwaysEmit='true')
+            Calendar(v-if="showCalendar" @dateClicked="handledateClick" @close="showCalendar=false" :searchText="searchText" :prevDateInfo="prevDateInfo" alwaysEmit='true')
         input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchText")
         input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchText")
@@ -159,11 +159,11 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
         template(v-else-if="users.length && !callUserList") 
             tr(v-for="(user, index) in users") 
                 td.center.optionCol.overflow(style="padding:0")
-                    .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user.user_id;") delete
+                    .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
                     template(v-if="user.approved.includes('suspended')")
-                        .material-symbols-outlined.fill.icon(@click="openUnblockUser = true; selectedUser = user.user_id;") no_accounts
+                        .material-symbols-outlined.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
                     template(v-else)
-                        .material-symbols-outlined.fill.icon(@click="openBlockUser = true; selectedUser = user.user_id;") account_circle
+                        .material-symbols-outlined.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
                 td.overflow(v-if="filterOptions.email") {{ user.email }}
                 td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
                 td.overflow(v-if="filterOptions.name") {{ user.name }}
@@ -240,7 +240,7 @@ Modal(:open="openInviteUser")
         br
 
         div(style="display: flex; align-items: center; justify-content: space-between;")
-            template(v-if="promiseRunning")
+            div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
                 button.noLine(type="button" @click="closeModal") Cancel 
@@ -291,7 +291,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         div(style="display: flex; align-items: center; justify-content: space-between;")
-            div(v-if="promiseRunning" style="display:block; height:44px; text-align:center;")
+            div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
                 button.noLine(type="button" @click="closeModal") Cancel 
@@ -311,7 +311,7 @@ Modal(:open="openBlockUser")
     br
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
-        template(v-if="promiseRunning")
+        div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine(type="button" @click="openBlockUser=false; selectedUser='';") Cancel 
@@ -331,7 +331,7 @@ Modal(:open="openUnblockUser")
     br
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
-        template(v-if="promiseRunning")
+        div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine(type="button" @click="openUnblockUser=false; selectedUser='';") Cancel 
@@ -351,7 +351,7 @@ Modal(:open="openDeleteUser")
     br
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
-        template(v-if="promiseRunning")
+        div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine(type="button" @click="openDeleteUser=false; selectedUser='';") Cancel 
@@ -400,6 +400,7 @@ let filterOptions = ref({
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
 let searchFor = ref('timestamp');
 let searchText = ref('');
+let prevDateInfo = {};
 let showCalendar = ref(false);
 let showLocale = ref(false);
 let openInviteUser = ref(false);
@@ -417,13 +418,17 @@ let error = ref('');
 
 let getPage = (p) => {
     let res = userPage.getPage(p);
+
     userPage.maxPage = res.maxPage;
     users.value = res.list;
     maxPage.value = res.maxPage;
-    console.log('ddd')
+
+    if(!res.list.length) {
+        currentPage.value--;
+    }
 }
 
-let refresh = async() => {
+let refresh = async(update) => {
     if (callUserList.value) {
         return;
     }
@@ -442,6 +447,7 @@ let refresh = async() => {
     })
 
     userPage = serviceUsers[currentService.id];
+
     callUserList.value = true;
 
     skapi.getUsers(fetchParams, { limit: 50 }).then(u => {
@@ -452,7 +458,7 @@ let refresh = async() => {
             // to avoid watch trigger
             if (currentPage.value === 1) {
                 getPage(1);
-            }
+            } 
             else {
                 currentPage.value = 1;
             }
@@ -487,11 +493,14 @@ let nextPage = () => {
     }
 }
 
-let handledateClick = (startDate, endDate) => {
-    if (startDate == null && endDate == null) {
+let handledateClick = (startDate, endDate, startTimestamp, endTimestamp) => {
+    console.log(startDate, endDate, startTimestamp, endTimestamp)
+    if (startDate == '' && endDate == '') {
         searchText.value = ''
     } else {
         searchText.value = (startDate || '') + ' ~ ' + (endDate || '');
+        prevDateInfo.start = startTimestamp;
+        prevDateInfo.end = endTimestamp;
     }
 }
 
@@ -525,31 +534,47 @@ let changeUserState = (state) => {
     promiseRunning.value = true;
 
     if(state == 'block') {
-        currentService.blockAccount(selectedUser).then(() => {
-            selectedUser = '';
-            promiseRunning.value = false;
-            openBlockUser.value = false;
-            getPage(currentPage.value);
-        }).catch(e => console.log(e));
+        currentService.blockAccount(selectedUser.user_id).then((r) => {
+            selectedUser.approved = 'by_admin:suspended:' + (new Date()).getTime();
+            let toEdit = {}
+            for(let k in selectedUser) {
+                toEdit[k] = selectedUser[k];
+            }
+            userPage.editItem(toEdit).then((r) => {
+                selectedUser = '';
+                promiseRunning.value = false;
+                openBlockUser.value = false;
+                getPage(currentPage.value);
+            });
+        }).catch(e => alert(e.message));
     } else if(state == 'unblock') {
-        currentService.unblockAccount(selectedUser).then(() => {
-            selectedUser = '';
-            promiseRunning.value = false;
-            openUnblockUser.value = false;
-            getPage(currentPage.value);
-        }).catch(e => console.log(e));
+        currentService.unblockAccount(selectedUser.user_id).then((r) => {
+            selectedUser.approved = 'by_admin:' + (new Date()).getTime();
+            let toEdit = {}
+            for(let k in selectedUser) {
+                toEdit[k] = selectedUser[k];
+            }
+            userPage.editItem(toEdit).then((r) => {
+                selectedUser = '';
+                promiseRunning.value = false;
+                openUnblockUser.value = false;
+                getPage(currentPage.value);
+            });
+        }).catch(e => alert(e.message));
     }
 }
 
 let deleteUser = () => {
     promiseRunning.value = true;
 
-    currentService.deleteAccount(selectedUser).then(() => {
-        selectedUser = '';
-        promiseRunning.value = false;
-        openBlockUser.value = false;
-        getPage(currentPage.value);
-    }).catch(e => console.log(e));
+    currentService.deleteAccount(selectedUser.user_id).then(() => {
+        userPage.deleteItem(selectedUser.user_id).then(() => {
+            selectedUser = '';
+            promiseRunning.value = false;
+            openDeleteUser.value = false;
+            getPage(currentPage.value);
+        })
+    }).catch(e => alert(e.message));
 }
 
 let closeModal = () => {
@@ -559,6 +584,71 @@ let closeModal = () => {
     } else if(openCreateUser.value) {
         document.getElementById("createForm").reset();
         openCreateUser.value = false;
+    }
+}
+
+let searchUsers = () => {
+    if (!searchText.value) {
+        fetchParams = defaultFetchParams;
+        refresh();
+    } else if (searchFor.value === 'timestamp') {
+        let dates = searchText.value.split('~').map(d => d.trim());
+
+        let startDate = 0;
+        if (dates?.[0]) {
+            let st = new Date(dates[0]).getTime();
+            if (!isNaN(st)) {
+                startDate = st
+            }
+        }
+
+        let endDate = Date.now();
+        if (dates?.[1]) {
+            let ed = new Date(dates[1]).getTime();
+            if (!isNaN(endDate)) {
+                endDate = ed;
+            }
+        }
+
+        fetchParams = {
+            service: currentService.id,
+            searchFor: searchFor.value,
+            value: startDate,
+            range: endDate
+        }
+
+        refresh();
+    } else if (searchFor.value === 'user_id') {
+        fetchParams = {
+            service: currentService.id,
+            searchFor: 'user_id',
+            value: searchText.value
+        }
+
+        refresh();
+    } else if (searchFor.value === 'birthdate') {
+        let dates = searchText.value.split('~').map(d => d.trim());
+
+        let startDate = dates?.[0] || '1000-01-01';
+
+        let endDate = dates?.[1] || new Date().toISOString().substring(0, 10);
+
+        fetchParams = {
+            service: currentService.id,
+            searchFor: searchFor.value,
+            value: startDate,
+            range: endDate
+        }
+
+        refresh();
+    } else {
+        fetchParams = {
+            service: currentService.id,
+            searchFor: searchFor.value,
+            value: searchText.value,
+            condition: '>='
+        }
+        refresh();
     }
 }
 
