@@ -2,10 +2,11 @@ export default class Pager {
     sortBy: string;
     id: string;
     order: 'asc' | 'desc' = 'asc';
-    map:any[] = [];
+    map: any[] = [];
     list: { [key: string]: any } = {};
     resultsPerPage = 10;
     worker: any;
+    endOfList: boolean;
 
     constructor(
         worker: Worker,
@@ -74,7 +75,7 @@ export default class Pager {
         }
 
         return new Promise((res) => {
-            this.worker.onmessage = (event:any) => {
+            this.worker.onmessage = (event: any) => {
                 this.map = event.data;
                 res("Insert Successful");
             };
@@ -101,7 +102,7 @@ export default class Pager {
         });
 
         return new Promise((res) => {
-            this.worker.onmessage = (event:any) => {
+            this.worker.onmessage = (event: any) => {
                 if (event.data) {
                     this.map = event.data;
                 }
@@ -124,7 +125,7 @@ export default class Pager {
         });
 
         return new Promise((res) => {
-            this.worker.onmessage = (event:any) => {
+            this.worker.onmessage = (event: any) => {
                 this.map = event.data;
 
                 delete this.list[id];
@@ -144,7 +145,7 @@ export default class Pager {
             new URL('@/code/pager_worker.js', import.meta.url),
             { type: 'module' }
         );
-        
+
         return new Pager(worker, option);
     }
 }

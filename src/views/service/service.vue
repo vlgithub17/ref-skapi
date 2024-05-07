@@ -40,7 +40,7 @@ section.infoBox
     .infoTitle(style="margin-right: 1rem;") Dashboard
 
     hr
-    
+
     .state 
         .smallTitle Service Name
         .smallValue {{ currentService.service.name }}
@@ -204,7 +204,7 @@ section.infoBox
     .infoValue(:class="{'nonClickable' : !user?.email_verified || currentService?.subscription?.status == 'canceled'}" style='display: flex;align-items: center;min-height:44px;')
         .smallTitle Disable/Enable
         Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
-    
+
     template(v-if="currentService.plan == 'Trial' || currentService.service.active < 0 || currentService?.subscription?.status == 'canceled'")
         hr
 
@@ -214,8 +214,6 @@ section.infoBox
                 span &nbsp;Delete Service
 
 br
-br
-
 </template>
 
 <script setup lang="ts">
@@ -224,6 +222,7 @@ import { currentService } from '@/views/service/main';
 import { user } from '@/code/user';
 import Code from '@/components/code.vue';
 import Toggle from '@/components/toggle.vue';
+import { dateFormat } from '@/code/admin';
 
 let inputName = '';
 let inputCors = '';
@@ -356,16 +355,6 @@ let getfileSize = (s: any) => {
         return (s / Math.pow(1024, e)).toFixed(2) + " " + unit[e];
     }
 };
-
-let dateFormat = (timestamp: number) => {
-    let currentDate = new Date(timestamp);
-    let year = currentDate.getFullYear();
-    let month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
-    let day = ('0' + currentDate.getDate()).slice(-2);
-    let dateStr = `${year}-${month}-${day}`;
-
-    return dateStr;
-}
 
 // change prevent_signup
 let changeCreateUserMode = (value: string) => {

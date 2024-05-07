@@ -17,7 +17,10 @@
                 span.name Database
             router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
                 span.material-symbols-outlined.fill.nohover email
-                span.name Mail
+                span.name Automated Email
+            router-link.router(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter'}")
+                span.material-symbols-outlined.fill.nohover Newspaper
+                span.name Newsletter
             router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting'}")
                 span.material-symbols-outlined.fill.nohover language
                 span.name Hosting
@@ -109,7 +112,7 @@ watch(serviceList, nv => {
     .name {
         font-weight: 500;
         margin-left: 13px;
-        padding-right: 60px;
+        padding-right: 1em;
     }
 }
 

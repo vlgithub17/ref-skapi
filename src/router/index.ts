@@ -145,32 +145,37 @@ const router = createRouter(
             {
               path: '',
               name: 'service',
-              component: Service
+              component: () => import('@/views/service/service.vue')
             },
             {
               path: 'users',
               name: 'users',
-              component: Users
+              component: () => import('@/views/service/users/users.vue')
             },
             {
               path: 'records',
               name: 'records',
-              component: Records
+              component: () => import('@/views/service/records/records.vue')
             },
             {
               path: 'mail',
               name: 'mail',
-              component: Mail
+              component: () => import('@/views/service/mail.vue')
+            },
+            {
+              path: 'newsletter',
+              name: 'newsletter',
+              component: () => import('@/views/service/newsletter.vue')
             },
             {
               path: 'hosting',
               name: 'hosting',
-              component: Hosting
+              component: () => import('@/views/service/hosting/hosting.vue')
             },
             {
               path: 'clientsecret',
               name: 'clientsecret',
-              component: ClientSecret
+              component: () => import('@/views/service/client_secret.vue')
             },
           ]
         },

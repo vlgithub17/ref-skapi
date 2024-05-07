@@ -12,13 +12,11 @@ export async function getEndpointUrl(dest: string, auth: boolean = true): Promis
     const record = endpoints[1];
     const get_ep = () => {
         switch (dest) {
-            case 'delete-newsletter':
             case 'register-service':
             case 'get-services':
             case 'register-subdomain':
             case 'list-host-directory':
             case 'refresh-cdn':
-            case 'request-newsletter-sender':
             case 'set-404':
             case 'subdomain-info':
                 return {
@@ -40,18 +38,12 @@ export async function getEndpointUrl(dest: string, auth: boolean = true): Promis
     return (get_ep()?.[auth ? 'private' : 'public'] || '') + dest;
 }
 
-// get newsletter mail address
-export async function requestNewsletterSender(service: string, params: { groupNum: number }): Promise<string> {
-    return skapi.util.request(await getEndpointUrl('request-newsletter-sender'), Object.assign({ service, owner: skapi.user.user_id }, skapi.util.extractFormData(params).data || {}), { auth: true });
-}
+export let dateFormat = (timestamp: number) => {
+    let currentDate = new Date(timestamp);
+    let year = currentDate.getFullYear();
+    let month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+    let day = ('0' + currentDate.getDate()).slice(-2);
+    let dateStr = `${year}-${month}-${day}`;
 
-export async function deleteNewsletter(
-    service: string,
-    params: {
-        message_id: string;
-        group: number;
-    }
-) {
-    return skapi.util.request(await getEndpointUrl('delete-newsletter'), Object.assign({ service, owner: skapi.user.user_id }, skapi.util.extractFormData(params).data || {}), { auth: true });
+    return dateStr;
 }
-

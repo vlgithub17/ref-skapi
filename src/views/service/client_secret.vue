@@ -44,7 +44,7 @@ hr
     br
     br
 template(v-else)
-    p Register your client secret keys here.
+    p Register your client secret by clicking '#[b Add Key]' below.
 
     .iconClick(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}")
         .material-symbols-outlined.fill add_circle
@@ -96,6 +96,8 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                             .material-symbols-outlined.fill.clickable.icon.hide(@click="editKey(key)") edit
                             .material-symbols-outlined.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
 
+br
+
 Modal(:open="deleteClientKey")
     h4(style='margin:.5em 0 0;') Delete Client Secret
     hr
@@ -113,10 +115,6 @@ Modal(:open="deleteClientKey")
             button.noLine.warning(@click="deleteClientKey = false") Cancel
             button.final.warning(@click="delCliKey") Delete
 
-br
-br
-br
-br
 </template>
 <script setup>
 import Table from '@/components/table.vue';
