@@ -208,21 +208,21 @@ let renderCalender = async(thisMonth) => {
     let nextDate = endDay.getDate();    // 이번달 마지막 날짜
     let nextDay = endDay.getDay();      // 이번달 마지막 요일
 
-    // console.log(nextDate, nextDay)
+    console.log(thisMonth, currentMonth.value, prevDate, prevDay, nextDate, nextDay)
 
     for (let i = prevDate - prevDay + 1; i <= prevDate; i++) {
-        let prevTimestamp = new Date(currentMonth.value == 1 ? currentYear.value - 1 : currentYear.value, currentMonth.value - 2, i);
-        dates.value.push({ day: i, classes: 'date prev disable', time: prevTimestamp.getTime() });
+        let prevTimestamp = new Date(currentMonth.value == 1 ? currentYear.value - 1 : currentYear.value, currentMonth.value == 0 ? 11 : currentMonth.value - 1, i);
+        dates.value.push({ day: i, classes: 'date prev disabled', time: prevTimestamp.getTime() });
     }
 
     for (let i = 1; i <= nextDate; i++) {
-        let currentTimestamp = new Date(currentYear.value, currentMonth.value - 1, i);
+        let currentTimestamp = new Date(currentYear.value, currentMonth.value, i);
         dates.value.push({ day: i, classes: 'date current', time: currentTimestamp.getTime() });
     }
 
     for (let i = 1; i <= (7 - nextDay == 7 ? 0 : 7 - nextDay); i++) {
-        let nextTimestamp = new Date(currentMonth.value == 12 ? currentYear.value + 1 : currentYear.value, currentMonth.value, i);
-        dates.value.push({ day: i, classes: 'date next disable', time: nextTimestamp.getTime() });
+        let nextTimestamp = new Date(currentMonth.value == 12 ? currentYear.value + 1 : currentYear.value, currentMonth.value == 11 ? 0 : currentMonth.value + 1, i);
+        dates.value.push({ day: i, classes: 'date next disabled', time: nextTimestamp.getTime() });
     }
 }
 renderCalender(thisMonth);
@@ -255,6 +255,8 @@ let periodDateSetting = () => {
                 getDateClass[i].classList.add('period');
             }
         }
+    } else {
+        return
     }
 }
 
@@ -282,6 +284,11 @@ let prevTime = async() => {
     }
     await renderCalender(thisMonth);
     periodDateSetting();
+    if(selectedInput == 'start') {
+        document.getElementById('start').focus();
+    } else if(selectedInput == 'end') {
+        document.getElementById('end').focus();
+    }
 }
 
 let nextTime = async() => {
@@ -292,6 +299,11 @@ let nextTime = async() => {
     }
     await renderCalender(thisMonth);
     periodDateSetting();
+    if(selectedInput == 'start') {
+        document.getElementById('start').focus();
+    } else if(selectedInput == 'end') {
+        document.getElementById('end').focus();
+    }
 }
 
 let goSelectedDate = async(y, m) => {
@@ -306,6 +318,10 @@ let goSelectedDate = async(y, m) => {
 }
 
 let createdDate = (e, date) => {
+    // if(e.currentTarget.classList.contains('disabled')) {
+    //     return
+    // }
+
     let getDateClass = document.querySelectorAll('.date');
     let selectedYear = currentYear.value;
     let selectedMonth = currentMonth.value + 1;
@@ -345,7 +361,7 @@ let createdDate = (e, date) => {
         emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
 
         nextTick(() => {
-            checkCalendar('end')
+            // checkCalendar('end')
             document.getElementById('end').focus();
             onMouseUp();
         })
@@ -358,6 +374,12 @@ let createdDate = (e, date) => {
         }
         checkDateRange(e, date);
         emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
+
+        // nextTick(() => {
+        //     // checkCalendar('start')
+        //     document.getElementById('start').focus();
+        //     onMouseUp();
+        // })
     }
 }
 </script>
@@ -493,7 +515,7 @@ let createdDate = (e, date) => {
 
                     &.prev,
                     &.next {
-                        color: rgba(0, 0, 0, 0.2);
+                        color: rgba(0, 0, 0, 0.5);
                     }
                 }
             }
