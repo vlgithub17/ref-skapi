@@ -160,8 +160,8 @@ let checkCalendar = (c) => {
     let getDateClass = document.querySelectorAll('.date');
     let s = startDate.value.split('-');
     let e = endDate.value.split('-');
-    console.log(dates.value)
-    console.log(s, e)
+    // console.log(dates.value)
+    // console.log(s, e)
 
     if(startDate.value && endDate.value) {
         if(s[0] !== e[0] || s[1] !== e[1]) {
@@ -208,7 +208,7 @@ let renderCalender = async(thisMonth) => {
     let nextDate = endDay.getDate();    // 이번달 마지막 날짜
     let nextDay = endDay.getDay();      // 이번달 마지막 요일
 
-    console.log(thisMonth, currentMonth.value, prevDate, prevDay, nextDate, nextDay)
+    // console.log(thisMonth, currentMonth.value, prevDate, prevDay, nextDate, nextDay)
 
     for (let i = prevDate - prevDay + 1; i <= prevDate; i++) {
         let prevTimestamp = new Date(currentMonth.value == 1 ? currentYear.value - 1 : currentYear.value, currentMonth.value == 0 ? 11 : currentMonth.value - 1, i);
@@ -238,25 +238,25 @@ onMounted(() => {
 
 let periodDateSetting = () => {    
     if(selectedStart.value && selectedEnd.value) {
-        let getDateClass = document.querySelectorAll('.date');
-        let s = startDate.value.split('-');
-        let e = endDate.value.split('-');
-
-        if(parseInt(s[1]) == currentMonth.value + 1 || parseInt(e[1]) == currentMonth.value + 1) {
-            for(let i = 0; i < getDateClass.length; i ++) {
-                if(selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
-                    nextTick(() => {
-                        getDateClass[i].classList.add('period');
-                    })
+        if(startDate.value && endDate.value) {
+            let getDateClass = document.querySelectorAll('.date');
+            let s = startDate.value.split('-');
+            let e = endDate.value.split('-');
+    
+            if(parseInt(s[1]) == currentMonth.value + 1 || parseInt(e[1]) == currentMonth.value + 1) {
+                for(let i = 0; i < getDateClass.length; i ++) {
+                    if(selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
+                        nextTick(() => {
+                            getDateClass[i].classList.add('period');
+                        })
+                    }
+                }
+            } else if(parseInt(s[1]) < currentMonth.value + 1 && currentMonth.value + 1 < parseInt(e[1])) {
+                for(let i = 0; i < getDateClass.length; i ++) {
+                    getDateClass[i].classList.add('period');
                 }
             }
-        } else if(parseInt(s[1]) < currentMonth.value + 1 && currentMonth.value + 1 < parseInt(e[1])) {
-            for(let i = 0; i < getDateClass.length; i ++) {
-                getDateClass[i].classList.add('period');
-            }
         }
-    } else {
-        return
     }
 }
 
@@ -307,7 +307,7 @@ let nextTime = async() => {
 }
 
 let goSelectedDate = async(y, m) => {
-    console.log(y,m)
+    // console.log(y,m)
     thisMonth = new Date(y, m - 1, 1);
     let getDateClass = document.querySelectorAll('.date');
     for(let i = 0; i < getDateClass.length; i ++) {
@@ -318,10 +318,6 @@ let goSelectedDate = async(y, m) => {
 }
 
 let createdDate = (e, date) => {
-    // if(e.currentTarget.classList.contains('disabled')) {
-    //     return
-    // }
-
     let getDateClass = document.querySelectorAll('.date');
     let selectedYear = currentYear.value;
     let selectedMonth = currentMonth.value + 1;

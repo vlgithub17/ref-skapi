@@ -360,7 +360,7 @@ Modal(:open="openDeleteUser")
 br
 br
 </template>
-<script setup>
+<script setup lang="ts">
 import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
@@ -494,7 +494,6 @@ let nextPage = () => {
 }
 
 let handledateClick = (startDate, endDate, startTimestamp, endTimestamp) => {
-    console.log(startDate, endDate, startTimestamp, endTimestamp)
     if (startDate == '' && endDate == '') {
         searchText.value = ''
     } else {
@@ -734,20 +733,5 @@ watch(openInviteUser, nv => {
 .iconClick.arrow {
     padding:0;
     font-size: 0.8rem;
-}
-.clickInput {
-    width: 100%;
-
-    input {
-        cursor: pointer;
-        outline: 1px solid rgba(0, 0, 0, 0.5);
-    
-        &.focus {
-            outline: 2px solid var(--main-color) !important;
-        }
-        &:focus {
-            outline: 1px solid rgba(0, 0, 0, 0.5);
-        }
-    }
 }
 </style>

@@ -212,6 +212,22 @@
     }
 }
 
+.clickInput {
+    width: 100%;
+
+    input {
+        cursor: pointer;
+        outline: 1px solid rgba(0, 0, 0, 0.5);
+    
+        &.focus {
+            outline: 2px solid var(--main-color) !important;
+        }
+        &:focus {
+            outline: 1px solid rgba(0, 0, 0, 0.5);
+        }
+    }
+}
+
 .moreVert {
     position: absolute;
     left: var(--moreVert-left);
