@@ -127,7 +127,6 @@ watch(currentPage, (n) => {
 });
 let prevDateInfo = {};
 let handledateClick = (startDate, endDate, startTimestamp, endTimestamp) => {
-    console.log(startDate, endDate, startTimestamp, endTimestamp)
     if (startDate == '' && endDate == '') {
         searchText.value = ''
     } else {
