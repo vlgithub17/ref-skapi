@@ -141,7 +141,7 @@ export default class Service {
         50: 'Unlimited',
         51: 'Free Standard'
     };
-    subscription?: SubscriptionObj = reactive({});
+    subscription?: SubscriptionObj | {} = reactive({});
     storageInfo: {
         cloud: number,
         database: number,
@@ -157,6 +157,7 @@ export default class Service {
     subscriptionFetched = ref(false);
     _orgPlan = '';
     _subsPromise;
+    newsletterSender: Promise<string>[] = [];
     constructor(id: string, service: ServiceObj, endpoints: string[]) {
         this.id = id;
         this.admin_private_endpoint = endpoints[0];
@@ -169,6 +170,30 @@ export default class Service {
         this.plan = this.planCode[this.service.group];
         this._subsPromise = this.getSubscription();
         this.getStorageInfo();
+        if (service.group > 1) {
+            this.requestNewsletterSender({ group_numb: 0 });
+            this.requestNewsletterSender({ group_numb: 1 });
+        }
+    }
+
+    // get newsletter mail address
+    async requestNewsletterSender(params: { group_numb: number }): Promise<string> {
+        if (this.newsletterSender[params.group_numb]) {
+            return await this.newsletterSender[params.group_numb];
+        }
+
+        let sndr = skapi.util.request(this.admin_private_endpoint + 'request-newsletter-sender', Object.assign({ service: this.id, owner: this.owner }, skapi.util.extractFormData(params).data || {}), { auth: true });
+        this.newsletterSender[params.group_numb] = sndr;
+        return await sndr;
+    }
+
+    async deleteNewsletter(
+        params: {
+            message_id: string;
+            group: number;
+        }
+    ) {
+        return skapi.util.request(this.admin_private_endpoint + 'delete-newsletter', Object.assign({ service: this.id, owner: this.owner }, skapi.util.extractFormData(params).data || {}), { auth: true });
     }
 
     setPlan = (subscription: SubscriptionObj) => {
@@ -181,20 +206,21 @@ export default class Service {
         }
         this.subscriptionFetched.value = true;
     }
-    async blockAccount(   
+
+    async blockAccount(
         userId: string
     ): Promise<'SUCCESS'> {
-        await skapi.util.request(this.admin_private_endpoint + 'block-account', { owner: this.owner, service: this.id , block: userId }, { auth: true });
+        await skapi.util.request(this.admin_private_endpoint + 'block-account', { owner: this.owner, service: this.id, block: userId }, { auth: true });
         return 'SUCCESS';
     }
-    
+
     async unblockAccount(
         userId: string
     ): Promise<'SUCCESS'> {
         await skapi.util.request(this.admin_private_endpoint + 'block-account', { owner: this.owner, service: this.id, unblock: userId }, { auth: true });
         return 'SUCCESS';
     }
-    
+
     async deleteAccount(
         userId: string
     ): Promise<'SUCCESS'> {

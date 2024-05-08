@@ -85,16 +85,20 @@
         div(v-if='user.user_id')
             h2 Ready to build your next big thing?
             p
-                | You are already signed in. Go to&nbsp;
-                router-link(to='my-services' style='color:yellow') My Services
+                | You are already signed in.
+                span.wordset
+                    | Go to&nbsp;
+                    router-link(to='my-services' style='color:yellow') My Services
                 | &nbsp;and start building!
             router-link(to="my-services")
                 button.final(style='background-color:white;color:black;width:146px') My Services
         div(v-else)
             h2 Ready to build your next big thing?
-            p
-                router-link(to='signup' style='color:yellow') Sign-up
-                | &nbsp;for free and start building!
+            p   
+                span.wordset
+                    router-link(to='signup' style='color:yellow') Sign-up
+                    | &nbsp;for free
+                | &nbsp;and start building!
             router-link(to="signup")
                 button.final(style='background-color:white;color:black;width:146px') Sign-Up
         br

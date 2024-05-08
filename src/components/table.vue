@@ -170,7 +170,7 @@ let setResize = async () => {
         text-align: left;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
-
+        
         tr {
             height: 60px;
         }
@@ -182,6 +182,8 @@ let setResize = async () => {
             padding: 0 20px;
             white-space: nowrap;
             user-select: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
 
             &.center {
                 text-align: center;
@@ -222,7 +224,7 @@ let setResize = async () => {
     tbody {
         overflow-y: auto;
         background-color: #fff;
-
+        
         tr {
             height: 60px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);

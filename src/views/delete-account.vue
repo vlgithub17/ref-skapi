@@ -72,7 +72,7 @@ let processDelete = async () => {
         await skapi.disableAccount();
         router.push('/bye')
     }
-    catch (err) {
+    catch (err: any) {
         promiseRunning.value = false;
         alert(err.message);
     }

@@ -6,8 +6,46 @@ import Service from "./service";
 export let user: { [key: string]: any } = reactive({});
 export let loginState = computed(() => !!user?.user_id);
 
-export let customer = null;
+export let customer: Promise<Customer> = null;
 export let emailSubscribed = ref(null);
+type Customer = {
+    "id": string,
+    "object": "customer",
+    "address": {
+        "city": string,
+        "country": string,
+        "line1": string,
+        "line2": string,
+        "postal_code": string,
+        "state": string
+    },
+    "balance": number,
+    "created": number,
+    "currency": string,
+    "default_source": any,
+    "delinquent": boolean,
+    "description": any,
+    "discount": any,
+    "email": string,
+    "invoice_prefix": string,
+    "invoice_settings": {
+        "custom_fields": any,
+        "default_payment_method": any,
+        "footer": any,
+        "rendering_options": any
+    },
+    "livemode": boolean,
+    "metadata": {
+        [key: string]: any
+    },
+    "name": string,
+    "next_invoice_sequence": number,
+    "phone": any,
+    "preferred_locales": any[],
+    "shipping": any,
+    "tax_exempt": string,
+    "test_clock": any
+}
 
 watch(() => user?.user_id, (u, ou) => {
     while (serviceIdList.length > 0) {
