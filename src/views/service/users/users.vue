@@ -69,10 +69,6 @@ form#searchForm(@submit.prevent="searchUsers")
                 .more(value="locale" @click="searchFor = 'locale';searchText = '';") Locale
                 .more(value="birthdate" @click="searchFor = 'birthdate';searchText = '';") Birth Date
     .search
-        //- .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="(e)=>{showDropDown(e)}")
-        //-     input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
-        //-     .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
-        //-     Calendar(@dateClicked="handledateClick" alwaysEmit='true' style="--moreVert-left:0;display:none")
         .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="showCalendar = !showCalendar;")
             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
             .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
@@ -467,13 +463,13 @@ let refresh = async(update) => {
     });
 }
 
-if (!serviceUsers?.[currentService.id]) {
-    refresh();
-}
-else {
-    userPage = serviceUsers[currentService.id];
-    getPage(currentPage.value);
-}
+// if (!serviceUsers?.[currentService.id]) {
+//     refresh();
+// }
+// else {
+//     userPage = serviceUsers[currentService.id];
+//     getPage(currentPage.value);
+// }
 
 let nextPage = () => {
     if (currentPage.value === maxPage.value && !userPage.endOfList) {
