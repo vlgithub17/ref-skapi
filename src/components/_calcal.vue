@@ -1,5 +1,5 @@
 <template lang="pug">
-#calendar(@click.stop)
+#calendar(:class="{'show' : props.showCalendar}" @click.stop)
     .timeWrap
         .timeNav 
             input#here(type="date" hidden)
@@ -21,16 +21,16 @@
             .dates  
                 div(v-for="date in dates" :data-time='date.time' :class="[date.classes, {'start' : (selectedStart == date.time), 'end' : (selectedEnd == date.time)}]" @click="(e) => createdDate(e, date)") {{ date.day }}
     .timeSettingWrap
-        input.big#start(type="text" placeholder="Start" readonly v-model="startDate" @click="checkCalendar('start')")
+        input.big#start(type="text" placeholder="Start" readonly v-model="startDate" @focus="onFocus" @keydown.stop="onKeyDown" @click="checkCalendar('start')")
         span ~
-        input.big#end(type="text" placeholder="End" readonly v-model="endDate" @click="checkCalendar('end')")
+        input.big#end(type="text" placeholder="End" readonly v-model="endDate" @focus="onFocus" @keydown.stop="onKeyDown" @click="checkCalendar('end')")
 </template>
 
 <script setup>
 import { onMounted, ref, onBeforeUnmount, nextTick, watch } from 'vue';
 
 let activeTime = ref(false);
-let selectedInput = ref('');
+let selectedInput = '';
 let startDate = ref('');
 let endDate = ref('');
 let monthObj = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -48,100 +48,110 @@ let dates = ref([]);
 let selectedStart = ref('');
 let selectedEnd = ref('');
 
-let emit = defineEmits(['dateClicked', 'close']);
-let props = defineProps(['alwaysEmit', 'searchText', 'prevDateInfo']); // 임시로 만들어놓은 
+let modelValue = ref('');
+let emit = defineEmits(['close', 'update:modelValue']);
+let props = defineProps(['showCalendar', 'modelValue']);
 
-watch(selectedInput, nv => {    
-    let getDateClass = document.querySelectorAll('.date');
-    for(let i = 0; i < getDateClass.length; i ++) { 
-        nextTick(() => {
-            getDateClass[i].classList.remove('here');
-        })
-    }
-
-    // 랜더링 후에 하는걸로 다시
-    if(nv == 'start' && selectedStart.value) {
-        let startClass = document.querySelector('.start');
-        nextTick(() => {
-            startClass.classList.add('here');
-        })
-    } else if(nv == 'end' && selectedEnd.value) {
-        let endClass = document.querySelector('.end');
-        nextTick(() => {
-            endClass.classList.add('here');
-        })
-    }
-})
-
-if(props.searchText && props.prevDateInfo) {
-    let searchDate = props.searchText.split(' ~ ');
-
-    nextTick(() => {
-        startDate.value = searchDate[0];
-        endDate.value = searchDate[1];
-        selectedStart.value = props.prevDateInfo.start;
-        selectedEnd.value = props.prevDateInfo.end;
-        periodDateSetting();
-        if(!startDate.value) {
+watch(() => props.showCalendar, nv => {
+    if (nv) {
+        if (startDate.value || (startDate.value && endDate.value)) {
+            let s = startDate.value.split('-');
+            goSelectedDate(s[0], s[1]);
+            nextTick(() => {
+                document.getElementById('start').focus();
+            })
+        } else if (endDate.value) {
             let e = endDate.value.split('-');
             goSelectedDate(e[0], e[1]);
-            document.getElementById('start').focus();
-        } else if(!endDate.value) {
-            let s = startDate.value.split('-');
-            goSelectedDate(s[0], s[1]);
-            document.getElementById('end').focus();
+            nextTick(() => {
+                document.getElementById('end').focus();
+            })
         } else {
-            let s = startDate.value.split('-');
-            goSelectedDate(s[0], s[1]);
-            document.getElementById('start').focus();
+            nextTick(() => {
+                document.getElementById('start').focus();
+            })
         }
-    })
-}
-
+    }
+})
 onMounted(() => {
     document.addEventListener('mouseup', closeCalendar);
-    document.getElementById("start").addEventListener('mouseup', onMouseUp);
-    document.getElementById("start").addEventListener('keydown', onKeyDown);
-    document.getElementById("end").addEventListener('mouseup', onMouseUp);
-    document.getElementById("end").addEventListener('keydown', onKeyDown);
-    document.getElementById('start').focus();
-    onMouseUp();
 })
 onBeforeUnmount(() => {
     document.removeEventListener('mouseup', closeCalendar);
-    document.getElementById("start").removeEventListener('mouseup', onMouseUp);
-    document.getElementById("start").removeEventListener('keydown', onKeyDown);
-    document.getElementById("end").removeEventListener('mouseup', onMouseUp);
-    document.getElementById("end").removeEventListener('keydown', onKeyDown);
 })
 
 let closeCalendar = (e) => {
     let localeSelector = document.querySelector('#calendar');
 
-    if(!localeSelector.contains(e.target)) {
+    if (!localeSelector.contains(e.target)) {
         emit('close');
     }
 }
 
-let onMouseUp = () => {
+let updateSearchText = () => {
+    if (startDate.value == '' && endDate.value == '') {
+        modelValue.value = ''
+    } else {
+        modelValue.value = (startDate.value || '') + ' ~ ' + (endDate.value || '');
+    }
+    emit('update:modelValue', modelValue.value);
+}
+
+let onFocus = (e) => {
     let activeInput = document.activeElement;
-    selectedInput.value = activeInput.id;
+    selectedInput = activeInput.id;
+
+    if (startDate.value || endDate.value) {
+        let s = startDate.value.split('-');
+        let e = endDate.value.split('-');
+
+        if(s[0] == currentYear.value && parseInt(s[1]) == (currentMonth.value + 1) || e[0] == currentYear.value && parseInt(e[1]) == (currentMonth.value + 1)) {
+            if (e.target.id == 'start' && startDate.value) {
+                let getDateClass = document.querySelectorAll('.date');
+                for (let i = 0; i < getDateClass.length; i++) {
+                    nextTick(() => {
+                        getDateClass[i].classList.remove('here');
+                    })
+                }
+    
+                let startClass = document.querySelector('.start');
+                nextTick(() => {
+                    startClass.classList.add('here');
+                })
+            } else if (e.target.id == 'end' && endDate.value) {
+                let getDateClass = document.querySelectorAll('.date');
+                for (let i = 0; i < getDateClass.length; i++) {
+                    nextTick(() => {
+                        getDateClass[i].classList.remove('here');
+                    })
+                }
+    
+                let endClass = document.querySelector('.end');
+                nextTick(() => {
+                    endClass.classList.add('here');
+                })
+            }
+        }
+
+    }
 }
 
 let onKeyDown = (e) => {
     let getDateClass = document.querySelectorAll('.date');
 
-    if(e.key == 'Backspace') {
-        if(selectedInput.value == 'start' && startDate.value) {
+    if (e.key == 'Backspace') {
+        if (selectedInput == 'start' && startDate.value) {
             startDate.value = '';
             selectedStart.value = '';
-            for(let i = 0; i < getDateClass.length; i ++) { 
+            for (let i = 0; i < getDateClass.length; i++) {
                 nextTick(() => {
                     getDateClass[i].classList.remove('period');
                 })
             }
-            emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
-            if(endDate.value) {
+
+            updateSearchText();
+
+            if (endDate.value) {
                 let e = endDate.value.split('-');
                 goSelectedDate(e[0], e[1]);
                 // document.getElementById('end').focus();
@@ -152,16 +162,18 @@ let onKeyDown = (e) => {
                 renderCalender(thisMonth);
             }
             document.getElementById('start').focus();
-        } else if(selectedInput.value == 'end' && endDate.value) {
+        } else if (selectedInput == 'end' && endDate.value) {
             endDate.value = '';
             selectedEnd.value = '';
-            for(let i = 0; i < getDateClass.length; i ++) { 
+            for (let i = 0; i < getDateClass.length; i++) {
                 nextTick(() => {
                     getDateClass[i].classList.remove('period');
                 })
             }
-            emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
-            if(startDate.value) {
+
+            updateSearchText();
+
+            if (startDate.value) {
                 let s = startDate.value.split('-');
                 goSelectedDate(s[0], s[1]);
                 // document.getElementById('start').focus();
@@ -185,15 +197,15 @@ let checkCalendar = (c) => {
     // console.log(dates.value)
     // console.log(s, e)
 
-    if(startDate.value && endDate.value) {
-        if(s[0] !== e[0] || s[1] !== e[1]) {
-            if(c == 'start') {
+    if (startDate.value && endDate.value) {
+        if (s[0] !== e[0] || s[1] !== e[1]) {
+            if (c == 'start') {
                 goSelectedDate(s[0], s[1]);
-            } else if(c == 'end') {
+            } else if (c == 'end') {
                 goSelectedDate(e[0], e[1]);
-            } else if(c == 'create') {
-                for(let i = 0; i < getDateClass.length; i ++) {
-                    if(selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
+            } else if (c == 'create') {
+                for (let i = 0; i < getDateClass.length; i++) {
+                    if (selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
                         nextTick(() => {
                             getDateClass[i].classList.add('period');
                         })
@@ -201,9 +213,9 @@ let checkCalendar = (c) => {
                 }
             }
         } else {
-            if(c == 'create') {
-                for(let i = 0; i < getDateClass.length; i ++) {
-                    if(selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
+            if (c == 'create') {
+                for (let i = 0; i < getDateClass.length; i++) {
+                    if (selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
                         nextTick(() => {
                             getDateClass[i].classList.add('period');
                         })
@@ -214,7 +226,7 @@ let checkCalendar = (c) => {
     }
 }
 
-let renderCalender = async(thisMonth) => {
+let renderCalender = async (thisMonth) => {
     let getDateClass = document.querySelectorAll('.date');
 
     dates.value.splice(0);
@@ -258,23 +270,23 @@ onMounted(() => {
     }
 })
 
-let periodDateSetting = () => {    
-    if(selectedStart.value && selectedEnd.value) {
-        if(startDate.value && endDate.value) {
+let periodDateSetting = () => {
+    if (selectedStart.value && selectedEnd.value) {
+        if (startDate.value && endDate.value) {
             let getDateClass = document.querySelectorAll('.date');
             let s = startDate.value.split('-');
             let e = endDate.value.split('-');
-    
-            if(parseInt(s[1]) == currentMonth.value + 1 || parseInt(e[1]) == currentMonth.value + 1) {
-                for(let i = 0; i < getDateClass.length; i ++) {
-                    if(selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
+
+            if (parseInt(s[1]) == currentMonth.value + 1 || parseInt(e[1]) == currentMonth.value + 1) {
+                for (let i = 0; i < getDateClass.length; i++) {
+                    if (selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
                         nextTick(() => {
                             getDateClass[i].classList.add('period');
                         })
                     }
                 }
-            } else if(parseInt(s[1]) < currentMonth.value + 1 && currentMonth.value + 1 < parseInt(e[1])) {
-                for(let i = 0; i < getDateClass.length; i ++) {
+            } else if (parseInt(s[1]) < currentMonth.value + 1 && currentMonth.value + 1 < parseInt(e[1])) {
+                for (let i = 0; i < getDateClass.length; i++) {
                     getDateClass[i].classList.add('period');
                 }
             }
@@ -282,107 +294,123 @@ let periodDateSetting = () => {
     }
 }
 
-let updateCalendar = async(e, what) => {
-    if(what == 'year') {
+let updateCalendar = async (e, what) => {
+    if (what == 'year') {
         currentYear.value = e.target.value;
-    } else if(what == 'month') {
+    } else if (what == 'month') {
         currentMonth.value = e.target.value;
     }
 
     thisMonth = new Date(currentYear.value, currentMonth.value, 1);
     let getDateClass = document.querySelectorAll('.date');
-    for(let i = 0; i < getDateClass.length; i ++) {
+    for (let i = 0; i < getDateClass.length; i++) {
         getDateClass[i].classList.remove('period');
     }
     await renderCalender(thisMonth);
     periodDateSetting();
 }
 
-let prevTime = async() => {
+let prevTime = async () => {
     thisMonth = new Date(currentYear.value, currentMonth.value - 1, 1);
     let getDateClass = document.querySelectorAll('.date');
-    for(let i = 0; i < getDateClass.length; i ++) {
+    for (let i = 0; i < getDateClass.length; i++) {
         getDateClass[i].classList.remove('period');
     }
     await renderCalender(thisMonth);
     periodDateSetting();
-    if(selectedInput.value == 'start') {
+    if (selectedInput == 'start') {
         document.getElementById('start').focus();
-    } else if(selectedInput.value == 'end') {
+    } else if (selectedInput == 'end') {
         document.getElementById('end').focus();
     }
 }
 
-let nextTime = async() => {
+let nextTime = async () => {
     thisMonth = new Date(currentYear.value, currentMonth.value + 1, 1);
     let getDateClass = document.querySelectorAll('.date');
-    for(let i = 0; i < getDateClass.length; i ++) {
+    for (let i = 0; i < getDateClass.length; i++) {
         getDateClass[i].classList.remove('period');
     }
     await renderCalender(thisMonth);
     periodDateSetting();
-    if(selectedInput.value == 'start') {
+    if (selectedInput == 'start') {
         document.getElementById('start').focus();
-    } else if(selectedInput.value == 'end') {
+    } else if (selectedInput == 'end') {
         document.getElementById('end').focus();
     }
 }
 
-let goSelectedDate = async(y, m) => {
+let goSelectedDate = async (y, m) => {
     // console.log(y,m)
     thisMonth = new Date(y, m - 1, 1);
     let getDateClass = document.querySelectorAll('.date');
-    for(let i = 0; i < getDateClass.length; i ++) {
+    for (let i = 0; i < getDateClass.length; i++) {
         getDateClass[i].classList.remove('period');
+        getDateClass[i].classList.remove('here');
     }
     await renderCalender(thisMonth);
     periodDateSetting();
+    if (selectedInput == 'start' && selectedStart.value) {
+        let startClass = document.querySelector('.start');
+        nextTick(() => {
+            startClass.classList.add('here');
+        })
+    } else if (selectedInput == 'end' && selectedEnd.value) {
+        let endClass = document.querySelector('.end');
+        nextTick(() => {
+            endClass.classList.add('here');
+        })
+    }
 }
 
 let createdDate = (e, date) => {
     let getDateClass = document.querySelectorAll('.date');
 
-    if(selectedStart.value && (selectedStart.value === date.time)) {
+    if (selectedStart.value && (selectedStart.value === date.time)) {
         startDate.value = '';
         selectedStart.value = '';
-        for(let i = 0; i < getDateClass.length; i ++) { 
+        for (let i = 0; i < getDateClass.length; i++) {
             nextTick(() => {
                 getDateClass[i].classList.remove('period');
             })
         }
-        emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
-        if(endDate.value) {
+
+        updateSearchText();
+
+        if (endDate.value) {
             let e = endDate.value.split('-');
             goSelectedDate(e[0], e[1]);
         } else {
             thisMonth = new Date(currentYear.value, currentMonth.value, 1);
             renderCalender(thisMonth);
         }
-        nextTick(()=> {
+        nextTick(() => {
             document.getElementById('start').focus();
-            onMouseUp();
+            // onMouseUp();
         })
 
         return false
-    } else if(selectedEnd.value && (selectedEnd.value === date.time)) {
+    } else if (selectedEnd.value && (selectedEnd.value === date.time)) {
         endDate.value = '';
         selectedEnd.value = '';
-        for(let i = 0; i < getDateClass.length; i ++) { 
+        for (let i = 0; i < getDateClass.length; i++) {
             nextTick(() => {
                 getDateClass[i].classList.remove('period');
             })
         }
-        emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
-        if(startDate.value) {
+
+        updateSearchText();
+
+        if (startDate.value) {
             let s = startDate.value.split('-');
             goSelectedDate(s[0], s[1]);
         } else {
             thisMonth = new Date(currentYear.value, currentMonth.value, 1);
             renderCalender(thisMonth);
         }
-        nextTick(()=> {
+        nextTick(() => {
             document.getElementById('end').focus();
-            onMouseUp();
+            // onMouseUp();
         })
 
         return false
@@ -392,13 +420,13 @@ let createdDate = (e, date) => {
     let selectedMonth = currentMonth.value + 1;
     let selectedDay = date.day;
     let formattedDate = `${selectedYear}-${selectedMonth < 10 ? `0${selectedMonth}` : selectedMonth}-${selectedDay < 10 ? `0${selectedDay}` : selectedDay}`;
-    
+
     let checkDateRange = (e, date) => {
         if (startDate.value && endDate.value) {
-            if(endDate.value < startDate.value) {
+            if (endDate.value < startDate.value) {
                 startDate.value = endDate.value;
                 selectedStart.value = date.time;
-                for(let i = 0; i < getDateClass.length; i ++ ) {
+                for (let i = 0; i < getDateClass.length; i++) {
                     getDateClass[i].classList.remove('start');
                     getDateClass[i].classList.remove('period');
                     getDateClass[i].classList.remove('end');
@@ -407,7 +435,7 @@ let createdDate = (e, date) => {
 
                 nextTick(() => {
                     document.getElementById('end').focus();
-                    onMouseUp();
+                    // onMouseUp();
                 })
             } else {
                 checkCalendar('create');
@@ -415,35 +443,37 @@ let createdDate = (e, date) => {
         }
     }
 
-    if(selectedInput.value == 'start') {
+    if (selectedInput == 'start') {
         startDate.value = formattedDate;
         selectedStart.value = date.time;
-        for(let i = 0; i < getDateClass.length; i ++ ) {
+        for (let i = 0; i < getDateClass.length; i++) {
             getDateClass[i].classList.remove('start');
             getDateClass[i].classList.remove('period');
         }
+
         checkDateRange(e, date);
-        emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
+        updateSearchText();
 
         nextTick(() => {
             // checkCalendar('end')
             document.getElementById('end').focus();
-            onMouseUp();
+            // onMouseUp();
         })
-    } else if(selectedInput.value == 'end') {
+    } else if (selectedInput == 'end') {
         endDate.value = formattedDate;
         selectedEnd.value = date.time;
-        for(let i = 0; i < getDateClass.length; i ++ ) {
+        for (let i = 0; i < getDateClass.length; i++) {
             getDateClass[i].classList.remove('end');
             getDateClass[i].classList.remove('period');
         }
+
         checkDateRange(e, date);
-        emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
+        updateSearchText();
 
         nextTick(() => {
             // checkCalendar('start')
             document.getElementById('end').focus();
-            onMouseUp();
+            // onMouseUp();
         })
     }
 }
@@ -456,11 +486,11 @@ let createdDate = (e, date) => {
     border: 1px solid rgba(0, 0, 0, 0.15);
     background: #FAFAFA;
     box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);
-    // opacity: 0;
+    display: none;
 
-    // &.show {
-    //     opacity: 1;
-    // }
+    &.show {
+        display: block;
+    }
 
     .infiniteScroll {
         position: relative;
@@ -508,9 +538,11 @@ let createdDate = (e, date) => {
             select {
                 flex-grow: 1;
 
-                -webkit-appearance:none; /* 크롬 */
-                -moz-appearance:none; /* 파이어폭스 */
-                appearance:none 
+                -webkit-appearance: none;
+                /* 크롬 */
+                -moz-appearance: none;
+                /* 파이어폭스 */
+                appearance: none
             }
 
             .month {
@@ -568,16 +600,19 @@ let createdDate = (e, date) => {
 
                     &.here {
                         &::before {
-                            background-color: rgba(41, 63, 230, 0.1);
+                            border: 1.8px solid var(--main-color) !important;
+                            background-color: rgba(41, 63, 230, 0.2);
                         }
                     }
 
-                    &.start, &.end {
+                    &.start,
+                    &.end {
                         &::before {
                             opacity: 1;
                             border: 1px solid var(--main-color);
                         }
                     }
+
                     &.period {
                         &::before {
                             opacity: 0.5;
