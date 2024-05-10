@@ -41,8 +41,3 @@ export let setService = (id: string) => {
 //         })
 //     })
 // }
-
-// newsletter list to keep
-type ServiceNewsletters = Pager[] // index is the group number
-
-export let serviceNewsletters: ServiceNewsletters = [];

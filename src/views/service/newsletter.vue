@@ -6,29 +6,29 @@ hr
 p.
     You can send newsletters to your users by sending your email to the endpoint provided.
 
-form#searchForm(@submit.prevent="init(true)")
-    .customSelect(@click.stop="(e)=>{showDropDown(e)}")
-        button(type='button')
-            span {{ searchFor == 'timestamp' ? 'Sent' : searchFor }}
-            span.material-symbols-outlined arrow_drop_down
-        .moreVert(style="--moreVert-left:0;display:none")
-            .inner(style="padding:0.8rem;padding-right:1rem")
-                .more(value="Subject" @click="searchFor = 'subject';searchText = '';") Subject
-                .more(value="timestamp" @click="searchFor = 'timestamp';searchText = '';") Sent
+//- form#searchForm(@submit.prevent="init(true)")
+//-     .customSelect(@click.stop="(e)=>{showDropDown(e)}")
+//-         button(type='button')
+//-             span {{ searchFor == 'timestamp' ? 'Sent' : searchFor }}
+//-             span.material-symbols-outlined arrow_drop_down
+//-         .moreVert(style="--moreVert-left:0;display:none")
+//-             .inner(style="padding:0.8rem;padding-right:1rem")
+//-                 .more(value="Subject" @click="searchFor = 'subject';searchText = '';") Subject
+//-                 .more(value="timestamp" @click="searchFor = 'timestamp';searchText = '';") Sent
 
-    .search
-        .clickInput(v-if="searchFor === 'timestamp'" @click.stop="showCalendar = !showCalendar;")
-            input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
-            .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp')") calendar_today
-            Calendar(v-if="showCalendar" @dateClicked="handledateClick" @close="showCalendar=false" :searchText="searchText" :prevDateInfo="prevDateInfo" alwaysEmit='true')
+//-     .search
+//-         .clickInput(v-if="searchFor === 'timestamp'" @click.stop="showCalendar = !showCalendar;")
+//-             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
+//-             .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp')") calendar_today
+//-             Calendar(v-if="showCalendar" @dateClicked="handledateClick" @close="showCalendar=false" :searchText="searchText" :prevDateInfo="prevDateInfo" alwaysEmit='true')
 
-        input.big#searchInput(v-else-if="searchFor === 'subject'" type="text" placeholder="Email subject" v-model="searchText")
+//-         input.big#searchInput(v-else-if="searchFor === 'subject'" type="text" placeholder="Email subject" v-model="searchText")
 
-        button.final(type="submit" style='flex-shrink: 0;') Search
+//-         button.final(type="submit" style='flex-shrink: 0;') Search
 
 .tableMenu
     div(style='flex-grow: 1;text-align:right')
-        .iconClick.square(@click="init(true)" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+        .iconClick.square(@click="init" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh
 
@@ -84,21 +84,39 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import type { Ref } from 'vue';
-import Calendar from '@/components/_calcal.vue';
-import { showDropDown } from '@/assets/js/event.js'
 import { currentService } from './main';
 import { user } from '@/code/user';
 import Table from '@/components/table.vue';
 import { skapi } from '@/code/admin';
 import { dateFormat } from '@/code/admin';
 import Pager from '@/code/pager';
-import { serviceNewsletters } from '@/views/service/main';
 
-let service = currentService.service;
-let showCalendar = ref(false);
-let currentTimestamp = new Date().getTime();
+let pager: Pager = null;
+
+// default form input values
+
+let searchFor: Ref<"timestamp" | "message_id" | "read" | "complaint" | "subject"> = ref('timestamp');
+let searchValue: Ref<string | number> = ref(new Date().getTime());
+let group: Ref<0 | 1> = ref(0);
+
+// computed params
+let callParams = computed(() => {
+    return {
+        params: {
+            service: currentService.service.service,
+            owner: currentService.service.owner,
+            searchFor: searchFor.value,
+            value: searchValue.value,
+            condition: searchFor.value === 'subject' ? '>=' : '<=',
+            group: group.value,
+        },
+        options: {
+            ascending: searchFor.value === 'subject',
+        }
+    }
+});
 
 type Newsletter = {
     bounced: number;
@@ -110,87 +128,95 @@ type Newsletter = {
     url: string;
 }
 
-let newsletterPager: Pager = null;
-let newsletterSender: string[] = reactive([]);
-let newsletterDisplay: Ref<Newsletter[]> = ref(null);
+// ui/ux related
+let newsletterEndpoint: string;
 let fetching = ref(false);
-let maxPage = 0;
+let maxPage = ref(0);
 let currentPage = ref(1);
-let searchFor = ref('timestamp');
-let group = ref(0);
-let searchText = ref('');
 
+// newsletter renderer
+let newsletterDisplay: Ref<Newsletter[]> = ref(null);
+
+
+
+
+// call getPage when currentPage changes
 watch(currentPage, (n) => {
     if (!fetching.value) {
         getPage();
     }
 });
-let prevDateInfo = {};
-let handledateClick = (startDate, endDate, startTimestamp, endTimestamp) => {
-    if (startDate == '' && endDate == '') {
-        searchText.value = ''
-    } else {
-        searchText.value = (startDate || '') + ' ~ ' + (endDate || '');
-        prevDateInfo.start = startTimestamp;
-        prevDateInfo.end = endTimestamp;
+
+// initialize the pager when searchFor changes
+watch(searchFor, (n) => {
+    if (!fetching.value) {
+        init();
     }
-}
+});
 
 let getPage = async (refresh?: boolean) => {
-    let page = currentPage.value;
+    if (!pager) {
+        // if pager is not ready return
+        return;
+    }
 
-    if (maxPage > page) {
-        let ns = newsletterPager.getPage(page);
-        maxPage = ns.maxPage;
+    if (!refresh && maxPage.value >= currentPage.value) {
+        // if has page
+        let ns = pager.getPage(currentPage.value);
+        maxPage.value = ns.maxPage;
         return ns.list;
     }
 
-    else if (!newsletterPager.endOfList) {
+    else if (!pager.endOfList || refresh) {
+        // if page data needs to be fetched
+
         fetching.value = true;
 
-        // initial fetch
-        let nsl = await skapi.getNewsletters({
-            service: service.service,
-            owner: service.owner,
-            searchFor: searchFor.value,
-            value: currentTimestamp,
-            condition: searchFor.value === 'subject' ? '>=' : '<=',
-            group: group.value ? 'authorized' : 'public',
-        }, { fetchMore: !refresh, ascending: searchFor.value === 'subject' });
+        // fetch from server
+        let fetchedNewsletters = await skapi.getNewsletters(callParams.value.params, Object.assign({ fetchMore: !refresh }, callParams.value.options));
 
-        newsletterPager.endOfList = nsl.endOfList;
-        if (nsl.list.length > 0) {
-            await newsletterPager.insertItems(nsl.list);
+        // save endOfList status
+        pager.endOfList = fetchedNewsletters.endOfList;
+
+        // insert data in pager
+        if (fetchedNewsletters.list.length > 0) {
+            await pager.insertItems(fetchedNewsletters.list);
         }
-        let disp = newsletterPager.getPage(page);
-        maxPage = disp.maxPage;
+
+        // get page from pager
+        let disp = pager.getPage(currentPage.value);
+
+        // set maxpage
+        maxPage.value = disp.maxPage;
+
+        // render data
         newsletterDisplay.value = disp.list as Newsletter[];
         fetching.value = false;
     }
 }
 
-let init = async (refresh: boolean) => {
-    let currentPage = ref(1);
+let init = async () => {
+    currentPage.value = 1;
+
     // setup pagers
-    if (!refresh && serviceNewsletters[group.value]) {
-        newsletterPager = serviceNewsletters[group.value];
-    }
-    else {
-        serviceNewsletters[group.value] = await Pager.init({
-            id: 'message_id',
-            resultsPerPage: 10,
-            sortBy: searchFor.value,
-            order: searchFor.value === 'subject' ? 'asc' : 'desc',
-        });
-        newsletterPager = serviceNewsletters[group.value];
-        currentService.requestNewsletterSender({ group_numb: group.value }).then(r => {
-            newsletterSender[group.value] = r;
-        });
-    }
+    pager = await Pager.init({
+        id: 'message_id',
+        resultsPerPage: 10,
+        sortBy: searchFor.value,
+        order: searchFor.value === 'subject' ? 'asc' : 'desc',
+    });
+
+    currentService.requestNewsletterSender({ group_numb: group.value }).then(r => {
+        newsletterEndpoint = r;
+    });
+
     getPage(true);
 }
 
 init();
+
+
+// utility functions below
 
 let converter = (text: string, parsed: boolean) => {
     if (!parsed) {
