@@ -27,10 +27,10 @@
 </template>
 
 <script setup>
-import { onMounted, ref, onBeforeUnmount, nextTick } from 'vue';
+import { onMounted, ref, onBeforeUnmount, nextTick, watch } from 'vue';
 
 let activeTime = ref(false);
-let selectedInput = '';
+let selectedInput = ref('');
 let startDate = ref('');
 let endDate = ref('');
 let monthObj = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -50,6 +50,28 @@ let selectedEnd = ref('');
 
 let emit = defineEmits(['dateClicked', 'close']);
 let props = defineProps(['alwaysEmit', 'searchText', 'prevDateInfo']); // 임시로 만들어놓은 
+
+watch(selectedInput, nv => {    
+    let getDateClass = document.querySelectorAll('.date');
+    for(let i = 0; i < getDateClass.length; i ++) { 
+        nextTick(() => {
+            getDateClass[i].classList.remove('here');
+        })
+    }
+
+    // 랜더링 후에 하는걸로 다시
+    if(nv == 'start' && selectedStart.value) {
+        let startClass = document.querySelector('.start');
+        nextTick(() => {
+            startClass.classList.add('here');
+        })
+    } else if(nv == 'end' && selectedEnd.value) {
+        let endClass = document.querySelector('.end');
+        nextTick(() => {
+            endClass.classList.add('here');
+        })
+    }
+})
 
 if(props.searchText && props.prevDateInfo) {
     let searchDate = props.searchText.split(' ~ ');
@@ -103,14 +125,14 @@ let closeCalendar = (e) => {
 
 let onMouseUp = () => {
     let activeInput = document.activeElement;
-    selectedInput = activeInput.id;
+    selectedInput.value = activeInput.id;
 }
 
 let onKeyDown = (e) => {
     let getDateClass = document.querySelectorAll('.date');
 
     if(e.key == 'Backspace') {
-        if(selectedInput == 'start' && startDate.value) {
+        if(selectedInput.value == 'start' && startDate.value) {
             startDate.value = '';
             selectedStart.value = '';
             for(let i = 0; i < getDateClass.length; i ++) { 
@@ -130,7 +152,7 @@ let onKeyDown = (e) => {
                 renderCalender(thisMonth);
             }
             document.getElementById('start').focus();
-        } else if(selectedInput == 'end' && endDate.value) {
+        } else if(selectedInput.value == 'end' && endDate.value) {
             endDate.value = '';
             selectedEnd.value = '';
             for(let i = 0; i < getDateClass.length; i ++) { 
@@ -284,9 +306,9 @@ let prevTime = async() => {
     }
     await renderCalender(thisMonth);
     periodDateSetting();
-    if(selectedInput == 'start') {
+    if(selectedInput.value == 'start') {
         document.getElementById('start').focus();
-    } else if(selectedInput == 'end') {
+    } else if(selectedInput.value == 'end') {
         document.getElementById('end').focus();
     }
 }
@@ -299,9 +321,9 @@ let nextTime = async() => {
     }
     await renderCalender(thisMonth);
     periodDateSetting();
-    if(selectedInput == 'start') {
+    if(selectedInput.value == 'start') {
         document.getElementById('start').focus();
-    } else if(selectedInput == 'end') {
+    } else if(selectedInput.value == 'end') {
         document.getElementById('end').focus();
     }
 }
@@ -319,6 +341,53 @@ let goSelectedDate = async(y, m) => {
 
 let createdDate = (e, date) => {
     let getDateClass = document.querySelectorAll('.date');
+
+    if(selectedStart.value && (selectedStart.value === date.time)) {
+        startDate.value = '';
+        selectedStart.value = '';
+        for(let i = 0; i < getDateClass.length; i ++) { 
+            nextTick(() => {
+                getDateClass[i].classList.remove('period');
+            })
+        }
+        emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
+        if(endDate.value) {
+            let e = endDate.value.split('-');
+            goSelectedDate(e[0], e[1]);
+        } else {
+            thisMonth = new Date(currentYear.value, currentMonth.value, 1);
+            renderCalender(thisMonth);
+        }
+        nextTick(()=> {
+            document.getElementById('start').focus();
+            onMouseUp();
+        })
+
+        return false
+    } else if(selectedEnd.value && (selectedEnd.value === date.time)) {
+        endDate.value = '';
+        selectedEnd.value = '';
+        for(let i = 0; i < getDateClass.length; i ++) { 
+            nextTick(() => {
+                getDateClass[i].classList.remove('period');
+            })
+        }
+        emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
+        if(startDate.value) {
+            let s = startDate.value.split('-');
+            goSelectedDate(s[0], s[1]);
+        } else {
+            thisMonth = new Date(currentYear.value, currentMonth.value, 1);
+            renderCalender(thisMonth);
+        }
+        nextTick(()=> {
+            document.getElementById('end').focus();
+            onMouseUp();
+        })
+
+        return false
+    }
+
     let selectedYear = currentYear.value;
     let selectedMonth = currentMonth.value + 1;
     let selectedDay = date.day;
@@ -346,7 +415,7 @@ let createdDate = (e, date) => {
         }
     }
 
-    if(selectedInput == 'start') {
+    if(selectedInput.value == 'start') {
         startDate.value = formattedDate;
         selectedStart.value = date.time;
         for(let i = 0; i < getDateClass.length; i ++ ) {
@@ -361,7 +430,7 @@ let createdDate = (e, date) => {
             document.getElementById('end').focus();
             onMouseUp();
         })
-    } else if(selectedInput == 'end') {
+    } else if(selectedInput.value == 'end') {
         endDate.value = formattedDate;
         selectedEnd.value = date.time;
         for(let i = 0; i < getDateClass.length; i ++ ) {
@@ -371,11 +440,11 @@ let createdDate = (e, date) => {
         checkDateRange(e, date);
         emit('dateClicked', startDate.value, endDate.value, selectedStart.value, selectedEnd.value);
 
-        // nextTick(() => {
-        //     // checkCalendar('start')
-        //     document.getElementById('start').focus();
-        //     onMouseUp();
-        // })
+        nextTick(() => {
+            // checkCalendar('start')
+            document.getElementById('end').focus();
+            onMouseUp();
+        })
     }
 }
 </script>
@@ -495,6 +564,12 @@ let createdDate = (e, date) => {
 
                     &:hover::before {
                         opacity: 1;
+                    }
+
+                    &.here {
+                        &::before {
+                            background-color: rgba(41, 63, 230, 0.1);
+                        }
                     }
 
                     &.start, &.end {
