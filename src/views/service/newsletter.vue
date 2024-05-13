@@ -28,7 +28,7 @@ p.
 
 .tableMenu
     div(style='flex-grow: 1;text-align:right')
-        .iconClick.square(@click="init" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+        .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh
 
@@ -73,11 +73,11 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             tr(v-for="i in (10 - newsletterDisplay.length)")
                 td(colspan="5")
 .tableMenu(style='display:block;text-align:center;')
-    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': currentPage === 1 || fetching }")
+    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
         .material-symbols-outlined.bold chevron_left
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
-    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': maxPage <= currentPage && newsletterPager?.endOfList || fetching }")
+    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList }")
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
 
@@ -133,25 +133,24 @@ let newsletterEndpoint: string;
 let fetching = ref(false);
 let maxPage = ref(0);
 let currentPage = ref(1);
+let endOfList = ref(false);
 
 // newsletter renderer
 let newsletterDisplay: Ref<Newsletter[]> = ref(null);
 
-
-
-
 // call getPage when currentPage changes
-watch(currentPage, (n) => {
-    if (!fetching.value) {
+watch(currentPage, (n, o) => {
+    if (n > 0 && n <= maxPage.value) { // condition for safety
         getPage();
+    }
+    else {
+        currentPage.value = o; // revert back to old value
     }
 });
 
 // initialize the pager when searchFor changes
 watch(searchFor, (n) => {
-    if (!fetching.value) {
-        init();
-    }
+    init();
 });
 
 let getPage = async (refresh?: boolean) => {
@@ -162,12 +161,11 @@ let getPage = async (refresh?: boolean) => {
 
     if (!refresh && maxPage.value >= currentPage.value) {
         // if has page
-        let ns = pager.getPage(currentPage.value);
-        maxPage.value = ns.maxPage;
-        return ns.list;
+        newsletterDisplay.value = pager.getPage(currentPage.value).list as Newsletter[];
+        return;
     }
 
-    else if (!pager.endOfList || refresh) {
+    else if (!endOfList.value || refresh) {
         // if page data needs to be fetched
 
         fetching.value = true;
@@ -176,7 +174,7 @@ let getPage = async (refresh?: boolean) => {
         let fetchedNewsletters = await skapi.getNewsletters(callParams.value.params, Object.assign({ fetchMore: !refresh }, callParams.value.options));
 
         // save endOfList status
-        pager.endOfList = fetchedNewsletters.endOfList;
+        endOfList.value = fetchedNewsletters.endOfList;
 
         // insert data in pager
         if (fetchedNewsletters.list.length > 0) {
@@ -215,21 +213,21 @@ let init = async () => {
 
 init();
 
-
-// utility functions below
-
-let converter = (text: string, parsed: boolean) => {
-    if (!parsed) {
-        return text;
-    }
-    text = text.replaceAll('${email}', user.email);
-    text = text.replaceAll('${name}', user.name || user.email);
-    text = text.replaceAll('${service_name}', currentService.service.name);
-    return text
-}
-
 let openNewsletter = (url: string) => {
     window.open(url, '_blank');
+}
+
+let converter = (html: string, parsed: boolean, inv: boolean) => {
+    if (!parsed) {
+        return html;
+    }
+    html = html.replaceAll('${code}', '123456');
+    html = html.replaceAll('${email}', user.email);
+    html = html.replaceAll('${name}', user.name || user.email);
+    html = html.replaceAll('${service_name}', service.name);
+    html = html.replaceAll('${link}', inv ? '/invitation_confirmed_template' : '/signup_confirmed_template');
+    html = html.replaceAll('${password}', 'abc123&&');
+    return html
 }
 </script>
 
