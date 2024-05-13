@@ -51,7 +51,7 @@
                 input(hidden type='submit')
                 .material-symbols-outlined.fill.modalIcon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')" @click.stop="showCalendar = !showCalendar") calendar_today
                 .material-symbols-outlined.fill.modalIcon(v-if="searchFor === 'locale' && !searchText" @click.stop="showLocale = !showLocale") arrow_drop_down
-                Calendar(v-if="showCalendar" @dateClicked="handledateClick" alwaysEmit='true')
+                //- Calendar(v-if="showCalendar" @dateClicked="handledateClick" alwaysEmit='true')
 
     br
 
@@ -286,7 +286,7 @@ import { skapi } from '@/code/admin';
 import Pager from '@/code/pager'
 import Modal from '@/components/modal.vue';
 import Checkbox from '@/components/checkbox.vue';
-import Calendar from '@/components/calendar.vue';
+// import Calendar from '@/components/calendar.vue';
 
 console.log(serviceUsers.value)
 

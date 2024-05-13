@@ -56,13 +56,17 @@ watch(() => props.showCalendar, nv => {
     if (nv) {
         if (startDate.value || (startDate.value && endDate.value)) {
             let s = startDate.value.split('-');
-            goSelectedDate(s[0], s[1]);
+            // goSelectedDate(s[0], s[1]);
+            selectedInput = 'start';
+
             nextTick(() => {
                 document.getElementById('start').focus();
             })
         } else if (endDate.value) {
             let e = endDate.value.split('-');
-            goSelectedDate(e[0], e[1]);
+            // goSelectedDate(e[0], e[1]);
+            selectedInput = 'end';
+
             nextTick(() => {
                 document.getElementById('end').focus();
             })
@@ -157,7 +161,9 @@ let onKeyDown = (e) => {
 
             if (endDate.value) {
                 let e = endDate.value.split('-');
-                goSelectedDate(e[0], e[1]);
+                // goSelectedDate(e[0], e[1]);
+                selectedInput = 'end';
+
                 // document.getElementById('end').focus();
             } else {
                 // let s = startDate.value.split('-');
@@ -179,7 +185,9 @@ let onKeyDown = (e) => {
 
             if (startDate.value) {
                 let s = startDate.value.split('-');
-                goSelectedDate(s[0], s[1]);
+                // goSelectedDate(s[0], s[1]);
+                selectedInput = 'start';
+
                 // document.getElementById('start').focus();
             } else {
                 // let e = endDate.value.split('-');
@@ -201,10 +209,16 @@ let checkCalendar = (c) => {
     let e = endDate.value.split('-');
 
     if (startDate.value || endDate.value) {
-        if (c == 'start' && startDate.value) {
-            goSelectedDate(s[0], s[1]);
-        } else if (c == 'end' && endDate.value) {
-            goSelectedDate(e[0], e[1]);
+        if (c == 'start' && startDate.value && selectedInput !== 'year') {
+            // goSelectedDate(s[0], s[1]);
+            selectedInput = 'start';
+        } else if (c == 'end' && endDate.value && selectedInput !== 'year') {
+            // goSelectedDate(e[0], e[1]);
+            selectedInput = 'end';
+        } else if (c == 'start' && startDate.value && selectedInput == 'year') {
+            selectedInput = 'start';
+        } else if (c == 'end' && endDate.value && selectedInput == 'year') {
+            selectedInput = 'end';
         } else if (c == 'create') {
             console.log(selectedStart.value, selectedEnd.value)
             for (let i = 0; i < getDateClass.length; i++) {
@@ -324,28 +338,28 @@ let nextTime = async () => {
     }
 }
 
-let goSelectedDate = async (y, m) => {
-    console.log(y,m)
-    thisMonth = new Date(y, m - 1, 1);
-    let getDateClass = document.querySelectorAll('.date');
-    for (let i = 0; i < getDateClass.length; i++) {
-        getDateClass[i].classList.remove('period');
-        getDateClass[i].classList.remove('here');
-    }
-    await renderCalender(thisMonth);
-    periodDateSetting();
-    if (selectedInput == 'start' && selectedStart.value) {
-        let startClass = document.querySelector('.start');
-        nextTick(() => {
-            startClass.classList.add('here');
-        })
-    } else if (selectedInput == 'end' && selectedEnd.value) {
-        let endClass = document.querySelector('.end');
-        nextTick(() => {
-            endClass.classList.add('here');
-        })
-    }
-}
+// let goSelectedDate = async (y, m) => {
+//     // console.log(y,m)
+//     thisMonth = new Date(y, m - 1, 1);
+//     let getDateClass = document.querySelectorAll('.date');
+//     for (let i = 0; i < getDateClass.length; i++) {
+//         getDateClass[i].classList.remove('period');
+//         getDateClass[i].classList.remove('here');
+//     }
+//     await renderCalender(thisMonth);
+//     periodDateSetting();
+//     if (selectedInput == 'start' && selectedStart.value) {
+//         let startClass = document.querySelector('.start');
+//         nextTick(() => {
+//             startClass.classList.add('here');
+//         })
+//     } else if (selectedInput == 'end' && selectedEnd.value) {
+//         let endClass = document.querySelector('.end');
+//         nextTick(() => {
+//             endClass.classList.add('here');
+//         })
+//     }
+// }
 
 let createdDate = (e, date) => {
     let getDateClass = document.querySelectorAll('.date');
@@ -363,7 +377,8 @@ let createdDate = (e, date) => {
 
         if (endDate.value) {
             let e = endDate.value.split('-');
-            goSelectedDate(e[0], e[1]);
+            // goSelectedDate(e[0], e[1]);
+            selectedInput = 'end';
         } else {
             thisMonth = new Date(currentYear.value, currentMonth.value, 1);
             renderCalender(thisMonth);
@@ -386,7 +401,8 @@ let createdDate = (e, date) => {
 
         if (startDate.value) {
             let s = startDate.value.split('-');
-            goSelectedDate(s[0], s[1]);
+            // goSelectedDate(s[0], s[1]);
+            selectedInput = 'start';
         } else {
             thisMonth = new Date(currentYear.value, currentMonth.value, 1);
             renderCalender(thisMonth);

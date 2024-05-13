@@ -361,7 +361,7 @@ import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
-import Calendar from '@/components/_calcal.vue';
+import Calendar from '@/components/calendar.vue';
 import Locale from '@/components/locale.vue';
 import Pager from '@/code/pager'
 
