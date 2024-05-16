@@ -27,10 +27,15 @@ p.
 //-         button.final(type="submit" style='flex-shrink: 0;') Search
 
 .tableMenu
-    div(style='flex-grow: 1;text-align:right')
+    div
         .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh
+    div
+        a.iconClick.square(:href="'mailto:' + newsletterEndpoint" @click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+            .material-symbols-outlined.fill mail
+            span &nbsp;&nbsp;Send Newsletter
+
 
 Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}' resizable)
     template(v-slot:head)
@@ -98,18 +103,41 @@ let pager: Pager = null;
 // default form input values
 
 let searchFor: Ref<"timestamp" | "message_id" | "read" | "complaint" | "subject"> = ref('timestamp');
-let searchValue: Ref<string | number> = ref(new Date().getTime());
+let searchValue: Ref<string | number> = ref('');
 let group: Ref<0 | 1> = ref(0);
+let currentTimestamp = new Date().getTime();
 
 // computed params
 let callParams = computed(() => {
+    let defaultValues = {
+        timestamp: {
+            value: currentTimestamp,
+            condition: '>=',
+        },
+        message_id: {
+            value: '',
+            condition: '=',
+        },
+        read: {
+            value: 0,
+            condition: '>=',
+        },
+        complaint: {
+            value: 0,
+            condition: '>=',
+        },
+        subject: {
+            value: '',
+            condition: '>=',
+        },
+    }
     return {
         params: {
             service: currentService.service.service,
             owner: currentService.service.owner,
             searchFor: searchFor.value,
-            value: searchValue.value,
-            condition: searchFor.value === 'subject' ? '>=' : '<=',
+            value: searchValue.value || defaultValues[searchFor.value].value,
+            condition: defaultValues[searchFor.value].condition,
             group: group.value,
         },
         options: {
@@ -129,11 +157,13 @@ type Newsletter = {
 }
 
 // ui/ux related
-let newsletterEndpoint: string;
 let fetching = ref(false);
 let maxPage = ref(0);
 let currentPage = ref(1);
 let endOfList = ref(false);
+
+let newsletterEndpoint: Ref<string> = ref('');
+currentService.newsletterSender[0].then(n => newsletterEndpoint.value = n);
 
 // newsletter renderer
 let newsletterDisplay: Ref<Newsletter[]> = ref(null);
@@ -167,6 +197,11 @@ let getPage = async (refresh?: boolean) => {
 
     else if (!endOfList.value || refresh) {
         // if page data needs to be fetched
+
+        if (refresh) {
+            // refresh timestamp
+            currentTimestamp = new Date().getTime();
+        }
 
         fetching.value = true;
 
@@ -202,10 +237,6 @@ let init = async () => {
         resultsPerPage: 10,
         sortBy: searchFor.value,
         order: searchFor.value === 'subject' ? 'asc' : 'desc',
-    });
-
-    currentService.requestNewsletterSender({ group_numb: group.value }).then(r => {
-        newsletterEndpoint = r;
     });
 
     getPage(true);
