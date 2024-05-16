@@ -8,8 +8,9 @@
         slot
 
 </template>
+
 <script setup>
-let props = defineProps(['hidecopy'])
+let props = defineProps(['hidecopy']);
 let cpy_btn = !props.hidecopy;
 
 // console.log({props})
@@ -26,14 +27,15 @@ let copy = (e) => {
     document.execCommand('copy');
     doc.remove();
 
-    let copyMsg = e.currentTarget.querySelector('.copyMsg')
-    copyMsg.textContent = 'Copied!'
+    let copyMsg = e.currentTarget.querySelector('.copyMsg');
+    copyMsg.textContent = 'Copied!';
 
     setTimeout(() => {
-        copyMsg.textContent = 'Copy code'
-    }, 2000)
+        copyMsg.textContent = 'Copy code';
+    }, 2000);
 }
 </script>
+
 <style lang="less">
 ._codeWrap {
     position: relative;

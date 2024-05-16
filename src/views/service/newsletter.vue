@@ -3,8 +3,27 @@ h2 Newsletter
 
 hr
 
+p You can send newsletters to your users by clicking on #[a(:href="'mailto:' + newsletterEndpoint") Send Newsletter] #[.wordset or sending the email to the address provided below:]
+
+Code
+    pre {{ newsletterEndpoint }}
+
+br
+
 p.
-    You can send newsletters to your users by sending your email to the endpoint provided.
+    You can collect your subscribers by using the following code:
+
+Code
+    pre.
+        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
+            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") placeholder]=#[span(style="color:#FFED91") "E-Mail address"]#[span(style="color:#999") &gt;]
+            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "public"]#[span(style="color:#999") &gt;]
+            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
+        #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
+
+p For more information on how to use the code above, please refer to the #[a(href="https://docs.skapi.com/email/newsletters.html" target="_blank") documentation]
+
+br
 
 //- form#searchForm(@submit.prevent="init(true)")
 //-     .customSelect(@click.stop="(e)=>{showDropDown(e)}")
@@ -27,32 +46,31 @@ p.
 //-         button.final(type="submit" style='flex-shrink: 0;') Search
 
 .tableMenu
-    div
-        .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-            .material-symbols-outlined.fill refresh
-            span &nbsp;&nbsp;Refresh
-    div
-        a.iconClick.square(:href="'mailto:' + newsletterEndpoint" @click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-            .material-symbols-outlined.fill mail
-            span &nbsp;&nbsp;Send Newsletter
+    a.iconClick.square(:href="'mailto:' + newsletterEndpoint" @click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .material-symbols-outlined.fill mail
+        span &nbsp;&nbsp;Send Newsletter
+
+    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .material-symbols-outlined.fill refresh
+        span &nbsp;&nbsp;Refresh
 
 
-Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}' resizable)
+Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
     template(v-slot:head)
         tr
             th(style='width: 250px;')
                 | Subject
                 .resizer
-            th(style='width: 150px;')
+            th(style='width: 120px;')
                 | Sent
                 .resizer
-            th(style='width: 100px;')
+            th(style='width: 120px;')
                 | Reads
                 .resizer
-            th(style='width: 100px;')
+            th(style='width: 120px;')
                 | Complaint
                 .resizer
-            th(style='width: 100px;')
+            th(style='width: 120px;')
                 | Bounced
                 .resizer
     template(v-slot:body)
@@ -86,6 +104,8 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
 
+br
+
 </template>
 
 <script setup lang="ts">
@@ -97,6 +117,8 @@ import Table from '@/components/table.vue';
 import { skapi } from '@/code/admin';
 import { dateFormat } from '@/code/admin';
 import Pager from '@/code/pager';
+import Code from '@/components/code.vue';
+import { showDropDown } from '@/assets/js/event.js'
 
 let pager: Pager = null;
 
@@ -145,6 +167,9 @@ watch(currentPage, (n, o) => {
 
 // initialize the pager when searchFor changes
 watch(searchFor, (n) => {
+    init();
+});
+watch(group, (n) => {
     init();
 });
 
@@ -287,7 +312,7 @@ tbody tr.nsrow {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    flex-direction: row-reverse;
+    // flex-direction: row-reverse;
 
     &>* {
         margin: 8px 0;

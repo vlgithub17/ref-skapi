@@ -16,7 +16,7 @@ br
 
 h4 For SPA Projects:
 
-p 1. Install the package:
+p 1. Install the library:
 
 Code
     pre npm install skapi-js
