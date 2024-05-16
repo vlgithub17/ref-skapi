@@ -112,7 +112,7 @@ let callParams = computed(() => {
     let defaultValues = {
         timestamp: {
             value: currentTimestamp,
-            condition: '>=',
+            condition: '<=',
         },
         message_id: {
             value: '',
