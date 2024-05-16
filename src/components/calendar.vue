@@ -21,13 +21,17 @@
             .dates  
                 div(v-for="date in dates" :data-time='date.time' :class="[date.classes, {'start' : (selectedStart == date.time), 'end' : (selectedEnd == date.time)}]" @click="(e) => createdDate(e, date)") {{ date.day }}
     .timeSettingWrap
-        input#start(type="text" placeholder="Start" readonly v-model="startDate" :class="{'active' : activeDate}" @keydown.stop="onKeyDown" @click="activeDate = true")
+        .input(@mouseover="startDate ? showDelete = true : showDelete = false" @mouseleave="showDelete = false")
+            input#start(type="text" placeholder="Start" readonly v-model="startDate" :class="{'active' : activeDate}" @click="activeDate = true")
+            .material-symbols-outlined.fill.delete(:class="{'show' : showDelete}" @click="deleteDate") cancel
         span ~
-        input#end(type="text" placeholder="End" readonly v-model="endDate" :class="{'active' : !activeDate}" @keydown.stop="onKeyDown" @click="activeDate = false")
+        .input(@mouseover="startDate ? showDelete = true : showDelete = false" @mouseleave="showDelete = false") 
+            input#end(type="text" placeholder="End" readonly v-model="endDate" :class="{'active' : !activeDate}" @click="activeDate = false")
+            .material-symbols-outlined.fill.delete(:class="{'show' : showDelete}" @click="deleteDate") cancel
 </template>
 
 <script setup>
-import { onMounted, ref, onBeforeUnmount, nextTick, watch } from 'vue';
+import { onMounted, ref, onBeforeUnmount, nextTick } from 'vue';
 
 // default calendar variable
 let newDate = new Date(); // 현재 날짜
@@ -42,41 +46,16 @@ let dates = ref([]);
 
 // ui/ux related
 let activeDate = ref(true);
-// let selectedInput = '';
+let showDelete = ref(false);
 let selectedStart = ref('');
 let selectedEnd = ref('');
 let startDate = ref('');
 let endDate = ref('');
-let monthObj = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 let modelValue = ref('');
+let monthObj = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 let emit = defineEmits(['close', 'update:modelValue']);
 let props = defineProps(['showCalendar', 'modelValue']);
 
-// watch(() => props.showCalendar, nv => {
-//     if (nv) {
-//         if (startDate.value || (startDate.value && endDate.value)) {
-//             let s = startDate.value.split('-');
-//             // goSelectedDate(s[0], s[1]);
-//             selectedInput = 'start';
-
-//             nextTick(() => {
-//                 document.getElementById('start').focus();
-//             })
-//         } else if (endDate.value) {
-//             let e = endDate.value.split('-');
-//             // goSelectedDate(e[0], e[1]);
-//             selectedInput = 'end';
-
-//             nextTick(() => {
-//                 document.getElementById('end').focus();
-//             })
-//         } else {
-//             nextTick(() => {
-//                 document.getElementById('start').focus();
-//             })
-//         }
-//     }
-// })
 onMounted(() => {
     document.addEventListener('mouseup', closeCalendar);
 })
@@ -114,62 +93,36 @@ let preventEnterKey = (e) => {
     }
 }
 
-let onKeyDown = (e) => {
-    if (e.key == 'Backspace') {
-        let getDateClass = document.querySelectorAll('.date');
+let deleteDate = (e) => {
+    let getDateClass = document.querySelectorAll('.date');
+    let deleteTarget = e.target.previousSibling;
 
-        if (activeDate.value && startDate.value) {
-            startDate.value = '';
-            selectedStart.value = '';
-            for (let i = 0; i < getDateClass.length; i++) {
-                nextTick(() => {
-                    getDateClass[i].classList.remove('period');
-                })
-            }
+    if (deleteTarget.id == 'start' && deleteTarget.value) {
+        startDate.value = '';
+        selectedStart.value = '';
+        for (let i = 0; i < getDateClass.length; i++) {
+            nextTick(() => {
+                getDateClass[i].classList.remove('period');
+            })
+        }
 
-            updateSearchText();
+        updateSearchText();
+        activeDate.value = true;
+    } else if (deleteTarget.id == 'end' && deleteTarget.value) {
+        endDate.value = '';
+        selectedEnd.value = '';
+        for (let i = 0; i < getDateClass.length; i++) {
+            nextTick(() => {
+                getDateClass[i].classList.remove('period');
+            })
+        }
 
-            // if (endDate.value) {
-            //     let e = endDate.value.split('-');
-            //     // goSelectedDate(e[0], e[1]);
-            //     // selectedInput = 'end';
-            //     activeDate.value = true;
+        updateSearchText();
 
-            //     // document.getElementById('end').focus();
-            // } else {
-            //     // let s = startDate.value.split('-');
-            //     // goSelectedDate(s[0], s[1]);
-            //     thisMonth = new Date(currentYear.value, currentMonth.value, 1);
-            //     renderCalender(thisMonth);
-            // }
+        if (startDate.value) {
+            activeDate.value = false;
+        } else {
             activeDate.value = true;
-            // document.getElementById('start').focus();
-        } else if (!activeDate.value && endDate.value) {
-            endDate.value = '';
-            selectedEnd.value = '';
-            for (let i = 0; i < getDateClass.length; i++) {
-                nextTick(() => {
-                    getDateClass[i].classList.remove('period');
-                })
-            }
-
-            updateSearchText();
-
-            if (startDate.value) {
-            //     let s = startDate.value.split('-');
-            //     // goSelectedDate(s[0], s[1]);
-            //     // selectedInput = 'start';
-                activeDate.value = false;
-
-            //     // document.getElementById('start').focus();
-            } else {
-            //     // let e = endDate.value.split('-');
-            //     // goSelectedDate(e[0], e[1]);
-            //     thisMonth = new Date(currentYear.value, currentMonth.value, 1);
-            //     renderCalender(thisMonth);
-                activeDate.value = true;
-            }
-            // document.getElementById('end').focus();
         }
     }
 }
@@ -181,12 +134,8 @@ let checkCalendar = (c) => {
 
     if (startDate.value || endDate.value) {
         if (c == 'start' && startDate.value) {
-            // goSelectedDate(s[0], s[1]);
-            // selectedInput = 'start';
             activeDate.value = true;
         } else if (c == 'end' && endDate.value) {
-            // goSelectedDate(e[0], e[1]);
-            // selectedInput = 'end';
             activeDate.value = false;
         } else if (c == 'create') {
             console.log(selectedStart.value, selectedEnd.value)
@@ -263,7 +212,6 @@ let periodDateSetting = () => {
 
 let updateCalendar = async (e, what) => {
     if (e.target.value.length > 4) {
-        // inputText.value = inputText.value.slice(0, maxLength);
         alert('maxLength 4');
         return
     } else if (e.target.value < 1900 || e.target.value > 9999) {
@@ -294,11 +242,6 @@ let prevTime = async () => {
     }
     await renderCalender(thisMonth);
     periodDateSetting();
-    // if (selectedInput == 'start') {
-    //     document.getElementById('start').focus();
-    // } else if (selectedInput == 'end') {
-    //     document.getElementById('end').focus();
-    // }
 }
 
 let nextTime = async () => {
@@ -309,35 +252,7 @@ let nextTime = async () => {
     }
     await renderCalender(thisMonth);
     periodDateSetting();
-    // if (selectedInput == 'start') {
-    //     document.getElementById('start').focus();
-    // } else if (selectedInput == 'end') {
-    //     document.getElementById('end').focus();
-    // }
 }
-
-// let goSelectedDate = async (y, m) => {
-//     // console.log(y,m)
-//     thisMonth = new Date(y, m - 1, 1);
-//     let getDateClass = document.querySelectorAll('.date');
-//     for (let i = 0; i < getDateClass.length; i++) {
-//         getDateClass[i].classList.remove('period');
-//         getDateClass[i].classList.remove('here');
-//     }
-//     await renderCalender(thisMonth);
-//     periodDateSetting();
-//     if (selectedInput == 'start' && selectedStart.value) {
-//         let startClass = document.querySelector('.start');
-//         nextTick(() => {
-//             startClass.classList.add('here');
-//         })
-//     } else if (selectedInput == 'end' && selectedEnd.value) {
-//         let endClass = document.querySelector('.end');
-//         nextTick(() => {
-//             endClass.classList.add('here');
-//         })
-//     }
-// }
 
 let createdDate = (e, date) => {
     let getDateClass = document.querySelectorAll('.date');
@@ -354,19 +269,6 @@ let createdDate = (e, date) => {
         updateSearchText();
         activeDate.value = true;
 
-        // if (endDate.value) {
-        //     let e = endDate.value.split('-');
-        //     // goSelectedDate(e[0], e[1]);
-        //     // selectedInput = 'end';
-        // } else {
-        //     // thisMonth = new Date(currentYear.value, currentMonth.value, 1);
-        //     // renderCalender(thisMonth);
-        //     activeDate.value = false;
-        // }
-        // nextTick(() => {
-        //     document.getElementById('start').focus();
-        // })
-
         return false
     } else if (selectedEnd.value && (selectedEnd.value === date.time)) {
         endDate.value = '';
@@ -380,18 +282,10 @@ let createdDate = (e, date) => {
         updateSearchText();
 
         if (startDate.value) {
-            let s = startDate.value.split('-');
-            // goSelectedDate(s[0], s[1]);
-            // selectedInput = 'start';
             activeDate.value = false;
         } else {
-            // thisMonth = new Date(currentYear.value, currentMonth.value, 1);
-            // renderCalender(thisMonth);
             activeDate.value = true;
         }
-        // nextTick(() => {
-        //     document.getElementById('end').focus();
-        // })
 
         return false
     }
@@ -413,9 +307,6 @@ let createdDate = (e, date) => {
                 }
                 endDate.value = null;
                 activeDate.value = false;
-                // nextTick(() => {
-                //     document.getElementById('end').focus();
-                // })
             } else {
                 checkCalendar('create');
             }
@@ -432,11 +323,7 @@ let createdDate = (e, date) => {
 
         checkDateRange(e, date);
         updateSearchText();
-
         activeDate.value = false;
-        // nextTick(() => {
-        //     document.getElementById('end').focus();
-        // })
     } else if (!activeDate.value) {
         endDate.value = formattedDate;
         selectedEnd.value = date.time;
@@ -447,10 +334,6 @@ let createdDate = (e, date) => {
 
         checkDateRange(e, date);
         updateSearchText();
-
-        // nextTick(() => {
-        //     document.getElementById('end').focus();
-        // })
     }
 }
 </script>
@@ -617,6 +500,33 @@ let createdDate = (e, date) => {
             left: 0;
             background: rgba(0, 0, 0, 0.10);
             box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.06);
+        } 
+
+        .input {
+            position: relative;
+
+            // &:hover {
+            //     .delete {
+            //         display: block;
+            //     }
+            // }
+            .delete {
+                position: absolute;
+                content: '';
+                top: 50%;
+                right: 5px;
+                transform: translateY(-50%);
+                opacity: 0.5;
+                cursor: pointer;
+                display: none;
+
+                &:hover {
+                    opacity: 1;
+                }
+                &.show {
+                    display: block;
+                }
+            }
         }
 
         input {
