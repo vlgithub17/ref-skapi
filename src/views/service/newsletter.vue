@@ -63,19 +63,19 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
                     #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
             tr(v-for="i in 9")
                 td(colspan="5")
-        template(v-else-if="!newsletterDisplay || newsletterDisplay.length === 0")
+        template(v-else-if="!listDisplay || listDisplay.length === 0")
             tr
                 td(colspan="5") No newsletter sent
             tr(v-for="i in 9")
                 td(colspan="5")
         template(v-else)
-            tr.nsrow(v-for="ns in newsletterDisplay" @click='openNewsletter(ns.url)')
+            tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
                 td.overflow {{ converter(ns.subject) }}
                 td.overflow {{ dateFormat(ns.timestamp) }}
                 td.overflow {{ ns.read }}
                 td.overflow {{ ns.complaint }}
                 td.overflow {{ ns.bounced }}
-            tr(v-for="i in (10 - newsletterDisplay.length)")
+            tr(v-for="i in (10 - listDisplay.length)")
                 td(colspan="5")
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
@@ -166,7 +166,7 @@ let newsletterEndpoint: Ref<string> = ref('');
 currentService.newsletterSender[0].then(n => newsletterEndpoint.value = n);
 
 // newsletter renderer
-let newsletterDisplay: Ref<Newsletter[]> = ref(null);
+let listDisplay: Ref<Newsletter[]> = ref(null);
 
 // call getPage when currentPage changes
 watch(currentPage, (n, o) => {
@@ -191,7 +191,7 @@ let getPage = async (refresh?: boolean) => {
 
     if (!refresh && maxPage.value >= currentPage.value) {
         // if has page
-        newsletterDisplay.value = pager.getPage(currentPage.value).list as Newsletter[];
+        listDisplay.value = pager.getPage(currentPage.value).list as Newsletter[];
         return;
     }
 
@@ -223,7 +223,7 @@ let getPage = async (refresh?: boolean) => {
         maxPage.value = disp.maxPage;
 
         // render data
-        newsletterDisplay.value = disp.list as Newsletter[];
+        listDisplay.value = disp.list as Newsletter[];
         fetching.value = false;
     }
 }
