@@ -21,13 +21,13 @@
             .dates  
                 div(v-for="date in dates" :data-time='date.time' :class="[date.classes, {'start' : (selectedStart == date.time), 'end' : (selectedEnd == date.time)}]" @click="(e) => createdDate(e, date)") {{ date.day }}
     .timeSettingWrap
-        .input(@mouseover="startDate ? showDelete = true : showDelete = false" @mouseleave="showDelete = false")
+        .input(@mouseover="startDate ? showIcon.start = true : showIcon.start = false" @mouseleave="showIcon.start = false")
             input#start(type="text" placeholder="Start" readonly v-model="startDate" :class="{'active' : activeDate}" @click="activeDate = true")
-            .material-symbols-outlined.fill.delete(:class="{'show' : showDelete}" @click="deleteDate") cancel
+            .material-symbols-outlined.fill.delete(:class="{'show' : showIcon.start}" @click="deleteDate") cancel
         span ~
-        .input(@mouseover="startDate ? showDelete = true : showDelete = false" @mouseleave="showDelete = false") 
+        .input(@mouseover="startDate ? showIcon.end = true : showIcon.end = false" @mouseleave="showIcon.end = false") 
             input#end(type="text" placeholder="End" readonly v-model="endDate" :class="{'active' : !activeDate}" @click="activeDate = false")
-            .material-symbols-outlined.fill.delete(:class="{'show' : showDelete}" @click="deleteDate") cancel
+            .material-symbols-outlined.fill.delete(:class="{'show' : showIcon.end}" @click="deleteDate") cancel
 </template>
 
 <script setup>
@@ -46,7 +46,10 @@ let dates = ref([]);
 
 // ui/ux related
 let activeDate = ref(true);
-let showDelete = ref(false);
+let showIcon = ref({
+    start: false,
+    end: false
+});
 let selectedStart = ref('');
 let selectedEnd = ref('');
 let startDate = ref('');
