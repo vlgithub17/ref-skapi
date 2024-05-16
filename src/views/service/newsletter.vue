@@ -82,7 +82,7 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
         .material-symbols-outlined.bold chevron_left
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
-    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList }")
+    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
 
@@ -105,13 +105,54 @@ let pager: Pager = null;
 let searchFor: Ref<"timestamp" | "message_id" | "read" | "complaint" | "subject"> = ref('timestamp');
 let searchValue: Ref<string | number> = ref('');
 let group: Ref<0 | 1> = ref(0);
-let currentTimestamp = new Date().getTime();
+let currentTimestamp: Ref<number> = ref(new Date().getTime());
 
-// computed params
+type Newsletter = {
+    bounced: number;
+    compliant: number;
+    read: number;
+    message_id: string;
+    subject: string;
+    timestamp: number;
+    url: string;
+}
+
+// ui/ux related
+let fetching = ref(false);
+let maxPage = ref(0);
+let currentPage = ref(1);
+let endOfList = ref(false);
+
+let newsletterEndpoint: Ref<string> = ref('');
+currentService.newsletterSender[0].then(n => newsletterEndpoint.value = n);
+
+// list renderer
+let listDisplay: Ref<Newsletter[]> = ref(null);
+
+// call getPage when currentPage changes
+watch(currentPage, (n, o) => {
+    if (n !== o && n > 0 && (n <= maxPage.value || n > maxPage.value && !endOfList.value)) {
+        // if new value is different from old value
+        // if new value is within maxPage
+        // if new value is greater than maxPage but not end of list
+
+        getPage();
+    }
+    else {
+        currentPage.value = o; // revert back to old value
+    }
+});
+
+// initialize the pager when searchFor changes
+watch(searchFor, (n) => {
+    init();
+});
+
+// computed fetch params
 let callParams = computed(() => {
     let defaultValues = {
         timestamp: {
-            value: currentTimestamp,
+            value: currentTimestamp.value,
             condition: '<=',
         },
         message_id: {
@@ -146,51 +187,14 @@ let callParams = computed(() => {
     }
 });
 
-type Newsletter = {
-    bounced: number;
-    compliant: number;
-    read: number;
-    message_id: string;
-    subject: string;
-    timestamp: number;
-    url: string;
-}
-
-// ui/ux related
-let fetching = ref(false);
-let maxPage = ref(0);
-let currentPage = ref(1);
-let endOfList = ref(false);
-
-let newsletterEndpoint: Ref<string> = ref('');
-currentService.newsletterSender[0].then(n => newsletterEndpoint.value = n);
-
-// newsletter renderer
-let listDisplay: Ref<Newsletter[]> = ref(null);
-
-// call getPage when currentPage changes
-watch(currentPage, (n, o) => {
-    if (n > 0 && n <= maxPage.value) { // condition for safety
-        getPage();
-    }
-    else {
-        currentPage.value = o; // revert back to old value
-    }
-});
-
-// initialize the pager when searchFor changes
-watch(searchFor, (n) => {
-    init();
-});
-
 let getPage = async (refresh?: boolean) => {
     if (!pager) {
-        // if pager is not ready return
+        // if pager is not ready, return
         return;
     }
 
     if (!refresh && maxPage.value >= currentPage.value) {
-        // if has page
+        // if is not refresh and has page data
         listDisplay.value = pager.getPage(currentPage.value).list as Newsletter[];
         return;
     }
@@ -200,20 +204,20 @@ let getPage = async (refresh?: boolean) => {
 
         if (refresh) {
             // refresh timestamp
-            currentTimestamp = new Date().getTime();
+            currentTimestamp.value = new Date().getTime();
         }
 
         fetching.value = true;
 
         // fetch from server
-        let fetchedNewsletters = await skapi.getNewsletters(callParams.value.params, Object.assign({ fetchMore: !refresh }, callParams.value.options));
+        let fetchedData = await skapi.getNewsletters(callParams.value.params, Object.assign({ fetchMore: !refresh }, callParams.value.options));
 
         // save endOfList status
-        endOfList.value = fetchedNewsletters.endOfList;
+        endOfList.value = fetchedData.endOfList;
 
         // insert data in pager
-        if (fetchedNewsletters.list.length > 0) {
-            await pager.insertItems(fetchedNewsletters.list);
+        if (fetchedData.list.length > 0) {
+            await pager.insertItems(fetchedData.list);
         }
 
         // get page from pager
@@ -243,6 +247,9 @@ let init = async () => {
 }
 
 init();
+
+
+// ux related functions
 
 let openNewsletter = (url: string) => {
     window.open(url, '_blank');
