@@ -3,8 +3,27 @@ h2 Newsletter
 
 hr
 
+p You can send newsletters to your users by clicking on #[a(:href="'mailto:' + newsletterEndpoint") Send Newsletter] #[.wordset or sending the email to the address provided below:]
+
+Code
+    pre {{ newsletterEndpoint }}
+
+br
+
 p.
-    You can send newsletters to your users by sending your email to the endpoint provided.
+    You can collect your subscribers by using the following code:
+
+Code
+    pre.
+        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
+            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") placeholder]=#[span(style="color:#FFED91") "E-Mail address"]#[span(style="color:#999") &gt;]
+            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "public"]#[span(style="color:#999") &gt;]
+            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
+        #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
+
+p For more information on how to use the code above, please refer to the #[a(href="https://docs.skapi.com/email/newsletters.html" target="_blank") documentation]
+
+br
 
 //- form#searchForm(@submit.prevent="init(true)")
 //-     .customSelect(@click.stop="(e)=>{showDropDown(e)}")
@@ -27,27 +46,31 @@ p.
 //-         button.final(type="submit" style='flex-shrink: 0;') Search
 
 .tableMenu
-    div(style='flex-grow: 1;text-align:right')
-        .iconClick.square(@click="init" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
-            .material-symbols-outlined.fill refresh
-            span &nbsp;&nbsp;Refresh
+    a.iconClick.square(:href="'mailto:' + newsletterEndpoint" @click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .material-symbols-outlined.fill mail
+        span &nbsp;&nbsp;Send Newsletter
 
-Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}' resizable)
+    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .material-symbols-outlined.fill refresh
+        span &nbsp;&nbsp;Refresh
+
+
+Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
     template(v-slot:head)
         tr
             th(style='width: 250px;')
                 | Subject
                 .resizer
-            th(style='width: 150px;')
+            th(style='width: 120px;')
                 | Sent
                 .resizer
-            th(style='width: 100px;')
+            th(style='width: 120px;')
                 | Reads
                 .resizer
-            th(style='width: 100px;')
+            th(style='width: 120px;')
                 | Complaint
                 .resizer
-            th(style='width: 100px;')
+            th(style='width: 120px;')
                 | Bounced
                 .resizer
     template(v-slot:body)
@@ -58,28 +81,30 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
                     #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
             tr(v-for="i in 9")
                 td(colspan="5")
-        template(v-else-if="!newsletterDisplay || newsletterDisplay.length === 0")
+        template(v-else-if="!listDisplay || listDisplay.length === 0")
             tr
                 td(colspan="5") No newsletter sent
             tr(v-for="i in 9")
                 td(colspan="5")
         template(v-else)
-            tr.nsrow(v-for="ns in newsletterDisplay" @click='openNewsletter(ns.url)')
+            tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
                 td.overflow {{ converter(ns.subject) }}
                 td.overflow {{ dateFormat(ns.timestamp) }}
                 td.overflow {{ ns.read }}
                 td.overflow {{ ns.complaint }}
                 td.overflow {{ ns.bounced }}
-            tr(v-for="i in (10 - newsletterDisplay.length)")
+            tr(v-for="i in (10 - listDisplay.length)")
                 td(colspan="5")
 .tableMenu(style='display:block;text-align:center;')
-    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': currentPage === 1 || fetching }")
+    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
         .material-symbols-outlined.bold chevron_left
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
-    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': maxPage <= currentPage && newsletterPager?.endOfList || fetching }")
+    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
+
+br
 
 </template>
 
@@ -92,31 +117,17 @@ import Table from '@/components/table.vue';
 import { skapi } from '@/code/admin';
 import { dateFormat } from '@/code/admin';
 import Pager from '@/code/pager';
+import Code from '@/components/code.vue';
+import { showDropDown } from '@/assets/js/event.js'
 
 let pager: Pager = null;
 
 // default form input values
 
 let searchFor: Ref<"timestamp" | "message_id" | "read" | "complaint" | "subject"> = ref('timestamp');
-let searchValue: Ref<string | number> = ref(new Date().getTime());
+let searchValue: Ref<string | number> = ref('');
 let group: Ref<0 | 1> = ref(0);
-
-// computed params
-let callParams = computed(() => {
-    return {
-        params: {
-            service: currentService.service.service,
-            owner: currentService.service.owner,
-            searchFor: searchFor.value,
-            value: searchValue.value,
-            condition: searchFor.value === 'subject' ? '>=' : '<=',
-            group: group.value,
-        },
-        options: {
-            ascending: searchFor.value === 'subject',
-        }
-    }
-});
+let currentTimestamp: Ref<number> = ref(new Date().getTime());
 
 type Newsletter = {
     bounced: number;
@@ -129,58 +140,109 @@ type Newsletter = {
 }
 
 // ui/ux related
-let newsletterEndpoint: string;
 let fetching = ref(false);
 let maxPage = ref(0);
 let currentPage = ref(1);
+let endOfList = ref(false);
 
-// newsletter renderer
-let newsletterDisplay: Ref<Newsletter[]> = ref(null);
+let newsletterEndpoint: Ref<string> = ref('');
+currentService.newsletterSender[0].then(n => newsletterEndpoint.value = n);
 
-
-
+// list renderer
+let listDisplay: Ref<Newsletter[]> = ref(null);
 
 // call getPage when currentPage changes
-watch(currentPage, (n) => {
-    if (!fetching.value) {
+watch(currentPage, (n, o) => {
+    if (n !== o && n > 0 && (n <= maxPage.value || n > maxPage.value && !endOfList.value)) {
+        // if new value is different from old value
+        // if new value is within maxPage
+        // if new value is greater than maxPage but not end of list
+
         getPage();
+    }
+    else {
+        currentPage.value = o; // revert back to old value
     }
 });
 
 // initialize the pager when searchFor changes
 watch(searchFor, (n) => {
-    if (!fetching.value) {
-        init();
+    init();
+});
+watch(group, (n) => {
+    init();
+});
+
+// computed fetch params
+let callParams = computed(() => {
+    let defaultValues = {
+        timestamp: {
+            value: currentTimestamp.value,
+            condition: '<=',
+        },
+        message_id: {
+            value: '',
+            condition: '=',
+        },
+        read: {
+            value: 0,
+            condition: '>=',
+        },
+        complaint: {
+            value: 0,
+            condition: '>=',
+        },
+        subject: {
+            value: '',
+            condition: '>=',
+        },
+    }
+    return {
+        params: {
+            service: currentService.service.service,
+            owner: currentService.service.owner,
+            searchFor: searchFor.value,
+            value: searchValue.value || defaultValues[searchFor.value].value,
+            condition: defaultValues[searchFor.value].condition,
+            group: group.value,
+        },
+        options: {
+            ascending: searchFor.value === 'subject',
+        }
     }
 });
 
 let getPage = async (refresh?: boolean) => {
     if (!pager) {
-        // if pager is not ready return
+        // if pager is not ready, return
         return;
     }
 
     if (!refresh && maxPage.value >= currentPage.value) {
-        // if has page
-        let ns = pager.getPage(currentPage.value);
-        maxPage.value = ns.maxPage;
-        return ns.list;
+        // if is not refresh and has page data
+        listDisplay.value = pager.getPage(currentPage.value).list as Newsletter[];
+        return;
     }
 
-    else if (!pager.endOfList || refresh) {
+    else if (!endOfList.value || refresh) {
         // if page data needs to be fetched
+
+        if (refresh) {
+            // refresh timestamp
+            currentTimestamp.value = new Date().getTime();
+        }
 
         fetching.value = true;
 
         // fetch from server
-        let fetchedNewsletters = await skapi.getNewsletters(callParams.value.params, Object.assign({ fetchMore: !refresh }, callParams.value.options));
+        let fetchedData = await skapi.getNewsletters(callParams.value.params, Object.assign({ fetchMore: !refresh }, callParams.value.options));
 
         // save endOfList status
-        pager.endOfList = fetchedNewsletters.endOfList;
+        endOfList.value = fetchedData.endOfList;
 
         // insert data in pager
-        if (fetchedNewsletters.list.length > 0) {
-            await pager.insertItems(fetchedNewsletters.list);
+        if (fetchedData.list.length > 0) {
+            await pager.insertItems(fetchedData.list);
         }
 
         // get page from pager
@@ -190,7 +252,7 @@ let getPage = async (refresh?: boolean) => {
         maxPage.value = disp.maxPage;
 
         // render data
-        newsletterDisplay.value = disp.list as Newsletter[];
+        listDisplay.value = disp.list as Newsletter[];
         fetching.value = false;
     }
 }
@@ -206,30 +268,29 @@ let init = async () => {
         order: searchFor.value === 'subject' ? 'asc' : 'desc',
     });
 
-    currentService.requestNewsletterSender({ group_numb: group.value }).then(r => {
-        newsletterEndpoint = r;
-    });
-
     getPage(true);
 }
 
 init();
 
 
-// utility functions below
-
-let converter = (text: string, parsed: boolean) => {
-    if (!parsed) {
-        return text;
-    }
-    text = text.replaceAll('${email}', user.email);
-    text = text.replaceAll('${name}', user.name || user.email);
-    text = text.replaceAll('${service_name}', currentService.service.name);
-    return text
-}
+// ux related functions
 
 let openNewsletter = (url: string) => {
     window.open(url, '_blank');
+}
+
+let converter = (html: string, parsed: boolean, inv: boolean) => {
+    if (!parsed) {
+        return html;
+    }
+    html = html.replaceAll('${code}', '123456');
+    html = html.replaceAll('${email}', user.email);
+    html = html.replaceAll('${name}', user.name || user.email);
+    html = html.replaceAll('${service_name}', service.name);
+    html = html.replaceAll('${link}', inv ? '/invitation_confirmed_template' : '/signup_confirmed_template');
+    html = html.replaceAll('${password}', 'abc123&&');
+    return html
 }
 </script>
 
@@ -251,7 +312,7 @@ tbody tr.nsrow {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    flex-direction: row-reverse;
+    // flex-direction: row-reverse;
 
     &>* {
         margin: 8px 0;
