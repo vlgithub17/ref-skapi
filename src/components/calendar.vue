@@ -25,7 +25,7 @@
             input#start(type="text" placeholder="Start" readonly v-model="startDate" :class="{'active' : activeDate}" @click="activeDate = true")
             .material-symbols-outlined.fill.delete(:class="{'show' : showIcon.start}" @click="deleteDate") cancel
         span ~
-        .input(@mouseover="startDate ? showIcon.end = true : showIcon.end = false" @mouseleave="showIcon.end = false") 
+        .input(@mouseover="endDate ? showIcon.end = true : showIcon.end = false" @mouseleave="showIcon.end = false") 
             input#end(type="text" placeholder="End" readonly v-model="endDate" :class="{'active' : !activeDate}" @click="activeDate = false")
             .material-symbols-outlined.fill.delete(:class="{'show' : showIcon.end}" @click="deleteDate") cancel
 </template>
