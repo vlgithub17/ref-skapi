@@ -301,16 +301,19 @@ let createdDate = (e, date) => {
     let checkDateRange = (e, date) => {
         if (startDate.value && endDate.value) {
             if (endDate.value < startDate.value) {
-                startDate.value = endDate.value;
-                selectedStart.value = date.time;
+                if (!activeDate.value) {
+                    startDate.value = endDate.value;
+                    selectedStart.value = date.time;
+                }
                 for (let i = 0; i < getDateClass.length; i++) {
                     getDateClass[i].classList.remove('start');
                     getDateClass[i].classList.remove('period');
                     getDateClass[i].classList.remove('end');
                 }
                 endDate.value = null;
+                selectedEnd.value = null;
                 activeDate.value = false;
-            } else {
+            } else  {
                 checkCalendar('create');
             }
         }

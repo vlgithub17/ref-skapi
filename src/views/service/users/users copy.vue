@@ -1,5 +1,5 @@
 <template lang="pug">
-//- p {{ searchValue }}
+//- p {{ searchText }}
 //- h3 User Authentication
 
 //- p.
@@ -59,43 +59,43 @@ form#searchForm(@submit.prevent="searchUsers")
             span.material-symbols-outlined arrow_drop_down
         .moreVert(style="--moreVert-left:0;display:none")
             .inner(style="padding:0.8rem;padding-right:1rem")
-                .more(value="timestamp" @click="searchFor = 'timestamp';searchValue = '';") Date Created
-                .more(value="user_id" @click="searchFor = 'user_id';searchValue = '';") User ID
-                .more(value="email" @click="searchFor = 'email';searchValue = '';") Email
-                .more(value="phone_number" @click="searchFor = 'phone_number';searchValue = '';") phone_number
-                .more(value="address" @click="searchFor = 'address';searchValue = '';") Address
-                .more(value="gender" @click="searchFor = 'gender';searchValue = '';") Gender
-                .more(value="name" @click="searchFor = 'name';searchValue = '';") Name
-                .more(value="locale" @click="searchFor = 'locale';searchValue = '';") Locale
-                .more(value="birthdate" @click="searchFor = 'birthdate';searchValue = '';") Birth Date
+                .more(value="timestamp" @click="searchFor = 'timestamp';searchText = '';") Date Created
+                .more(value="user_id" @click="searchFor = 'user_id';searchText = '';") User ID
+                .more(value="email" @click="searchFor = 'email';searchText = '';") Email
+                .more(value="phone_number" @click="searchFor = 'phone_number';searchText = '';") phone_number
+                .more(value="address" @click="searchFor = 'address';searchText = '';") Address
+                .more(value="gender" @click="searchFor = 'gender';searchText = '';") Gender
+                .more(value="name" @click="searchFor = 'name';searchText = '';") Name
+                .more(value="locale" @click="searchFor = 'locale';searchText = '';") Locale
+                .more(value="birthdate" @click="searchFor = 'birthdate';searchText = '';") Birth Date
     .search
         .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="showCalendar = !showCalendar;")
-            input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" readonly)
+            input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
             .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
-            Calendar(v-model="searchValue" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
-        input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue")
-        input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue")
-        input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchValue")
-        input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue")
-        input.big#searchInput(v-else-if="searchFor === 'locale'" type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue")
-        input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-        input.big#searchInput(v-else-if="searchFor === 'email'" type="email" placeholder="Search public email address" v-model="searchValue")
+            Calendar(v-model="searchText" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
+        input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchText")
+        input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchText")
+        input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchText")
+        input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchText")
+        input.big#searchInput(v-else-if="searchFor === 'locale'" type="text" placeholder="2 digit country code e.g. KR" v-model="searchText")
+        input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchText" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+        input.big#searchInput(v-else-if="searchFor === 'email'" type="email" placeholder="Search public email address" v-model="searchText")
         .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale'" @click.stop="showLocale = !showLocale") arrow_drop_down
         button.final(type="submit" style='flex-shrink: 0;') Search
-        Locale(v-if="showLocale" @countryClicked="handleCountryClick" @close="showLocale=false" :searchValue="searchValue")
+        Locale(v-if="showLocale" @countryClicked="handleCountryClick" @close="showLocale=false" :searchText="searchText")
 
 br
 
 .tableMenu
     div(style='flex-grow: 1;text-align:right')
-        .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .iconClick.square(@click="refresh" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh
     div
-        .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill person_add
             span &nbsp;&nbsp;Create User
-        .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill mark_email_unread
             span &nbsp;&nbsp;Invite User
 
@@ -140,20 +140,20 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
 
 
     template(v-slot:body)
-        template(v-if="fetching")
+        template(v-if="callUserList")
             tr
                 td#loading(:colspan="colspan").
                     Loading Users ... &nbsp;
                     #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
             tr(v-for="i in 9")
                 td(:colspan="colspan")
-        template(v-else-if="!listDisplay || listDisplay.length === 0")
+        template(v-else-if="users == null || (!users.length && !callUserList)")
             tr
                 td#noUsers(:colspan="colspan") No Users
             tr(v-for="i in 9")
                 td(:colspan="colspan")
-        template(v-else) 
-            tr(v-for="(user, index) in listDisplay") 
+        template(v-else-if="users.length && !callUserList") 
+            tr(v-for="(user, index) in users") 
                 td.center.optionCol.overflow(style="padding:0")
                     .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
                     template(v-if="user.approved.includes('suspended')")
@@ -167,15 +167,15 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
                 td.overflow(v-if="filterOptions.address") {{ user.address || '-' }}
                 td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
                 td.center.overflow(v-if="filterOptions.gender") -
-            tr(v-for="i in (10 - listDisplay.length)")
+            tr(v-if="users.length < 10" v-for="i in (10 - users.length)" :key="'extra-' + i")
                 td(:colspan="colspan")
         
 .tableMenu(style='display:block;text-align:center;')
-    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage === 1 }")
+    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': currentPage === 1 || callUserList }")
         .material-symbols-outlined.bold chevron_left
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
-    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
+    .iconClick.square.arrow(@click="nextPage" :class="{'nonClickable': maxPage <= currentPage && userPage?.endOfList || callUserList }")
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
 
@@ -365,27 +365,29 @@ import Calendar from '@/components/calendar.vue';
 import Locale from '@/components/locale.vue';
 import Pager from '@/code/pager'
 
-import type { Ref } from 'vue';
-import { ref, computed, nextTick, watch, onUnmounted, onMounted } from 'vue';
+import { ref, nextTick, watch, onUnmounted, onMounted } from 'vue';
 import { skapi } from '@/code/admin';
 import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
 import { currentService, serviceUsers } from '@/views/service/main';
 import { Countries } from '@/code/countries';
 
-let pager: Pager = null;
-
-let searchFor: Ref<"timestamp" | "user_id" | "email" | "phone_number" | "address" | "gender" | "name" | "locale" | "birthdate"> = ref('timestamp');
-let searchValue: Ref<string | number> = ref('');
-let currentTimestamp: Ref<number> = ref(new Date().getTime());
-
-// ui/ux related
-let fetching = ref(false);
-let maxPage = ref(0);
+function log(e){
+    console.log('- log -')
+    console.log(e);
+}
+let userPage = null;
+let users = ref(null);
+let callUserList = ref(false);
 let currentPage = ref(1);
-let endOfList = ref(false);
-let showCalendar = ref(false);
-let showLocale = ref(false);
+let maxPage = ref(1);
+let defaultFetchParams = {
+    service: currentService.id,
+    searchFor: 'timestamp',
+    condition: '<=',
+    value: new Date().getTime()
+}
+let fetchParams = defaultFetchParams;
 let filterOptions = ref({
     userID: true,
     name: true,
@@ -396,14 +398,16 @@ let filterOptions = ref({
     timestamp: true
 });
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
-
-// modal related
-let promiseRunning = ref(false);
+let searchFor = ref('timestamp');
+let searchText = ref('');
+let showCalendar = ref(false);
+let showLocale = ref(false);
 let openInviteUser = ref(false);
 let openCreateUser = ref(false);
 let openBlockUser = ref(false);
 let openUnblockUser = ref(false);
 let openDeleteUser = ref(false);
+let promiseRunning = ref(false);
 let selectedUser = '';
 let name = '';
 let email = '';
@@ -411,130 +415,263 @@ let password = '';
 let redirect = '';
 let error = ref('');
 
-// list renderer
-let listDisplay = ref(null);
+let getPage = (p) => {
+    let res = userPage.getPage(p);
 
-// call getPage when currentPage changes
-watch(currentPage, (n, o) => {
-    if (n !== o && n > 0 && (n <= maxPage.value || n > maxPage.value && !endOfList.value)) {
-        getPage();
-    }
-    else {
-        currentPage.value = o;
-    }
-});
+    userPage.maxPage = res.maxPage;
+    users.value = res.list;
+    maxPage.value = res.maxPage;
 
-// computed fetch params
-let callParams = computed(() => {
-    let dates = searchValue.value.split('~').map(d => d.trim());
-    switch (searchFor.value) {
-        // case 'timestamp':
-        //     let startDate = 0;
-        //     if (dates?.[0]) {
-        //         let st = new Date(dates[0]).getTime();
-        //         if (!isNaN(st)) {
-        //             startDate = st
-        //         }
-        //     }
-        //     let endDate = Date.now();
-        //     if (dates?.[1]) {
-        //         let ed = new Date(dates[1]).getTime();
-        //         if (!isNaN(endDate)) {
-        //             endDate = ed;
-        //         }
-        //     }
-        //     return 'Loading...';
-        // case 'user_id':
-        //     return 'Data loaded successfully!';
-        // case 'birthdate':
-        //     let dates = searchValue.value.split('~').map(d => d.trim());
-        //     let startDate = dates?.[0] || '1000-01-01';
-        //     let endDate = dates?.[1] || new Date().toISOString().substring(0, 10);
-
-        //     return {
-        //         service: currentService.id,
-        //         searchFor: searchFor.value,
-        //         value: startDate,
-        //         range: endDate
-        //     }
-        default:
-            return {
-                service: currentService.id,
-                searchFor: searchFor.value,
-                value: searchValue.value,
-                condition: '>='
-            }
-    }
-});
-
-// let callParams = ref({
-//     service: currentService.id,
-//     searchFor: searchFor.value,
-//     condition: '<=',
-//     value: new Date().getTime()
-// })
-
-let getPage = async (refresh?: boolean) => {
-    if (!pager) {
-        return;
-    }
-
-    if (!refresh && maxPage.value >= currentPage.value) {
-        listDisplay.value = pager.getPage(currentPage.value).list;
-        return;
-    }
-
-    else if (!endOfList.value || refresh) {
-
-        if (refresh) {
-            currentTimestamp.value = new Date().getTime();
-        }
-
-        fetching.value = true;
-
-        // fetch from server
-        let fetchedData = await skapi.getUsers(callParams.value, { fetchMore: !refresh });
-
-        // save endOfList status
-        endOfList.value = fetchedData.endOfList;
-
-        // insert data in pager
-        if (fetchedData.list.length > 0) {
-            await pager.insertItems(fetchedData.list);
-        }
-
-        // get page from pager
-        let disp = pager.getPage(currentPage.value);
-
-        // set maxpage
-        maxPage.value = disp.maxPage;
-
-        // render data
-        listDisplay.value = disp.list;
-        fetching.value = false;
+    if(!res.list.length) {
+        currentPage.value--;
     }
 }
 
-let init = async () => {
-    currentPage.value = 1;
+let refresh = async(update) => {
+    if (callUserList.value) {
+        return;
+    }
+    if (!searchText.value) {
+        fetchParams = defaultFetchParams;
+        fetchParams.value = new Date().getTime();
+    }
 
-    // setup pagers
-    pager = await Pager.init({
+    users.value = null;
+     
+    serviceUsers[currentService.id] = await Pager.init({
         id: 'user_id',
-        resultsPerPage: 10,
-        sortBy: searchFor.value,
+        sortBy: 'timestamp',
         order: 'desc',
-    });
+        resultsPerPage: 10
+    })
 
-    getPage(true);
+    userPage = serviceUsers[currentService.id];
+
+    callUserList.value = true;
+
+    skapi.getUsers(fetchParams, { limit: 50 }).then(u => {
+        if (u.endOfList) {
+            userPage.endOfList = true;
+        }
+        userPage.insertItems(u.list).then(_ => {
+            // to avoid watch trigger
+            if (currentPage.value === 1) {
+                getPage(1);
+            } 
+            else {
+                currentPage.value = 1;
+            }
+            callUserList.value = false;
+        });
+    });
 }
 
-init();
+// if (!serviceUsers?.[currentService.id]) {
+//     refresh();
+// }
+// else {
+//     userPage = serviceUsers[currentService.id];
+//     getPage(currentPage.value);
+// }
+
+let nextPage = () => {
+    if (currentPage.value === maxPage.value && !userPage.endOfList) {
+        users.value = null;
+        callUserList.value = true;
+        skapi.getUsers(fetchParams, { fetchMore: true, limit: 50 }).then(u => {
+            if (u.endOfList) {
+                userPage.endOfList = true;
+            }
+            userPage.insertItems(u.list).then(_ => {
+                currentPage.value++;
+                callUserList.value = false;
+            });
+        });
+    } else {
+        currentPage.value++;
+    }
+}
+
+// let handledateClick = (startDate, endDate, startTimestamp, endTimestamp) => {
+//     if (startDate == '' && endDate == '') {
+//         searchText.value = ''
+//     } else {
+//         searchText.value = (startDate || '') + ' ~ ' + (endDate || '');
+//         prevDateInfo.start = startTimestamp;
+//         prevDateInfo.end = endTimestamp;
+//     }
+// }
 
 let handleCountryClick = (key) => {
-    searchValue.value = key;
+    searchText.value = key;
+    // showLocale.value = false;
     document.querySelector('#searchInput').focus();
 }
+
+let createUser = () => {
+    promiseRunning.value = true;
+    error.value = '';
+    skapi.signup({
+        email,
+        name,
+        password,
+        service: currentService.id
+    }).then((res) => {
+        console.log(res);
+        document.getElementById("createForm").reset();
+        openCreateUser.value = false;
+        promiseRunning.value = false;
+        refresh();
+    }).catch((err) => {
+        promiseRunning.value = false;
+        error.value = err.message;
+    });
+}
+
+let changeUserState = (state) => {
+    promiseRunning.value = true;
+
+    if(state == 'block') {
+        currentService.blockAccount(selectedUser.user_id).then((r) => {
+            selectedUser.approved = 'by_admin:suspended:' + (new Date()).getTime();
+            let toEdit = {}
+            for(let k in selectedUser) {
+                toEdit[k] = selectedUser[k];
+            }
+            userPage.editItem(toEdit).then((r) => {
+                selectedUser = '';
+                promiseRunning.value = false;
+                openBlockUser.value = false;
+                getPage(currentPage.value);
+            });
+        }).catch(e => alert(e.message));
+    } else if(state == 'unblock') {
+        currentService.unblockAccount(selectedUser.user_id).then((r) => {
+            selectedUser.approved = 'by_admin:' + (new Date()).getTime();
+            let toEdit = {}
+            for(let k in selectedUser) {
+                toEdit[k] = selectedUser[k];
+            }
+            userPage.editItem(toEdit).then((r) => {
+                selectedUser = '';
+                promiseRunning.value = false;
+                openUnblockUser.value = false;
+                getPage(currentPage.value);
+            });
+        }).catch(e => alert(e.message));
+    }
+}
+
+let deleteUser = () => {
+    promiseRunning.value = true;
+
+    currentService.deleteAccount(selectedUser.user_id).then(() => {
+        userPage.deleteItem(selectedUser.user_id).then(() => {
+            selectedUser = '';
+            promiseRunning.value = false;
+            openDeleteUser.value = false;
+            getPage(currentPage.value);
+        })
+    }).catch(e => alert(e.message));
+}
+
+let closeModal = () => {
+    if(openInviteUser.value) {
+        document.getElementById("inviteForm").reset();
+        openInviteUser.value = false;
+    } else if(openCreateUser.value) {
+        document.getElementById("createForm").reset();
+        openCreateUser.value = false;
+    }
+}
+
+let searchUsers = () => {
+    if (!searchText.value) {
+        fetchParams = defaultFetchParams;
+        refresh();
+    } else if (searchFor.value === 'timestamp') {
+        let dates = searchText.value.split('~').map(d => d.trim());
+
+        let startDate = 0;
+        if (dates?.[0]) {
+            let st = new Date(dates[0]).getTime();
+            if (!isNaN(st)) {
+                startDate = st
+            }
+        }
+
+        let endDate = Date.now();
+        if (dates?.[1]) {
+            let ed = new Date(dates[1]).getTime();
+            if (!isNaN(endDate)) {
+                endDate = ed;
+            }
+        }
+
+        fetchParams = {
+            service: currentService.id,
+            searchFor: searchFor.value,
+            value: startDate,
+            range: endDate
+        }
+
+        refresh();
+    } else if (searchFor.value === 'user_id') {
+        fetchParams = {
+            service: currentService.id,
+            searchFor: 'user_id',
+            value: searchText.value
+        }
+
+        refresh();
+    } else if (searchFor.value === 'birthdate') {
+        let dates = searchText.value.split('~').map(d => d.trim());
+
+        let startDate = dates?.[0] || '1000-01-01';
+
+        let endDate = dates?.[1] || new Date().toISOString().substring(0, 10);
+
+        fetchParams = {
+            service: currentService.id,
+            searchFor: searchFor.value,
+            value: startDate,
+            range: endDate
+        }
+
+        refresh();
+    } else {
+        fetchParams = {
+            service: currentService.id,
+            searchFor: searchFor.value,
+            value: searchText.value,
+            condition: '>='
+        }
+        refresh();
+    }
+}
+
+onUnmounted(() => {
+    if (fetchParams.searchFor !== 'timestamp' || fetchParams?.condition !== '<=') {
+        // remove list if it's not defaultParams
+        delete serviceUsers[currentService.id];
+    }
+});
+
+watch(filterOptions.value, nv => {
+    colspan = Object.values(filterOptions.value).filter(value => value).length + 1;
+}, { immediate: true })
+
+watch(currentPage, (page) => {
+    getPage(page);
+});
+
+watch(openInviteUser, nv => {
+    if(nv) {
+        nextTick(() => {
+            document.getElementById('inviteUserEmail').focus();
+        })
+    }
+})
 </script>
 <style scoped lang="less">
 #searchForm {
