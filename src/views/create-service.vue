@@ -39,7 +39,7 @@ main#create
                 li Real-time data
 
             ul
-                li Automated emails and sending newsletters
+                li Automated emails and sending bulk email
                 li 1GB of email storage
                 li Subdomain hosting
         .infoBox(:class="{'checked' : serviceMode == 'premium'}" @click="serviceMode='premium'")
@@ -55,10 +55,10 @@ main#create
                 li Real-time data
 
             ul
-                li Automated emails and sending newsletters
+                li Automated emails and sending bulk email
                 li 10GB of email storage
                 li Subdomain hosting
-                li unlimited use with pay-as-you-go when exceeding the limit
+                li Unlimited use with pay-as-you-go when exceeding the limit
 
 
     p(style='font-size: 16px;display: flex;justify-content: center;') Selected Plan:&nbsp; #[b(style='color:var(--main-color)') {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]

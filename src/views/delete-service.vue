@@ -34,7 +34,7 @@ br
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine.warning(type="button" @click="router.push('/my-services/' + serviceId)") Cancel
+            button.noLine.warning(type="button" @click="router.push('/my-services/' + serviceId + '/dashboard')") Cancel
             | &nbsp;&nbsp;
             button.final.warning(type="submit" :class="{disabled: !iUnderstand}" @click='deleteService()') Delete
 

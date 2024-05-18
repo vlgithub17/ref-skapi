@@ -1,40 +1,6 @@
 <template lang="pug">
-h3 Using 3rd party APIs
 
-p.
-    When using a 3rd party API that requires a client secret key in your website,
-    register them in Skapi and make secure requests to your APIs #[span.wordset without exposing] your #[span.wordset client secret key.]
-
-Code
-    pre.
-        skapi.#[span(style="color:#44E9FF") clientSecretRequest]({
-            clientSecretName: #[span(style="color:#FFED91") "myapi"],
-            url: #[span(style="color:#FFED91") "https://api.openai.com/v1/images/generations"],
-            method: #[span(style="color:#FFED91") "POST"],
-            headers: {
-                #[span(style="color:#FFED91") "Content-Type"]: #[span(style="color:#FFED91") "application/json"],
-                Authorization: #[span(style="color:#FFED91") "Bearer $CLIENT_SECRET"]
-            },
-            data: {
-                model: #[span(style="color:#FFED91") "dall-e-3"],
-                "prompt": #[span(style="color:#FFED91") "A cute baby sea otter"],
-                n: #[span(style="color:#FFED91") 1],
-                size: #[span(style="color:#FFED91") "1024x1024"]
-            }
-        }).#[span(style="color:#44E9FF") then]( result => console.#[span(style="color:#44E9FF") log](result) );
-
-p.
-    The example above shows how you can request #[b OpenAI]'s #[b DALL·E 3] in your project.
-p.
-    It is using the client secret key stored under the name: "#[b myapi]".
-    #[br]
-    The placeholder: "#[b $CLIENT_SECRET]" will be replaced to the actual client secret key from the backend.
-
-p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
-
-br
-
-h2 Client Secret
+h2 Client Secret Key
 
 hr
 
@@ -44,7 +10,7 @@ hr
     br
     br
 template(v-else)
-    p Register your client secret by clicking '#[b Add Key]' below.
+    p Register your client secret keys by clicking '#[b Add Key]' below.
 
     .iconClick(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}")
         .material-symbols-outlined.fill add_circle
@@ -95,6 +61,43 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                         template(v-if="!editMode && !addMode")
                             .material-symbols-outlined.fill.clickable.icon.hide(@click="editKey(key)") edit
                             .material-symbols-outlined.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
+
+br
+
+h3 Using 3rd party APIs with Client Secret Key
+
+hr
+
+p(style='margin-bottom: 0').
+    When using a 3rd party API that requires a client secret key in your website,
+    register them in Skapi and make secure requests to your APIs #[span.wordset without exposing] your #[span.wordset client secret key.]
+
+Code
+    pre.
+        skapi.#[span(style="color:#44E9FF") clientSecretRequest]({
+            clientSecretName: #[span(style="color:#FFED91") "myapi"],
+            url: #[span(style="color:#FFED91") "https://api.openai.com/v1/images/generations"],
+            method: #[span(style="color:#FFED91") "POST"],
+            headers: {
+                #[span(style="color:#FFED91") "Content-Type"]: #[span(style="color:#FFED91") "application/json"],
+                Authorization: #[span(style="color:#FFED91") "Bearer $CLIENT_SECRET"]
+            },
+            data: {
+                model: #[span(style="color:#FFED91") "dall-e-3"],
+                "prompt": #[span(style="color:#FFED91") "A cute baby sea otter"],
+                n: #[span(style="color:#FFED91") 1],
+                size: #[span(style="color:#FFED91") "1024x1024"]
+            }
+        }).#[span(style="color:#44E9FF") then]( result => console.#[span(style="color:#44E9FF") log](result) );
+
+p.
+    The example above shows how you can request #[b OpenAI]'s #[b DALL·E 3] in your project.
+p.
+    It is using the client secret key stored under the name: "#[b myapi]".
+    #[br]
+    The placeholder: "#[b $CLIENT_SECRET]" will be replaced to the actual client secret key from the backend.
+
+p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
 
 br
 

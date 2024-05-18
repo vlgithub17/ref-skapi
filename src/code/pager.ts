@@ -49,16 +49,6 @@ export default class Pager {
     ): Promise<"Insert Successful"> {
         let { withinRange = false } = options || {};
 
-        console.log({
-            method: 'insert',
-            list: this.list,
-            map: this.map,
-            id: this.id,
-            sortBy: this.sortBy,
-            order: this.order,
-            items: items,
-            withinRange: withinRange
-        })
         this.worker.postMessage({
             method: 'insert',
             list: this.list,

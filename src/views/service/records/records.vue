@@ -2,7 +2,7 @@
 
 h3 Database
 
-p.
+p(style='margin-bottom: 0').
     The example below shows how you can let your users to upload / fetch their data from your service.
     The indexing and the security level is defined from your HTML without any server side code.
     Skapi can handle any type of data including huge binary files.

@@ -145,6 +145,11 @@ const router = createRouter(
             {
               path: '',
               name: 'service',
+              component: () => import('@/views/service/getting_started.vue')
+            },
+            {
+              path: 'dashboard',
+              name: 'dashboard',
               component: () => import('@/views/service/service.vue')
             },
             {

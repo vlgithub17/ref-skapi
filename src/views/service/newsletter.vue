@@ -1,55 +1,52 @@
 <template lang="pug">
-h2 Newsletter
+h2(style='margin-bottom: 0')
+    | Bulk Email:
+    | &nbsp;
+    .customSelect(style='display: inline-block; min-width: 160px; vertical-align: middle' @click.stop="(e)=>{showDropDown(e)}")
+        button(type='button')
+            span {{ group ? 'Service Mail' : 'Newsletter' }}
+            span.material-symbols-outlined arrow_drop_down
+        .moreVert(style="--moreVert-left:0;display:none")
+            .inner(style="padding:0.8rem;padding-right:1rem")
+                .more(@click="group = 0") Newsletter
+                .more(@click="group = 1") Service Mail
 
 hr
 
-p You can send newsletters to your users by clicking on #[a(:href="'mailto:' + newsletterEndpoint") Send Newsletter] #[.wordset or sending the email to the address provided below:]
+p(style='margin-bottom: 0') You can send {{mailType.toLowerCase()}} to your users by clicking on #[a(:href="'mailto:' + newsletterEndpoint") Send {{ mailType }}],#[br]#[.wordset or by sending the email to the address provided below:]
 
 Code
-    pre {{ newsletterEndpoint }}
+    pre {{ newsletterEndpoint || '...' }}
 
 br
 
-p.
-    You can collect your subscribers by using the following code:
+p(style='margin-bottom: 0').
+    You can collect your {{mailType.toLowerCase()}} subscribers by using the following code:
 
-Code
+Code(v-if='group === 0')
     pre.
         #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") placeholder]=#[span(style="color:#FFED91") "E-Mail address"]#[span(style="color:#999") &gt;]
-            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "public"]#[span(style="color:#999") &gt;]
+            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") {{group ? '"authorized"' : '"public"'}}]#[span(style="color:#999") &gt;]
             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
         #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
+Code(v-if='group === 1')
+    pre.
+        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
+            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") {{group ? '"authorized"' : '"public"'}}]#[span(style="color:#999") &gt;]
+            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
+        #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
+
+p(v-if='group === 1') * User must be logged in to subscribe to Service Mail, and the user must have their email verified.
 
 p For more information on how to use the code above, please refer to the #[a(href="https://docs.skapi.com/email/newsletters.html" target="_blank") documentation]
 
 br
 
-//- form#searchForm(@submit.prevent="init(true)")
-//-     .customSelect(@click.stop="(e)=>{showDropDown(e)}")
-//-         button(type='button')
-//-             span {{ searchFor == 'timestamp' ? 'Sent' : searchFor }}
-//-             span.material-symbols-outlined arrow_drop_down
-//-         .moreVert(style="--moreVert-left:0;display:none")
-//-             .inner(style="padding:0.8rem;padding-right:1rem")
-//-                 .more(value="Subject" @click="searchFor = 'subject';searchText = '';") Subject
-//-                 .more(value="timestamp" @click="searchFor = 'timestamp';searchText = '';") Sent
-
-//-     .search
-//-         .clickInput(v-if="searchFor === 'timestamp'" @click.stop="showCalendar = !showCalendar;")
-//-             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchText" readonly)
-//-             .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp')") calendar_today
-//-             Calendar(v-if="showCalendar" @dateClicked="handledateClick" @close="showCalendar=false" :searchText="searchText" :prevDateInfo="prevDateInfo" alwaysEmit='true')
-
-//-         input.big#searchInput(v-else-if="searchFor === 'subject'" type="text" placeholder="Email subject" v-model="searchText")
-
-//-         button.final(type="submit" style='flex-shrink: 0;') Search
-
 .tableMenu
     a.iconClick.square(:href="'mailto:' + newsletterEndpoint" @click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill mail
-        span &nbsp;&nbsp;Send Newsletter
-
+        span &nbsp;&nbsp;Send {{mailType}}
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill refresh
         span &nbsp;&nbsp;Refresh
@@ -57,35 +54,46 @@ br
 
 Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
     template(v-slot:head)
-        tr
+        tr(:class="{'nonClickable' : fetching}")
             th(style='width: 250px;')
-                | Subject
+                span(@click='toggleSort("subject")')
+                    | Subject
+                    span.material-symbols-outlined.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
                 .resizer
             th(style='width: 120px;')
-                | Sent
+                span(@click='toggleSort("timestamp")')
+                    | Sent
+                    span.material-symbols-outlined.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
                 .resizer
             th(style='width: 120px;')
-                | Reads
+                span(@click='toggleSort("read")')
+                    | Reads
+                    span.material-symbols-outlined.fill(v-if='searchFor === "read"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
                 .resizer
             th(style='width: 120px;')
-                | Complaint
+                span(@click='toggleSort("complaint")')
+                    | Complaint
+                    span.material-symbols-outlined.fill(v-if='searchFor === "complaint"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
                 .resizer
             th(style='width: 120px;')
-                | Bounced
-                .resizer
+                span(@click='toggleSort("bounced")')
+                    | Bounced
+                    span.material-symbols-outlined.fill(v-if='searchFor === "bounced"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
+            th.center(style="width:60px; padding:0")
+
     template(v-slot:body)
         template(v-if="fetching")
             tr
-                td#loading(colspan="5").
-                    Loading Newsletters ... &nbsp;
+                td#loading(colspan="6").
+                    Loading {{mailType}} ... &nbsp;
                     #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
             tr(v-for="i in 9")
-                td(colspan="5")
+                td(colspan="6")
         template(v-else-if="!listDisplay || listDisplay.length === 0")
             tr
-                td(colspan="5") No newsletter sent
+                td(colspan="6") No {{mailType}} Sent
             tr(v-for="i in 9")
-                td(colspan="5")
+                td(colspan="6")
         template(v-else)
             tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
                 td.overflow {{ converter(ns.subject) }}
@@ -93,8 +101,13 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
                 td.overflow {{ ns.read }}
                 td.overflow {{ ns.complaint }}
                 td.overflow {{ ns.bounced }}
+                td.center.buttonWrap(@click.stop)
+                    .material-symbols-outlined.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
             tr(v-for="i in (10 - listDisplay.length)")
-                td(colspan="5")
+                td(colspan="6")
+
+br
+
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
         .material-symbols-outlined.bold chevron_left
@@ -105,6 +118,27 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
         .material-symbols-outlined.bold chevron_right
 
 br
+
+Modal(:open="emailToDelete")
+    h4(style='margin:.5em 0 0;') Delete Email
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            Are you sure you want to delete email:
+            #[br]
+            "#[b {{ emailToDelete?.subject }}]"?
+            #[br]
+            #[br]
+            This action cannot be undone.
+    br
+    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+        template(v-if='deleteMailLoad')
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine.warning(@click="emailToDelete = null") Cancel
+            button.final.warning(@click="deleteEmail(emailToDelete)") Delete
 
 </template>
 
@@ -119,15 +153,17 @@ import { dateFormat } from '@/code/admin';
 import Pager from '@/code/pager';
 import Code from '@/components/code.vue';
 import { showDropDown } from '@/assets/js/event.js'
+import Modal from '@/components/modal.vue';
+import type { Newsletters } from 'skapi-js/js/Types';
 
 let pager: Pager = null;
 
 // default form input values
 
-let searchFor: Ref<"timestamp" | "message_id" | "read" | "complaint" | "subject"> = ref('timestamp');
-let searchValue: Ref<string | number> = ref('');
+let searchFor: Ref<"timestamp" | "read" | "complaint" | "subject"> = ref('timestamp');
 let group: Ref<0 | 1> = ref(0);
-let currentTimestamp: Ref<number> = ref(new Date().getTime());
+let ascending: Ref<boolean> = ref(false);
+let emailToDelete: Ref<Newsletter> = ref(null);
 
 type Newsletter = {
     bounced: number;
@@ -144,12 +180,14 @@ let fetching = ref(false);
 let maxPage = ref(0);
 let currentPage = ref(1);
 let endOfList = ref(false);
-
-let newsletterEndpoint: Ref<string> = ref('');
-currentService.newsletterSender[0].then(n => newsletterEndpoint.value = n);
-
+let mailType = computed(() => group.value === 0 ? 'Newsletter' : 'Service Mail');
+let deleteMailLoad = ref(false);
 // list renderer
 let listDisplay: Ref<Newsletter[]> = ref(null);
+
+// etc
+let newsletterEndpoint: Ref<string> = ref('');
+currentService.newsletterSender[0].then(r => newsletterEndpoint.value = r);
 
 // call getPage when currentPage changes
 watch(currentPage, (n, o) => {
@@ -167,9 +205,21 @@ watch(currentPage, (n, o) => {
 
 // initialize the pager when searchFor changes
 watch(searchFor, (n) => {
-    init();
+    if (!fetching.value) {
+        ascending.value = n === 'subject';
+        init();
+    }
 });
+
+watch(ascending, (n) => {
+    if (!fetching.value) {
+        init();
+    }
+});
+
 watch(group, (n) => {
+    newsletterEndpoint.value = '';
+    currentService.newsletterSender[n].then(r => newsletterEndpoint.value = r);
     init();
 });
 
@@ -177,12 +227,8 @@ watch(group, (n) => {
 let callParams = computed(() => {
     let defaultValues = {
         timestamp: {
-            value: currentTimestamp.value,
-            condition: '<=',
-        },
-        message_id: {
-            value: '',
-            condition: '=',
+            value: 0,
+            condition: '>=',
         },
         read: {
             value: 0,
@@ -193,8 +239,8 @@ let callParams = computed(() => {
             condition: '>=',
         },
         subject: {
-            value: '',
-            condition: '>=',
+            value: ' ',
+            condition: '>',
         },
     }
     return {
@@ -202,12 +248,12 @@ let callParams = computed(() => {
             service: currentService.service.service,
             owner: currentService.service.owner,
             searchFor: searchFor.value,
-            value: searchValue.value || defaultValues[searchFor.value].value,
+            value: defaultValues[searchFor.value].value,
             condition: defaultValues[searchFor.value].condition,
             group: group.value,
         },
         options: {
-            ascending: searchFor.value === 'subject',
+            ascending: ascending.value,
         }
     }
 });
@@ -226,12 +272,6 @@ let getPage = async (refresh?: boolean) => {
 
     else if (!endOfList.value || refresh) {
         // if page data needs to be fetched
-
-        if (refresh) {
-            // refresh timestamp
-            currentTimestamp.value = new Date().getTime();
-        }
-
         fetching.value = true;
 
         // fetch from server
@@ -265,14 +305,13 @@ let init = async () => {
         id: 'message_id',
         resultsPerPage: 10,
         sortBy: searchFor.value,
-        order: searchFor.value === 'subject' ? 'asc' : 'desc',
+        order: ascending.value ? 'asc' : 'desc',
     });
 
     getPage(true);
 }
 
 init();
-
 
 // ux related functions
 
@@ -292,19 +331,84 @@ let converter = (html: string, parsed: boolean, inv: boolean) => {
     html = html.replaceAll('${password}', 'abc123&&');
     return html
 }
+
+let toggleSort = (search) => {
+    if (fetching.value) {
+        return;
+    }
+
+    if (searchFor.value === search) {
+        ascending.value = !ascending.value;
+    }
+    else {
+        searchFor.value = search;
+    }
+}
+
+let deleteEmail = (ns: Newsletter) => {
+    if (!ns) {
+        return;
+    }
+
+    let params = {
+        message_id: ns.message_id,
+        group: group.value,
+    }
+
+    deleteMailLoad.value = true;
+    currentService.deleteNewsletter(params).then(async () => {
+        emailToDelete.value = null;
+        await pager.deleteItem(params.message_id);
+        getPage();
+    }).catch(err => window.alert(err)).finally(() => {
+        deleteMailLoad.value = false;
+    });
+}
+
 </script>
 
 <style lang="less" scoped>
 // table style below
 
-tbody tr.nsrow {
-    &:not(.active):hover {
-        background-color: rgba(41, 63, 230, 0.05);
-        cursor: pointer;
-    }
+tbody {
+    tr.nsrow {
+        @media (pointer: fine) {
 
-    &.active {
-        background-color: rgba(41, 63, 230, 0.10);
+            // only for mouse pointer devices
+            &:not(.active):hover {
+                background-color: rgba(41, 63, 230, 0.05);
+                cursor: pointer;
+            }
+        }
+
+        &.active {
+            background-color: rgba(41, 63, 230, 0.10);
+        }
+
+        &:hover {
+            .hide {
+                display: block;
+            }
+        }
+
+        .hide {
+            display: none;
+        }
+    }
+}
+
+thead {
+    th {
+        &>span {
+            @media (pointer: fine) {
+
+                // only for mouse pointer devices
+                &:hover {
+                    cursor: pointer;
+                    text-decoration: underline;
+                }
+            }
+        }
     }
 }
 
@@ -312,50 +416,15 @@ tbody tr.nsrow {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    // flex-direction: row-reverse;
 
     &>* {
-        margin: 8px 0;
+        margin-bottom: 8px;
     }
 }
 
-#searchForm {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    width: 600px;
-    max-width: 100%;
-
-    .search {
-        position: relative;
-        display: flex;
-        flex-grow: 1;
-        gap: 8px;
+@media (pointer: coarse) {
+    .hide {
+        display: block !important;
     }
-
-    .big {
-        padding-right: 1rem;
-    }
-
-    .icon {
-        position: absolute;
-        top: 50%;
-        right: 125px;
-        transform: translateY(-50%);
-        cursor: pointer;
-        user-select: none;
-        // z-index: 99;
-    }
-}
-
-#calendar,
-#localeSelector {
-    position: absolute;
-    right: 0;
-    top: 100%;
-    max-width: 100%;
-    margin-top: 8px;
-    z-index: 1;
 }
 </style>
