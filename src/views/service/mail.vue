@@ -37,10 +37,10 @@ template(v-if='emailType === "Signup Confirmation"')
         li #[b ${service_name}] - Service name
 
     p(style='margin-bottom: 0').
-        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.signup_confirmation') email address] provided below:
+        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.confirmation') email address] provided below:
 
     Code
-        pre {{ email_templates.signup_confirmation }}
+        pre {{ email_templates.confirmation }}
 
     p.
         For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
@@ -52,7 +52,7 @@ template(v-if='emailType === "Signup Confirmation"')
 
         .state
             .smallTitle Subject
-            .ellipsis {{ converter(signup_confirmation.subject, parseOpt.signup) }}
+            .ellipsis {{ converter(confirmation.subject, parseOpt.signup) }}
 
         .state
             .smallTitle Content
@@ -61,8 +61,8 @@ template(v-if='emailType === "Signup Confirmation"')
             small.editHandle(:style='{color: !parseOpt.signup ? "black" : null}' @click='parseOpt.signup = false') [Original]
 
         .email
-            div(v-if='signup_confirmation.html === null') ...
-            div(v-else v-html='converter(signup_confirmation.html, parseOpt.signup)')
+            div(v-if='confirmation.html === null') ...
+            div(v-else v-html='converter(confirmation.html, parseOpt.signup)')
 
 
 template(v-if='emailType === "Welcome Email"')
@@ -77,9 +77,9 @@ template(v-if='emailType === "Welcome Email"')
         li #[b ${service_name}] - Service name
 
     p(style='margin-bottom: 0').
-        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.signup_confirmation') email address] provided below:
+        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.confirmation') email address] provided below:
     Code
-        pre {{ email_templates.signup_confirmation }}
+        pre {{ email_templates.confirmation }}
 
     p.
         For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
@@ -123,10 +123,10 @@ template(v-if='emailType === "Verification Email"')
         li #[b ${service_name}] - Service name
 
     p(style='margin-bottom: 0').
-        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.signup_confirmation') email address] provided below:
+        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.confirmation') email address] provided below:
 
     Code
-        pre {{ email_templates.signup_confirmation }}
+        pre {{ email_templates.confirmation }}
 
     p.
         For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
@@ -168,10 +168,10 @@ template(v-if='emailType === "Invitation Email"')
         li #[b ${service_name}] - Service name
 
     p(style='margin-bottom: 0').
-        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.signup_confirmation') email address] provided below:
+        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.confirmation') email address] provided below:
 
     Code
-        pre {{ email_templates.signup_confirmation }}
+        pre {{ email_templates.confirmation }}
 
     p.
         For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
@@ -407,8 +407,7 @@ let group: ComputedRef<'confirmation' | 'welcome' | 'verification' | 'invitation
     switch (emailType.value) {
         case 'Signup Confirmation':
             grp = 'confirmation';
-            mailEndpoint.value = currentService.service.email_triggers.template_setters.signup_confirmation;
-            return grp;
+            break;
 
         case 'Welcome Email':
             grp = 'welcome';
@@ -647,13 +646,13 @@ else {
     });
 }
 
-let signup_confirmation = reactive({
+let confirmation = reactive({
     subject: service?.template_confirmation?.subject || '[${service_name}] Signup Confirmation',
     html: null
 })
 
 if (!service.template_confirmation?.url) {
-    signup_confirmation.html = `<pre>
+    confirmation.html = `<pre>
 Please activate your account by clicking this <a href="\${link}" style="font-weight: bold">LINK</a>
 Your activation link is valid for 7 days.
 </pre>`;
@@ -661,7 +660,7 @@ Your activation link is valid for 7 days.
 
 else {
     fetchHTML(service.template_confirmation.url).then((html) => {
-        signup_confirmation.html = html;
+        confirmation.html = html;
     });
 }
 

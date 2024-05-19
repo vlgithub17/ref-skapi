@@ -25,7 +25,7 @@ export type ServiceObj = {
     email_triggers?: {
         template_setters: {
             welcome: string,
-            signup_confirmation: string,
+            confirmation: string,
             newsletter_subscription: string,
             verification: string,
             invitation: string
