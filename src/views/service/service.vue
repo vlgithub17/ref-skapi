@@ -1,7 +1,7 @@
 <template lang="pug">
 
 section.infoBox
-    .infoTitle(style="margin-right: 1rem;") Dashboard
+    .infoTitle Dashboard
 
     hr
 

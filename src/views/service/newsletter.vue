@@ -2,8 +2,8 @@
 h2(style='margin-bottom: 0')
     | Bulk Email:
     | &nbsp;
-    .customSelect(style='display: inline-block; min-width: 160px; vertical-align: middle' @click.stop="(e)=>{showDropDown(e)}")
-        button(type='button')
+    .customSelect(style='display: inline-block; min-width: 160px; vertical-align: middle' @click.stop="(e)=>{showDropDown(e)}" :class='{disabled: fetching}')
+        button(type='button' :disabled='fetching')
             span {{ group ? 'Service Mail' : 'Newsletter' }}
             span.material-symbols-outlined arrow_drop_down
         .moreVert(style="--moreVert-left:0;display:none")
@@ -44,7 +44,7 @@ p For more information on how to use the code above, please refer to the #[a(hre
 br
 
 .tableMenu
-    a.iconClick.square(:href="'mailto:' + newsletterEndpoint" @click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    a.iconClick.square(:href="'mailto:' + newsletterEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill mail
         span &nbsp;&nbsp;Send {{mailType}}
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
@@ -207,7 +207,7 @@ watch(currentPage, (n, o) => {
 watch(searchFor, (n) => {
     if (!fetching.value) {
         ascending.value = n === 'subject';
-        if (pager.endOfList) {
+        if (endOfList.value) {
             resetIndex();
         }
         else {
@@ -218,7 +218,7 @@ watch(searchFor, (n) => {
 
 watch(ascending, (n) => {
     if (!fetching.value) {
-        if (pager.endOfList) {
+        if (endOfList.value) {
             resetIndex();
         }
         else {
@@ -273,8 +273,12 @@ let getPage = async (refresh?: boolean) => {
         // if pager is not ready, return
         return;
     }
+    
+    if(refresh) {
+        endOfList.value = false;
+    }
 
-    if (!refresh && maxPage.value >= currentPage.value) {
+    if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
         // if is not refresh and has page data
         listDisplay.value = pager.getPage(currentPage.value).list as Newsletter[];
         return;
@@ -307,9 +311,10 @@ let getPage = async (refresh?: boolean) => {
     }
 }
 
-let resetIndex = () => {
+let resetIndex = async () => {
+    // reset index is used when index is changed but it's end of list
     currentPage.value = 1;
-    pager.resetIndex({
+    await pager.resetIndex({
         sortBy: searchFor.value,
         order: ascending.value ? 'asc' : 'desc',
     });

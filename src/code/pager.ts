@@ -6,7 +6,6 @@ export default class Pager {
     list: { [key: string]: any } = {};
     resultsPerPage = 10;
     worker: any;
-    endOfList: boolean;
 
     constructor(
         worker: Worker,
@@ -165,7 +164,7 @@ export default class Pager {
             };
         });
     }
-    
+
     ////////////////////////////////////////////////////////////////
     static async init(option: {
         id: string; // unique id of the data

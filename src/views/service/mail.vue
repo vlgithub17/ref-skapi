@@ -2,8 +2,8 @@
 h2(style='margin-bottom: 0')
     | Automated Email:
     | &nbsp;
-    .customSelect(style='display: inline-block; min-width: 220px; vertical-align: middle' @click.stop="(e)=>{showDropDown(e)}")
-        button(type='button')
+    .customSelect(style='display: inline-block; min-width: 220px; vertical-align: middle' @click.stop="(e)=>{showDropDown(e)}" :class='{disabled: fetching}')
+        button(type='button' :disabled='fetching')
             span {{ emailType }}
             span.material-symbols-outlined arrow_drop_down
         .moreVert(style="--moreVert-left:0;display:none")
@@ -46,6 +46,10 @@ template(v-if='emailType === "Signup Confirmation"')
         For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
 
     section.infoBox
+        .infoTitle Current Template
+
+        hr
+
         .state
             .smallTitle Subject
             .ellipsis {{ converter(signup_confirmation.subject, parseOpt.signup) }}
@@ -81,6 +85,10 @@ template(v-if='emailType === "Welcome Email"')
         For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
 
     section.infoBox
+        .infoTitle Current Template
+
+        hr
+
         .state
             .smallTitle Subject
             .ellipsis {{ converter(welcome.subject, parseOpt.welcome) }}
@@ -124,6 +132,10 @@ template(v-if='emailType === "Verification Email"')
         For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
 
     section.infoBox
+        .infoTitle Current Template
+
+        hr
+
         .state
             .smallTitle Subject
             .ellipsis {{ converter(verification.subject, parseOpt.verification) }}
@@ -165,6 +177,10 @@ template(v-if='emailType === "Invitation Email"')
         For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
 
     section.infoBox
+        .infoTitle Current Template
+
+        hr
+
         .state
             .smallTitle Subject
             .ellipsis {{ converter(invitation.subject, parseOpt.invitation) }}
@@ -178,52 +194,59 @@ template(v-if='emailType === "Invitation Email"')
             div(v-if='invitation.html === null') ...
             div(v-else v-html='converter(invitation.html, parseOpt.invitation, true)')
 
+br
 
 .tableMenu
-    a.iconClick.square(:href="'mailto:' + newsletterEndpoint" @click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    a.iconClick.square(:href="'mailto:' + mailEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill mail
-        span &nbsp;&nbsp;Set {{emailType}}
-    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill refresh
-        span &nbsp;&nbsp;Refresh
-
-br
+        span &nbsp;&nbsp;New {{emailType}}
+    //- .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    //-     .material-symbols-outlined.fill refresh
+    //-     span &nbsp;&nbsp;Refresh
 
 Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
     template(v-slot:head)
         tr(:class="{'nonClickable' : fetching}")
-            th(style='width: 250px;')
+            th(style="width:66px; padding:0;text-align:center;")
+                span In-Use
+                .resizer
+            th
                 span(@click='toggleSort("subject")')
                     | Subject
                     span.material-symbols-outlined.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
                 .resizer
-            th(style='width: 120px;')
+            th
                 span(@click='toggleSort("timestamp")')
-                    | Sent
+                    | Date
                     span.material-symbols-outlined.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
-            th.center(style="width:120px; padding:0")
+            th(style="width:66px; padding:0")
 
     template(v-slot:body)
         template(v-if="fetching")
             tr
-                td#loading(colspan="3").
+                td#loading(colspan="4").
                     Loading {{emailType}} ... &nbsp;
                     #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
             tr(v-for="i in 9")
-                td(colspan="3")
+                td(colspan="4")
         template(v-else-if="!listDisplay || listDisplay.length === 0")
             tr
-                td(colspan="3") No {{emailType}} Template
+                td(colspan="4") No {{emailType}} Template
             tr(v-for="i in 9")
-                td(colspan="3")
+                td(colspan="4")
         template(v-else)
             tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
+                td.overflow
+                    template(v-if='currentService.service?.["template_" + group]?.url === ns.url')
+                        span.material-symbols-outlined.fill verified
+                    template(v-else)
+                        span.material-symbols-outlined.fill.icon.clickable.hide(@click.stop="emailToUse = ns") check_circle
                 td.overflow {{ converter(ns.subject) }}
                 td.overflow {{ dateFormat(ns.timestamp) }}
                 td.center.buttonWrap(@click.stop)
-                    .material-symbols-outlined.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
+                    span.material-symbols-outlined.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
             tr(v-for="i in (10 - listDisplay.length)")
-                td(colspan="3")
+                td(colspan="4")
 
 br
 
@@ -243,19 +266,44 @@ Modal(:open="emailToDelete")
 
     div(style='font-size:.8rem;')
         p.
-            Are you sure you want to delete email:
+            Are you sure you want to delete email template:
             #[br]
             "#[b {{ emailToDelete?.subject }}]"?
             #[br]
             #[br]
             This action cannot be undone.
+
     br
+
     div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
         template(v-if='deleteMailLoad')
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine.warning(@click="emailToDelete = null") Cancel
             button.final.warning(@click="deleteEmail(emailToDelete)") Delete
+
+
+Modal(:open="emailToUse")
+    h4(style='margin:.5em 0 0;') Set Template
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            By clicking confirm, you are setting the email template:
+            #[br]
+            "#[b {{ emailToUse?.subject }}]"
+            #[br]
+            as the {{ emailType }} template.
+
+    br
+
+    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+        template(v-if='useMailLoad')
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine(@click="emailToUse = null") Cancel
+            button.final(@click="useEmail(emailToUse)") Confirm
 
 br
 br
@@ -264,7 +312,7 @@ br
 
 <script setup lang="ts">
 import { reactive, ref, computed, watch } from 'vue';
-import type { Ref } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
 import { currentService } from './main';
 import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
@@ -307,8 +355,6 @@ let deleteMailLoad = ref(false);
 let listDisplay: Ref<Newsletter[]> = ref(null);
 
 // etc
-let newsletterEndpoint: Ref<string> = ref('');
-currentService.newsletterSender[0].then(r => newsletterEndpoint.value = r);
 
 // call getPage when currentPage changes
 watch(currentPage, (n, o) => {
@@ -328,7 +374,7 @@ watch(currentPage, (n, o) => {
 watch(searchFor, (n) => {
     if (!fetching.value) {
         ascending.value = n === 'subject';
-        if (pager.endOfList) {
+        if (endOfList.value) {
             resetIndex();
         }
         else {
@@ -337,9 +383,9 @@ watch(searchFor, (n) => {
     }
 });
 
-watch(ascending, (n) => {
+watch(ascending, () => {
     if (!fetching.value) {
-        if (pager.endOfList) {
+        if (endOfList.value) {
             resetIndex();
         }
         else {
@@ -348,18 +394,36 @@ watch(ascending, (n) => {
     }
 });
 
-let group = computed(() => {
-    switch (emailType.value) {
-        case 'Signup Confirmation':
-            return 'confirmation';
-        case 'Welcome Email':
-            return 'welcome';
-        case 'Verification Email':
-            return 'verification';
-        case 'Invitation Email':
-            return 'invitation';
+watch(emailType, () => {
+    if (!fetching.value) {
+        init();
     }
 })
+
+let mailEndpoint = ref('');
+
+let group: ComputedRef<'confirmation' | 'welcome' | 'verification' | 'invitation'> = computed(() => {
+    let grp: 'confirmation' | 'welcome' | 'verification' | 'invitation' = 'confirmation';
+    switch (emailType.value) {
+        case 'Signup Confirmation':
+            grp = 'confirmation';
+            mailEndpoint.value = currentService.service.email_triggers.template_setters.signup_confirmation;
+            return grp;
+
+        case 'Welcome Email':
+            grp = 'welcome';
+            break;
+        case 'Verification Email':
+            grp = 'verification';
+            break;
+        case 'Invitation Email':
+            grp = 'invitation';
+            break;
+    }
+
+    mailEndpoint.value = (currentService.service.email_triggers.template_setters as any)[grp];
+    return grp;
+});
 
 // computed fetch params
 let callParams = computed(() => {
@@ -394,7 +458,11 @@ let getPage = async (refresh?: boolean) => {
         return;
     }
 
-    if (!refresh && maxPage.value >= currentPage.value) {
+    if (refresh) {
+        endOfList.value = false;
+    }
+
+    if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
         // if is not refresh and has page data
         listDisplay.value = pager.getPage(currentPage.value).list as Newsletter[];
         return;
@@ -427,12 +495,13 @@ let getPage = async (refresh?: boolean) => {
     }
 }
 
-let resetIndex = () => {
+let resetIndex = async () => {
     currentPage.value = 1;
-    pager.resetIndex({
+    await pager.resetIndex({
         sortBy: searchFor.value,
         order: ascending.value ? 'asc' : 'desc',
     });
+
     getPage();
 }
 
@@ -478,12 +547,17 @@ let deleteEmail = (ns: Newsletter) => {
 
     let params = {
         message_id: ns.message_id,
-        group: -1, // -1 template
+        group: group.value
     }
 
     deleteMailLoad.value = true;
-    currentService.deleteNewsletter(params).then(async () => {
+    currentService.deleteTemplate(params).then(async () => {
         emailToDelete.value = null;
+
+        if ((currentService.service as any)?.["template_" + group]?.url === ns.url) {
+            delete (currentService.service as any)?.["template_" + group];
+        }
+
         await pager.deleteItem(params.message_id);
         getPage();
     }).catch(err => window.alert(err)).finally(() => {
@@ -491,6 +565,36 @@ let deleteEmail = (ns: Newsletter) => {
     });
 }
 
+let useMailLoad = ref(false);
+let emailToUse = ref(null);
+
+let useEmail = (ns: Newsletter) => {
+    if (!ns) {
+        return;
+    }
+
+    let params = {
+        message_id: ns.message_id,
+        group: group.value
+    }
+
+    useMailLoad.value = true;
+    currentService.setTemplate(params).then(async () => {
+        if (!currentService.service["template_" + group.value])
+            currentService.service["template_" + group.value] = {
+                url: ns.url,
+                subject: ns.subject
+            }
+        else {
+            currentService.service["template_" + group.value].url = ns.url;
+            currentService.service["template_" + group.value].subject = ns.subject;
+        }
+
+        emailToUse.value = null;
+    }).catch(err => window.alert(err)).finally(() => {
+        useMailLoad.value = false;
+    });
+}
 ///////////////////////////////////////////////////////////////////////////////// template history[end]
 
 let service = currentService.service;
@@ -544,11 +648,11 @@ else {
 }
 
 let signup_confirmation = reactive({
-    subject: service?.template_signup_confirmation?.subject || '[${service_name}] Signup Confirmation',
+    subject: service?.template_confirmation?.subject || '[${service_name}] Signup Confirmation',
     html: null
 })
 
-if (!service.template_signup_confirmation?.url) {
+if (!service.template_confirmation?.url) {
     signup_confirmation.html = `<pre>
 Please activate your account by clicking this <a href="\${link}" style="font-weight: bold">LINK</a>
 Your activation link is valid for 7 days.
@@ -556,7 +660,7 @@ Your activation link is valid for 7 days.
 }
 
 else {
-    fetchHTML(service.template_signup_confirmation.url).then((html) => {
+    fetchHTML(service.template_confirmation.url).then((html) => {
         signup_confirmation.html = html;
     });
 }
@@ -615,5 +719,65 @@ ul {
 li {
     margin-bottom: 8px;
     font-size: .8rem;
+}
+
+// table style below
+
+tbody {
+    tr.nsrow {
+        @media (pointer: fine) {
+
+            // only for mouse pointer devices
+            &:not(.active):hover {
+                background-color: rgba(41, 63, 230, 0.05);
+                // cursor: pointer;
+            }
+        }
+
+        &.active {
+            background-color: rgba(41, 63, 230, 0.10);
+        }
+
+        &:hover {
+            .hide {
+                display: block;
+            }
+        }
+
+        .hide {
+            display: none;
+        }
+    }
+}
+
+thead {
+    th {
+        &>span {
+            @media (pointer: fine) {
+
+                // only for mouse pointer devices
+                &:hover {
+                    cursor: pointer;
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}
+
+.tableMenu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    &>* {
+        margin-bottom: 8px;
+    }
+}
+
+@media (pointer: coarse) {
+    .hide {
+        display: block !important;
+    }
 }
 </style>
