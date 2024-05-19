@@ -178,22 +178,323 @@ template(v-if='emailType === "Invitation Email"')
             div(v-if='invitation.html === null') ...
             div(v-else v-html='converter(invitation.html, parseOpt.invitation, true)')
 
+
+.tableMenu
+    a.iconClick.square(:href="'mailto:' + newsletterEndpoint" @click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .material-symbols-outlined.fill mail
+        span &nbsp;&nbsp;Set {{emailType}}
+    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .material-symbols-outlined.fill refresh
+        span &nbsp;&nbsp;Refresh
+
+br
+
+Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
+    template(v-slot:head)
+        tr(:class="{'nonClickable' : fetching}")
+            th(style='width: 250px;')
+                span(@click='toggleSort("subject")')
+                    | Subject
+                    span.material-symbols-outlined.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
+                .resizer
+            th(style='width: 120px;')
+                span(@click='toggleSort("timestamp")')
+                    | Sent
+                    span.material-symbols-outlined.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
+            th.center(style="width:120px; padding:0")
+
+    template(v-slot:body)
+        template(v-if="fetching")
+            tr
+                td#loading(colspan="3").
+                    Loading {{emailType}} ... &nbsp;
+                    #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+            tr(v-for="i in 9")
+                td(colspan="3")
+        template(v-else-if="!listDisplay || listDisplay.length === 0")
+            tr
+                td(colspan="3") No {{emailType}} Template
+            tr(v-for="i in 9")
+                td(colspan="3")
+        template(v-else)
+            tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
+                td.overflow {{ converter(ns.subject) }}
+                td.overflow {{ dateFormat(ns.timestamp) }}
+                td.center.buttonWrap(@click.stop)
+                    .material-symbols-outlined.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
+            tr(v-for="i in (10 - listDisplay.length)")
+                td(colspan="3")
+
+br
+
+.tableMenu(style='display:block;text-align:center;')
+    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
+        .material-symbols-outlined.bold chevron_left
+        span Previous&nbsp;&nbsp;
+    | &nbsp;&nbsp;
+    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
+        span &nbsp;&nbsp;Next
+        .material-symbols-outlined.bold chevron_right
+
+Modal(:open="emailToDelete")
+    h4(style='margin:.5em 0 0;') Delete Email
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            Are you sure you want to delete email:
+            #[br]
+            "#[b {{ emailToDelete?.subject }}]"?
+            #[br]
+            #[br]
+            This action cannot be undone.
+    br
+    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+        template(v-if='deleteMailLoad')
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine.warning(@click="emailToDelete = null") Cancel
+            button.final.warning(@click="deleteEmail(emailToDelete)") Delete
+
 br
 br
 
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed, watch } from 'vue';
 import type { Ref } from 'vue';
 import { currentService } from './main';
 import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
 import Code from '@/components/code.vue';
+import { dateFormat } from '@/code/admin';
+import Table from '@/components/table.vue';
+import Modal from '@/components/modal.vue';
+import Pager from '@/code/pager';
+import { skapi } from '@/code/admin';
+
+type Newsletter = {
+    bounced: number;
+    compliant: number;
+    read: number;
+    message_id: string;
+    subject: string;
+    timestamp: number;
+    url: string;
+}
+
+let emailType: Ref<'Signup Confirmation' | 'Welcome Email' | 'Verification Email' | 'Invitation Email'> = ref('Signup Confirmation');
+
+///////////////////////////////////////////////////////////////////////////////// template history[start]
+let pager: Pager = null;
+
+// default form input values
+
+let searchFor: Ref<"timestamp" | "subject"> = ref('timestamp');
+let ascending: Ref<boolean> = ref(false);
+let emailToDelete: Ref<Newsletter> = ref(null);
+
+// ui/ux related
+let fetching = ref(false);
+let maxPage = ref(0);
+let currentPage = ref(1);
+let endOfList = ref(false);
+let deleteMailLoad = ref(false);
+
+// list renderer
+let listDisplay: Ref<Newsletter[]> = ref(null);
+
+// etc
+let newsletterEndpoint: Ref<string> = ref('');
+currentService.newsletterSender[0].then(r => newsletterEndpoint.value = r);
+
+// call getPage when currentPage changes
+watch(currentPage, (n, o) => {
+    if (n !== o && n > 0 && (n <= maxPage.value || n > maxPage.value && !endOfList.value)) {
+        // if new value is different from old value
+        // if new value is within maxPage
+        // if new value is greater than maxPage but not end of list
+
+        getPage();
+    }
+    else {
+        currentPage.value = o; // revert back to old value
+    }
+});
+
+// initialize the pager when searchFor changes
+watch(searchFor, (n) => {
+    if (!fetching.value) {
+        ascending.value = n === 'subject';
+        if (pager.endOfList) {
+            resetIndex();
+        }
+        else {
+            init();
+        }
+    }
+});
+
+watch(ascending, (n) => {
+    if (!fetching.value) {
+        if (pager.endOfList) {
+            resetIndex();
+        }
+        else {
+            init();
+        }
+    }
+});
+
+let group = computed(() => {
+    switch (emailType.value) {
+        case 'Signup Confirmation':
+            return 'confirmation';
+        case 'Welcome Email':
+            return 'welcome';
+        case 'Verification Email':
+            return 'verification';
+        case 'Invitation Email':
+            return 'invitation';
+    }
+})
+
+// computed fetch params
+let callParams = computed(() => {
+    let defaultValues = {
+        timestamp: {
+            value: 0,
+            condition: '>=',
+        },
+        subject: {
+            value: ' ',
+            condition: '>',
+        },
+    }
+    return {
+        params: {
+            service: currentService.service.service,
+            owner: currentService.service.owner,
+            searchFor: searchFor.value,
+            value: defaultValues[searchFor.value].value,
+            condition: defaultValues[searchFor.value].condition,
+            group: group.value,
+        },
+        options: {
+            ascending: ascending.value,
+        }
+    }
+});
+
+let getPage = async (refresh?: boolean) => {
+    if (!pager) {
+        // if pager is not ready, return
+        return;
+    }
+
+    if (!refresh && maxPage.value >= currentPage.value) {
+        // if is not refresh and has page data
+        listDisplay.value = pager.getPage(currentPage.value).list as Newsletter[];
+        return;
+    }
+
+    else if (!endOfList.value || refresh) {
+        // if page data needs to be fetched
+        fetching.value = true;
+
+        // fetch from server
+        let fetchedData = await currentService.getMailTemplates(callParams.value.params, Object.assign({ fetchMore: !refresh }, callParams.value.options));
+
+        // save endOfList status
+        endOfList.value = fetchedData.endOfList;
+
+        // insert data in pager
+        if (fetchedData.list.length > 0) {
+            await pager.insertItems(fetchedData.list);
+        }
+
+        // get page from pager
+        let disp = pager.getPage(currentPage.value);
+
+        // set maxpage
+        maxPage.value = disp.maxPage;
+
+        // render data
+        listDisplay.value = disp.list as Newsletter[];
+        fetching.value = false;
+    }
+}
+
+let resetIndex = () => {
+    currentPage.value = 1;
+    pager.resetIndex({
+        sortBy: searchFor.value,
+        order: ascending.value ? 'asc' : 'desc',
+    });
+    getPage();
+}
+
+let init = async () => {
+    currentPage.value = 1;
+
+    // setup pagers
+    pager = await Pager.init({
+        id: 'message_id',
+        resultsPerPage: 10,
+        sortBy: searchFor.value,
+        order: ascending.value ? 'asc' : 'desc',
+    });
+
+    getPage(true);
+}
+
+init();
+
+// ux related functions
+
+let openNewsletter = (url: string) => {
+    window.open(url, '_blank');
+}
+
+let toggleSort = (search: any) => {
+    if (fetching.value) {
+        return;
+    }
+
+    if (searchFor.value === search) {
+        ascending.value = !ascending.value;
+    }
+    else {
+        searchFor.value = search;
+    }
+}
+
+let deleteEmail = (ns: Newsletter) => {
+    if (!ns) {
+        return;
+    }
+
+    let params = {
+        message_id: ns.message_id,
+        group: -1, // -1 template
+    }
+
+    deleteMailLoad.value = true;
+    currentService.deleteNewsletter(params).then(async () => {
+        emailToDelete.value = null;
+        await pager.deleteItem(params.message_id);
+        getPage();
+    }).catch(err => window.alert(err)).finally(() => {
+        deleteMailLoad.value = false;
+    });
+}
+
+///////////////////////////////////////////////////////////////////////////////// template history[end]
 
 let service = currentService.service;
 let email_templates = currentService.service.email_triggers.template_setters;
-let emailType: Ref<string> = ref('Signup Confirmation');
 let parseOpt = reactive({});
 
 let converter = (html: string, parsed: boolean, inv: boolean) => {

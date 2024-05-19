@@ -156,15 +156,6 @@ import { showDropDown } from '@/assets/js/event.js'
 import Modal from '@/components/modal.vue';
 import type { Newsletters } from 'skapi-js/js/Types';
 
-let pager: Pager = null;
-
-// default form input values
-
-let searchFor: Ref<"timestamp" | "read" | "complaint" | "subject"> = ref('timestamp');
-let group: Ref<0 | 1> = ref(0);
-let ascending: Ref<boolean> = ref(false);
-let emailToDelete: Ref<Newsletter> = ref(null);
-
 type Newsletter = {
     bounced: number;
     compliant: number;
@@ -174,6 +165,15 @@ type Newsletter = {
     timestamp: number;
     url: string;
 }
+
+let pager: Pager = null;
+
+// default form input values
+
+let searchFor: Ref<"timestamp" | "read" | "complaint" | "subject"> = ref('timestamp');
+let group: Ref<0 | 1> = ref(0);
+let ascending: Ref<boolean> = ref(false);
+let emailToDelete: Ref<Newsletter> = ref(null);
 
 // ui/ux related
 let fetching = ref(false);
@@ -207,13 +207,23 @@ watch(currentPage, (n, o) => {
 watch(searchFor, (n) => {
     if (!fetching.value) {
         ascending.value = n === 'subject';
-        init();
+        if (pager.endOfList) {
+            resetIndex();
+        }
+        else {
+            init();
+        }
     }
 });
 
 watch(ascending, (n) => {
     if (!fetching.value) {
-        init();
+        if (pager.endOfList) {
+            resetIndex();
+        }
+        else {
+            init();
+        }
     }
 });
 
@@ -297,6 +307,15 @@ let getPage = async (refresh?: boolean) => {
     }
 }
 
+let resetIndex = () => {
+    currentPage.value = 1;
+    pager.resetIndex({
+        sortBy: searchFor.value,
+        order: ascending.value ? 'asc' : 'desc',
+    });
+    getPage();
+}
+
 let init = async () => {
     currentPage.value = 1;
 
@@ -319,20 +338,7 @@ let openNewsletter = (url: string) => {
     window.open(url, '_blank');
 }
 
-let converter = (html: string, parsed: boolean, inv: boolean) => {
-    if (!parsed) {
-        return html;
-    }
-    html = html.replaceAll('${code}', '123456');
-    html = html.replaceAll('${email}', user.email);
-    html = html.replaceAll('${name}', user.name || user.email);
-    html = html.replaceAll('${service_name}', service.name);
-    html = html.replaceAll('${link}', inv ? '/invitation_confirmed_template' : '/signup_confirmed_template');
-    html = html.replaceAll('${password}', 'abc123&&');
-    return html
-}
-
-let toggleSort = (search) => {
+let toggleSort = (search: any) => {
     if (fetching.value) {
         return;
     }
@@ -365,6 +371,18 @@ let deleteEmail = (ns: Newsletter) => {
     });
 }
 
+let converter = (html: string, parsed: boolean, inv: boolean) => {
+    if (!parsed) {
+        return html;
+    }
+    html = html.replaceAll('${code}', '123456');
+    html = html.replaceAll('${email}', user.email);
+    html = html.replaceAll('${name}', user.name || user.email);
+    html = html.replaceAll('${service_name}', service.name);
+    html = html.replaceAll('${link}', inv ? '/invitation_confirmed_template' : '/signup_confirmed_template');
+    html = html.replaceAll('${password}', 'abc123&&');
+    return html
+}
 </script>
 
 <style lang="less" scoped>

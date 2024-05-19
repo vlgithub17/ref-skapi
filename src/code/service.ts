@@ -554,6 +554,43 @@ export default class Service {
         return this.service;
     }
 
+    async getMailTemplates(
+        params?: {
+            searchFor: 'message_id' | 'timestamp' | 'read' | 'complaint' | 'subject';
+            value: string | number;
+            range?: string | number;
+            condition?: '>' | '>=' | '=' | '<' | '<=' | 'gt' | 'gte' | 'eq' | 'lt' | 'lte';
+        },
+        fetchOptions?: { [key: string]: any }
+    ): Promise<any> {
+        try {
+            return skapi.util.request(this.admin_private_endpoint + 'get-templates', Object.assign({
+                service: this.id,
+                owner: this.owner,
+            }, params), { auth: true, fetchOptions });
+        }
+        catch (err: any) {
+            alert(err.message);
+        }
+    }
+    
+    async deleteTemplates(
+        params?: {
+            searchFor: 'message_id' | 'timestamp' | 'read' | 'complaint' | 'subject';
+            group: 'welcome' | 'signup_confirmation' | 'newsletter_subscription' | 'verification' | 'invitation';
+        }
+    ): Promise<any> {
+        try {
+            return skapi.util.request(this.admin_private_endpoint + 'delete-template', Object.assign({
+                service: this.id,
+                owner: this.owner,
+            }, params), { auth: true });
+        }
+        catch (err: any) {
+            alert(err.message);
+        }
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     static async create(params: { name: string }) {
         if (!params?.name) throw new Error('Invalid service name.');
