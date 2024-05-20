@@ -53,21 +53,7 @@ hr
 p Search and manage your service users.
 
 form#searchForm(@submit.prevent="searchUsers")
-    .customSelect(@click.stop="(e)=>{showDropDown(e)}")
-        button(type='button')
-            span {{ searchFor == 'timestamp' ? 'date created' : searchFor }}
-            span.material-symbols-outlined arrow_drop_down
-        .moreVert(style="--moreVert-left:0;display:none")
-            .inner(style="padding:0.8rem;padding-right:1rem")
-                .more(value="timestamp" @click="searchFor = 'timestamp';searchValue = '';") Date Created
-                .more(value="user_id" @click="searchFor = 'user_id';searchValue = '';") User ID
-                .more(value="email" @click="searchFor = 'email';searchValue = '';") Email
-                .more(value="phone_number" @click="searchFor = 'phone_number';searchValue = '';") phone_number
-                .more(value="address" @click="searchFor = 'address';searchValue = '';") Address
-                .more(value="gender" @click="searchFor = 'gender';searchValue = '';") Gender
-                .more(value="name" @click="searchFor = 'name';searchValue = '';") Name
-                .more(value="locale" @click="searchFor = 'locale';searchValue = '';") Locale
-                .more(value="birthdate" @click="searchFor = 'birthdate';searchValue = '';") Birth Date
+    Select(v-model="searchFor" :selectOptions="selectOptions")
     .search
         .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="showCalendar = !showCalendar;")
             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" readonly)
@@ -79,10 +65,10 @@ form#searchForm(@submit.prevent="searchUsers")
         input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue")
         input.big#searchInput(v-else-if="searchFor === 'locale'" type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue")
         input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-        input.big#searchInput(v-else-if="searchFor === 'email'" type="email" placeholder="Search public email address" v-model="searchValue")
+        input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue")
         .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale'" @click.stop="showLocale = !showLocale") arrow_drop_down
         button.final(type="submit" style='flex-shrink: 0;') Search
-        Locale(v-if="showLocale" @countryClicked="handleCountryClick" @close="showLocale=false" :searchValue="searchValue")
+        Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
 
 br
 
@@ -163,7 +149,7 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
                 td.overflow(v-if="filterOptions.email") {{ user.email }}
                 td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
                 td.overflow(v-if="filterOptions.name") {{ user.name }}
-                td.overflow(v-if="filterOptions.timestamp") {{ user.timestamp }}
+                td.overflow(v-if="filterOptions.timestamp") {{ new Date(user.timestamp).toLocaleString() }}
                 td.overflow(v-if="filterOptions.address") {{ user.address || '-' }}
                 td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
                 td.center.overflow(v-if="filterOptions.gender") -
@@ -359,6 +345,7 @@ br
 <script setup lang="ts">
 import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
+import Select from '@/components/select.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
 import Calendar from '@/components/calendar.vue';
@@ -377,7 +364,6 @@ let pager: Pager = null;
 
 let searchFor: Ref<"timestamp" | "user_id" | "email" | "phone_number" | "address" | "gender" | "name" | "locale" | "birthdate"> = ref('timestamp');
 let searchValue: Ref<string | number> = ref('');
-let currentTimestamp: Ref<number> = ref(new Date().getTime());
 
 // ui/ux related
 let fetching = ref(false);
@@ -395,6 +381,44 @@ let filterOptions = ref({
     locale: true,
     timestamp: true
 });
+let selectOptions = [
+    {
+        option: 'Date Created',
+        value: 'timestamp'
+    },
+    {
+        option: 'User ID',
+        value: 'user_id'
+    },
+    {
+        option: 'Email',
+        value: 'email'
+    },
+    {
+        option: 'Phone Number',
+        value: 'phone_number'
+    },
+    {
+        option: 'Address',
+        value: 'address'
+    },
+    {
+        option: 'Gender',
+        value: 'gender'
+    },
+    {
+        option: 'Name',
+        value: 'name'
+    },
+    {
+        option: 'Locale',
+        value: 'locale'
+    },
+    {
+        option: 'Birth Date',
+        value: 'birthdate'
+    },
+]
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
 
 // modal related
@@ -424,68 +448,88 @@ watch(currentPage, (n, o) => {
     }
 });
 
+watch(fetching, n => {
+    if (n && showCalendar.value) {
+        showCalendar.value = false
+    }
+})
+
+watch(searchFor, (n, o) => {
+    if (n !== o) {
+        searchValue.value = '';
+    }
+})
+
 // computed fetch params
 let callParams = computed(() => {
     switch (searchFor.value) {
         case 'timestamp':
         case 'birthdate':
             let dates = searchValue.value.split('~').map(d => d.trim());
-            let startDate = dates?.[0] || '1000-01-01';
-            let endDate = dates?.[1] || new Date().toISOString().substring(0, 10);
+            let startDate = dates?.[0] ? new Date(dates?.[0]).getTime() : 0;
+            let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : new Date().getTime();
 
-            return {
-                service: currentService.id,
-                searchFor: searchFor.value,
-                value: startDate,
-                range: endDate
+            if (startDate && endDate) {
+                return {
+                    service: currentService.id,
+                    searchFor: searchFor.value,
+                    value: startDate,
+                    range: endDate
+                }
+            } else {
+                return {
+                    service: currentService.id,
+                    searchFor: searchFor.value,
+                    value: startDate ? startDate : endDate,
+                    condition: startDate ? '>=' : '<='
+                }
             }
         case 'user_id':
             return {
                 service: currentService.id,
-                searchFor: 'user_id',
+                searchFor: searchFor.value,
                 value: searchValue.value
             }
 
         default:
             return {
                 service: currentService.id,
-                searchFor: searchFor.value,
-                value: searchValue.value,
+                searchFor: searchValue.value == '' ? 'timestamp' : searchFor.value,
+                value: searchValue.value == '' ? 0 : searchValue.value,
                 condition: '>='
             }
     }
 });
 
-// let callParams = ref({
-//     service: currentService.id,
-//     searchFor: searchFor.value,
-//     condition: '<=',
-//     value: new Date().getTime()
-// })
+let currentParams = callParams.value;
 
 let getPage = async (refresh?: boolean) => {
     if (!pager) {
         return;
     }
+    
+    if (refresh) {
+        endOfList.value = false;
+    }
 
-    if (!refresh && maxPage.value >= currentPage.value) {
+    if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
         listDisplay.value = pager.getPage(currentPage.value).list;
         return;
     }
 
     else if (!endOfList.value || refresh) {
-
-        if (refresh) {
-            currentTimestamp.value = new Date().getTime();
-        }
-
         fetching.value = true;
 
-        // fetch from server
-        let fetchedData = await skapi.getUsers(callParams.value, { fetchMore: !refresh });
+        let fetchedData = await skapi.getUsers(currentParams, { fetchMore: !refresh, ascending: !searchValue.value ? false : true });
 
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
+
+        console.log(fetchedData.list)
+
+        // if (promiseRunning) {
+        //     fetchedData.list.push
+        // }
 
         // insert data in pager
         if (fetchedData.list.length > 0) {
@@ -494,11 +538,7 @@ let getPage = async (refresh?: boolean) => {
 
         // get page from pager
         let disp = pager.getPage(currentPage.value);
-
-        // set maxpage
         maxPage.value = disp.maxPage;
-
-        // render data
         listDisplay.value = disp.list;
         fetching.value = false;
     }
@@ -511,8 +551,8 @@ let init = async () => {
     pager = await Pager.init({
         id: 'user_id',
         resultsPerPage: 10,
-        sortBy: searchFor.value,
-        order: 'desc',
+        sortBy: !searchValue.value ? 'timestamp' : currentParams.searchFor,
+        order: !searchValue.value ? 'desc' : 'asc',
     });
 
     getPage(true);
@@ -520,9 +560,42 @@ let init = async () => {
 
 init();
 
-let handleCountryClick = (key) => {
-    searchValue.value = key;
-    document.querySelector('#searchInput').focus();
+let searchUsers = () => {
+    currentParams = callParams.value;
+    console.log(currentParams)
+    init();
+}
+
+let createUser = () => {
+    promiseRunning.value = true;
+    error.value = '';
+    skapi.signup({
+        email,
+        name,
+        password,
+        service: currentService.id
+    }).then(async(res) => {
+        console.log(res);
+        res.email = res.email_admin;
+        await pager.insertItems([res]);
+        document.getElementById("createForm").reset();
+        openCreateUser.value = false;
+        promiseRunning.value = false;
+        getPage();
+    }).catch((err) => {
+        promiseRunning.value = false;
+        error.value = err.message;
+    });
+}
+
+let closeModal = () => {
+    if(openInviteUser.value) {
+        document.getElementById("inviteForm").reset();
+        openInviteUser.value = false;
+    } else if(openCreateUser.value) {
+        document.getElementById("createForm").reset();
+        openCreateUser.value = false;
+    }
 }
 </script>
 <style scoped lang="less">
