@@ -8,16 +8,16 @@ let showDropDown = (e) => {
 
         let getMoreVert = getCustomSelect[i].lastChild;
         getMoreVert.style.display = 'none'
-        console.log('a')
+        // console.log('a')
     }
     
     let getMoreVert = currentTarget.lastChild;
     if (getMoreVert.style.display === 'none') {
         getMoreVert.style.display = 'block';
-        console.log('b')
+        // console.log('b')
     } else {
         getMoreVert.style.display = 'none'
-        console.log('c')
+        // console.log('c')
     }
 }
 
@@ -34,7 +34,7 @@ let hideMoreVert = (e) => {
 
     for (let i = 0; i < getMoreVert.length; i++) {
         if(getMoreVert[i].style.display == 'block' && !getMoreVert[i].contains(e.target)) {
-            console.log('hideMoreVert');
+            // console.log('hideMoreVert');
             console.log(getMoreVert[i].contains(e.target))
             getMoreVert[i].style.display = 'none';
         }

@@ -1,5 +1,5 @@
 <template lang="pug">
-#localeSelector(@click.stop)
+#localeSelector(:class="{'show' : props.showLocale}" @click.stop)
     .wrap
         .country(v-for="(c, key) in Countries" @click="handleCountryClick(key)" :class="{'selected' : selectedFlag == key}") 
             span.flag {{ c.flag }}
@@ -7,21 +7,11 @@
 </template>
 <script setup>
 import { Countries } from '@/code/countries';
-import { ref, onBeforeMount, onBeforeUnmount, onMounted, nextTick } from 'vue';
+import { ref, onBeforeUnmount, onMounted } from 'vue';
 
-let emit = defineEmits(['countryClicked', 'close']);
-let props = defineProps(['searchText']);
+let emit = defineEmits(['close', 'update:modelValue']);
+let props = defineProps(['showLocale', 'modelValue']);
 let selectedFlag = ref('');
-let handleCountryClick = (key) => {
-    selectedFlag.value = key;
-    emit('countryClicked', key);
-};
-
-if(props.searchText) {
-    nextTick(() => {
-        selectedFlag.value = props.searchText;
-    })
-}
 
 onMounted(() => {
     document.addEventListener('mouseup', closeLocale);
@@ -29,6 +19,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
     document.removeEventListener('mouseup', closeLocale);
 })
+
+let handleCountryClick = (key) => {
+    selectedFlag.value = key;
+    emit('update:modelValue', key);
+    emit('close');
+};
 
 let closeLocale = (e) => {
     let localeSelector = document.querySelector('#localeSelector');
@@ -48,6 +44,11 @@ let closeLocale = (e) => {
     border: 1px solid rgba(0, 0, 0, 0.15);
     background: #FAFAFA;
     box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);
+    display: none;
+
+    &.show {
+        display: block;
+    }
 
     .wrap {
         height: 100%;

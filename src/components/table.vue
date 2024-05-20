@@ -182,7 +182,7 @@ let setResize = async () => {
             padding: 0 20px;
             white-space: nowrap;
             user-select: none;
-            overflow: hidden;
+            // overflow: hidden;
             text-overflow: ellipsis;
 
             &.center {
