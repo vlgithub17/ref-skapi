@@ -81,7 +81,7 @@ br
         .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill person_add
             span &nbsp;&nbsp;Create User
-        .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentService.plan == 'Trial'}")
             .material-symbols-outlined.fill mark_email_unread
             span &nbsp;&nbsp;Invite User
 
@@ -165,6 +165,59 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
 
+// create user
+Modal(:open="openCreateUser" style="width:478px")
+    h4(style='margin:.5em 0 0;') Create User
+
+    hr
+
+    form#createForm(@submit.prevent="createUser")
+        input(hidden name="service" :value="currentService.id")
+
+        label User's Email 
+            input.big(
+                type="email"
+                @input="e => email = e.target.value"
+                title="Please enter a valid email address." 
+                placeholder="anonymous@anonymous.com"
+                required
+            )
+        br
+
+        label Name 
+            input.big(
+                @input="e => name = e.target.value"
+                placeholder="User's Name" 
+                required
+            )
+
+        br
+
+        label Password 
+            input.big(
+                @input="e => password = e.target.value"
+                placeholder="User's Password"
+                type='Password'
+                minlength="6"
+                required
+            )
+
+        br
+
+        .error(v-if="error")
+            .material-symbols-outlined.mid error
+            span {{ error }}
+
+        br
+
+        div(style="display: flex; align-items: center; justify-content: space-between;")
+            div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
+                img.loading(src="@/assets/img/loading.png")
+            template(v-else)
+                button.noLine(type="button" @click="closeModal") Cancel 
+                button.final(type="submit") Create User
+
+// invite user
 Modal(:open="openInviteUser")
     h4(style='margin:.5em 0 0;') Invite User
 
@@ -228,57 +281,7 @@ Modal(:open="openInviteUser")
                 button.noLine(type="button" @click="closeModal") Cancel 
                 button.final(type="submit") Create User
 
-Modal(:open="openCreateUser" style="width:478px")
-    h4(style='margin:.5em 0 0;') Create User
-
-    hr
-
-    form#createForm(@submit.prevent="createUser")
-        input(hidden name="service" :value="currentService.id")
-
-        label User's Email 
-            input.big(
-                type="email"
-                @input="e => email = e.target.value"
-                title="Please enter a valid email address." 
-                placeholder="anonymous@anonymous.com"
-                required
-            )
-        br
-
-        label Name 
-            input.big(
-                @input="e => name = e.target.value"
-                placeholder="User's Name" 
-                required
-            )
-
-        br
-
-        label Password 
-            input.big(
-                @input="e => password = e.target.value"
-                placeholder="User's Password"
-                type='Password'
-                minlength="6"
-                required
-            )
-
-        br
-
-        .error(v-if="error")
-            .material-symbols-outlined.mid error
-            span {{ error }}
-
-        br
-
-        div(style="display: flex; align-items: center; justify-content: space-between;")
-            div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-                img.loading(src="@/assets/img/loading.png")
-            template(v-else)
-                button.noLine(type="button" @click="closeModal") Cancel 
-                button.final(type="submit") Create User
-
+// block user
 Modal(:open="openBlockUser")
     h4(style='margin:.5em 0 0;') Block User
 
@@ -299,6 +302,7 @@ Modal(:open="openBlockUser")
             button.noLine(type="button" @click="openBlockUser=false; selectedUser='';") Cancel 
             button.final(type="button" @click="changeUserState('block')") Block
 
+// unblock user
 Modal(:open="openUnblockUser")
     h4(style='margin:.5em 0 0;') Unblock User
 
@@ -319,6 +323,7 @@ Modal(:open="openUnblockUser")
             button.noLine(type="button" @click="openUnblockUser=false; selectedUser='';") Cancel 
             button.final(type="button" @click="changeUserState('unblock')") Unblock  
 
+// delete user
 Modal(:open="openDeleteUser")
     h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete User
 
@@ -368,7 +373,7 @@ let searchValue: Ref<string | number> = ref('');
 // ui/ux related
 let fetching = ref(false);
 let maxPage = ref(0);
-let currentPage = ref(1);
+let currentPage: Ref<number> = ref(1);
 let endOfList = ref(false);
 let showCalendar = ref(false);
 let showLocale = ref(false);
@@ -428,7 +433,7 @@ let openCreateUser = ref(false);
 let openBlockUser = ref(false);
 let openUnblockUser = ref(false);
 let openDeleteUser = ref(false);
-let selectedUser = '';
+let selectedUser: { [key:string]: any } = {};
 let name = '';
 let email = '';
 let password = '';
@@ -525,12 +530,6 @@ let getPage = async (refresh?: boolean) => {
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
 
-        console.log(fetchedData.list)
-
-        // if (promiseRunning) {
-        //     fetchedData.list.push
-        // }
-
         // insert data in pager
         if (fetchedData.list.length > 0) {
             await pager.insertItems(fetchedData.list);
@@ -586,6 +585,87 @@ let createUser = () => {
         promiseRunning.value = false;
         error.value = err.message;
     });
+}
+
+let inviteUser = () => {
+    promiseRunning.value = true;
+    error.value = '';
+    skapi.signup({
+        email,
+        name,
+        access_group: 1,
+        service: currentService.id
+    }, {
+        signup_confirmation: redirect || false
+    }).then((res) => {
+        promiseRunning.value = false;
+        openInviteUser.value = false;
+    }).catch((err) => {
+        if (err.code === 'EXISTS') {
+            skapi.resendInvitation({
+                redirect: redirect || '',
+                email,
+                service: currentService.id
+            }).then(() => {
+                promiseRunning.value = false;
+                openInviteUser.value = false;
+            }).catch((err) => {
+                promiseRunning.value = false;
+                error.value = err.message;
+            });
+        }
+        else {
+            promiseRunning.value = false;
+            error.value = err.message;
+        }
+    });
+}
+
+let changeUserState = (state: string) => {
+    promiseRunning.value = true;
+
+    if(state == 'block') {
+        currentService.blockAccount(selectedUser.user_id).then((r) => {
+            selectedUser.approved = 'by_admin:suspended:' + (new Date()).getTime();
+            let toEdit = {}
+            for(let k in selectedUser) {
+                toEdit[k] = selectedUser[k];
+            }
+            pager.editItem(toEdit).then((r) => {
+                selectedUser = {};
+                promiseRunning.value = false;
+                openBlockUser.value = false;
+                getPage(currentPage.value);
+            });
+        }).catch(e => alert(e.message));
+    } else if(state == 'unblock') {
+        currentService.unblockAccount(selectedUser.user_id).then((r) => {
+            selectedUser.approved = 'by_admin:' + (new Date()).getTime();
+            let toEdit = {}
+            for(let k in selectedUser) {
+                toEdit[k] = selectedUser[k];
+            }
+            pager.editItem(toEdit).then((r) => {
+                selectedUser = {};
+                promiseRunning.value = false;
+                openUnblockUser.value = false;
+                getPage(currentPage.value);
+            });
+        }).catch(e => alert(e.message));
+    }
+}
+
+let deleteUser = () => {
+    promiseRunning.value = true;
+
+    currentService.deleteAccount(selectedUser.user_id).then(() => {
+        pager.deleteItem(selectedUser.user_id).then(() => {
+            selectedUser = {};
+            promiseRunning.value = false;
+            openDeleteUser.value = false;
+            getPage(currentPage.value);
+        })
+    }).catch(e => alert(e.message));
 }
 
 let closeModal = () => {
