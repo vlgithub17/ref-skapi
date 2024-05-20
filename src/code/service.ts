@@ -662,6 +662,16 @@ export default class Service {
         return new Service(service.service, service, [admin_private_endpoint, record_private_endpoint]);
     }
 
+    async refresh() {
+        let service = await skapi.util.request(this.admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: this.id }, { auth: true });
+        for (let region in service) {
+            if (service[region][0]) {
+                this.service = reactive(service[region][0]);
+                return;
+            }
+        }
+    }
+
     static async load(id: string): Promise<Service> {
         if (!id) throw new Error('Invalid service id.');
 

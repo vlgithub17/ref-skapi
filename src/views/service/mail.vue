@@ -105,7 +105,7 @@ section.infoBox
 
     .email
         div(v-if='htmls[group] === null') ...
-        iframe(v-else :srcdoc='converter(htmls[group], parseOpt.invitation, true)' style='width: 100%; height: 300px; border: none;')
+        iframe(v-else :srcdoc='currentTemp' style='width: 100%; height: 300px; border: none;')
 
 br
 
@@ -113,7 +113,7 @@ br
     a.iconClick.square(:href="'mailto:' + mailEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill mail
         span &nbsp;&nbsp;New {{emailType}}
-    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square(@click="()=>{init(true)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill refresh
         span &nbsp;&nbsp;Refresh
 
@@ -501,7 +501,11 @@ let useEmail = (ns: Newsletter) => {
 
 let service = currentService.service;
 let email_templates = currentService.service.email_triggers.template_setters;
-let parseOpt = reactive({});
+let parseOpt: any = reactive({});
+
+let currentTemp = computed(() => {
+    return converter(htmls[group.value], parseOpt[group.value], true);
+})
 
 let converter = (html: string, parsed: boolean, inv: boolean) => {
     if (!parsed) {
@@ -517,11 +521,12 @@ let converter = (html: string, parsed: boolean, inv: boolean) => {
 }
 
 let subjects = computed(() => {
+    let s = currentService.service;
     return {
-        confirmation: service?.template_confirmation?.subject || '[${service_name}] Signup Confirmation',
-        welcome: service?.template_welcome?.subject || "Thank you for joining ${service_name}",
-        verification: service?.template_verification?.subject || '[${service_name}] Verification code',
-        invitation: service?.template_invitation?.subject || '[${service_name}] Invitation'
+        confirmation: s?.template_confirmation?.subject || '[${service_name}] Signup Confirmation',
+        welcome: s?.template_welcome?.subject || "Thank you for joining ${service_name}",
+        verification: s?.template_verification?.subject || '[${service_name}] Verification code',
+        invitation: s?.template_invitation?.subject || '[${service_name}] Invitation'
     }
 })
 
@@ -572,7 +577,13 @@ Your activation link is valid for 7 days.
     htmls[key] = html;
 }
 
-let init = async () => {
+let init = async (refreshService?: boolean) => {
+    if (refreshService) {
+        fetching.value = true;
+        await currentService.refresh();
+        service = currentService.service;
+        fetching.value = false;
+    }
     currentPage.value = 1;
 
     // setup pagers
