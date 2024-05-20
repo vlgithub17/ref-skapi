@@ -36,35 +36,6 @@ template(v-if='emailType === "Signup Confirmation"')
         li #[b ${name}] - User name, normaled to users email if not provided
         li #[b ${service_name}] - Service name
 
-    p(style='margin-bottom: 0').
-        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.confirmation') email address] provided below:
-
-    Code
-        pre {{ email_templates.confirmation }}
-
-    p.
-        For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
-
-    section.infoBox
-        .infoTitle Current Template
-
-        hr
-
-        .state
-            .smallTitle Subject
-            .ellipsis {{ converter(confirmation.subject, parseOpt.signup) }}
-
-        .state
-            .smallTitle Content
-            small.editHandle(:style='{color: parseOpt.signup ? "black" : null}' @click='parseOpt.signup = true') [Parsed]
-            span &nbsp;|&nbsp;
-            small.editHandle(:style='{color: !parseOpt.signup ? "black" : null}' @click='parseOpt.signup = false') [Original]
-
-        .email
-            div(v-if='confirmation.html === null') ...
-            div(v-else v-html='converter(confirmation.html, parseOpt.signup)')
-
-
 template(v-if='emailType === "Welcome Email"')
     p.
         Welcome Email is sent when the user successfully logs in after the signup confirmation.
@@ -75,34 +46,6 @@ template(v-if='emailType === "Welcome Email"')
         li #[b ${email}] - User email
         li #[b ${name}] - User name, normaled to users email if not provided
         li #[b ${service_name}] - Service name
-
-    p(style='margin-bottom: 0').
-        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.confirmation') email address] provided below:
-    Code
-        pre {{ email_templates.confirmation }}
-
-    p.
-        For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
-
-    section.infoBox
-        .infoTitle Current Template
-
-        hr
-
-        .state
-            .smallTitle Subject
-            .ellipsis {{ converter(welcome.subject, parseOpt.welcome) }}
-
-        .state
-            .smallTitle Content
-            small.editHandle(:style='{color: parseOpt.welcome ? "black" : null}' @click='parseOpt.welcome = true') [Parsed]
-            span &nbsp;|&nbsp;
-            small.editHandle(:style='{color: !parseOpt.welcome ? "black" : null}' @click='parseOpt.welcome = false') [Original]
-
-        .email
-            div(v-if='welcome.html === null') ...
-            div(v-else v-html='converter(welcome.html, parseOpt.welcome)')
-
 
 template(v-if='emailType === "Verification Email"')
     p.
@@ -122,34 +65,6 @@ template(v-if='emailType === "Verification Email"')
         li #[b ${name}] - User name, normaled to users email if not provided
         li #[b ${service_name}] - Service name
 
-    p(style='margin-bottom: 0').
-        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.confirmation') email address] provided below:
-
-    Code
-        pre {{ email_templates.confirmation }}
-
-    p.
-        For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
-
-    section.infoBox
-        .infoTitle Current Template
-
-        hr
-
-        .state
-            .smallTitle Subject
-            .ellipsis {{ converter(verification.subject, parseOpt.verification) }}
-        .state
-            .smallTitle Content
-            small.editHandle(:style='{color: parseOpt.verification ? "black" : null}' @click='parseOpt.verification = true') [Parsed]
-            span &nbsp;|&nbsp;
-            small.editHandle(:style='{color: !parseOpt.verification ? "black" : null}' @click='parseOpt.verification = false') [Original]
-
-        .email
-            div(v-if='verification.html === null') ...
-            div(v-else v-html='converter(verification.html, parseOpt.verification)')
-
-
 template(v-if='emailType === "Invitation Email"')
     p.
         Invitation Email is sent when the user is invited to join the service.
@@ -167,32 +82,30 @@ template(v-if='emailType === "Invitation Email"')
         li #[b ${name}] - User name, normaled to users email if not provided
         li #[b ${service_name}] - Service name
 
-    p(style='margin-bottom: 0').
-        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates.confirmation') email address] provided below:
+p(style='margin-bottom: 0').
+    You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates[group]') email address] provided below:
+Code
+    pre {{ email_templates[group] }}
+p.
+    For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
 
-    Code
-        pre {{ email_templates.confirmation }}
+section.infoBox
+    .infoTitle Current Template
 
-    p.
-        For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
+    hr
 
-    section.infoBox
-        .infoTitle Current Template
+    .state
+        .smallTitle Subject
+        .ellipsis {{ converter(subjects[group], parseOpt.invitation) }}
+    .state
+        .smallTitle Content
+        small.editHandle(:style='{color: parseOpt.invitation ? "black" : null}' @click='parseOpt.invitation = true') [Parsed]
+        span &nbsp;|&nbsp;
+        small.editHandle(:style='{color: !parseOpt.invitation ? "black" : null}' @click='parseOpt.invitation = false') [Original]
 
-        hr
-
-        .state
-            .smallTitle Subject
-            .ellipsis {{ converter(invitation.subject, parseOpt.invitation) }}
-        .state
-            .smallTitle Content
-            small.editHandle(:style='{color: parseOpt.invitation ? "black" : null}' @click='parseOpt.invitation = true') [Parsed]
-            span &nbsp;|&nbsp;
-            small.editHandle(:style='{color: !parseOpt.invitation ? "black" : null}' @click='parseOpt.invitation = false') [Original]
-
-        .email
-            div(v-if='invitation.html === null') ...
-            div(v-else v-html='converter(invitation.html, parseOpt.invitation, true)')
+    .email
+        div(v-if='htmls[group] === null') ...
+        iframe(v-else :srcdoc='converter(htmls[group], parseOpt.invitation, true)' style='width: 100%; height: 300px; border: none;')
 
 br
 
@@ -200,9 +113,9 @@ br
     a.iconClick.square(:href="'mailto:' + mailEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill mail
         span &nbsp;&nbsp;New {{emailType}}
-    //- .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-    //-     .material-symbols-outlined.fill refresh
-    //-     span &nbsp;&nbsp;Refresh
+    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .material-symbols-outlined.fill refresh
+        span &nbsp;&nbsp;Refresh
 
 Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
     template(v-slot:head)
@@ -240,7 +153,7 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
                     template(v-if='currentService.service?.["template_" + group]?.url === ns.url')
                         span.material-symbols-outlined.fill verified
                     template(v-else)
-                        span.material-symbols-outlined.fill.icon.clickable.hide(@click.stop="emailToUse = ns") check_circle
+                        span.material-symbols-outlined.icon.clickable.hide(@click.stop="emailToUse = ns") verified
                 td.overflow {{ converter(ns.subject) }}
                 td.overflow {{ dateFormat(ns.timestamp) }}
                 td.center.buttonWrap(@click.stop)
@@ -281,7 +194,6 @@ Modal(:open="emailToDelete")
         template(v-else)
             button.noLine.warning(@click="emailToDelete = null") Cancel
             button.final.warning(@click="deleteEmail(emailToDelete)") Delete
-
 
 Modal(:open="emailToUse")
     h4(style='margin:.5em 0 0;') Set Template
@@ -424,6 +336,10 @@ let group: ComputedRef<'confirmation' | 'welcome' | 'verification' | 'invitation
     return grp;
 });
 
+watch(group, n => {
+    getHtml(n);
+})
+
 // computed fetch params
 let callParams = computed(() => {
     let defaultValues = {
@@ -504,22 +420,6 @@ let resetIndex = async () => {
     getPage();
 }
 
-let init = async () => {
-    currentPage.value = 1;
-
-    // setup pagers
-    pager = await Pager.init({
-        id: 'message_id',
-        resultsPerPage: 10,
-        sortBy: searchFor.value,
-        order: ascending.value ? 'asc' : 'desc',
-    });
-
-    getPage(true);
-}
-
-init();
-
 // ux related functions
 
 let openNewsletter = (url: string) => {
@@ -558,6 +458,7 @@ let deleteEmail = (ns: Newsletter) => {
         }
 
         await pager.deleteItem(params.message_id);
+        getHtml(group.value);
         getPage();
     }).catch(err => window.alert(err)).finally(() => {
         deleteMailLoad.value = false;
@@ -579,15 +480,17 @@ let useEmail = (ns: Newsletter) => {
 
     useMailLoad.value = true;
     currentService.setTemplate(params).then(async () => {
-        if (!currentService.service["template_" + group.value])
-            currentService.service["template_" + group.value] = {
+        if (!(currentService.service as any)["template_" + group.value])
+            (currentService.service as any)["template_" + group.value] = reactive({
                 url: ns.url,
                 subject: ns.subject
-            }
+            })
         else {
-            currentService.service["template_" + group.value].url = ns.url;
-            currentService.service["template_" + group.value].subject = ns.subject;
+            (currentService.service as any)["template_" + group.value].url = ns.url;
+            (currentService.service as any)["template_" + group.value].subject = ns.subject;
         }
+
+        getHtml(group.value);
 
         emailToUse.value = null;
     }).catch(err => window.alert(err)).finally(() => {
@@ -613,64 +516,39 @@ let converter = (html: string, parsed: boolean, inv: boolean) => {
     return html
 }
 
-let welcome = reactive({
-    subject: service?.template_welcome?.subject || "Thank you for joining ${service_name}",
-    html: null
+let subjects = computed(() => {
+    return {
+        confirmation: service?.template_confirmation?.subject || '[${service_name}] Signup Confirmation',
+        welcome: service?.template_welcome?.subject || "Thank you for joining ${service_name}",
+        verification: service?.template_verification?.subject || '[${service_name}] Verification code',
+        invitation: service?.template_invitation?.subject || '[${service_name}] Invitation'
+    }
 })
 
-if (!service.template_welcome?.url) {
-    welcome.html = `
+let htmls: { [key: string]: string } = reactive({
+    confirmation: null,
+    welcome: null,
+    verification: null,
+    invitation: null
+})
+
+let getHtml = async (key: string) => {
+    if (!key) {
+        return;
+    }
+
+    let defaults: { [key: string]: string } = {
+        welcome: `
 <pre>
 <span style="font-weight: bold">Hello \${name}</span>
 Thank you for joining \${service_name}
-Your login email is: <span style="font-weight: bold">\${email}</span></pre>`;
-
-}
-else {
-    fetchHTML(service.template_welcome.url).then((html) => {
-        welcome.html = html;
-    });
-}
-
-let verification = reactive({
-    subject: service?.template_verification?.subject || '[${service_name}] Verification code',
-    html: null
-})
-
-if (!service.template_verification?.url) {
-    verification.html = '<pre>Your verification code is <span style="font-weight: bold">${code}</span></pre>';
-}
-else {
-    fetchHTML(service.template_verification.url).then((html) => {
-        verification.html = html;
-    });
-}
-
-let confirmation = reactive({
-    subject: service?.template_confirmation?.subject || '[${service_name}] Signup Confirmation',
-    html: null
-})
-
-if (!service.template_confirmation?.url) {
-    confirmation.html = `<pre>
+Your login email is: <span style="font-weight: bold">\${email}</span></pre>`,
+        verification: '<pre>Your verification code is <span style="font-weight: bold">${code}</span></pre>',
+        confirmation: `<pre>
 Please activate your account by clicking this <a href="\${link}" style="font-weight: bold">LINK</a>
 Your activation link is valid for 7 days.
-</pre>`;
-}
-
-else {
-    fetchHTML(service.template_confirmation.url).then((html) => {
-        confirmation.html = html;
-    });
-}
-
-let invitation = reactive({
-    subject: service?.template_invitation?.subject || '[${service_name}] Invitation',
-    html: null
-})
-
-if (!service.template_invitation?.url) {
-    invitation.html = `
+</pre>`,
+        invitation: `
 <pre>
 Hello \${name}
 You are invited to \${service_name}
@@ -681,19 +559,35 @@ Your account password is: <b>\${password}</b>
 
 Your activation link is valid for 7 days.
 </pre>`
-}
-else {
-    fetchHTML(service.template_invitation.url).then((html) => {
-        invitation.html = html;
-    });
-}
+    }
 
-async function fetchHTML(url: string) {
+    let url = (service as any)?.['template_' + group.value]?.url;
+    if (!url) {
+        htmls[key] = defaults[key];
+        return;
+    }
+
     let res = await fetch(url);
     let html = await res.text();
-    return html;
+    htmls[key] = html;
 }
 
+let init = async () => {
+    currentPage.value = 1;
+
+    // setup pagers
+    pager = await Pager.init({
+        id: 'message_id',
+        resultsPerPage: 10,
+        sortBy: searchFor.value,
+        order: ascending.value ? 'asc' : 'desc',
+    });
+
+    getPage(true);
+    getHtml(group.value);
+}
+
+init();
 </script>
 
 <style lang="less" scoped>
