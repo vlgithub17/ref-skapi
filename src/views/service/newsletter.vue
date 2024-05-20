@@ -13,13 +13,6 @@ h2(style='margin-bottom: 0')
 
 hr
 
-p(style='margin-bottom: 0') You can send {{mailType.toLowerCase()}} to your users by clicking on #[a(:href="'mailto:' + newsletterEndpoint") Send {{ mailType }}],#[br]#[.wordset or by sending the email to the address provided below:]
-
-Code
-    pre {{ newsletterEndpoint || '...' }}
-
-br
-
 p(style='margin-bottom: 0').
     You can collect your {{mailType.toLowerCase()}} subscribers by using the following code:
 
@@ -39,7 +32,14 @@ Code(v-if='group === 1')
 
 p(v-if='group === 1') * User must be logged in to subscribe to Service Mail, and the user must have their email verified.
 
-p For more information on how to use the code above, please refer to the #[a(href="https://docs.skapi.com/email/newsletters.html" target="_blank") documentation]
+br
+
+p(style='margin-bottom: 0') Once the users have subscribed to your {{mailType.toLowerCase()}}, they will be able to receive your emails sent to the address provided below:
+
+Code
+    pre {{ newsletterEndpoint || '...' }}
+
+p For more information, please refer to the #[a(href="https://docs.skapi.com/email/newsletters.html" target="_blank") documentation]
 
 br
 

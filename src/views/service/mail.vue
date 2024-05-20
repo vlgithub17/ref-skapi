@@ -90,18 +90,18 @@ p.
     For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
 
 section.infoBox
-    .infoTitle Current Template
+    .infoTitle {{emailType}}
 
     hr
 
     .state
         .smallTitle Subject
-        .ellipsis {{ converter(subjects[group], parseOpt.invitation) }}
+        .ellipsis {{ converter(subjects[group], parseOpt[group]) }}
     .state
         .smallTitle Content
-        small.editHandle(:style='{color: parseOpt.invitation ? "black" : null}' @click='parseOpt.invitation = true') [Parsed]
+        small.editHandle(:style='{color: parseOpt[group] ? "black" : null}' @click='parseOpt[group] = true') [Preview]
         span &nbsp;|&nbsp;
-        small.editHandle(:style='{color: !parseOpt.invitation ? "black" : null}' @click='parseOpt.invitation = false') [Original]
+        small.editHandle(:style='{color: !parseOpt[group] ? "black" : null}' @click='parseOpt[group] = false') [Original]
 
     .email
         div(v-if='htmls[group] === null') ...
@@ -172,7 +172,7 @@ br
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
 
-Modal(:open="emailToDelete")
+Modal(:open="!!emailToDelete")
     h4(style='margin:.5em 0 0;') Delete Email
 
     hr
@@ -195,7 +195,7 @@ Modal(:open="emailToDelete")
             button.noLine.warning(@click="emailToDelete = null") Cancel
             button.final.warning(@click="deleteEmail(emailToDelete)") Delete
 
-Modal(:open="emailToUse")
+Modal(:open="!!emailToUse")
     h4(style='margin:.5em 0 0;') Set Template
 
     hr

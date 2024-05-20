@@ -38,6 +38,7 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
 
                 ul
                     li Provides 10k user accounts
+                    li User invitations
                     li 4GB of database
                     li 50GB each for file storage and hosting storage
                     li Real-time data
@@ -63,6 +64,7 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
 
                 ul
                     li 100k user accounts
+                    li User invitations
                     li 100GB of database
                     li 1TB each for file storage and hosting storage
                     li Real-time data
