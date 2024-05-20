@@ -426,37 +426,26 @@ watch(currentPage, (n, o) => {
 
 // computed fetch params
 let callParams = computed(() => {
-    let dates = searchValue.value.split('~').map(d => d.trim());
     switch (searchFor.value) {
-        // case 'timestamp':
-        //     let startDate = 0;
-        //     if (dates?.[0]) {
-        //         let st = new Date(dates[0]).getTime();
-        //         if (!isNaN(st)) {
-        //             startDate = st
-        //         }
-        //     }
-        //     let endDate = Date.now();
-        //     if (dates?.[1]) {
-        //         let ed = new Date(dates[1]).getTime();
-        //         if (!isNaN(endDate)) {
-        //             endDate = ed;
-        //         }
-        //     }
-        //     return 'Loading...';
-        // case 'user_id':
-        //     return 'Data loaded successfully!';
-        // case 'birthdate':
-        //     let dates = searchValue.value.split('~').map(d => d.trim());
-        //     let startDate = dates?.[0] || '1000-01-01';
-        //     let endDate = dates?.[1] || new Date().toISOString().substring(0, 10);
+        case 'timestamp':
+        case 'birthdate':
+            let dates = searchValue.value.split('~').map(d => d.trim());
+            let startDate = dates?.[0] || '1000-01-01';
+            let endDate = dates?.[1] || new Date().toISOString().substring(0, 10);
 
-        //     return {
-        //         service: currentService.id,
-        //         searchFor: searchFor.value,
-        //         value: startDate,
-        //         range: endDate
-        //     }
+            return {
+                service: currentService.id,
+                searchFor: searchFor.value,
+                value: startDate,
+                range: endDate
+            }
+        case 'user_id':
+            return {
+                service: currentService.id,
+                searchFor: 'user_id',
+                value: searchValue.value
+            }
+
         default:
             return {
                 service: currentService.id,
