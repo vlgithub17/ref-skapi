@@ -6,7 +6,6 @@ export default class Pager {
     list: { [key: string]: any } = {};
     resultsPerPage = 10;
     worker: any;
-    endOfList: boolean;
 
     constructor(
         worker: Worker,
@@ -49,16 +48,6 @@ export default class Pager {
     ): Promise<"Insert Successful"> {
         let { withinRange = false } = options || {};
 
-        console.log({
-            method: 'insert',
-            list: this.list,
-            map: this.map,
-            id: this.id,
-            sortBy: this.sortBy,
-            order: this.order,
-            items: items,
-            withinRange: withinRange
-        })
         this.worker.postMessage({
             method: 'insert',
             list: this.list,
@@ -130,6 +119,48 @@ export default class Pager {
 
                 delete this.list[id];
                 res("Item Deleted");
+            };
+        });
+    }
+
+    resetIndex(option: {
+        sortBy?: string; // sort by which key
+        order?: 'asc' | 'desc'; // sort order
+        resultsPerPage?: number; // how many items per page
+    }): Promise<"Reset Successful"> {
+        let { sortBy, order, resultsPerPage } = option;
+        
+        if(!sortBy && !order && !resultsPerPage) {
+            return new Promise((res) => {
+                res("Reset Successful");
+            });
+        }
+
+        this.sortBy = sortBy || this.sortBy;
+        this.order = order || this.order;
+        this.resultsPerPage = resultsPerPage || this.resultsPerPage;
+
+        if(sortBy === this.sortBy && order === this.order && resultsPerPage === this.resultsPerPage) {
+            return new Promise((res) => {
+                res("Reset Successful");
+            });
+        }
+
+        this.worker.postMessage({
+            method: 'insert',
+            list: {},
+            map: [],
+            id: this.id,
+            sortBy: sortBy,
+            order: order,
+            items: Object.keys(this.list).map((key) => this.list[key]),
+            withinRange: false
+        });
+
+        return new Promise((res) => {
+            this.worker.onmessage = (event: any) => {
+                this.map = event.data;
+                res("Reset Successful");
             };
         });
     }

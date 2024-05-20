@@ -1,49 +1,9 @@
 <template lang="pug">
-h2 Getting Started
-
-hr
-
-p Add the following code to your HTML website to get started:
-
-Code
-    pre.
-        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-            #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
-        #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-
-br
-
-h4 For SPA Projects:
-
-p 1. Install the library:
-
-Code
-    pre npm install skapi-js
-
-br
-
-p 2. Initialize Skapi from your main.js:
-
-Code
-    pre.
-        #[span(style="color:#999") // main.js]
-        #[span(style="color:#44E9FF") import] { Skapi } #[span(style="color:#44E9FF") from] #[span(style="color:#FFED91") "skapi-js"]
-        #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
-        #[span(style="color:#44E9FF") export] { skapi } #[span(style="color:#999") // Import the instance in your components]
-
-p For more details, please refer to the #[a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank") Documentation]
-
-br
 
 section.infoBox
-    .infoTitle(style="margin-right: 1rem;") Dashboard
+    .infoTitle Dashboard
 
     hr
-
-    .state 
-        .smallTitle Service Name
-        .smallValue {{ currentService.service.name }}
 
     .state 
         .smallTitle State
@@ -52,6 +12,21 @@ section.infoBox
             span(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color);font-weight:normal") Suspended
             span(v-else-if="currentService.service.active == 1" style='color: var(--text-green);font-weight:normal;') Running
             span(v-else) -
+
+    .state
+        .smallTitle Subscription
+        .smallValue(:style='{fontWeight:currentService.service.plan == "Canceled" ? "normal" : null, color:currentService.service.plan == "Canceled" ? "var(--caution-color)" : null}')
+            span {{ currentService.service.plan }}&nbsp;
+            router-link.editHandle(:to='`/subscription/${currentService.id}`' @click="editCors") [CHANGE]
+
+    .state 
+        .smallTitle Renewal Date
+        .smallValue 
+            template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be deleted by {{ dateFormat(currentService.service.timestamp + 604800000) }}
+            template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
+            template(v-else) -
+
+    br
 
     .state.nobreak
         .smallTitle Service ID
@@ -107,21 +82,6 @@ section.infoBox
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
             span(v-else-if="currentService.plan == 'Premium'") 1TB
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
-
-    br
-
-    .state
-        .smallTitle Subscription
-        .smallValue(:style='{fontWeight:currentService.service.plan == "Canceled" ? "normal" : null, color:currentService.service.plan == "Canceled" ? "var(--caution-color)" : null}')
-            span {{ currentService.service.plan }}&nbsp;
-            router-link.editHandle(:to='`/subscription/${currentService.id}`' @click="editCors") [CHANGE]
-
-    .state 
-        .smallTitle Renewal Date
-        .smallValue 
-            template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be deleted by {{ dateFormat(currentService.service.timestamp + 604800000) }}
-            template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
-            template(v-else) -
 
 br
 
@@ -205,13 +165,13 @@ section.infoBox
         .smallTitle Disable/Enable
         Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
 
-    template(v-if="currentService.plan == 'Trial' || currentService.service.active < 0 || currentService?.subscription?.status == 'canceled'")
-        hr
+br
 
-        div(style="text-align:right")
-            router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
-                .material-symbols-outlined.fill(style='font-size:24px;') cancel
-                span &nbsp;Delete Service
+template(v-if="currentService.plan == 'Trial' || currentService.service.active < 0 || currentService?.subscription?.status == 'canceled'")
+    div(style="text-align:right")
+        router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
+            .material-symbols-outlined.fill(style='font-size:24px;') cancel
+            span &nbsp;Delete Service
 
 br
 </template>
@@ -220,7 +180,6 @@ br
 import { nextTick, reactive, ref } from 'vue';
 import { currentService } from '@/views/service/main';
 import { user } from '@/code/user';
-import Code from '@/components/code.vue';
 import Toggle from '@/components/toggle.vue';
 import { dateFormat } from '@/code/admin';
 
@@ -347,9 +306,10 @@ let getUserUnit = (user: number) => {
 }
 
 let getfileSize = (s: any) => {
-    if (s == 0 || s == null) {
+    if (s <= 0 || s == null) {
         return '0 bytes'
-    } else {
+    }
+    else {
         let unit = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
         let e = Math.floor(Math.log(s) / Math.log(1024));
         return (s / Math.pow(1024, e)).toFixed(2) + " " + unit[e];

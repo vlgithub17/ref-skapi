@@ -4,17 +4,10 @@ import LandingPage from '@/views/landing.vue'
 import Login from '@/views/login.vue'
 import Signup from '@/views/signup.vue'
 import Create from '@/views/create-service.vue'
-import DeleteService from '@/views/delete-service.vue'
 import Subscription from '@/views/subscription/subscription.vue'
 import AccountSetting from '@/views/account-setting.vue'
 import MyServices from '@/views/service-list.vue'
 import ServiceMain from '@/views/service/main.vue'
-import Service from '@/views/service/service.vue'
-import Users from '@/views/service/users/users.vue'
-import Records from '@/views/service/records/records.vue'
-import Mail from '@/views/service/mail.vue'
-import ClientSecret from '@/views/service/client_secret.vue'
-import Hosting from '@/views/service/hosting/hosting.vue'
 import { skapi } from '@/code/admin'
 
 let checkUser = async (t, f, n)=>{
@@ -107,7 +100,7 @@ const router = createRouter(
     {
       path: '/delete-service/:id',
       name: 'delete-service',
-      component: DeleteService,
+      component: () => import('@/views/delete-service.vue'),
       beforeEnter: checkUser
     },
     {
@@ -145,6 +138,11 @@ const router = createRouter(
             {
               path: '',
               name: 'service',
+              component: () => import('@/views/service/getting_started.vue')
+            },
+            {
+              path: 'dashboard',
+              name: 'dashboard',
               component: () => import('@/views/service/service.vue')
             },
             {

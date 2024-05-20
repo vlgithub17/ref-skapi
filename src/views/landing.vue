@@ -1,5 +1,4 @@
 <template lang="pug">
-
 .grad
     header(style='color:white;width:800px;')
         img(src='@/assets/img/logo/logo-white.svg' style='height:3rem;')
@@ -135,62 +134,10 @@ footer {
 }
 
 .grad {
-    // background:
-    //     linear-gradient(217deg, rgba(0, 255, 170, .66), rgba(255, 0, 0, 0) 70.71%),
-    //     linear-gradient(120deg,  rgba(0, 14, 255, .66), rgba(0, 255, 0, 0) 70.71%),
-    //     linear-gradient(148deg, rgba(0, 255, 0, 0), rgba(41, 63, 230, 1) 70.71%),
-    //     linear-gradient(45deg, #fcd04b, #293fe6 70.71%);
-    // background:
-    // linear-gradient(37deg, rgba(0, 255, 170, .66), rgba(255, 0, 0, 0) 70.71%),
-    // linear-gradient(300deg, rgba(0, 14, 255, .66), rgba(0, 255, 0, 0) 70.71%),
-    // linear-gradient(328deg, rgba(0, 255, 0, 0), rgba(41, 63, 230, 1) 70.71%),
-    // linear-gradient(225deg, #fcd04b, #293fe6 70.71%);
-    // background:
-    // linear-gradient(127deg, rgba(0, 255, 170, .66), rgba(255, 0, 0, 0) 70.71%),
-    // linear-gradient(30deg, rgba(0, 14, 255, .66), rgba(0, 255, 0, 0) 70.71%),
-    // linear-gradient(58deg, rgba(0, 255, 0, 0), rgba(41, 63, 230, 1) 70.71%),
-    // linear-gradient(315deg, #fcd04b, #293fe6 70.71%);
-
-
-
-    // background:
-    // linear-gradient(37deg, #00ffaa, rgba(255, 0, 0, 0) 70.71%),
-    // linear-gradient(234deg, #000eff, rgba(0, 255, 0, 0) 70.71%),
-    // linear-gradient(328deg, #000eff, rgba(0, 255, 0, 0) 70.71%),
-    // linear-gradient(156deg, #fcd04b, #0000ff 70.71%);
-    // background:
-    //     linear-gradient(217deg, rgba(0, 255, 170, 1), rgba(255, 0, 0, 0) 70.71%),
-    //     linear-gradient(54deg, rgba(0, 14, 255, 1), rgba(0, 255, 0, 0) 70.71%),
-    //     linear-gradient(148deg, rgba(0, 14, 255, 1), rgba(0, 255, 0, 0) 70.71%),
-    //     linear-gradient(336deg, rgba(252, 208, 75, 1), rgba(0, 0, 255, 1) 70.71%);
-    // rgb(109 0 255)
-    //rgba(0, 255, 170, 0.8)
-    // 0034ff
-    // background:
-    //     linear-gradient(217deg, rgb(0, 0, 255), rgba(255, 0, 0, 0) 80%),
-    //     linear-gradient(54deg, rgba(0, 0, 255, 0.77), rgba(0, 255, 0, 0) 80%),
-    //     linear-gradient(336deg, rgba(0, 255, 170,1), rgba(252, 208, 75, 0.8) 80%);
-    // background:
-    //     linear-gradient(172deg, rgb(0, 0, 255), rgba(255, 0, 0, 0) 80%),
-    //     linear-gradient(9deg, rgba(0, 0, 255, 0.77), rgba(0, 255, 0, 0) 80%),
-    //     linear-gradient(291deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
-    // background:
-    // linear-gradient(352deg, rgb(0, 0, 255), rgba(255, 0, 0, 0) 80%),
-    // linear-gradient(189deg, rgba(0, 0, 255, 0.77), rgba(0, 255, 0, 0) 80%),
-    // linear-gradient(111deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
     background:
         linear-gradient(32deg, rgb(0, 0, 255), rgba(255, 0, 0, 0) 80%),
         linear-gradient(229deg, rgba(0, 0, 255, 0.77), rgba(0, 255, 0, 0) 80%),
         linear-gradient(151deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
-    // background:
-    // linear-gradient(32deg, rgba(0, 0, 255, 0.6), rgba(255, 0, 0, 0) 80%),
-    // linear-gradient(229deg, rgba(0, 0, 255, 0.57), rgba(0, 255, 0, 0) 80%),
-    // linear-gradient(151deg, rgba(0, 255, 170, 0.8), rgba(252, 208, 75, 0.6) 80%);
-    // background:
-    // linear-gradient(32deg, rgba(0, 0, 200, 0.9), rgba(255, 0, 0, 0.2) 80%),
-    // linear-gradient(229deg, rgba(0, 0, 180, 0.9), rgba(0, 255, 0, 0.2) 80%),
-    // linear-gradient(151deg, rgba(0, 150, 120, 0.9), rgba(202, 158, 25, 0.6) 80%);
-
 }
 
 .grad {

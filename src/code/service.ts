@@ -25,7 +25,7 @@ export type ServiceObj = {
     email_triggers?: {
         template_setters: {
             welcome: string,
-            signup_confirmation: string,
+            confirmation: string,
             newsletter_subscription: string,
             verification: string,
             invitation: string
@@ -43,7 +43,7 @@ export type ServiceObj = {
         subject: string,
         url: string
     };
-    template_signup_confirmation: {
+    template_confirmation: {
         subject: string,
         url: string
     };
@@ -552,6 +552,68 @@ export default class Service {
         }
 
         return this.service;
+    }
+
+    async getMailTemplates(
+        params?: {
+            searchFor: 'message_id' | 'timestamp' | 'read' | 'complaint' | 'subject';
+            value: string | number;
+            range?: string | number;
+            condition?: '>' | '>=' | '=' | '<' | '<=' | 'gt' | 'gte' | 'eq' | 'lt' | 'lte';
+        },
+        fetchOptions?: { [key: string]: any }
+    ): Promise<any> {
+        try {
+            let res = await skapi.util.request(this.admin_private_endpoint + 'get-templates', Object.assign({
+                service: this.id,
+                owner: this.owner,
+            }, params), { auth: true, method: 'get', fetchOptions: fetchOptions || {} });
+
+            res.list.forEach((value: any, idx: number) => {
+                res.list[idx] = {
+                    message_id: value.mid, timestamp: value.stmp, subject: value.subj, url: value.url
+                }
+            });
+
+            return res;
+        }
+        catch (err: any) {
+            alert(err.message);
+        }
+    }
+
+    async deleteTemplate(
+        params?: {
+            message_id: string;
+            group: 'welcome' | 'confirmation' | 'verification' | 'invitation';
+        }
+    ): Promise<any> {
+        try {
+            return skapi.util.request(this.admin_private_endpoint + 'delete-template', Object.assign({
+                service: this.id,
+                owner: this.owner,
+            }, params), { auth: true });
+        }
+        catch (err: any) {
+            alert(err.message);
+        }
+    }
+
+    async setTemplate(
+        params?: {
+            message_id: string;
+            group: 'welcome' | 'confirmation' | 'verification' | 'invitation';
+        }
+    ): Promise<any> {
+        try {
+            return skapi.util.request(this.admin_private_endpoint + 'set-template', Object.assign({
+                service: this.id,
+                owner: this.owner,
+            }, params), { auth: true });
+        }
+        catch (err: any) {
+            alert(err.message);
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////////
