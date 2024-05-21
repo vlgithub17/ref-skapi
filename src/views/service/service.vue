@@ -4,31 +4,6 @@ section.infoBox
     .infoTitle Dashboard
 
     hr
-
-    .state 
-        .smallTitle State
-        .smallValue
-            span(v-if="currentService.service.active == 0") Disabled
-            span(v-else-if="currentService.service.active == -1 && currentService?.subscription?.status == 'canceled'" style="color:var(--caution-color);font-weight:normal") Suspended
-            span(v-else-if="currentService.service.active == 1" style='color: var(--text-green);font-weight:normal;') Running
-            span(v-else) -
-
-    .state
-        .smallTitle Subscription
-        .smallValue(:style='{fontWeight:currentService.service.plan == "Canceled" ? "normal" : null, color:currentService.service.plan == "Canceled" ? "var(--caution-color)" : null}')
-            span {{ currentService.service.plan }}&nbsp;
-            router-link.editHandle(:to='`/subscription/${currentService.id}`' @click="editCors") [CHANGE]
-
-    .state 
-        .smallTitle {{currentService.service.plan == "Canceled" ? '-' : 'Renewal Data'}}
-        .smallValue(:style='{color: (currentService.service.plan == "Canceled" || currentService.plan == "Trial") ? "var(--caution-color)" : null, fontWeight: (currentService.service.plan == "Canceled" || currentService.plan == "Trial") ? "normal" : null}' )
-            template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be reset by {{ dateFormat(currentService.service.timestamp + 604800000) }}
-            template(v-else-if='currentService.service.plan == "Canceled"' style="color:var(--caution-color)") Terminated on {{ dateFormat(currentService.subscription.current_period_end * 1000) }}
-            template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
-            template(v-else) -
-
-    br
-
     .state.nobreak
         .smallTitle Service ID
         .ellipsis {{ currentService.id }}
@@ -39,13 +14,37 @@ section.infoBox
 
     br
 
+    .state 
+        .smallTitle State
+        .smallValue
+            span(v-if="currentService.service.active == 0" style="font-weight:normal;") Disabled
+            span(v-else-if="currentService.service.active <= -1" style="color:var(--caution-color);font-weight:normal") Suspended
+            span(v-else-if="currentService.service.active >= 1" style='color: var(--text-green);font-weight:normal;') Running
+            span(v-else) -
+
+    .state
+        .smallTitle Subscription
+        .smallValue(:style='{fontWeight:currentService.service.plan == "Canceled" ? "normal" : null, color:currentService.service.plan == "Canceled" ? "var(--caution-color)" : null}')
+            span {{ currentService.service.plan }}&nbsp;
+            router-link.editHandle(:to='`/subscription/${currentService.id}`' @click="editCors") [CHANGE]
+
+    .state 
+        .smallTitle {{currentService.service.plan == "Canceled" ? '-' : 'Renewal Date'}}
+        .smallValue(:style='{color: (currentService.service.plan == "Canceled" || currentService.plan == "Trial") ? "var(--caution-color)" : null, fontWeight: (currentService.service.plan == "Canceled" || currentService.plan == "Trial") ? "normal" : null}' )
+            template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will reset on {{ resetTime(currentService.service.timestamp) }}
+            template(v-else-if='currentService.service.plan == "Canceled" && !currentService.service.suspended' style="color:var(--caution-color)") Suspends on {{ dateFormat(currentService.subscription?.current_period_end * 1000) }}
+            template(v-else-if='currentService.service.suspended' style="color:var(--caution-color)") Terminates on {{ dateFormat(2592000000 + currentService.subscription.cancel_at * 1000) }}
+            template(v-else) {{currentService.subscription?.current_period_end ? dateFormat(currentService.subscription?.current_period_end * 1000) : '-' }}
+
+    br
+
     .state
         .smallTitle Date Created
         .smallValue {{ currentService.dateCreated }}
 
     .state 
-        .smallTitle Host URL
-        .smallValue {{ currentService.service.subdomain ? currentService.service.subdomain + '.skapi.com' : 'Not hosted' }}
+        .smallTitle File Hosting
+        .smallValue {{ currentService.service.subdomain ? currentService.service.subdomain + '.skapi.com' : 'None' }}
 
     br
 
@@ -78,7 +77,7 @@ section.infoBox
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
     .state 
-        .smallTitle Hosting
+        .smallTitle File Hosting
         .smallValue {{ getfileSize(currentService.storageInfo.host) }} / 
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
             span(v-else-if="currentService.plan == 'Premium'") 1TB
@@ -107,7 +106,7 @@ section.infoBox
 
     hr
 
-    div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active == 0 || currentService.service.active == -1}")
+    div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
         .infoValue
             .smallTitle Service Name
             template(v-if="modifyMode.name")
@@ -122,7 +121,7 @@ section.infoBox
 
             div(v-else)
                 .smallValue {{ currentService.service.name }}&nbsp;
-                span.editHandle(@click="editName" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
+                span.editHandle(@click="editName") [EDIT]
 
         .infoValue
             .smallTitle CORS
@@ -138,7 +137,7 @@ section.infoBox
 
             div(v-else)
                 .smallValue {{ currentService.service.cors || '*' }}&nbsp;
-                span.editHandle(@click="editCors" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
+                span.editHandle(@click="editCors") [EDIT]
 
         .infoValue
             .smallTitle Secret Key
@@ -162,13 +161,13 @@ section.infoBox
                 option(value="admin") Only admin allowed
                 option(value="anyone") Anyone allowed
 
-    .infoValue(:class="{'nonClickable' : !user?.email_verified || currentService?.subscription?.status == 'canceled'}" style='display: flex;align-items: center;min-height:44px;')
+    .infoValue(:class="{'nonClickable' : !user?.email_verified || currentService.service.plan == 'Canceled'}" style='display: flex;align-items: center;min-height:44px;')
         .smallTitle Disable/Enable
-        Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.active == -1" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
+        Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.plan == 'Canceled'" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
 
 br
 
-template(v-if="currentService.plan == 'Trial' || currentService.service.active < 0 || currentService?.subscription?.status == 'canceled'")
+template(v-if="currentService.plan == 'Trial' || currentService.service.plan == 'Canceled'")
     div(style="text-align:right")
         router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
             .material-symbols-outlined.fill(style='font-size:24px;') cancel
@@ -178,7 +177,7 @@ br
 </template>
 
 <script setup lang="ts">
-import { nextTick, reactive, ref } from 'vue';
+import { nextTick, reactive, ref, computed } from 'vue';
 import { currentService } from '@/views/service/main';
 import { user } from '@/code/user';
 import Toggle from '@/components/toggle.vue';
@@ -202,6 +201,33 @@ let updatingValue = reactive({
 let focus_name = ref();
 let focus_cors = ref();
 let focus_key = ref();
+
+let resetTime = (timestamp:number) => {
+  // Convert the timestamp to a Date object
+  let startDate = new Date(timestamp); // assuming the timestamp is in seconds
+  let today = new Date();
+
+  // Calculate the difference in days
+  const diffInDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+
+  // Calculate the number of days since the last 7-day cycle
+  const daysSinceLastCycle = diffInDays % 7;
+
+  // Calculate the number of days until the next cycle
+  let daysUntilNextCycle = (7 - daysSinceLastCycle) % 7;
+
+  // If the cycle has just started today, then daysUntilNextCycle will be 0.
+  // In that case, we want to return 7 (the next cycle will start in 7 days).
+  if (daysUntilNextCycle === 0) {
+    daysUntilNextCycle = 7;
+  }
+
+  // Add the number of days until the next cycle to today's date
+  today.setDate(today.getDate() + daysUntilNextCycle);
+
+  // Return the date as a 13-digit timestamp
+  return dateFormat(today.getTime());
+}
 
 // edit/change name
 let editName = () => {

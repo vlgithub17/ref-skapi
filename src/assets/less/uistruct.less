@@ -156,15 +156,10 @@
         font-weight: 500;
         display: inline-block;
         width: var(--smallTitle-width);
-        vertical-align: text-bottom;
     }
 
     .smallValue {
         display: inline-block;
-
-        * {
-            vertical-align: middle;
-        }
     }
 
     .infoValue {
@@ -191,10 +186,10 @@
             position: relative;
             flex-wrap: nowrap !important;
             margin: 4px 0;
-
+            gap: 0.5rem;
             .loading {
                 vertical-align: middle;
-                margin-right: 10px;
+                // margin-right: 10px;
             }
 
             .save,
@@ -225,12 +220,12 @@
 
             .save {
                 color: var(--main-color);
-                margin-right: 10px;
+                // margin-right: 10px;
             }
 
-            input {
+            input, .input {
                 flex-grow: 1;
-                margin-right: 10px;
+                // margin-right: 10px;
             }
         }
     }

@@ -22,6 +22,7 @@ export type ServiceObj = {
     users: number;
     subdomain?: string,
     subs_id?: string,
+    suspended?: boolean; // the service is canceled and suspended, if false, the service can be canceled but still running until the end of period
     email_triggers?: {
         template_setters: {
             welcome: string,
@@ -52,78 +53,70 @@ export type ServiceObj = {
         url: string
     };
 };
-// import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
 
 type SubscriptionObj = {
-    [key: string]: any;
-    application: null;
-    application_fee_percent: null
-    automatic_tax: { enabled: boolean, liability: null }
-    billing_cycle_anchor: number
-    billing_cycle_anchor_config: null
-    billing_thresholds: null
-    cancel_at: null
-    cancel_at_period_end: false
-    canceled_at: null
-    cancellation_details: { comment: null, feedback: null, reason: null }
-    collection_method: string
-    created: number
-    currency: string
-    current_period_end: number
-    current_period_start: number
-    customer: string
-    days_until_due: null
-    default_payment_method: string
-    default_source: null
-    default_tax_rates: []
-    description: string
-    discount: null
-    ended_at: null
-    id: string
-    invoice_settings: { account_tax_ids: null, issuer: { type: string } }
-    items: { object: string, data: [], has_more: false, total_count: 1, url: string }
-    latest_invoice: string
-    livemode: false
-    metadata: { service: string }
-    next_pending_invoice_item_invoice: null
-    object: string
-    on_behalf_of: null
-    pause_collection: null
-    payment_settings: { payment_method_options: null, payment_method_types: null, save_default_payment_method: string }
-    pending_invoice_item_interval: null
-    pending_setup_intent: null
-    pending_update: null
-    plan: {
-        active: boolean,
-        aggregate_usage: null,
-        amount: number,
-        amount_decimal: string,
-        billing_scheme: string,
-        created: number,
-        currency: string,
-        id: string,
-        interval: string,
-        interval_count: number,
-        livemode: boolean,
-        metadata: {},
-        nickname: null,
-        object: string,
-        product: string,
-        tiers_mode: null,
-        transform_usage: null,
-        trial_period_days: null,
-        usage_type: string
-    }
-    quantity: number
-    schedule: null
-    start_date: number
-    status: string
-    test_clock: null
-    transfer_data: null
-    trial_end: null
-    trial_settings: { end_behavior: { missing_payment_method: string } }
-    trial_start: null
-}
+    id: string;
+    object: string;
+    application: string | null;
+    application_fee_percent: number | null;
+    automatic_tax: {
+        enabled: boolean;
+        liability: string | null;
+    };
+    billing_cycle_anchor: number;
+    billing_cycle_anchor_config: object | null;
+    billing_thresholds: object | null;
+    cancel_at: number | null; // actually cancelled at (10 digit timestamp)
+    cancel_at_period_end: boolean;
+    canceled_at: number | null; // requested cancel at (10 digit timestamp)
+    cancellation_details: {
+        comment: string | null;
+        feedback: string | null;
+        reason: string | null;
+    };
+    collection_method: string;
+    created: number;
+    currency: string;
+    current_period_end: number;
+    current_period_start: number;
+    customer: string;
+    days_until_due: number | null;
+    default_payment_method: string | null;
+    default_source: string | null;
+    default_tax_rates: string[];
+    description: string | null;
+    discount: object | null;
+    discounts: object[];
+    ended_at: number | null;
+    invoice_settings: {
+        account_tax_ids: string | null;
+        issuer: {
+            type: string;
+        };
+    };
+    items: object;
+    latest_invoice: string;
+    livemode: boolean;
+    metadata: object;
+    next_pending_invoice_item_invoice: string | null;
+    on_behalf_of: string | null;
+    pause_collection: object | null;
+    payment_settings: object;
+    pending_invoice_item_interval: object | null;
+    pending_setup_intent: string | null;
+    pending_update: object | null;
+    plan: object;
+    quantity: number;
+    schedule: object | null;
+    start_date: number;
+    status: string;
+    test_clock: object | null;
+    transfer_data: object | null;
+    trial_end: number | null;
+    trial_settings: object;
+    trial_start: number | null;
+};
+
 
 export default class Service {
     id: string;
@@ -141,7 +134,7 @@ export default class Service {
         50: 'Unlimited',
         51: 'Free Standard'
     };
-    subscription?: SubscriptionObj | {} = reactive({});
+    subscription: SubscriptionObj = reactive(null);
     storageInfo: {
         cloud: number,
         database: number,
@@ -152,7 +145,7 @@ export default class Service {
         database: null,
         email: null,
         host: null
-    })
+    });
 
     subscriptionFetched = ref(false);
     _orgPlan = '';
@@ -163,11 +156,11 @@ export default class Service {
         this.admin_private_endpoint = endpoints[0];
         this.record_private_endpoint = endpoints[1];
         this.admin_public_endpoint = endpoints[2];
-        service.plan = '-'
-        this.service = reactive(service);
         this.owner = service.owner;
         this.dateCreated = typeof service.timestamp === 'string' ? service.timestamp : new Date(service.timestamp).toDateString();
-        this.plan = this.planCode[this.service.group];
+        this.plan = this.planCode[service.group];
+        service.plan = this.plan;
+        this.service = reactive(service);
         this._subsPromise = this.getSubscription();
         this.getStorageInfo();
         if (service.group > 1) {
@@ -196,9 +189,12 @@ export default class Service {
         return skapi.util.request(this.admin_private_endpoint + 'delete-newsletter', Object.assign({ service: this.id, owner: this.owner }, skapi.util.extractFormData(params).data || {}), { auth: true });
     }
 
-    setPlan = (subscription: SubscriptionObj) => {
+    checkCancel = () => {
         this._orgPlan = this.planCode[this.service.group];
-        if (subscription?.status === 'canceled' || subscription?.cancel_at_period_end || new Date().getTime() < (subscription?.canceled_at || 0)) {
+        let currTime = new Date().getTime();
+        this.service.suspended = this.subscription?.cancel_at && currTime >= this.subscription?.cancel_at * 1000;
+
+        if (this.subscription?.canceled_at && currTime >= this.subscription.canceled_at * 1000) {
             this.service.plan = 'Canceled';
         }
         else {
@@ -247,14 +243,8 @@ export default class Service {
     }
 
     async getSubscription(refresh = false): Promise<SubscriptionObj> {
-        if (Object.keys(this.subscription).length) {
-            if (!refresh) {
-                return this.subscription;
-            }
-        }
-
-        for (let k in this.subscription) {
-            delete this.subscription[k];
+        if (this.subscription && !refresh) {
+            return this.subscription;
         }
 
         if (this.service?.subs_id) {
@@ -266,7 +256,7 @@ export default class Service {
 
             let SUBSCRIPTION_ID = subs_id[0];
 
-            let res = await skapi.clientSecretRequest({
+            this.subscription = reactive(await skapi.clientSecretRequest({
                 clientSecretName: 'stripe_test',
                 url: `https://api.stripe.com/v1/subscriptions/${SUBSCRIPTION_ID}`,
                 method: 'GET',
@@ -274,24 +264,18 @@ export default class Service {
                     Authorization: 'Bearer $CLIENT_SECRET',
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
-            });
-
-            Object.assign(this.subscription, res);
+            }));
         }
 
-        this.setPlan(this.subscription);
+        this.checkCancel();
         return this.subscription;
     }
 
     async cancelSubscription(): Promise<SubscriptionObj> {
         await this._subsPromise;
 
-        if (!Object.keys(this.subscription).length) {
+        if (!this.subscription) {
             return null;
-        }
-
-        for (let k in this.subscription) {
-            delete this.subscription[k];
         }
 
         if (this.service?.subs_id) {
@@ -303,7 +287,7 @@ export default class Service {
 
             let SUBSCRIPTION_ID = subs_id[0];
 
-            let res = await skapi.clientSecretRequest({
+            this.subscription = reactive(await skapi.clientSecretRequest({
                 clientSecretName: 'stripe_test',
                 url: `https://api.stripe.com/v1/subscriptions/${SUBSCRIPTION_ID}`,
                 method: 'POST',
@@ -313,12 +297,10 @@ export default class Service {
                 data: {
                     cancel_at_period_end: true
                 }
-            });
-
-            Object.assign(this.subscription, res);
+            }));
         }
 
-        this.setPlan(this.subscription);
+        this.checkCancel();
         return this.subscription;
     }
 
@@ -459,37 +441,25 @@ export default class Service {
         }
 
         if (Object.keys(to_update).length) {
-            let srv = await skapi.util.request(this.admin_private_endpoint + 'register-service', Object.assign({ execute: 'update', service: this.id, owner: this.owner }, to_update), { auth: true });
-            for (let k in srv) {
-                this.service[k] = srv[k];
-            }
+            this.service = reactive(await skapi.util.request(this.admin_private_endpoint + 'register-service', Object.assign({ execute: 'update', service: this.id, owner: this.owner }, to_update), { auth: true }));
         }
 
         return this.service;
     }
 
-    async getServiceInfo() {
-        this.service = await skapi.util.request(this.admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: this.id }, { auth: true });
-        return this.service;
-    }
-
-    getSubdomainInfo(
-        params: {
-            subdomain: string;
-        }
-    ): Promise<{
+    getSubdomainInfo(): Promise<{
         srvc: string;
         subd: string;
         ownr: string;
         stat: string;
         ["404"]?: string;
     }> {
-        return skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service_id: this.id, subdomain: params.subdomain, service: skapi.service, owner: skapi.owner }, { auth: true });
+        return skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service: this.id, subdomain: this.service.subdomain, owner: skapi.owner }, { auth: true });
     }
 
     updateSubdomain(cb: (service: ServiceObj) => void, time = 1000) {
         if (this.service?.subdomain && (this.service.subdomain?.[0] === '+' || this.service.subdomain?.[0] === '*')) {
-            this.getServiceInfo().then(() => {
+            this.refresh().then(() => {
                 if (!this.service?.subdomain || this.service?.subdomain && this.service.subdomain[0] !== '+' && this.service.subdomain[0] !== '*') {
                     return cb(this.service);
                 }
@@ -506,8 +476,8 @@ export default class Service {
 
     async registerSubdomain(
         params: {
-            subdomain: string,
-            cb: (service: ServiceObj) => void; // callback runs when the subdomain process is complete
+            subdomain?: string,
+            cb?: (service: ServiceObj) => void; // callback runs when the subdomain process is complete
         }
     ): Promise<ServiceObj> {
         let invalid = [
@@ -616,6 +586,237 @@ export default class Service {
         }
     }
 
+
+    async refreshCDN(
+        serviceId: string,
+        params?: {
+            // when true, returns the status of the cdn refresh without running the cdn refresh
+            // if callback are given, calls for cdn refresh, then callbacks the cdn refresh status in 3 seconds interval
+            checkStatus: boolean | ((status: 'IN_QUEUE' | 'COMPLETE' | 'IN_PROCESS') => void);
+        }
+    ): Promise<
+        'IS_QUEUED' | // new cdn refresh is queued
+        'IN_QUEUE' | // the previous cdn refresh is still in queue
+        'COMPLETE' | // only when checkStatus is true and the previous cdn refresh is complete
+        'IN_PROCESS' // the cdn refresh is in process
+    > {
+        await this.require(Required.ADMIN);
+        let { checkStatus = false } = params || {};
+
+        if (!serviceId) throw 'Service ID is required';
+
+        let service = this.services[serviceId];
+        if (!service.subdomain || service.subdomain[0] === '*') {
+            throw 'subdomain does not exists.';
+        }
+
+        try {
+            let res = await this.request(await this.getAdminEndpoint('refresh-cdn'), {
+                service: serviceId,
+                subdomain: service.subdomain,
+                exec: typeof checkStatus === 'boolean' && checkStatus ? 'status' : 'refresh'
+            }, {
+                auth: true,
+                method: 'post'
+            });
+
+            if (checkStatus === true) {
+                return res;
+            }
+
+            return 'IS_QUEUED';
+
+        }
+        catch (err) {
+            if ((err as SkapiError).message === 'previous cdn refresh is still in queue.') {
+                return 'IN_QUEUE';
+            }
+            if ((err as SkapiError).message === 'previous cdn refresh is in process.') {
+                return 'IN_PROCESS';
+            }
+            else {
+                throw err;
+            }
+        }
+        finally {
+            if (typeof checkStatus === 'function') {
+                let callbackInterval = (serviceId, cb, time = 30000) => {
+                    setTimeout(() => {
+                        this.refreshCDN(serviceId, { checkStatus: true }).then(res => {
+                            if (res === 'COMPLETE') {
+                                return cb(res);
+                            }
+                            callbackInterval(serviceId, cb, time);
+                        });
+                    }, time);
+                };
+                callbackInterval(serviceId, checkStatus);
+            }
+        }
+    }
+
+    async set404(
+        params: {
+            path: string; // Set path to file of 404 page. ex) folder/file.html
+        }
+    ): Promise<'SUCCESS'> {
+        await skapi.util.request(this.admin_private_endpoint + 'set-404', { service: this.id, owner: this.owner, page404: params.path }, { auth: true });
+        return 'SUCCESS';
+    }
+
+    async uploadHostFiles(
+        fileList: FormData | HTMLFormElement | SubmitEvent,
+        params: {
+            nestKey?: string; // file to nest
+            progress?: (p:
+                {
+                    status: 'upload',
+                    progress: number,
+                    currentFile: File,
+                    completed: File[],
+                    failed: File[],
+                    loaded: number,
+                    total: number,
+                    abort: () => void
+                }
+            ) => void;
+        }
+    ): Promise<{ completed: File[]; failed: File[]; bin_endpoints: string[] }> {
+        let progress = params?.progress || ((p: any) => p);
+
+        if (fileList instanceof SubmitEvent) {
+            fileList = (fileList.target as HTMLFormElement);
+        }
+
+        if (fileList instanceof HTMLFormElement) {
+            fileList = new FormData(fileList);
+        }
+
+        let reserved_key = this.id;
+
+        let getSignedParams: Record<string, any> = {
+            reserved_key,
+            service: this.id,
+            owner: this.owner,
+            request: 'host',
+            id: this.service.subdomain
+        };
+
+        let xhr: any;
+        let fetchProgress = (
+            url: string,
+            body: FormData,
+            progressCallback: (p: ProgressEvent) => void
+        ) => {
+            return new Promise((res, rej) => {
+                xhr = new XMLHttpRequest();
+                xhr.open('POST', url);
+                xhr.onload = () => {
+                    let result = xhr.responseText;
+                    try {
+                        result = JSON.parse(result);
+                    }
+                    catch (err) { }
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        res(result);
+                    } else {
+                        rej(result);
+                    }
+                };
+                xhr.onerror = () => rej('Network error');
+                xhr.onabort = () => rej('Aborted');
+                xhr.ontimeout = () => rej('Timeout');
+
+                // xhr.addEventListener('error', rej);
+                if (xhr.upload && typeof progressCallback === 'function') {
+                    xhr.upload.onprogress = progressCallback;
+                }
+
+                xhr.send(body);
+            });
+        };
+
+        let completed = [];
+        let failed = [];
+        let bin_endpoints = [];
+        for (let [key, f] of (fileList as any).entries()) {
+            if (!(f instanceof File)) {
+                continue;
+            }
+
+            let signedParams = Object.assign({
+                key: f.name,
+                // sizeKey: toBase62(f.size),
+                contentType: f.type || null
+            }, getSignedParams);
+
+            let { fields = null, url } = await skapi.util.request(this.record_private_endpoint + 'get-signed-url', signedParams, { auth: true });
+
+            bin_endpoints.push(url);
+
+            let form = new FormData();
+
+            for (let name in fields) {
+                form.append(name, fields[name]);
+            }
+
+            form.append('file', f);
+            console.log(url, form)
+            try {
+                await fetchProgress(
+                    url,
+                    form,
+                    (p: ProgressEvent) => progress(
+                        {
+                            status: 'upload',
+                            progress: p.loaded / p.total * 100,
+                            currentFile: f,
+                            completed,
+                            failed,
+                            loaded: p.loaded,
+                            total: p.total,
+                            abort: () => xhr.abort()
+                        }
+                    )
+                );
+                completed.push(f);
+            } catch (err) {
+                failed.push(f);
+            }
+        }
+
+        return { completed, failed, bin_endpoints };
+    }
+
+    async deleteHostFiles(
+        params: {
+            serviceId: string,
+            paths: string[]; // path without subdomain ex) folder/file.html
+        }
+    ): Promise<string> {
+        await this.require(Required.ADMIN);
+        if (!params?.serviceId) {
+            throw new SkapiError('"params.serviceId" is required.', { code: 'INVALID_PARAMETER' });
+        }
+        if (!params?.paths) {
+            throw new SkapiError('"params.paths" is required.', { code: 'INVALID_PARAMETER' });
+        }
+
+        let service = this.services[params.serviceId];
+        let pathsArr = [];
+
+        for (let i = 0; i < params.paths.length; i++) {
+            pathsArr.push(service.subdomain + '/' + params.paths[i]);
+        }
+
+        return this.request('del-files', {
+            service: params.serviceId,
+            endpoints: pathsArr,
+            storage: 'host'
+        }, { auth: true, method: 'post' });
+    }
+
+
     //////////////////////////////////////////////////////////////////////////////
     static async create(params: { name: string }) {
         if (!params?.name) throw new Error('Invalid service name.');
@@ -667,9 +868,10 @@ export default class Service {
         for (let region in service) {
             if (service[region][0]) {
                 this.service = reactive(service[region][0]);
-                return;
+                break;
             }
         }
+        return this.service;
     }
 
     static async load(id: string): Promise<Service> {

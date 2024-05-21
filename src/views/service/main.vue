@@ -26,7 +26,7 @@
                 span.name Bulk Email
             router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting', 'nonClickable' : currentService.service.group <= 1}")
                 span.material-symbols-outlined.fill.nohover language
-                span.name Hosting
+                span.name File Hosting
     main.right 
         router-view
     
