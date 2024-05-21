@@ -1,17 +1,7 @@
 <template lang="pug">
 h2(style='margin-bottom: 0')
-    | Automated Email:
-    | &nbsp;
-    .customSelect(style='display: inline-block; min-width: 220px; vertical-align: middle' @click.stop="(e)=>{showDropDown(e)}" :class='{disabled: fetching}')
-        button(type='button' :disabled='fetching')
-            span {{ emailType }}
-            span.material-symbols-outlined arrow_drop_down
-        .moreVert(style="--moreVert-left:0;display:none")
-            .inner(style="padding:0.8rem;padding-right:1rem")
-                .more(@click="emailType = 'Signup Confirmation'") Signup Confirmation
-                .more(@click="emailType = 'Welcome Email'") Welcome Email
-                .more(@click="emailType = 'Verification Email'") Verification Email
-                .more(@click="emailType = 'Invitation Email'") Invitation Email
+    | Automated Email:&nbsp;
+    Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;' :class='{disabled: fetching}')
 
 hr
 
@@ -86,7 +76,10 @@ p(style='margin-bottom: 0').
     You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates[group]') email address] provided below:
 Code
     pre {{ email_templates[group] }}
+
 p.
+    * The senders email address should exactly match your current profile email address: #[b.wordset {{ user.email }}]
+    #[br]
     For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
 
 section.infoBox
@@ -227,13 +220,13 @@ import { reactive, ref, computed, watch } from 'vue';
 import type { ComputedRef, Ref } from 'vue';
 import { currentService } from './main';
 import { user } from '@/code/user';
-import { showDropDown } from '@/assets/js/event.js'
 import Code from '@/components/code.vue';
 import { dateFormat } from '@/code/admin';
 import Table from '@/components/table.vue';
 import Modal from '@/components/modal.vue';
 import Pager from '@/code/pager';
 import { skapi } from '@/code/admin';
+import Select from '@/components/select.vue';
 
 type Newsletter = {
     bounced: number;
@@ -246,7 +239,24 @@ type Newsletter = {
 }
 
 let emailType: Ref<'Signup Confirmation' | 'Welcome Email' | 'Verification Email' | 'Invitation Email'> = ref('Signup Confirmation');
-
+let emailTypeSelect = [
+    {
+        value: 'Signup Confirmation',
+        option: 'Signup Confirmation'
+    },
+    {
+        value: 'Welcome Email',
+        option: 'Welcome Email'
+    },
+    {
+        value: 'Verification Email',
+        option: 'Verification Email'
+    },
+    {
+        value: 'Invitation Email',
+        option: 'Invitation Email'
+    }
+]
 ///////////////////////////////////////////////////////////////////////////////// template history[start]
 let pager: Pager = null;
 

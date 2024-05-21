@@ -53,7 +53,7 @@ hr
 p Search and manage your service users.
 
 form#searchForm(@submit.prevent="searchUsers")
-    Select(v-model="searchFor" :selectOptions="selectOptions")
+    Select(v-model="emailType" :selectOptions="selectOptions")
     .search
         .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="showCalendar = !showCalendar;")
             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" readonly)

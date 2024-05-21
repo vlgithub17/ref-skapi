@@ -20,9 +20,10 @@ section.infoBox
             router-link.editHandle(:to='`/subscription/${currentService.id}`' @click="editCors") [CHANGE]
 
     .state 
-        .smallTitle Renewal Date
-        .smallValue 
-            template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be deleted by {{ dateFormat(currentService.service.timestamp + 604800000) }}
+        .smallTitle {{currentService.service.plan == "Canceled" ? '-' : 'Renewal Data'}}
+        .smallValue(:style='{color: (currentService.service.plan == "Canceled" || currentService.plan == "Trial") ? "var(--caution-color)" : null, fontWeight: (currentService.service.plan == "Canceled" || currentService.plan == "Trial") ? "normal" : null}' )
+            template(v-if="currentService.plan == 'Trial'" style="color:var(--caution-color)") All Data will be reset by {{ dateFormat(currentService.service.timestamp + 604800000) }}
+            template(v-else-if='currentService.service.plan == "Canceled"' style="color:var(--caution-color)") Terminated on {{ dateFormat(currentService.subscription.current_period_end * 1000) }}
             template(v-else-if="currentService.service.active >= 0") {{ currentService?.subscription?.current_period_end ? dateFormat(currentService?.subscription?.current_period_end * 1000) : '-' }}
             template(v-else) -
 
