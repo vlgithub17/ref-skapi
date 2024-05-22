@@ -1,24 +1,9 @@
 <template lang="pug">
 h2(style='margin-bottom: 0')
-    | Bulk Email:
-    | &nbsp;
-    .customSelect(style='display: inline-block; min-width: 160px; vertical-align: middle' @click.stop="(e)=>{showDropDown(e)}" :class='{disabled: fetching}')
-        button(type='button' :disabled='fetching')
-            span {{ group ? 'Service Mail' : 'Newsletter' }}
-            span.material-symbols-outlined arrow_drop_down
-        .moreVert(style="--moreVert-left:0;display:none")
-            .inner(style="padding:0.8rem;padding-right:1rem")
-                .more(@click="group = 0") Newsletter
-                .more(@click="group = 1") Service Mail
+    | Bulk Email:&nbsp;
+    Select(v-model="group" :selectOptions="[{option: 'Newsletter', value: 0}, {option: 'Service Mail', value: 1}]" style='display:inline-block;vertical-align:middle;' :class='{disabled: fetching}')
 
 hr
-
-p(style='margin-bottom: 0') You can send {{mailType.toLowerCase()}} to your users by clicking on #[a(:href="'mailto:' + newsletterEndpoint") Send {{ mailType }}],#[br]#[.wordset or by sending the email to the address provided below:]
-
-Code
-    pre {{ newsletterEndpoint || '...' }}
-
-br
 
 p(style='margin-bottom: 0').
     You can collect your {{mailType.toLowerCase()}} subscribers by using the following code:
@@ -39,9 +24,19 @@ Code(v-if='group === 1')
 
 p(v-if='group === 1') * User must be logged in to subscribe to Service Mail, and the user must have their email verified.
 
-p For more information on how to use the code above, please refer to the #[a(href="https://docs.skapi.com/email/newsletters.html" target="_blank") documentation]
+br
+
+p(style='margin-bottom: 0') Once the users have subscribed to your {{mailType.toLowerCase()}}, they will be able to receive your emails sent to the address provided below:
+
+Code
+    pre {{ newsletterEndpoint || '...' }}
 
 br
+
+p.
+    * The senders email address should exactly match your current profile email address: #[b.wordset {{ user.email }}]
+    #[br]
+    For more information, please refer to the #[a(href="https://docs.skapi.com/email/newsletters.html" target="_blank") documentation]
 
 .tableMenu
     a.iconClick.square(:href="'mailto:' + newsletterEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
@@ -143,7 +138,7 @@ Modal(:open="emailToDelete")
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import { currentService } from './main';
 import { user } from '@/code/user';
@@ -152,9 +147,9 @@ import { skapi } from '@/code/admin';
 import { dateFormat } from '@/code/admin';
 import Pager from '@/code/pager';
 import Code from '@/components/code.vue';
-import { showDropDown } from '@/assets/js/event.js'
 import Modal from '@/components/modal.vue';
 import type { Newsletters } from 'skapi-js/js/Types';
+import Select from '@/components/select.vue';
 
 type Newsletter = {
     bounced: number;

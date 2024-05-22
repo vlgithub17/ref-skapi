@@ -32,6 +32,8 @@ Code
         #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "{{ currentService.id }}"], #[span(style="color:#FFED91") "{{ currentService.owner }}"]);
         #[span(style="color:#44E9FF") export] { skapi } #[span(style="color:#999") // Import the instance in your components]
 
+br
+
 p For more details, please refer to the #[a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank") Documentation]
 
 br
@@ -40,6 +42,5 @@ br
 
 <script setup>
 import Code from '@/components/code.vue';
-import { user } from '@/code/user';
 import { currentService } from '@/views/service/main';
 </script>

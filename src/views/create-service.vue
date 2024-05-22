@@ -33,7 +33,8 @@ main#create
             hr
 
             ul
-                li Provides 10k user accounts
+                li 10k user accounts
+                li User invitations
                 li 4GB of database
                 li 50GB each for file storage and hosting storage
                 li Real-time data
@@ -50,6 +51,7 @@ main#create
 
             ul
                 li 100k user accounts
+                li User invitations
                 li 100GB of database
                 li 1TB each for file storage and hosting storage
                 li Real-time data
