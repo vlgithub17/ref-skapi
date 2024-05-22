@@ -134,7 +134,7 @@ export default class Service {
         50: 'Unlimited',
         51: 'Free Standard'
     };
-    subscription: SubscriptionObj = reactive(null);
+    subscription: SubscriptionObj;
     storageInfo: {
         cloud: number,
         database: number,
@@ -451,13 +451,13 @@ export default class Service {
         srvc: string;
         subd: string;
         ownr: string;
-        stat: string;
+        stat: 'remove' | 'change:(subdomain to be changed to)' | 'active' | string;
         ["404"]?: string;
     }> {
-        return skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service: this.id, subdomain: this.service.subdomain, owner: skapi.owner }, { auth: true });
+        return skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service: this.id, owner: this.owner }, { auth: true });
     }
 
-    updateSubdomain(cb: (service: ServiceObj) => void, time = 1000) {
+    pendingSubdomain(cb: (service: ServiceObj) => void, time = 1000) {
         if (this.service?.subdomain && (this.service.subdomain?.[0] === '+' || this.service.subdomain?.[0] === '*')) {
             this.refresh().then(() => {
                 if (!this.service?.subdomain || this.service?.subdomain && this.service.subdomain[0] !== '+' && this.service.subdomain[0] !== '*') {
@@ -465,7 +465,7 @@ export default class Service {
                 }
                 else {
                     time *= 1.2;
-                    setTimeout(() => this.updateSubdomain(cb, time), time);
+                    setTimeout(() => this.pendingSubdomain(cb, time), time);
                 }
             });
         }
@@ -518,7 +518,7 @@ export default class Service {
         }
 
         if (typeof params.cb === 'function') {
-            this.updateSubdomain(params.cb);
+            this.pendingSubdomain(params.cb);
         }
 
         return this.service;
@@ -539,8 +539,8 @@ export default class Service {
                 owner: this.owner,
             }, params), { auth: true, method: 'get', fetchOptions: fetchOptions || {} });
 
-            res.list.forEach((value: any, idx: number) => {
-                res.list[idx] = {
+            res.list = res.list.map((value:any) => {
+                return {
                     message_id: value.mid, timestamp: value.stmp, subject: value.subj, url: value.url
                 }
             });
@@ -585,7 +585,6 @@ export default class Service {
             alert(err.message);
         }
     }
-
 
     async refreshCDN(
         serviceId: string,
@@ -659,9 +658,8 @@ export default class Service {
         params: {
             path: string; // Set path to file of 404 page. ex) folder/file.html
         }
-    ): Promise<'SUCCESS'> {
-        await skapi.util.request(this.admin_private_endpoint + 'set-404', { service: this.id, owner: this.owner, page404: params.path }, { auth: true });
-        return 'SUCCESS';
+    ): Promise<'SUCCESS: Removed 404 page'> {
+        return await skapi.util.request(this.admin_private_endpoint + 'set-404', { service: this.id, owner: this.owner, page404: params.path }, { auth: true });
     }
 
     async uploadHostFiles(
@@ -790,32 +788,63 @@ export default class Service {
 
     async deleteHostFiles(
         params: {
-            serviceId: string,
             paths: string[]; // path without subdomain ex) folder/file.html
         }
     ): Promise<string> {
-        await this.require(Required.ADMIN);
-        if (!params?.serviceId) {
-            throw new SkapiError('"params.serviceId" is required.', { code: 'INVALID_PARAMETER' });
-        }
-        if (!params?.paths) {
-            throw new SkapiError('"params.paths" is required.', { code: 'INVALID_PARAMETER' });
-        }
-
-        let service = this.services[params.serviceId];
         let pathsArr = [];
 
         for (let i = 0; i < params.paths.length; i++) {
-            pathsArr.push(service.subdomain + '/' + params.paths[i]);
+            pathsArr.push(this.service.subdomain + '/' + params.paths[i]);
         }
 
-        return this.request('del-files', {
-            service: params.serviceId,
+        return skapi.util.request(this.record_private_endpoint + 'del-files', {
+            service: this.id,
             endpoints: pathsArr,
             storage: 'host'
         }, { auth: true, method: 'post' });
     }
 
+    getDirInfo() {
+        return skapi.util.request(this.admin_private_endpoint + 'host-directory', Object.assign({ service: this.id, owner: this.owner }, { dir: '', info: true }), {
+            fetchOptions: {
+                limit: 1,
+                fetchMore: false,
+                ascending: true
+            },
+            method: 'post',
+            auth: true
+        });
+    }
+    listHostDirectory(
+        params: {
+            dir: string; // unix style dir with subdomain. ex) subdomain/folder/subfolder
+        },
+        fetchMore: boolean = false
+    ): Promise<{
+        [key: string]: any;
+        list: {
+            name: string; // file path ex) /folder/subfolder/file.txt
+            path: string;
+            size: number;
+            upl: number;
+            cnt: number;
+        }
+    }> {
+        let _subd = this.service.subdomain;
+        if (_subd[0] === '*' || _subd[0] === '+') {
+            _subd = _subd.slice(1);
+        }
+
+        return skapi.util.request(this.admin_private_endpoint + 'host-directory', Object.assign({ service: this.id, owner: this.owner }, params), {
+            fetchOptions: {
+                limit: 100,
+                fetchMore: !!fetchMore,
+                ascending: true
+            },
+            method: 'post',
+            auth: true
+        });
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     static async create(params: { name: string }) {

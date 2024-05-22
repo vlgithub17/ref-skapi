@@ -119,12 +119,12 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             th
                 span(@click='toggleSort("subject")')
                     | Subject
-                    span.material-symbols-outlined.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
+                    span.material-symbols-outlined.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th
                 span(@click='toggleSort("timestamp")')
                     | Date
-                    span.material-symbols-outlined.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
+                    span.material-symbols-outlined.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
             th(style="width:66px; padding:0")
 
     template(v-slot:body)
@@ -295,12 +295,18 @@ watch(currentPage, (n, o) => {
 // initialize the pager when searchFor changes
 watch(searchFor, (n) => {
     if (!fetching.value) {
-        ascending.value = n === 'subject';
-        if (endOfList.value) {
-            resetIndex();
+        let prev = ascending.value;
+        if (n === 'subject') {
+            ascending.value = true;
         }
-        else {
-            init();
+        if (prev !== ascending.value) {
+
+            if (endOfList.value) {
+                resetIndex();
+            }
+            else {
+                init();
+            }
         }
     }
 });
@@ -399,7 +405,7 @@ let getPage = async (refresh?: boolean) => {
 
         // fetch from server
         let fetchedData = await currentService.getMailTemplates(callParams.value.params, Object.assign({ fetchMore: !refresh }, callParams.value.options));
-
+        
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
 

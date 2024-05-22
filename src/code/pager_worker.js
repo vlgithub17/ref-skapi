@@ -1,6 +1,5 @@
 function getIndexValue(obj, path) {
     let keys = path.split('.');
-
     for (let key of keys) {
         if (obj.hasOwnProperty(key) && obj[key] !== '') {
             obj = obj[key];

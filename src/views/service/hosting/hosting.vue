@@ -27,6 +27,17 @@
         small(style='font-weight: normal' :style='{color: currentSubdomain.status === "Active" ? "var(--text-green)" : currentSubdomain.status === "Removing" ? "var(--caution-color)" : null } ') ({{ currentSubdomain.status }})
 
     hr
+    .infoValue
+        .smallTitle Created
+        .smallValue {{ dirInfo?.upl ? new Date(dirInfo.upl).toLocaleString() : '...' }}
+
+    .infoValue
+        .smallTitle Size
+        .smallValue {{ dirInfo?.size ? getFileSize(dirInfo.size) : '...' }}
+
+    .infoValue
+        .smallTitle Number of Files
+        .smallValue {{ dirInfo?.cnt || '...' }}
 
     .infoValue
         .smallTitle URL
@@ -64,16 +75,103 @@
 
             div(v-else)
                 .smallValue.editValue
-                    span.editHandle(style='font-size: .8rem;margin-right: 8px;' @click="open404FileInp") {{ sdInfo?.['404'] || 'Select HTML File' }}
-                    span.material-symbols-outlined.cancel.fill(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="modifyMode.page404 = false;selected404File=null;") delete
-
-    br
+                    span.editHandle(style='font-size: .8rem;margin-right: 8px;' :class='{nonClickable:sdInfo?.["404"] && sdInfo?.["404"] === "..."}' @click="open404FileInp") {{ sdInfo?.['404'] || 'Select HTML File' }}
+                    span.material-symbols-outlined.cancel.fill(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true") delete
 
     div(style="text-align:right")
         .iconClick(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
             .material-symbols-outlined.fill(style='font-size:24px;') cancel
             span &nbsp;Remove Hosting
+br
 
+.tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+
+    .iconClick.square
+        .material-symbols-outlined.fill refresh
+        span &nbsp;&nbsp;Refresh CDN
+
+    .iconClick.square
+        .material-symbols-outlined.fill upload_file
+        span &nbsp;&nbsp;Upload Files
+    .iconClick.square
+        .material-symbols-outlined.fill drive_folder_upload
+        span &nbsp;&nbsp;Upload Folder
+
+    .iconClick.square
+        .material-symbols-outlined.fill delete
+        span &nbsp;&nbsp;Delete Selected
+
+
+Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}" resizable)
+    template(v-slot:head)
+        tr
+            th(style="width:1px;")
+                Checkbox(@click.stop)
+                .resizer
+            th(style='width:320px;')
+                span(@click='toggleSort("name")')
+                    | Filename
+                    .material-symbols-outlined.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                .resizer
+
+            th(style='width:160px;')
+                span(@click='toggleSort("size")')
+                    | Size
+                    span.material-symbols-outlined.fill(v-if='sortBy === "size"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                .resizer
+            th(style='width:220px;')
+                span(@click='toggleSort("upl")')
+                    | Uploaded
+                    span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+
+    template(v-slot:body)
+        template(v-if="fetching")
+            tr
+                td#loading(colspan="4").
+                    Loading... &nbsp;
+                    #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+            tr(v-for="i in 9")
+                td(colspan="4")
+        template(v-else-if="!listDisplay || listDisplay.length === 0")
+            tr
+                td(colspan="4") Drag and drop files here
+            tr(v-for="i in 9")
+                td(colspan="4")
+        template(v-else)
+            tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
+                td.overflow
+                    .material-symbols-outlined.fill(v-if='currentDirectory') arrow_upward
+                td.overflow(colspan="3")
+                    template(v-if='currentDirectory')
+                        .material-symbols-outlined.fill folder_open
+                        | &nbsp;
+                    | / {{ currentDirectory }}
+            tr.nsrow(v-for="ns in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = ns.name.slice(1) }')
+                td.overflow
+                    Checkbox(@click.stop)
+
+                td.overflow(v-if='ns.name[0] == "#"')
+                    span.material-symbols-outlined.fill(style='vertical-align: sub;') folder
+                    | &nbsp;{{ ns.name.slice(1) }}
+                td.overflow(v-else) {{ ns.name }}
+                td.overflow {{ getFileSize(ns.size) }}
+                td.overflow {{ new Date(ns.upl).toLocaleString() }}
+
+            tr(v-for="i in (10 - listDisplay.length)")
+                td(colspan="4")
+
+br
+
+.tableMenu(style='display:block;text-align:center;')
+    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
+        .material-symbols-outlined.bold chevron_left
+        span Previous&nbsp;&nbsp;
+    | &nbsp;&nbsp;
+    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || eof && currentPage >= maxPage }")
+        span &nbsp;&nbsp;Next
+        .material-symbols-outlined.bold chevron_right
+
+br
 
 Modal(:open="removeHosting")
     h4(style='margin:.5em 0 0;') Remove Hosting
@@ -90,12 +188,30 @@ Modal(:open="removeHosting")
     br
 
     div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='removeingHosting')
+        template(v-if='modalPromise')
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
             button.noLine.warning(@click="removeHosting = false") Cancel
             button.final.warning(@click="remove") Remove
 
+Modal(:open="openRemove404")
+    h4(style='margin:.5em 0 0;') Remove 404
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            Would you like to remove the 404 page?
+            #[br]
+            This will revert the 404 page to the default one.
+    br
+
+    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+        template(v-if='modalPromise')
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine.warning(@click="openRemove404 = false") Cancel
+            button.final.warning(@click="remove404") Remove
 </template>
 
 <script setup lang="ts">
@@ -103,24 +219,42 @@ import { reactive, ref, computed, watch, nextTick } from 'vue';
 import type { ComputedRef, Ref } from 'vue';
 import { currentService } from '@/views/service/main';
 import Code from '@/components/code.vue';
-import { dateFormat } from '@/code/admin';
 import Table from '@/components/table.vue';
 import Modal from '@/components/modal.vue';
 import Pager from '@/code/pager';
-import { skapi } from '@/code/admin';
+import { skapi, getFileSize, dateFormat } from '@/code/admin';
 import { user } from '@/code/user';
+import Checkbox from '@/components/checkbox.vue';
 
+let domain = import.meta.env.VITE_DOMAIN;
+
+let promiseRunning = ref(false);
+let modalPromise = ref(false);
+let sdInfo: Ref<{
+    srvc?: string;
+    subd?: string;
+    ownr?: string;
+    stat?: string;
+    "404"?: string;
+}> = ref({
+    "404": '...'
+})
+
+let dirInfo: Ref<{
+    cnt: number;
+    size: number;
+    upl: number;
+}> = ref(null);
 
 // register input
 let subdomain = ref('');
-let promiseRunning = ref(false);
-
 let registerSubdomain = async () => {
     promiseRunning.value = true;
     try {
         await currentService.registerSubdomain({
             subdomain: subdomain.value, cb: (srvc) => {
                 promiseRunning.value = false;
+                getInfo();
             }
         });
 
@@ -155,7 +289,6 @@ let editSubdomain = () => {
 let focus_404 = ref();
 let selected404File = ref(null);
 let open404FileInp = async () => {
-    console.log('yo')
     modifyMode.page404 = true;
     await nextTick();
     focus_404.value.click();
@@ -163,13 +296,11 @@ let open404FileInp = async () => {
 
 let handle404file = (e: any) => {
     let file = e.target.files[0];
-    console.log(file);
     let fileName = file.name;
     selected404File.value = fileName;
 }
 let progress404 = ref(0);
 let change404 = async (e: any) => {
-    console.log(e);
     updatingValue.page404 = true;
 
     try {
@@ -194,19 +325,40 @@ let change404 = async (e: any) => {
         alert(err.message);
     }
 }
+
+let openRemove404 = ref(false);
+let remove404 = async () => {
+    modalPromise.value = true;
+
+    try {
+        await currentService.set404({
+            path: null,
+        });
+
+        delete sdInfo.value['404'];
+        openRemove404.value = false;
+        selected404File = null;
+    }
+    catch (err: any) {
+        alert(err.message);
+    }
+    finally {
+        modalPromise.value = false;
+    }
+}
+
 //
 
 let removeHosting = ref(false);
-let removeingHosting = ref(false);
 let remove = () => {
-    removeingHosting.value = true;
+    modalPromise.value = true;
     currentService.registerSubdomain({
         cb: () => null
     }).then(() => {
         removeHosting.value = false;
-        removeingHosting.value = false;
+        modalPromise.value = false;
     }).catch(err => {
-        removeingHosting.value = false;
+        modalPromise.value = false;
         alert(err.message);
     });
 }
@@ -222,7 +374,7 @@ let changeSubdomain = async () => {
     try {
         await currentService.registerSubdomain({
             subdomain: inputSubdomain,
-            cb: () => null
+            cb: getInfo
         });
 
         modifyMode.subdomain = false;
@@ -243,7 +395,7 @@ let currentSubdomain = computed(() => {
         status = sd[0] === '*' ? 'Removing' : 'Pending';
     }
     else {
-        subd = sd + '.skapi.com';
+        subd = sd + '.' + domain;
         status = 'Active';
     }
     return {
@@ -252,35 +404,176 @@ let currentSubdomain = computed(() => {
     };
 });
 
-let _subd = currentService.service?.subdomain || '';
-let sdInfo: Ref<{
-    '404'?: string;
-    srvc: string;
-    subd: string;
-    ownr: string;
-    stat: string;
-}> = ref({
-    '404': '...',
-    srvc: '',
-    subd: '',
-    ownr: '',
-    stat: ''
-});
-if (_subd) {
-    if (_subd[0] === '*' || _subd[0] === '+') {
-        currentService.updateSubdomain(() => {
-            // + pending
-            // * removing
-            subdomain.value = currentService.service.subdomain;
-            // currentService.getSubdomainInfo().then(s => console.log(s))
+let currentDirectory = ref('');
+let listDisplay = ref([]);
+let folders: any = {};
+let sortBy = ref('name');
+let ascending = ref(true);
+let currentPage = ref(1);
+let endOfList: any = reactive({});
+let maxPage = ref(0);
+let fetching = ref(true);
+function getInfo() {
+    let _subd = currentService.service?.subdomain || '';
+    if (_subd) {
+        if (_subd[0] === '*' || _subd[0] === '+') {
+            currentService.pendingSubdomain(() => {
+                // + pending
+                // * removing
+                subdomain.value = currentService.service.subdomain;
+                currentService.getSubdomainInfo().then(s => sdInfo.value = s);
+            });
+        }
+        else if (!sdInfo.value.srvc) {
+            currentService.getSubdomainInfo().then(s => sdInfo.value = s);
+        }
+        currentService.getDirInfo().then(dir => {
+            if (dir.cnt) {
+                getFileList(true);
+            }
+            dirInfo.value = dir
         });
     }
-    // else {
-    //     currentService.getSubdomainInfo().then(s => console.log(s))
-    // }
-    currentService.getSubdomainInfo().then(s => sdInfo.value = s);
 }
 
+getInfo();
+
+let eof = computed(() => {
+    let currDir = currentDirectory.value || '!';
+    return endOfList[currDir]
+});
+
+watch(currentDirectory, () => {
+    getFileList(true);
+});
+
+async function getFileList(refresh = false) {
+    if (!refresh && fetching.value) return;
+
+    let resultsPerPage = 10;
+    let currDir = currentDirectory.value || '!';
+
+    fetching.value = true;
+
+    let hasPage = folders?.[currDir]
+    if (!hasPage || refresh) {
+        maxPage.value = 0;
+        currentPage.value = 1;
+        endOfList[currDir] = false;
+        folders[currDir] = {
+            pager: await Pager.init({
+                id: 'name',
+                sortBy: sortBy.value,
+                order: ascending.value ? 'asc' : 'desc',
+                resultsPerPage,
+            })
+        }
+    }
+
+    let pager = folders[currDir].pager;
+
+    if (refresh || !endOfList[currDir] && hasPage && currentPage.value > maxPage.value) {
+        try {
+            let l = await currentService.listHostDirectory({ dir: currentDirectory.value }, !refresh)
+            if (l.list.length > 0) {
+                await pager.insertItems(l.list);
+                let fl = pager.getPage(currentPage.value);
+                listDisplay.value = fl.list;
+                maxPage.value = fl.maxPage;
+                endOfList[currDir] = l.endOfList;
+            }
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            fetching.value = false;
+        }
+    }
+    else if (endOfList[currDir] || maxPage.value && currentPage.value <= maxPage.value) {
+        let fl = pager.getPage(currentPage.value);
+        listDisplay.value = fl.list;
+        maxPage.value = fl.maxPage;
+    }
+
+    fetching.value = false;
+}
+
+function parseUrl(ns) {
+    let path = ns.path;
+    if (path.split('/').length > 1) {
+        return `https://${currentSubdomain.value.subdomain}/${path}/${ns.name}`;
+    }
+
+    return `https://${currentSubdomain.value.subdomain}/${ns.name}`
+}
+
+function openFile(ns) {
+    window.open(parseUrl(ns), '_blank');
+}
+
+let resetIndex = async () => {
+    let currDir = currentDirectory.value || '!';
+    await folders[currDir].pager.resetIndex({
+        sortBy: sortBy.value,
+        order: ascending.value ? 'asc' : 'desc',
+    });
+    if (currentPage.value !== 1) {
+        currentPage.value = 1;
+    }
+    else {
+        getFileList();
+    }
+}
+let toggleSort = (search: any) => {
+    if (fetching.value) {
+        return;
+    }
+
+    if (sortBy.value === search) {
+        ascending.value = !ascending.value;
+    }
+    else {
+        sortBy.value = search;
+    }
+}
+
+// call getPage when currentPage changes
+watch(currentPage, (n, o) => {
+    if (n !== o && n > 0 && (n <= maxPage.value || n > maxPage.value && !endOfList.value)) {
+        // if new value is different from old value
+        // if new value is within maxPage
+        // if new value is greater than maxPage but not end of list
+
+        getFileList();
+    }
+    else {
+        currentPage.value = o; // revert back to old value
+    }
+});
+
+// initialize the pager when searchFor changes
+watch(sortBy, (n) => {
+    if (!fetching.value) {
+        let currDir = currentDirectory.value || '!';
+        if (endOfList[currDir]) {
+            resetIndex();
+        }
+        else {
+            getFileList(true);
+        }
+    }
+});
+
+watch(ascending, () => {
+    if (!fetching.value) {
+        let currDir = currentDirectory.value || '!';
+        if (endOfList[currDir]) {
+            resetIndex();
+        }
+        else {
+            getFileList(true);
+        }
+    }
+});
 </script>
 
 <style lang="less" scoped>
@@ -317,6 +610,67 @@ form.register {
 
     button {
         flex-shrink: 0;
+    }
+}
+
+
+// table style below
+
+tbody {
+    tr.nsrow {
+        @media (pointer: fine) {
+
+            // only for mouse pointer devices
+            &:not(.active):hover {
+                background-color: rgba(41, 63, 230, 0.05);
+                // cursor: pointer;
+            }
+        }
+
+        &.active {
+            background-color: rgba(41, 63, 230, 0.10);
+        }
+
+        &:hover {
+            .hide {
+                display: block;
+            }
+        }
+
+        .hide {
+            display: none;
+        }
+    }
+}
+
+thead {
+    th {
+        &>span {
+            @media (pointer: fine) {
+
+                // only for mouse pointer devices
+                &:hover {
+                    cursor: pointer;
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}
+
+.tableMenu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    &>* {
+        margin-bottom: 8px;
+    }
+}
+
+@media (pointer: coarse) {
+    .hide {
+        display: block !important;
     }
 }
 </style>

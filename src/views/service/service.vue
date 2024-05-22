@@ -57,28 +57,28 @@ section.infoBox
 
     .state 
         .smallTitle Database 
-        .smallValue {{ getfileSize(currentService.storageInfo.database) }} / 
+        .smallValue {{ getFileSize(currentService.storageInfo.database) }} / 
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 4GB
             span(v-else-if="currentService.plan == 'Premium'") 100GB
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
     .state 
         .smallTitle File Storage
-        .smallValue {{ getfileSize(currentService.storageInfo.cloud) }} / 
+        .smallValue {{ getFileSize(currentService.storageInfo.cloud) }} / 
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
             span(v-else-if="currentService.plan == 'Premium'") 1TB
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
     .state 
         .smallTitle Email Storage
-        .smallValue {{ getfileSize(currentService.storageInfo.email) }} / 
+        .smallValue {{ getFileSize(currentService.storageInfo.email) }} / 
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 1GB
             span(v-else-if="currentService.plan == 'Premium'") 10GB
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
     .state 
         .smallTitle File Hosting
-        .smallValue {{ getfileSize(currentService.storageInfo.host) }} / 
+        .smallValue {{ getFileSize(currentService.storageInfo.host) }} / 
             span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
             span(v-else-if="currentService.plan == 'Premium'") 1TB
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
@@ -182,6 +182,7 @@ import { currentService } from '@/views/service/main';
 import { user } from '@/code/user';
 import Toggle from '@/components/toggle.vue';
 import { dateFormat } from '@/code/admin';
+import { getFileSize } from '@/code/admin';
 
 let inputName = '';
 let inputCors = '';
@@ -331,17 +332,6 @@ let getUserUnit = (user: number) => {
 
     return result;
 }
-
-let getfileSize = (s: any) => {
-    if (s <= 0 || s == null) {
-        return '0 bytes'
-    }
-    else {
-        let unit = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
-        let e = Math.floor(Math.log(s) / Math.log(1024));
-        return (s / Math.pow(1024, e)).toFixed(2) + " " + unit[e];
-    }
-};
 
 // change prevent_signup
 let changeCreateUserMode = (value: string) => {
