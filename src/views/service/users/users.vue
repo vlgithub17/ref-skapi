@@ -53,19 +53,19 @@ hr
 p Search and manage your service users.
 
 form#searchForm(@submit.prevent="searchUsers")
-    Select(v-model="emailType" :selectOptions="selectOptions")
+    Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}")
     .search
-        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click.stop="showCalendar = !showCalendar;")
+        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" :class="{'nonClickable' : fetching}" @click.stop="showCalendar = !showCalendar;")
             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" readonly)
             .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
             Calendar(v-model="searchValue" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
-        input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue")
-        input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue")
-        input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchValue")
-        input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue")
-        input.big#searchInput(v-else-if="searchFor === 'locale'" type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue")
-        input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-        input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue")
+        input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue" :disabled="fetching")
+        input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue" :disabled="fetching")
+        input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchValue" :disabled="fetching")
+        input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue" :disabled="fetching")
+        input.big#searchInput(v-else-if="searchFor === 'locale'" type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue" :disabled="fetching")
+        input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" :disabled="fetching" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+        input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue" :disabled="fetching")
         .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale'" @click.stop="showLocale = !showLocale") arrow_drop_down
         button.final(type="submit" style='flex-shrink: 0;') Search
         Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
@@ -101,6 +101,11 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
                             Checkbox(v-model="filterOptions.gender" style="display:flex") Gender
                             Checkbox(v-model="filterOptions.locale" style="display:flex") Locale
                             Checkbox(v-model="filterOptions.timestamp" style="display:flex") Date Created 
+                            Checkbox(v-model="filterOptions.birthdate" style="display:flex") Birthdate 
+                            Checkbox(v-model="filterOptions.picture" style="display:flex") Picture 
+                            Checkbox(v-model="filterOptions.profile" style="display:flex") Profile 
+                            Checkbox(v-model="filterOptions.website" style="display:flex") Website 
+                            Checkbox(v-model="filterOptions.nickname" style="display:flex") Nickname 
                 .resizer
             th.overflow(v-if="filterOptions.email" style="width:200px")
                 | Email
@@ -122,6 +127,24 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
                 .resizer
             th.center.overflow(v-if="filterOptions.gender" style="width:96px;")
                 | Gender
+                .resizer
+            th.center.overflow(v-if="filterOptions.birthdate" style="width:140px;")
+                | Birthdate
+                .resizer
+            th.center.overflow(v-if="filterOptions.nickname" style="width:140px;")
+                | Nickname
+                .resizer
+            th.overflow(v-if="filterOptions.picture" style="width:160px;")
+                | Picture
+                .resizer
+            th.overflow(v-if="filterOptions.profile" style="width:160px;")
+                | Profile
+                .resizer
+            th.overflow(v-if="filterOptions.website" style="width:160px;")
+                | Website
+                .resizer
+            th.overflow(v-if="filterOptions.misc" style="width:200px;")
+                | Misc
                 .resizer
 
 
@@ -152,7 +175,13 @@ Table(:class="{disabled: !user?.email_verified || currentService.service.active 
                 td.overflow(v-if="filterOptions.timestamp") {{ new Date(user.timestamp).toLocaleString() }}
                 td.overflow(v-if="filterOptions.address") {{ user.address || '-' }}
                 td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
-                td.center.overflow(v-if="filterOptions.gender") -
+                td.center.overflow(v-if="filterOptions.gender") {{ user.gender || '-' }}
+                td.center.overflow(v-if="filterOptions.birthdate") {{ user.birthdate || '-' }}
+                td.center.overflow(v-if="filterOptions.nickname") {{ user.nickname || '-' }}
+                td.overflow(v-if="filterOptions.picture") {{ user.picture || '-' }}
+                td.overflow(v-if="filterOptions.profile") {{ user.profile || '-' }}
+                td.overflow(v-if="filterOptions.website") {{ user.website || '-' }}
+                td.overflow(v-if="filterOptions.misc") {{ user.misc || '-' }}
             tr(v-for="i in (10 - listDisplay.length)")
                 td(:colspan="colspan")
         
@@ -177,7 +206,7 @@ Modal(:open="openCreateUser" style="width:478px")
         label User's Email 
             input.big(
                 type="email"
-                @input="e => email = e.target.value"
+                @input="e => createParams.email = e.target.value"
                 title="Please enter a valid email address." 
                 placeholder="anonymous@anonymous.com"
                 required
@@ -186,7 +215,7 @@ Modal(:open="openCreateUser" style="width:478px")
 
         label Name 
             input.big(
-                @input="e => name = e.target.value"
+                @input="e => createParams.name = e.target.value"
                 placeholder="User's Name" 
                 required
             )
@@ -195,11 +224,98 @@ Modal(:open="openCreateUser" style="width:478px")
 
         label Password 
             input.big(
-                @input="e => password = e.target.value"
+                @input="e => createParams.password = e.target.value"
                 placeholder="User's Password"
                 type='Password'
                 minlength="6"
                 required
+            )
+
+        br
+
+        label Phone Number 
+            input.big(
+                @input="e => createParams.phone_number = e.target.value"
+                placeholder="User's Phone Number"
+                type='text'
+            )
+
+        br
+
+        .label
+            label Gender 
+                input.big(
+                    @input="e => createParams.gender = e.target.value"
+                    placeholder="User's Gender"
+                    type='text'
+                )
+            Checkbox(v-model="gender_public") public
+
+        br
+
+        .label
+            label Address 
+                input.big(
+                    @input="e => createParams.address = e.target.value"
+                    placeholder="User's Address"
+                    type='text'
+                ) 
+            Checkbox(v-model="address_public") public
+
+        br
+
+        .label
+            label Birthdate 
+                input.big(
+                    @input="e => createParams.birthdate = e.target.value"
+                    placeholder="User's Birthdate"
+                    type='text'
+                )
+            Checkbox(v-model="birthdate_public") public
+
+        br
+
+        label Picture 
+            input.big(
+                @input="e => createParams.picture = e.target.value"
+                placeholder="URL of the profile picture."
+                type='url'
+            )
+
+        br
+
+        label Profile 
+            input.big(
+                @input="e => createParams.profile = e.target.value"
+                placeholder="URL of the profile page"
+                type='url'
+            )
+
+        br
+
+        label Website 
+            input.big(
+                @input="e => createParams.website = e.target.value"
+                placeholder="URL of the website"
+                type='url'
+            )
+
+        br
+
+        label Nickname 
+            input.big(
+                @input="e => createParams.nickname = e.target.value"
+                placeholder="Nickname of the user"
+                type='text'
+            )
+
+        br
+
+        label misc 
+            input.big(
+                @input="e => createParams.misc = e.target.value"
+                placeholder="Additional string value that can be used freely"
+                type='text'
             )
 
         br
@@ -241,7 +357,7 @@ Modal(:open="openInviteUser")
             | User's Email 
             input.big#inviteUserEmail(
                 type="email"
-                @input="e => email = e.target.value"
+                @input="e => inviteParams.email = e.target.value"
                 title="Please enter a valid email address." 
                 placeholder="anonymous@anonymous.com"
                 required
@@ -251,7 +367,7 @@ Modal(:open="openInviteUser")
         label
             | Name 
             input.big(
-                @input="e => name = e.target.value"
+                @input="e => inviteParams.name = e.target.value"
                 placeholder="User's Name" 
                 required
             )
@@ -377,14 +493,21 @@ let currentPage: Ref<number> = ref(1);
 let endOfList = ref(false);
 let showCalendar = ref(false);
 let showLocale = ref(false);
+
 let filterOptions = ref({
+    email: true,
     userID: true,
     name: true,
-    email: true,
+    timestamp: true,
     address: true,
-    gender: true,
     locale: true,
-    timestamp: true
+    gender: true,
+    birthdate: true,
+    picture: true,
+    profile: true,
+    website: true,
+    nickname: true,
+    misc: true,
 });
 let selectOptions = [
     {
@@ -434,9 +557,30 @@ let openBlockUser = ref(false);
 let openUnblockUser = ref(false);
 let openDeleteUser = ref(false);
 let selectedUser: { [key:string]: any } = {};
-let name = '';
-let email = '';
-let password = '';
+let gender_public = ref(false);
+let address_public = ref(false);
+let birthdate_public = ref(false);
+let createParams = {
+    email: '',
+    name: '',
+    password: '',
+    service: currentService.id,
+    phone_number: '',
+    gender: '',
+    address: '',
+    birthdate: '',
+    picture: '',
+    profile: '',
+    website: '',
+    nickname: '',
+    misc: ''
+}
+let inviteParams = {
+    email: '',
+    name: '',
+    access_group: 1,
+    service: currentService.id
+}
 let redirect = '';
 let error = ref('');
 
@@ -539,6 +683,7 @@ let getPage = async (refresh?: boolean) => {
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
+        console.log(listDisplay.value)
         fetching.value = false;
     }
 }
@@ -568,16 +713,19 @@ let searchUsers = () => {
 let createUser = () => {
     promiseRunning.value = true;
     error.value = '';
-    skapi.signup({
-        email,
-        name,
-        password,
-        service: currentService.id
-    }).then(async(res) => {
+
+    if (gender_public.value || address_public.value || birthdate_public.value){
+        Object.assign(createParams, {gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value})
+    }
+
+    skapi.signup(createParams).then(async(res) => {
         console.log(res);
         res.email = res.email_admin;
         await pager.insertItems([res]);
         document.getElementById("createForm").reset();
+        gender_public.value = false;
+        address_public.value = false;
+        birthdate_public.value = false;
         openCreateUser.value = false;
         promiseRunning.value = false;
         getPage();
@@ -590,12 +738,8 @@ let createUser = () => {
 let inviteUser = () => {
     promiseRunning.value = true;
     error.value = '';
-    skapi.signup({
-        email,
-        name,
-        access_group: 1,
-        service: currentService.id
-    }, {
+
+    skapi.signup(inviteParams, {
         signup_confirmation: redirect || false
     }).then((res) => {
         promiseRunning.value = false;
@@ -674,6 +818,9 @@ let closeModal = () => {
         openInviteUser.value = false;
     } else if(openCreateUser.value) {
         document.getElementById("createForm").reset();
+        gender_public.value = false;
+        address_public.value = false;
+        birthdate_public.value = false;
         openCreateUser.value = false;
     }
 }
@@ -714,6 +861,17 @@ let closeModal = () => {
     max-width: 100%;
     margin-top: 8px;
     z-index: 1;
+}
+#createForm {
+    .label {
+        position: relative;
+
+        ._checkbox {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    }
 }
 .tableMenu {
     display: flex;
