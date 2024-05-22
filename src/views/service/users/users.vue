@@ -480,7 +480,6 @@ import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
 import { currentService, serviceUsers } from '@/views/service/main';
 import { Countries } from '@/code/countries';
-import type { timeStamp } from 'console';
 
 let pager: Pager = null;
 
