@@ -182,6 +182,13 @@ let setResize = async () => {
             padding: 0 20px;
             white-space: nowrap;
             user-select: none;
+            span {
+                display: inline-block;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                max-width:100%;
+            }
             // overflow: hidden;
             text-overflow: ellipsis;
 

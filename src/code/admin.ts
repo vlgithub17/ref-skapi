@@ -47,3 +47,14 @@ export let dateFormat = (timestamp: number) => {
 
     return dateStr;
 }
+
+export const getFileSize = (s: any) => {
+    if (s <= 0 || s == null) {
+        return '0 bytes'
+    }
+    else {
+        let unit = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
+        let e = Math.floor(Math.log(s) / Math.log(1024));
+        return (s / Math.pow(1024, e)).toFixed(2) + " " + unit[e];
+    }
+};

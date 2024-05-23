@@ -53,27 +53,27 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             th(style='width: 250px;')
                 span(@click='toggleSort("subject")')
                     | Subject
-                    span.material-symbols-outlined.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
+                    span.material-symbols-outlined.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("timestamp")')
                     | Sent
-                    span.material-symbols-outlined.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
+                    span.material-symbols-outlined.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("read")')
                     | Reads
-                    span.material-symbols-outlined.fill(v-if='searchFor === "read"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
+                    span.material-symbols-outlined.fill(v-if='searchFor === "read"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("complaint")')
                     | Complaint
-                    span.material-symbols-outlined.fill(v-if='searchFor === "complaint"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
+                    span.material-symbols-outlined.fill(v-if='searchFor === "complaint"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("bounced")')
                     | Bounced
-                    span.material-symbols-outlined.fill(v-if='searchFor === "bounced"') {{ascending ? 'arrow_drop_up' : 'arrow_drop_down'}}
+                    span.material-symbols-outlined.fill(v-if='searchFor === "bounced"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
             th.center(style="width:60px; padding:0")
 
     template(v-slot:body)
