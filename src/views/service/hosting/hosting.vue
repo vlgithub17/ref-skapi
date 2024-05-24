@@ -90,10 +90,12 @@ br
         .material-symbols-outlined.fill refresh
         span &nbsp;&nbsp;Refresh CDN
 
-    .iconClick.square
+    .iconClick.square(@click='uploadFileInp.click()')
+        input(type="file" hidden multiple @change="e=>listFiles(e.target.files)" ref="uploadFileInp")
         .material-symbols-outlined.fill upload_file
         span &nbsp;&nbsp;Upload Files
-    .iconClick.square
+    .iconClick.square(@click='uploadFolderInp.click()')
+        input(type="file" hidden multiple directory webkitdirectory @change="e=>listFiles(e.target.files)" ref="uploadFolderInp")
         .material-symbols-outlined.fill drive_folder_upload
         span &nbsp;&nbsp;Upload Folder
 
@@ -102,7 +104,7 @@ br
         span &nbsp;&nbsp;Delete Selected
 
 
-Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}" resizable)
+Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active'}" resizable)
     template(v-slot:head)
         tr
             th(style="width:1px;")
@@ -225,7 +227,12 @@ import Pager from '@/code/pager';
 import { skapi, getFileSize, dateFormat } from '@/code/admin';
 import { user } from '@/code/user';
 import Checkbox from '@/components/checkbox.vue';
+import { listFiles } from '@/views/service/hosting/file';
 
+// fileinputs
+let uploadFileInp = ref();
+let uploadFolderInp = ref();
+//
 let domain = import.meta.env.VITE_DOMAIN;
 
 let promiseRunning = ref(false);
