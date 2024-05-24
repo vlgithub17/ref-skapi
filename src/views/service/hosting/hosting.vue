@@ -126,7 +126,7 @@ Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentServ
                     | Uploaded
                     span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
 
-    template(v-slot:body)
+    template(v-slot:body @dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'}" @drop.stop.prevent="e => onDrop(e)")
         template(v-if="fetching")
             tr
                 td#loading(colspan="4").
@@ -227,7 +227,7 @@ import Pager from '@/code/pager';
 import { skapi, getFileSize, dateFormat } from '@/code/admin';
 import { user } from '@/code/user';
 import Checkbox from '@/components/checkbox.vue';
-import { listFiles } from '@/views/service/hosting/file';
+import { listFiles, onDrop } from '@/views/service/hosting/file';
 
 // fileinputs
 let uploadFileInp = ref();

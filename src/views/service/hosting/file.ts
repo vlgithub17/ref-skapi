@@ -3,3 +3,7 @@ export let listFiles = (files:FileList) => {
         console.log(f);
     }
 }
+
+export let onDrop = (e) => {
+    console.log(e)
+}
