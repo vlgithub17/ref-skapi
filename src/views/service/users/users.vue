@@ -204,6 +204,7 @@ Modal(:open="openCreateUser" style="width:478px")
         input(hidden name="service" :value="currentService.id")
 
         label User's Email 
+            span(style="color:red") *
             input.big(
                 type="email"
                 @input="e => createParams.email = e.target.value"
@@ -213,22 +214,22 @@ Modal(:open="openCreateUser" style="width:478px")
             )
         br
 
-        label Name 
-            input.big(
-                @input="e => createParams.name = e.target.value"
-                placeholder="User's Name" 
-                required
-            )
-
-        br
-
         label Password 
+            span(style="color:red") *
             input.big(
                 @input="e => createParams.password = e.target.value"
                 placeholder="User's Password"
                 type='Password'
                 minlength="6"
                 required
+            )
+
+        br
+
+        label Name 
+            input.big(
+                @input="e => createParams.name = e.target.value"
+                placeholder="User's Name" 
             )
 
         br
@@ -353,8 +354,8 @@ Modal(:open="openInviteUser")
     form#inviteForm(@submit.prevent="inviteUser")
         input(hidden name="service" :value="currentService.id")
 
-        label
-            | User's Email 
+        label User's Email 
+            span(style="color:red") *
             input.big#inviteUserEmail(
                 type="email"
                 @input="e => inviteParams.email = e.target.value"
@@ -364,8 +365,8 @@ Modal(:open="openInviteUser")
             )
         br
 
-        label
-            | Name 
+        label Name 
+            span(style="color:red") *
             input.big(
                 @input="e => inviteParams.name = e.target.value"
                 placeholder="User's Name" 
@@ -374,8 +375,7 @@ Modal(:open="openInviteUser")
 
         br
 
-        label
-            | Redirect URL 
+        label Redirect URL 
             input.big(
                 @input="e => redirect = e.target.value"
                 placeholder="URL to redirect when accepted. (optional)"
@@ -683,7 +683,11 @@ let getPage = async (refresh?: boolean) => {
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
-        console.log(listDisplay.value)
+
+        if(!disp.list.length) {
+            currentPage.value--;
+        }
+
         fetching.value = false;
     }
 }
