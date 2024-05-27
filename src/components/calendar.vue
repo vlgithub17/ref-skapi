@@ -7,8 +7,8 @@
             select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
                 option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
             .goback
-                .material-symbols-outlined.prev(@click="prevTime") arrow_back_ios
-                .material-symbols-outlined.next(@click="nextTime") arrow_forward_ios
+                .material-symbols-outlined.prev(@click="reRender('prev')") arrow_back_ios
+                .material-symbols-outlined.next(@click="reRender('next')") arrow_forward_ios
         .timeCont 
             .days 
                 .day Mo
@@ -130,36 +130,13 @@ let deleteDate = (e) => {
     }
 }
 
-let checkCalendar = (c) => {
-    let getDateClass = document.querySelectorAll('.date');
-    let s = startDate.value.split('-');
-    let e = endDate.value.split('-');
-
-    if (startDate.value || endDate.value) {
-        if (c == 'start' && startDate.value) {
-            activeDate.value = true;
-        } else if (c == 'end' && endDate.value) {
-            activeDate.value = false;
-        } else if (c == 'create') {
-            console.log(selectedStart.value, selectedEnd.value)
-            for (let i = 0; i < getDateClass.length; i++) {
-                if (selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
-                    nextTick(() => {
-                        getDateClass[i].classList.add('period');
-                    })
-                }
-            }
-        }
-    }
-}
-
 let renderCalender = async (thisMonth) => {
-    let getDateClass = document.querySelectorAll('.date');
-
     dates.value.splice(0);
     currentYear.value = thisMonth.getFullYear();
     currentMonth.value = thisMonth.getMonth();
     currentDate = thisMonth.getDate();
+
+    let todayTimestamp = new Date(currentYear.value, currentMonth.value, today.getDate())
 
     let startDay = new Date(currentYear.value, currentMonth.value, 0);
     let prevDate = startDay.getDate();  // 저번달 마지막 날짜
@@ -176,7 +153,11 @@ let renderCalender = async (thisMonth) => {
 
     for (let i = 1; i <= nextDate; i++) {
         let currentTimestamp = new Date(currentYear.value, currentMonth.value, i);
-        dates.value.push({ day: i, classes: 'date current', time: currentTimestamp.getTime() });
+        if(currentTimestamp.getTime() == todayTimestamp.getTime() && today.getFullYear() == currentYear.value && today.getMonth() == currentMonth.value) {
+            dates.value.push({ day: i, classes: 'date current today', time: currentTimestamp.getTime() });
+        } else {
+            dates.value.push({ day: i, classes: 'date current', time: currentTimestamp.getTime() });
+        }
     }
 
     for (let i = 1; i <= (7 - nextDay == 7 ? 0 : 7 - nextDay); i++) {
@@ -185,15 +166,6 @@ let renderCalender = async (thisMonth) => {
     }
 }
 renderCalender(thisMonth);
-
-// 오늘 날짜 표기
-onMounted(() => {
-    if (today.getMonth() == currentMonth.value) {
-        let todayDate = today.getDate();
-        let currentMonthDate = document.querySelectorAll('.dates .current');
-        currentMonthDate[todayDate - 1].classList.add('today');
-    }
-})
 
 let periodDateSetting = () => {
     if (selectedStart.value && selectedEnd.value) {
@@ -237,18 +209,13 @@ let updateCalendar = async (e, what) => {
     periodDateSetting();
 }
 
-let prevTime = async () => {
-    thisMonth = new Date(currentYear.value, currentMonth.value - 1, 1);
-    let getDateClass = document.querySelectorAll('.date');
-    for (let i = 0; i < getDateClass.length; i++) {
-        getDateClass[i].classList.remove('period');
+let reRender = async (go) => {
+    if (go == 'prev') {
+        thisMonth = new Date(currentYear.value, currentMonth.value - 1, 1);
+    } else {
+        thisMonth = new Date(currentYear.value, currentMonth.value + 1, 1);
     }
-    await renderCalender(thisMonth);
-    periodDateSetting();
-}
 
-let nextTime = async () => {
-    thisMonth = new Date(currentYear.value, currentMonth.value + 1, 1);
     let getDateClass = document.querySelectorAll('.date');
     for (let i = 0; i < getDateClass.length; i++) {
         getDateClass[i].classList.remove('period');
@@ -314,9 +281,16 @@ let createdDate = (e, date) => {
                 selectedEnd.value = null;
                 activeDate.value = false;
             } else  {
-                checkCalendar('create');
+                for (let i = 0; i < getDateClass.length; i++) {
+                    if (selectedStart.value < getDateClass[i].dataset.time && getDateClass[i].dataset.time < selectedEnd.value) {
+                        nextTick(() => {
+                            getDateClass[i].classList.add('period');
+                        })
+                    }
+                }
             }
         }
+        updateSearchText();
     }
 
     if (activeDate.value) {
@@ -328,7 +302,6 @@ let createdDate = (e, date) => {
         }
 
         checkDateRange(e, date);
-        updateSearchText();
         activeDate.value = false;
     } else if (!activeDate.value) {
         endDate.value = formattedDate;
@@ -339,7 +312,6 @@ let createdDate = (e, date) => {
         }
 
         checkDateRange(e, date);
-        updateSearchText();
     }
 }
 </script>
@@ -459,10 +431,11 @@ let createdDate = (e, date) => {
                         opacity: 1;
                     }
 
-                    &.here {
+                    &.today {
                         &::before {
-                            border: 1.8px solid var(--main-color) !important;
-                            background-color: rgba(41, 63, 230, 0.2);
+                            opacity: 1 !important;
+                            border: 1px solid var(--main-color) !important;
+                            background-color: unset;
                         }
                     }
 
@@ -470,13 +443,15 @@ let createdDate = (e, date) => {
                     &.end {
                         &::before {
                             opacity: 1;
-                            border: 1px solid var(--main-color);
+                            border: 1.2px solid var(--main-color);
+                            background-color: rgba(41, 63, 230, 0.2);
                         }
                     }
 
                     &.period {
                         &::before {
                             opacity: 0.5;
+                            background-color: rgba(41, 63, 230, 0.05);
                         }
                     }
 

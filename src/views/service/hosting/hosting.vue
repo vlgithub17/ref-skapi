@@ -104,7 +104,7 @@ br
         span &nbsp;&nbsp;Refresh CDN
 
 
-Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active'}" resizable)
+Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'}" @drop.stop.prevent="e => onDrop(e)" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active'}" resizable)
     template(v-slot:head)
         tr
             th(style="width:1px;")
@@ -246,7 +246,7 @@ import Pager from '@/code/pager';
 import { skapi, getFileSize, dateFormat } from '@/code/admin';
 import { user } from '@/code/user';
 import Checkbox from '@/components/checkbox.vue';
-import { listFiles } from '@/views/service/hosting/file';
+import { listFiles, onDrop } from '@/views/service/hosting/file';
 
 // fileinputs
 let uploadFileInp = ref();
