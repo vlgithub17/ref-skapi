@@ -200,14 +200,16 @@ Modal(:open="openCreateUser" style="width:478px")
 
     hr
 
-    form#createForm(@submit.prevent="createUser" @keydown.stop="preventEnter")
+    form#createForm(@submit.prevent="createUser")
         input(hidden name="service" :value="currentService.id")
 
         label User's Email 
             span(style="color:red") *
             input.big(
                 type="email"
+                name="email"
                 @input="e => createParams.email = e.target.value"
+                @keydown="e => moveFocus(e, 'password')"
                 title="Please enter a valid email address." 
                 placeholder="anonymous@anonymous.com"
                 required
@@ -218,6 +220,7 @@ Modal(:open="openCreateUser" style="width:478px")
             span(style="color:red") *
             input.big(
                 @input="e => createParams.password = e.target.value"
+                @keydown="e => moveFocus(e, 'name')"
                 placeholder="User's Password"
                 type='Password'
                 minlength="6"
@@ -228,7 +231,9 @@ Modal(:open="openCreateUser" style="width:478px")
 
         label Name 
             input.big(
+                name="name"
                 @input="e => createParams.name = e.target.value"
+                @keydown="e => moveFocus(e, 'phone')"
                 placeholder="User's Name" 
             )
 
@@ -236,7 +241,9 @@ Modal(:open="openCreateUser" style="width:478px")
 
         label Phone Number 
             input.big(
+                name="phone"
                 @input="e => createParams.phone_number = e.target.value"
+                @keydown="e => moveFocus(e, 'gender')"
                 placeholder="User's Phone Number"
                 type='text'
             )
@@ -246,7 +253,9 @@ Modal(:open="openCreateUser" style="width:478px")
         .label
             label Gender 
                 input.big(
+                    name="gender"
                     @input="e => createParams.gender = e.target.value"
+                    @keydown="e => moveFocus(e, 'address')"
                     placeholder="User's Gender"
                     type='text'
                 )
@@ -257,7 +266,9 @@ Modal(:open="openCreateUser" style="width:478px")
         .label
             label Address 
                 input.big(
+                    name="address"
                     @input="e => createParams.address = e.target.value"
+                    @keydown="e => moveFocus(e, 'birthdate')"
                     placeholder="User's Address"
                     type='text'
                 ) 
@@ -268,7 +279,9 @@ Modal(:open="openCreateUser" style="width:478px")
         .label
             label Birthdate 
                 input.big(
+                    name="birthdate"
                     @input="e => createParams.birthdate = e.target.value"
+                    @keydown="e => moveFocus(e, 'picture')"
                     placeholder="User's Birthdate"
                     type='text'
                 )
@@ -278,7 +291,9 @@ Modal(:open="openCreateUser" style="width:478px")
 
         label Picture 
             input.big(
+                name="picture"
                 @input="e => createParams.picture = e.target.value"
+                @keydown="e => moveFocus(e, 'profile')"
                 placeholder="URL of the profile picture."
                 type='url'
             )
@@ -287,7 +302,9 @@ Modal(:open="openCreateUser" style="width:478px")
 
         label Profile 
             input.big(
+                name="profile"
                 @input="e => createParams.profile = e.target.value"
+                @keydown="e => moveFocus(e, 'website')"
                 placeholder="URL of the profile page"
                 type='url'
             )
@@ -296,7 +313,9 @@ Modal(:open="openCreateUser" style="width:478px")
 
         label Website 
             input.big(
+                name="website"
                 @input="e => createParams.website = e.target.value"
+                @keydown="e => moveFocus(e, 'nickname')"
                 placeholder="URL of the website"
                 type='url'
             )
@@ -305,7 +324,9 @@ Modal(:open="openCreateUser" style="width:478px")
 
         label Nickname 
             input.big(
+                name="nickname"
                 @input="e => createParams.nickname = e.target.value"
+                @keydown="e => moveFocus(e, 'misc')"
                 placeholder="Nickname of the user"
                 type='text'
             )
@@ -314,6 +335,7 @@ Modal(:open="openCreateUser" style="width:478px")
 
         label misc 
             input.big(
+                name="misc"
                 @input="e => createParams.misc = e.target.value"
                 placeholder="Additional string value that can be used freely"
                 type='text'
@@ -714,11 +736,12 @@ let searchUsers = () => {
     init();
 }
 
-let preventEnter = (e) => {
+let moveFocus = (e:any, next:string) => {
     if (e.key == 'Enter') {
-        e.preventDefalut();
+        e.preventDefault();
 
-        
+        console.log(e.key)
+        document.getElementsByName(next).focus();
     }
 }
 
