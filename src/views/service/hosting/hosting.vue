@@ -86,9 +86,9 @@ br
 
 .tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
 
-    .iconClick.square
-        .material-symbols-outlined.fill refresh
-        span &nbsp;&nbsp;Refresh CDN
+    .iconClick.square(:class="{'nonClickable': noSelection}" @click='deleteSelected=true')
+        .material-symbols-outlined.fill delete
+        span &nbsp;&nbsp;Delete Selected
 
     .iconClick.square(@click='uploadFileInp.click()')
         input(type="file" hidden multiple @change="e=>listFiles(e.target.files)" ref="uploadFileInp")
@@ -100,15 +100,15 @@ br
         span &nbsp;&nbsp;Upload Folder
 
     .iconClick.square
-        .material-symbols-outlined.fill delete
-        span &nbsp;&nbsp;Delete Selected
+        .material-symbols-outlined.fill refresh
+        span &nbsp;&nbsp;Refresh CDN
 
 
 Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active'}" resizable)
     template(v-slot:head)
         tr
             th(style="width:1px;")
-                Checkbox(@click.stop)
+                Checkbox(@click.stop v-model='checkedall' @change='checkall')
                 .resizer
             th(style='width:320px;')
                 span(@click='toggleSort("name")')
@@ -148,9 +148,9 @@ Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentServ
                         .material-symbols-outlined.fill folder_open
                         | &nbsp;
                     | / {{ currentDirectory }}
-            tr.nsrow(v-for="ns in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = ns.name.slice(1) }')
+            tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = ns.name.slice(1) }')
                 td.overflow
-                    Checkbox(@click.stop)
+                    Checkbox(@click.stop v-model='checked[ns.name]')
 
                 td.overflow(v-if='ns.name[0] == "#"')
                     span.material-symbols-outlined.fill(style='vertical-align: sub;') folder
@@ -174,6 +174,25 @@ br
         .material-symbols-outlined.bold chevron_right
 
 br
+
+Modal(:open="deleteSelected")
+    h4(style='margin:.5em 0 0;') Delete Files
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            Delete {{ numberOfSelected }} file(s) from your hosting?
+            #[br]
+            This action cannot be undone.
+    br
+
+    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+        template(v-if='modalPromise')
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine.warning(@click="deleteSelected = false") Cancel
+            button.final.warning(@click="deleteFiles") Delete
 
 Modal(:open="removeHosting")
     h4(style='margin:.5em 0 0;') Remove Hosting
@@ -233,6 +252,7 @@ import { listFiles } from '@/views/service/hosting/file';
 let uploadFileInp = ref();
 let uploadFolderInp = ref();
 //
+
 let domain = import.meta.env.VITE_DOMAIN;
 
 let promiseRunning = ref(false);
@@ -420,6 +440,80 @@ let currentPage = ref(1);
 let endOfList: any = reactive({});
 let maxPage = ref(0);
 let fetching = ref(true);
+
+// checks
+let checked: any = ref({});
+let checkedall = ref(false);
+let checkall = () => {
+    for (let i in listDisplay.value) {
+        checked.value[listDisplay.value[i].name] = checkedall.value;
+    }
+}
+let noSelection = computed(() => {
+    for (let i in checked.value) {
+        if (checked.value[i]) {
+            return false;
+        }
+    }
+    return true;
+});
+
+let deleteSelected = ref(false);
+
+let deleteFiles = async () => {
+    console.log("hi")
+    modalPromise.value = true;
+    let toDel = [];
+    for (let i in checked.value) {
+        if (checked.value[i]) {
+            toDel.push((() => {
+                for (let v of listDisplay.value) {
+                    if (v.name === i) {
+                        return v
+                    }
+                }
+            })());
+        }
+    }
+
+    try {
+        let currDir = currentDirectory.value || '!';
+        let pager = folders[currDir].pager;
+        await currentService.deleteHostFiles({ paths: toDel.map(v => v.path + '/' + (()=>{
+            let n = v.name;
+            if(n[0] == '#') {
+                return n.slice(1) + '/';
+            }
+            return n;
+        })()) });
+        await Promise.all(toDel.map(v => pager.deleteItem(v.name)));
+        getFileList().then(()=>{
+            // when empty, go back a page
+            if(!listDisplay.value.length && currentPage.value > 1) {
+                currentPage.value--;
+            }
+        });
+        deleteSelected.value = false;
+    } catch (err: any) {
+        alert(err.message);
+    } finally {
+        modalPromise.value = false;
+    }
+}
+
+let numberOfSelected = computed(() => {
+    let n = 0;
+    for (let i in checked.value) {
+        if (checked.value[i]) {
+            n++;
+        }
+    }
+    return n;
+});
+
+
+//
+
 function getInfo() {
     let _subd = currentService.service?.subdomain || '';
     if (_subd) {
@@ -500,6 +594,13 @@ async function getFileList(refresh = false) {
         listDisplay.value = fl.list;
         maxPage.value = fl.maxPage;
     }
+
+    let chk: any = {};
+    for (let lk in listDisplay.value) {
+        chk[listDisplay.value[lk].name] = false;
+    }
+
+    checked.value = chk;
 
     fetching.value = false;
 }
