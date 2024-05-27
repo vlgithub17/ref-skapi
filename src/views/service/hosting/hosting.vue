@@ -104,7 +104,7 @@ br
         span &nbsp;&nbsp;Delete Selected
 
 
-Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active'}" resizable)
+Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'}" @drop.stop.prevent="e => onDrop(e)" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active'}" resizable)
     template(v-slot:head)
         tr
             th(style="width:1px;")
@@ -126,7 +126,7 @@ Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentServ
                     | Uploaded
                     span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
 
-    template(v-slot:body @dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'}" @drop.stop.prevent="e => onDrop(e)")
+    template(v-slot:body)
         template(v-if="fetching")
             tr
                 td#loading(colspan="4").
