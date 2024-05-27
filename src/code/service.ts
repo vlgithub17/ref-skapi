@@ -539,7 +539,7 @@ export default class Service {
                 owner: this.owner,
             }, params), { auth: true, method: 'get', fetchOptions: fetchOptions || {} });
 
-            res.list = res.list.map((value:any) => {
+            res.list = res.list.map((value: any) => {
                 return {
                     message_id: value.mid, timestamp: value.stmp, subject: value.subj, url: value.url
                 }
@@ -791,15 +791,11 @@ export default class Service {
             paths: string[]; // path without subdomain ex) folder/file.html
         }
     ): Promise<string> {
-        let pathsArr = [];
-
-        for (let i = 0; i < params.paths.length; i++) {
-            pathsArr.push(this.service.subdomain + '/' + params.paths[i]);
-        }
-
+        if (!params.paths || !params.paths.length) return;
         return skapi.util.request(this.record_private_endpoint + 'del-files', {
             service: this.id,
-            endpoints: pathsArr,
+            owner: this.owner,
+            endpoints: params.paths,
             storage: 'host'
         }, { auth: true, method: 'post' });
     }
