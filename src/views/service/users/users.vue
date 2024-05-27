@@ -684,7 +684,7 @@ let getPage = async (refresh?: boolean) => {
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
 
-        if(!disp.list.length) {
+        if(disp.maxPage > 0 && disp.maxPage < currentPage.value && !disp.list.length) {
             currentPage.value--;
         }
 
