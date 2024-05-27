@@ -200,7 +200,7 @@ Modal(:open="openCreateUser" style="width:478px")
 
     hr
 
-    form#createForm(@submit.prevent="createUser")
+    form#createForm(@submit.prevent="createUser" @keydown.stop="preventEnter")
         input(hidden name="service" :value="currentService.id")
 
         label User's Email 
@@ -712,6 +712,14 @@ let searchUsers = () => {
     currentParams = callParams.value;
     console.log(currentParams)
     init();
+}
+
+let preventEnter = (e) => {
+    if (e.key == 'Enter') {
+        e.preventDefalut();
+
+        
+    }
 }
 
 let createUser = () => {
