@@ -170,7 +170,7 @@ template(v-else)
             .material-symbols-outlined.bold chevron_left
             span Previous&nbsp;&nbsp;
         | &nbsp;&nbsp;
-        .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || eof && currentPage >= maxPage }")
+        .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || eof && currentPage >= maxPage || !listDisplay.length }")
             span &nbsp;&nbsp;Next
             .material-symbols-outlined.bold chevron_right
 
