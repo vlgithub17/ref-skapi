@@ -21,218 +21,219 @@
             template(v-else)
                 | Register
 
-.infoBox(v-else :class='{nonClickable: !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== "Active"}')
-    .infoTitle
-        | Hosting&nbsp;&nbsp;
-        small(style='font-weight: normal' :style='{color: currentSubdomain.status === "Active" ? "var(--text-green)" : currentSubdomain.status === "Removing" ? "var(--caution-color)" : null } ') ({{ currentSubdomain.status }})
+template(v-else)
+    .infoBox(:class='{nonClickable: !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== "Active"}')
+        .infoTitle
+            | Hosting&nbsp;&nbsp;
+            small(style='font-weight: normal' :style='{color: currentSubdomain.status === "Active" ? "var(--text-green)" : currentSubdomain.status === "Removing" ? "var(--caution-color)" : null } ') ({{ currentSubdomain.status }})
 
-    hr
-    .infoValue
-        .smallTitle Created
-        .smallValue {{ dirInfo?.upl ? new Date(dirInfo.upl).toLocaleString() : '...' }}
+        hr
+        .infoValue
+            .smallTitle Created
+            .smallValue {{ !fetching ? dirInfo.upl ? new Date().toLocaleString() : new Date(dirInfo.upl).toLocaleString() : '...' }}
 
-    .infoValue
-        .smallTitle Size
-        .smallValue {{ dirInfo?.size ? getFileSize(dirInfo.size) : '...' }}
+        .infoValue
+            .smallTitle Size
+            .smallValue {{ !fetching ? getFileSize(dirInfo.size || 0) : '...' }}
 
-    .infoValue
-        .smallTitle Number of Files
-        .smallValue {{ dirInfo?.cnt || '...' }}
+        .infoValue
+            .smallTitle Number of Files
+            .smallValue {{ !fetching ? dirInfo?.cnt || 0 : '...' }}
 
-    .infoValue
-        .smallTitle URL
-        .smallValue
-            template(v-if="modifyMode.subdomain")
-                form.register.editValue(@submit.prevent="changeSubdomain")
-                    .subdomain
-                        input#modifySubdomain.big(ref="focus_subdomain" :disabled="updatingValue.subdomain || null" type="text"  pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="4" maxlength="32" placeholder="your-subdomain" required :value='inputSubdomain' @input="(e) => {e.target.setCustomValidity(''); inputSubdomain = e.target.value;}")
+        .infoValue
+            .smallTitle URL
+            .smallValue
+                template(v-if="modifyMode.subdomain")
+                    form.register.editValue(@submit.prevent="changeSubdomain")
+                        .subdomain
+                            input#modifySubdomain.big(ref="focus_subdomain" :disabled="updatingValue.subdomain || null" type="text"  pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="4" maxlength="32" placeholder="your-subdomain" required :value='inputSubdomain' @input="(e) => {e.target.setCustomValidity(''); inputSubdomain = e.target.value;}")
 
-                    template(v-if="updatingValue.subdomain")
-                        img.loading(src="@/assets/img/loading.png")
-                    label.material-symbols-outlined.save(v-else) done
-                        input(type="submit" hidden)
-                    span.material-symbols-outlined.cancel(@click="modifyMode.subdomain = false;") close
+                        template(v-if="updatingValue.subdomain")
+                            img.loading(src="@/assets/img/loading.png")
+                        label.material-symbols-outlined.save(v-else) done
+                            input(type="submit" hidden)
+                        span.material-symbols-outlined.cancel(@click="modifyMode.subdomain = false;") close
 
-            div(v-else)
-                .smallValue {{ currentSubdomain.subdomain }}&nbsp;
-                span.editHandle(@click="editSubdomain" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
-                .infoValue
+                div(v-else)
+                    .smallValue {{ currentSubdomain.subdomain }}&nbsp;
+                    span.editHandle(@click="editSubdomain" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
+                    .infoValue
 
-    .infoValue
-        .smallTitle 404 Page
-        .smallValue
-            template(v-if="modifyMode.page404")
-                form.register.editValue(@submit.prevent="change404" style='flex-grow: 0')
-                    input(ref="focus_404" hidden type="file" name='file' required @change="handle404file" :disabled='updatingValue.page404' accept="text/html")
-                    .input.editHandle(style='font-size: .8rem;margin-right: 8px;' @click='focus_404.click()' :class='{nonClickable:updatingValue.page404}') {{ selected404File || sdInfo?.['404'] || 'Select HTML File' }}
-                    template(v-if="updatingValue.page404")
-                        //- img.loading(src="@/assets/img/loading.png")
-                        pre(style='margin:0;font-size: .8rem;font-weight:normal' v-if='progress404 < 100') {{ progress404 }}%
-                        pre(style='margin:0;font-size: .8rem;font-weight:normal' v-else) Updating...
-                    label.material-symbols-outlined.save.fill(v-else :class="{'nonClickable' : !selected404File}") upload
-                        input(type="submit" hidden)
-                    span.material-symbols-outlined.cancel(v-if='!updatingValue.page404' @click="modifyMode.page404 = false;selected404File=null;") close
+        .infoValue
+            .smallTitle 404 Page
+            .smallValue
+                template(v-if="modifyMode.page404")
+                    form.register.editValue(@submit.prevent="change404" style='flex-grow: 0')
+                        input(ref="focus_404" hidden type="file" name='file' required @change="handle404file" :disabled='updatingValue.page404' accept="text/html")
+                        .input.editHandle(style='font-size: .8rem;margin-right: 8px;' @click='focus_404.click()' :class='{nonClickable:updatingValue.page404}') {{ selected404File || sdInfo?.['404'] || 'Select HTML File' }}
+                        template(v-if="updatingValue.page404")
+                            //- img.loading(src="@/assets/img/loading.png")
+                            pre(style='margin:0;font-size: .8rem;font-weight:normal' v-if='progress404 < 100') {{ progress404 }}%
+                            pre(style='margin:0;font-size: .8rem;font-weight:normal' v-else) Updating...
+                        label.material-symbols-outlined.save.fill(v-else :class="{'nonClickable' : !selected404File}") upload
+                            input(type="submit" hidden)
+                        span.material-symbols-outlined.cancel(v-if='!updatingValue.page404' @click="modifyMode.page404 = false;selected404File=null;") close
 
-            div(v-else)
-                .smallValue.editValue
-                    span.editHandle(style='font-size: .8rem;margin-right: 8px;' :class='{nonClickable:sdInfo?.["404"] && sdInfo?.["404"] === "..."}' @click="open404FileInp") {{ sdInfo?.['404'] || 'Select HTML File' }}
-                    span.material-symbols-outlined.cancel.fill(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true") delete
+                div(v-else)
+                    .smallValue.editValue
+                        span.editHandle(style='font-size: .8rem;margin-right: 8px;' :class='{nonClickable:sdInfo?.["404"] && sdInfo?.["404"] === "..."}' @click="open404FileInp") {{ sdInfo?.['404'] || 'Select HTML File' }}
+                        span.material-symbols-outlined.cancel.fill(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true") delete
 
-    div(style="text-align:right")
-        .iconClick(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
-            .material-symbols-outlined.fill(style='font-size:24px;') cancel
-            span &nbsp;Remove Hosting
-br
+        div(style="text-align:right")
+            .iconClick(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
+                .material-symbols-outlined.fill(style='font-size:24px;') cancel
+                span &nbsp;Remove Hosting
+    br
 
-.tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+    .tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
 
-    .iconClick.square(:class="{'nonClickable': noSelection}" @click='deleteSelected=true')
-        .material-symbols-outlined.fill delete
-        span &nbsp;&nbsp;Delete Selected
+        .iconClick.square(:class="{'nonClickable': noSelection}" @click='deleteSelected=true')
+            .material-symbols-outlined.fill delete
+            span &nbsp;&nbsp;Delete Selected
 
-    .iconClick.square(@click='uploadFileInp.click()')
-        input(type="file" hidden multiple @change="e=>listFiles(e.target.files)" ref="uploadFileInp")
-        .material-symbols-outlined.fill upload_file
-        span &nbsp;&nbsp;Upload Files
-    .iconClick.square(@click='uploadFolderInp.click()')
-        input(type="file" hidden multiple directory webkitdirectory @change="e=>listFiles(e.target.files)" ref="uploadFolderInp")
-        .material-symbols-outlined.fill drive_folder_upload
-        span &nbsp;&nbsp;Upload Folder
+        .iconClick.square(@click='uploadFileInp.click()')
+            input(type="file" hidden multiple @change="e=>listFiles(e.target.files)" ref="uploadFileInp")
+            .material-symbols-outlined.fill upload_file
+            span &nbsp;&nbsp;Upload Files
+        .iconClick.square(@click='uploadFolderInp.click()')
+            input(type="file" hidden multiple directory webkitdirectory @change="e=>listFiles(e.target.files)" ref="uploadFolderInp")
+            .material-symbols-outlined.fill drive_folder_upload
+            span &nbsp;&nbsp;Upload Folder
 
-    .iconClick.square
-        .material-symbols-outlined.fill refresh
-        span &nbsp;&nbsp;Refresh CDN
+        .iconClick.square
+            .material-symbols-outlined.fill refresh
+            span &nbsp;&nbsp;Refresh CDN
 
 
-Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'}" @drop.stop.prevent="e => onDrop(e)" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active'}" resizable)
-    template(v-slot:head)
-        tr
-            th(style="width:1px;")
-                Checkbox(@click.stop v-model='checkedall' @change='checkall')
-                .resizer
-            th(style='width:320px;')
-                span(@click='toggleSort("name")')
-                    | Filename
-                    .material-symbols-outlined.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-                .resizer
-
-            th(style='width:160px;')
-                span(@click='toggleSort("size")')
-                    | Size
-                    span.material-symbols-outlined.fill(v-if='sortBy === "size"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-                .resizer
-            th(style='width:220px;')
-                span(@click='toggleSort("upl")')
-                    | Uploaded
-                    span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-
-    template(v-slot:body)
-        template(v-if="fetching")
+    Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'}" @drop.stop.prevent="e => onDrop(e)" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active'}" resizable)
+        template(v-slot:head)
             tr
-                td#loading(colspan="4").
-                    Loading... &nbsp;
-                    #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-            tr(v-for="i in 9")
-                td(colspan="4")
-        template(v-else-if="!listDisplay || listDisplay.length === 0")
-            tr
-                td(colspan="4") Drag and drop files here
-            tr(v-for="i in 9")
-                td(colspan="4")
-        template(v-else)
-            tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
-                td.overflow
-                    .material-symbols-outlined.fill(v-if='currentDirectory') arrow_upward
-                td.overflow(colspan="3")
-                    template(v-if='currentDirectory')
-                        .material-symbols-outlined.fill folder_open
-                        | &nbsp;
-                    | / {{ currentDirectory }}
-            tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = ns.name.slice(1) }')
-                td.overflow
-                    Checkbox(@click.stop v-model='checked[ns.name]')
+                th(style="width:1px;")
+                    Checkbox(@click.stop v-model='checkedall' @change='checkall')
+                    .resizer
+                th(style='width:320px;')
+                    span(@click='toggleSort("name")')
+                        | Filename
+                        .material-symbols-outlined.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    .resizer
 
-                td.overflow(v-if='ns.name[0] == "#"')
-                    span.material-symbols-outlined.fill(style='vertical-align: sub;') folder
-                    | &nbsp;{{ ns.name.slice(1) }}
-                td.overflow(v-else) {{ ns.name }}
-                td.overflow {{ getFileSize(ns.size) }}
-                td.overflow {{ new Date(ns.upl).toLocaleString() }}
+                th(style='width:160px;')
+                    span(@click='toggleSort("size")')
+                        | Size
+                        span.material-symbols-outlined.fill(v-if='sortBy === "size"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    .resizer
+                th(style='width:220px;')
+                    span(@click='toggleSort("upl")')
+                        | Uploaded
+                        span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
 
-            tr(v-for="i in (10 - listDisplay.length)")
-                td(colspan="4")
+        template(v-slot:body)
+            template(v-if="fetching")
+                tr
+                    td#loading(colspan="4").
+                        Loading... &nbsp;
+                        #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+                tr(v-for="i in 9")
+                    td(colspan="4")
+            template(v-else-if="!listDisplay || listDisplay.length === 0")
+                tr
+                    td(colspan="4") Drag and drop files here
+                tr(v-for="i in 9")
+                    td(colspan="4")
+            template(v-else)
+                tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
+                    td.overflow
+                        .material-symbols-outlined.fill(v-if='currentDirectory') arrow_upward
+                    td.overflow(colspan="3")
+                        template(v-if='currentDirectory')
+                            .material-symbols-outlined.fill folder_open
+                            | &nbsp;
+                        | / {{ currentDirectory }}
+                tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = ns.name.slice(1) }')
+                    td.overflow
+                        Checkbox(@click.stop v-model='checked[ns.name]')
 
-br
+                    td.overflow(v-if='ns.name[0] == "#"')
+                        span.material-symbols-outlined.fill(style='vertical-align: sub;') folder
+                        | &nbsp;{{ ns.name.slice(1) }}
+                    td.overflow(v-else) {{ ns.name }}
+                    td.overflow {{ getFileSize(ns.size) }}
+                    td.overflow {{ new Date(ns.upl).toLocaleString() }}
 
-.tableMenu(style='display:block;text-align:center;')
-    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
-        .material-symbols-outlined.bold chevron_left
-        span Previous&nbsp;&nbsp;
-    | &nbsp;&nbsp;
-    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || eof && currentPage >= maxPage }")
-        span &nbsp;&nbsp;Next
-        .material-symbols-outlined.bold chevron_right
+                tr(v-for="i in (10 - listDisplay.length)")
+                    td(colspan="4")
 
-br
-
-Modal(:open="deleteSelected")
-    h4(style='margin:.5em 0 0;') Delete Files
-
-    hr
-
-    div(style='font-size:.8rem;')
-        p.
-            Delete {{ numberOfSelected }} file(s) from your hosting?
-            #[br]
-            This action cannot be undone.
     br
 
-    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='modalPromise')
-            img.loading(src="@/assets/img/loading.png")
-        template(v-else)
-            button.noLine.warning(@click="deleteSelected = false") Cancel
-            button.final.warning(@click="deleteFiles") Delete
+    .tableMenu(style='display:block;text-align:center;')
+        .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
+            .material-symbols-outlined.bold chevron_left
+            span Previous&nbsp;&nbsp;
+        | &nbsp;&nbsp;
+        .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || eof && currentPage >= maxPage }")
+            span &nbsp;&nbsp;Next
+            .material-symbols-outlined.bold chevron_right
 
-Modal(:open="removeHosting")
-    h4(style='margin:.5em 0 0;') Remove Hosting
-
-    hr
-
-    div(style='font-size:.8rem;')
-        p.
-            Are you sure you want to remove hosting?
-            #[br]
-            This will remove all the files and release your subdomain address.
-            #[br]
-            This action cannot be undone.
     br
 
-    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='modalPromise')
-            img.loading(src="@/assets/img/loading.png")
-        template(v-else)
-            button.noLine.warning(@click="removeHosting = false") Cancel
-            button.final.warning(@click="remove") Remove
+    Modal(:open="deleteSelected")
+        h4(style='margin:.5em 0 0;') Delete Files
 
-Modal(:open="openRemove404")
-    h4(style='margin:.5em 0 0;') Remove 404
+        hr
 
-    hr
+        div(style='font-size:.8rem;')
+            p.
+                Delete {{ numberOfSelected }} file(s) from your hosting?
+                #[br]
+                This action cannot be undone.
+        br
 
-    div(style='font-size:.8rem;')
-        p.
-            Would you like to remove the 404 page?
-            #[br]
-            This will revert the 404 page to the default one.
-    br
+        div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+            template(v-if='modalPromise')
+                img.loading(src="@/assets/img/loading.png")
+            template(v-else)
+                button.noLine.warning(@click="deleteSelected = false") Cancel
+                button.final.warning(@click="deleteFiles") Delete
 
-    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='modalPromise')
-            img.loading(src="@/assets/img/loading.png")
-        template(v-else)
-            button.noLine.warning(@click="openRemove404 = false") Cancel
-            button.final.warning(@click="remove404") Remove
+    Modal(:open="removeHosting")
+        h4(style='margin:.5em 0 0;') Remove Hosting
+
+        hr
+
+        div(style='font-size:.8rem;')
+            p.
+                Are you sure you want to remove hosting?
+                #[br]
+                This will remove all the files and release your subdomain address.
+                #[br]
+                This action cannot be undone.
+        br
+
+        div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+            template(v-if='modalPromise')
+                img.loading(src="@/assets/img/loading.png")
+            template(v-else)
+                button.noLine.warning(@click="removeHosting = false") Cancel
+                button.final.warning(@click="remove") Remove
+
+    Modal(:open="openRemove404")
+        h4(style='margin:.5em 0 0;') Remove 404
+
+        hr
+
+        div(style='font-size:.8rem;')
+            p.
+                Would you like to remove the 404 page?
+                #[br]
+                This will revert the 404 page to the default one.
+        br
+
+        div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+            template(v-if='modalPromise')
+                img.loading(src="@/assets/img/loading.png")
+            template(v-else)
+                button.noLine.warning(@click="openRemove404 = false") Cancel
+                button.final.warning(@click="remove404") Remove
 </template>
 
 <script setup lang="ts">
@@ -515,6 +516,20 @@ let numberOfSelected = computed(() => {
 //
 
 function getInfo() {
+    fetching.value = true;
+    let process = ()=>{
+        currentService.getSubdomainInfo().then(s => sdInfo.value = s);
+        currentService.getDirInfo().then(dir => {
+            if (dir.cnt) {
+                getFileList(true);
+            }
+            else {
+                fetching.value = false;
+            }
+            dirInfo.value = dir;
+        });
+    }
+
     let _subd = currentService.service?.subdomain || '';
     if (_subd) {
         if (_subd[0] === '*' || _subd[0] === '+') {
@@ -522,18 +537,12 @@ function getInfo() {
                 // + pending
                 // * removing
                 subdomain.value = currentService.service.subdomain;
-                currentService.getSubdomainInfo().then(s => sdInfo.value = s);
+                process();
             });
         }
         else if (!sdInfo.value.srvc) {
-            currentService.getSubdomainInfo().then(s => sdInfo.value = s);
+            process();
         }
-        currentService.getDirInfo().then(dir => {
-            if (dir.cnt) {
-                getFileList(true);
-            }
-            dirInfo.value = dir
-        });
     }
 }
 

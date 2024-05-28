@@ -800,7 +800,13 @@ export default class Service {
         }, { auth: true, method: 'post' });
     }
 
-    getDirInfo() {
+    getDirInfo(): Promise<{
+        name: string; // !
+        path: string; // subdomain
+        size: number;
+        upl: number;
+        cnt: number;
+    }> {
         return skapi.util.request(this.admin_private_endpoint + 'host-directory', Object.assign({ service: this.id, owner: this.owner }, { dir: '', info: true }), {
             fetchOptions: {
                 limit: 1,
@@ -819,12 +825,12 @@ export default class Service {
     ): Promise<{
         [key: string]: any;
         list: {
-            name: string; // file path ex) /folder/subfolder/file.txt
-            path: string;
+            name: string; // file name file.txt | #folder
+            path: string; // file path ex) subdomain/folder/subfolder
             size: number;
             upl: number;
             cnt: number;
-        }
+        }[]
     }> {
         let _subd = this.service.subdomain;
         if (_subd[0] === '*' || _subd[0] === '+') {
