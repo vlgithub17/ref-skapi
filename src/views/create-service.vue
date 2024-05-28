@@ -79,7 +79,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { serviceIdList, serviceList } from '@/views/service-list'
 import { skapi } from '@/code/admin';
-import { user, customer } from '@/code/user';
+import { customer } from '@/code/user';
 import Service from '@/code/service';
 
 const router = useRouter();
@@ -123,7 +123,7 @@ let createSubscription = async (ticket_id, service_info) => {
     let product = JSON.parse(import.meta.env.VITE_PRODUCT);
     let customer_id = resolvedCustomer.id;
     let currentUrl = window.location;
-
+    
     let response = await skapi.clientSecretRequest({
         clientSecretName: 'stripe_test',
         url: 'https://api.stripe.com/v1/checkout/sessions',
@@ -133,12 +133,12 @@ let createSubscription = async (ticket_id, service_info) => {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
         data: {
-            client_reference_id: user.user_id,
+            client_reference_id: service_info.owner,
             customer: customer_id,
             'customer_update[name]': 'auto',
             'customer_update[address]': 'auto',
             'subscription_data[metadata][service]': service_info.id,
-            'subscription_data[metadata][owner]': user.user_id,
+            'subscription_data[metadata][owner]': service_info.owner,
             'mode': 'subscription',
             'subscription_data[description]': 'Subscription plan for service ID: "' + service_info.id + '"',
             cancel_url: currentUrl.origin + '/my-services',
