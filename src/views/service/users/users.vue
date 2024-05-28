@@ -205,9 +205,8 @@ Modal(:open="openCreateUser" style="width:478px")
 
         label User's Email 
             span(style="color:red") *
-            input.big(
+            input.big#email(
                 type="email"
-                name="email"
                 @input="e => createParams.email = e.target.value"
                 @keydown="e => moveFocus(e, 'password')"
                 title="Please enter a valid email address." 
@@ -218,7 +217,7 @@ Modal(:open="openCreateUser" style="width:478px")
 
         label Password 
             span(style="color:red") *
-            input.big(
+            input.big#password(
                 @input="e => createParams.password = e.target.value"
                 @keydown="e => moveFocus(e, 'name')"
                 placeholder="User's Password"
@@ -230,8 +229,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         label Name 
-            input.big(
-                name="name"
+            input.big#name(
                 @input="e => createParams.name = e.target.value"
                 @keydown="e => moveFocus(e, 'phone')"
                 placeholder="User's Name" 
@@ -240,8 +238,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         label Phone Number 
-            input.big(
-                name="phone"
+            input.big#phone(
                 @input="e => createParams.phone_number = e.target.value"
                 @keydown="e => moveFocus(e, 'gender')"
                 placeholder="User's Phone Number"
@@ -252,8 +249,7 @@ Modal(:open="openCreateUser" style="width:478px")
 
         .label
             label Gender 
-                input.big(
-                    name="gender"
+                input.big#gender(
                     @input="e => createParams.gender = e.target.value"
                     @keydown="e => moveFocus(e, 'address')"
                     placeholder="User's Gender"
@@ -265,8 +261,7 @@ Modal(:open="openCreateUser" style="width:478px")
 
         .label
             label Address 
-                input.big(
-                    name="address"
+                input.big#address(
                     @input="e => createParams.address = e.target.value"
                     @keydown="e => moveFocus(e, 'birthdate')"
                     placeholder="User's Address"
@@ -278,8 +273,7 @@ Modal(:open="openCreateUser" style="width:478px")
 
         .label
             label Birthdate 
-                input.big(
-                    name="birthdate"
+                input.big#birthdate(
                     @input="e => createParams.birthdate = e.target.value"
                     @keydown="e => moveFocus(e, 'picture')"
                     placeholder="User's Birthdate"
@@ -290,8 +284,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         label Picture 
-            input.big(
-                name="picture"
+            input.big#picture(
                 @input="e => createParams.picture = e.target.value"
                 @keydown="e => moveFocus(e, 'profile')"
                 placeholder="URL of the profile picture."
@@ -301,8 +294,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         label Profile 
-            input.big(
-                name="profile"
+            input.big#profile(
                 @input="e => createParams.profile = e.target.value"
                 @keydown="e => moveFocus(e, 'website')"
                 placeholder="URL of the profile page"
@@ -312,8 +304,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         label Website 
-            input.big(
-                name="website"
+            input.big#website(
                 @input="e => createParams.website = e.target.value"
                 @keydown="e => moveFocus(e, 'nickname')"
                 placeholder="URL of the website"
@@ -323,8 +314,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         label Nickname 
-            input.big(
-                name="nickname"
+            input.big#nickname(
                 @input="e => createParams.nickname = e.target.value"
                 @keydown="e => moveFocus(e, 'misc')"
                 placeholder="Nickname of the user"
@@ -334,8 +324,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         label misc 
-            input.big(
-                name="misc"
+            input.big#misc(
                 @input="e => createParams.misc = e.target.value"
                 placeholder="Additional string value that can be used freely"
                 type='text'
@@ -740,8 +729,36 @@ let moveFocus = (e:any, next:string) => {
     if (e.key == 'Enter') {
         e.preventDefault();
 
-        console.log(e.key)
-        document.getElementsByName(next).focus();
+        if (e.target.id == 'email') {
+            if (!e.target.value) {
+                alert('email is required');
+                return false;
+            } else {
+                let email_regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i;
+                if (!email_regex.test(e.target.value)) {
+                    alert('Please enter it in e-mail format');
+                    return false;
+                }
+            }
+        } else if (e.target.id == 'password') {
+            if (!e.target.value) {
+                alert('password is required');
+                return false;
+            } else {
+                if (e.target.value.length < 6) {
+                    alert('Please enter at least 6 characters');
+                    return false;
+                }
+            }
+        }
+        
+        let scrollTarget = document.getElementById('createForm').parentElement;
+
+        if (scrollTarget.getBoundingClientRect().height < scrollTarget.scrollHeight) {
+            scrollTarget.scrollTop += 70;
+        }
+
+        document.getElementById(next).focus();
     }
 }
 
@@ -804,31 +821,31 @@ let changeUserState = (state: string) => {
     promiseRunning.value = true;
 
     if(state == 'block') {
-        currentService.blockAccount(selectedUser.user_id).then((r) => {
+        currentService.blockAccount(selectedUser.user_id).then(async(r) => {
             selectedUser.approved = 'by_admin:suspended:' + (new Date()).getTime();
             let toEdit = {}
             for(let k in selectedUser) {
                 toEdit[k] = selectedUser[k];
             }
-            pager.editItem(toEdit).then((r) => {
+            await pager.editItem(toEdit).then((r) => {
                 selectedUser = {};
                 promiseRunning.value = false;
                 openBlockUser.value = false;
-                getPage(currentPage.value);
+                // getPage(currentPage.value);
             });
         }).catch(e => alert(e.message));
     } else if(state == 'unblock') {
-        currentService.unblockAccount(selectedUser.user_id).then((r) => {
+        currentService.unblockAccount(selectedUser.user_id).then(async(r) => {
             selectedUser.approved = 'by_admin:' + (new Date()).getTime();
             let toEdit = {}
             for(let k in selectedUser) {
                 toEdit[k] = selectedUser[k];
             }
-            pager.editItem(toEdit).then((r) => {
+            await pager.editItem(toEdit).then((r) => {
                 selectedUser = {};
                 promiseRunning.value = false;
                 openUnblockUser.value = false;
-                getPage(currentPage.value);
+                // getPage(currentPage.value);
             });
         }).catch(e => alert(e.message));
     }
@@ -837,12 +854,12 @@ let changeUserState = (state: string) => {
 let deleteUser = () => {
     promiseRunning.value = true;
 
-    currentService.deleteAccount(selectedUser.user_id).then(() => {
-        pager.deleteItem(selectedUser.user_id).then(() => {
+    currentService.deleteAccount(selectedUser.user_id).then(async() => {
+        await pager.deleteItem(selectedUser.user_id).then(() => {
             selectedUser = {};
             promiseRunning.value = false;
             openDeleteUser.value = false;
-            getPage(currentPage.value);
+            // getPage(currentPage.value);
         })
     }).catch(e => alert(e.message));
 }
