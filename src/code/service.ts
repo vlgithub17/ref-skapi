@@ -665,10 +665,10 @@ export default class Service {
     async uploadHostFiles(
         fileList: FormData | HTMLFormElement | SubmitEvent,
         params: {
-            nestKey?: string; // file to nest
+            prefix?: string,
             progress?: (p:
                 {
-                    status: 'upload',
+                    status: 'loadstart' | 'progress' | 'abort' | 'error' | 'load' | 'timeout' | 'loadend',
                     progress: number,
                     currentFile: File,
                     completed: File[],
@@ -730,6 +730,8 @@ export default class Service {
                     xhr.upload.onprogress = progressCallback;
                 }
 
+                xhr.onprogress = progressCallback;
+
                 xhr.send(body);
             });
         };
@@ -737,14 +739,16 @@ export default class Service {
         let completed = [];
         let failed = [];
         let bin_endpoints = [];
+        let prefix = params.prefix ? params.prefix : '';
+        prefix = prefix && prefix[prefix.length - 1] === '/' ? prefix : prefix + '/';
+
         for (let [key, f] of (fileList as any).entries()) {
             if (!(f instanceof File)) {
                 continue;
             }
 
             let signedParams = Object.assign({
-                key: f.name,
-                // sizeKey: toBase62(f.size),
+                key: prefix + (f.webkitRelativePath || f.name),
                 contentType: f.type || null
             }, getSignedParams);
 
@@ -759,14 +763,14 @@ export default class Service {
             }
 
             form.append('file', f);
-            console.log(url, form)
+
             try {
                 await fetchProgress(
                     url,
                     form,
                     (p: ProgressEvent) => progress(
                         {
-                            status: 'upload',
+                            status: p.type,
                             progress: p.loaded / p.total * 100,
                             currentFile: f,
                             completed,

@@ -92,11 +92,11 @@ template(v-else)
             span &nbsp;&nbsp;Delete Selected
 
         .iconClick.square(@click='uploadFileInp.click()')
-            input(type="file" hidden multiple @change="e=>listFiles(e.target.files)" ref="uploadFileInp")
+            input(type="file" hidden multiple @change="e=>uploadFiles(e.target.files, ()=>getFileList(true))" ref="uploadFileInp")
             .material-symbols-outlined.fill upload_file
             span &nbsp;&nbsp;Upload Files
         .iconClick.square(@click='uploadFolderInp.click()')
-            input(type="file" hidden multiple directory webkitdirectory @change="e=>listFiles(e.target.files)" ref="uploadFolderInp")
+            input(type="file" hidden multiple directory webkitdirectory @change="e=>uploadFiles(e.target.files, ()=>getFileList(true))" ref="uploadFolderInp")
             .material-symbols-outlined.fill drive_folder_upload
             span &nbsp;&nbsp;Upload Folder
 
@@ -105,11 +105,11 @@ template(v-else)
             span &nbsp;&nbsp;Refresh CDN
 
 
-    Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'; dragHere = true;}" @dragleave.stop.prevent="dragHere = false;" @drop.stop.prevent="e => {dragHere = false; onDrop(e)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}" resizable)
+    Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'; dragHere = true;}" @dragleave.stop.prevent="dragHere = false;" @drop.stop.prevent="e => {dragHere = false; onDrop(e, ()=>getFileList(true))}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}" resizable)
         template(v-slot:head)
             tr
                 th(style="width:1px;")
-                    Checkbox(@click.stop v-model='checkedall' @change='checkall')
+                    Checkbox(@click.stop v-model='checkedall' @change='checkall' :class='{nonClickable: !listDisplay.length}')
                     .resizer
                 th(style='width:320px;')
                     span(@click='toggleSort("name")')
@@ -128,6 +128,9 @@ template(v-else)
                         span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
 
         template(v-slot:body)
+            tr(v-if='uploadProgress.name')
+                td(colspan="4")
+                    | File: /{{ uploadProgress.name }} {{ uploadProgress.progress }}% {{ uploadCount[0] }} / {{ uploadCount[1] }}
             template(v-if="fetching")
                 tr
                     td#loading(colspan="4").
@@ -251,7 +254,7 @@ import Pager from '@/code/pager';
 import { skapi, getFileSize, dateFormat } from '@/code/admin';
 import { user } from '@/code/user';
 import Checkbox from '@/components/checkbox.vue';
-import { listFiles, onDrop } from '@/views/service/hosting/file';
+import { uploadFiles, onDrop, currentDirectory, uploadCount, uploadProgress } from '@/views/service/hosting/file';
 
 let dragHere = ref(false);
 // fileinputs
@@ -319,6 +322,7 @@ let editSubdomain = () => {
     });
 }
 
+// modal
 let focus_404 = ref();
 let selected404File = ref(null);
 let open404FileInp = async () => {
@@ -380,8 +384,6 @@ let remove404 = async () => {
     }
 }
 
-//
-
 let removeHosting = ref(false);
 let remove = () => {
     modalPromise.value = true;
@@ -419,6 +421,8 @@ let changeSubdomain = async () => {
     }
 }
 
+//
+
 let currentSubdomain = computed(() => {
     let sd = currentService.service.subdomain;
     let status = '';
@@ -437,7 +441,6 @@ let currentSubdomain = computed(() => {
     };
 });
 
-let currentDirectory = ref('');
 let listDisplay = ref([]);
 let folders: any = {};
 let sortBy = ref('name');
@@ -516,7 +519,6 @@ let numberOfSelected = computed(() => {
     }
     return n;
 });
-
 
 //
 
