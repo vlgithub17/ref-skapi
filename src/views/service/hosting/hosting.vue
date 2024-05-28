@@ -105,17 +105,17 @@ template(v-else)
             span &nbsp;&nbsp;Refresh CDN
 
 
-    Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'}" @drop.stop.prevent="e => onDrop(e)" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active'}" resizable)
-        template(v-slot:head)
-            tr
-                th(style="width:1px;")
-                    Checkbox(@click.stop v-model='checkedall' @change='checkall')
-                    .resizer
-                th(style='width:320px;')
-                    span(@click='toggleSort("name")')
-                        | Filename
-                        .material-symbols-outlined.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-                    .resizer
+Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'; dragHere = true;}" @dragleave.stop.prevent="dragHere = false;" @drop.stop.prevent="e => {dragHere = false; onDrop(e)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}" resizable)
+    template(v-slot:head)
+        tr
+            th(style="width:1px;")
+                Checkbox(@click.stop v-model='checkedall' @change='checkall')
+                .resizer
+            th(style='width:320px;')
+                span(@click='toggleSort("name")')
+                    | Filename
+                    .material-symbols-outlined.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                .resizer
 
                 th(style='width:160px;')
                     span(@click='toggleSort("size")')
@@ -176,8 +176,12 @@ template(v-else)
 
     br
 
-    Modal(:open="deleteSelected")
-        h4(style='margin:.5em 0 0;') Delete Files
+.dragPopup(:class="{'show' : dragHere}")
+    .material-symbols-outlined(style='font-size:64px;') cloud_upload
+    p Drop your files to upload
+
+Modal(:open="deleteSelected")
+    h4(style='margin:.5em 0 0;') Delete Files
 
         hr
 
@@ -249,6 +253,7 @@ import { user } from '@/code/user';
 import Checkbox from '@/components/checkbox.vue';
 import { listFiles, onDrop } from '@/views/service/hosting/file';
 
+let dragHere = ref(false);
 // fileinputs
 let uploadFileInp = ref();
 let uploadFolderInp = ref();
@@ -782,6 +787,30 @@ thead {
 
     &>* {
         margin-bottom: 8px;
+    }
+}
+
+.dragHere {
+    outline: 4px solid var(--main-color);
+    opacity: 0.3;
+}
+
+.dragPopup {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    max-width: 300px;
+    width: 100%;
+    padding: 10px 20px;
+    margin: 8px;
+    border-radius: 8px;
+    transform: translate(-50%, 300px);
+    transition: all .15s;
+    background-color: var(--main-color);
+    color: #fff;
+
+    &.show {
+        transform: translate(-50%, 0);
     }
 }
 
