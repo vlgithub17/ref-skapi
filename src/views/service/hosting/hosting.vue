@@ -105,17 +105,17 @@ template(v-else)
             span &nbsp;&nbsp;Refresh CDN
 
 
-Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'; dragHere = true;}" @dragleave.stop.prevent="dragHere = false;" @drop.stop.prevent="e => {dragHere = false; onDrop(e)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}" resizable)
-    template(v-slot:head)
-        tr
-            th(style="width:1px;")
-                Checkbox(@click.stop v-model='checkedall' @change='checkall')
-                .resizer
-            th(style='width:320px;')
-                span(@click='toggleSort("name")')
-                    | Filename
-                    .material-symbols-outlined.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-                .resizer
+    Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'; dragHere = true;}" @dragleave.stop.prevent="dragHere = false;" @drop.stop.prevent="e => {dragHere = false; onDrop(e)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}" resizable)
+        template(v-slot:head)
+            tr
+                th(style="width:1px;")
+                    Checkbox(@click.stop v-model='checkedall' @change='checkall')
+                    .resizer
+                th(style='width:320px;')
+                    span(@click='toggleSort("name")')
+                        | Filename
+                        .material-symbols-outlined.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    .resizer
 
                 th(style='width:160px;')
                     span(@click='toggleSort("size")')
@@ -176,28 +176,28 @@ Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'; dragHere =
 
     br
 
-.dragPopup(:class="{'show' : dragHere}")
-    .material-symbols-outlined(style='font-size:64px;') cloud_upload
-    p Drop your files to upload
+    .dragPopup(:class="{'show' : dragHere}")
+        .material-symbols-outlined(style='font-size:64px;') cloud_upload
+        p Drop your files to upload
 
-Modal(:open="deleteSelected")
-    h4(style='margin:.5em 0 0;') Delete Files
+    Modal(:open="deleteSelected")
+        h4(style='margin:.5em 0 0;') Delete Files
 
-        hr
+            hr
 
-        div(style='font-size:.8rem;')
-            p.
-                Delete {{ numberOfSelected }} file(s) from your hosting?
-                #[br]
-                This action cannot be undone.
-        br
+            div(style='font-size:.8rem;')
+                p.
+                    Delete {{ numberOfSelected }} file(s) from your hosting?
+                    #[br]
+                    This action cannot be undone.
+            br
 
-        div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-            template(v-if='modalPromise')
-                img.loading(src="@/assets/img/loading.png")
-            template(v-else)
-                button.noLine.warning(@click="deleteSelected = false") Cancel
-                button.final.warning(@click="deleteFiles") Delete
+            div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+                template(v-if='modalPromise')
+                    img.loading(src="@/assets/img/loading.png")
+                template(v-else)
+                    button.noLine.warning(@click="deleteSelected = false") Cancel
+                    button.final.warning(@click="deleteFiles") Delete
 
     Modal(:open="removeHosting")
         h4(style='margin:.5em 0 0;') Remove Hosting
