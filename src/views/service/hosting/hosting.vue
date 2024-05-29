@@ -99,7 +99,7 @@ template(v-else)
         .iconClick.square(:class="{'nonClickable': noSelection}" @click='deleteSelected=true')
             .material-symbols-outlined.fill delete
             span &nbsp;&nbsp;Delete Selected
-            
+
         .iconClick.square
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh CDN
@@ -133,7 +133,9 @@ template(v-else)
                 tr.uploadState(style="position:relative")
                     td
                         .material-symbols-outlined.center.moving upload
-                    td(colspan="3") File: /{{ uploadProgress.name }} ({{ uploadCount[0] }} / {{ uploadCount[1] }})
+                    td(colspan="3")
+                        | Uploading: /{{ uploadProgress.name }}&nbsp;
+                        b ({{ uploadCount[0] }} / {{ uploadCount[1] }})
             template(v-if="fetching")
                 tr
                     td#loading(colspan="4").
@@ -155,7 +157,7 @@ template(v-else)
                             .material-symbols-outlined.fill folder_open
                             | &nbsp;
                         | / {{ currentDirectory }}
-                tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = ns.name.slice(1) }')
+                tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = setNewDir(ns) }')
                     td
                         Checkbox(@click.stop v-model='checked[ns.name]')
 
@@ -560,6 +562,16 @@ function getInfo() {
 
 getInfo();
 
+let setNewDir = (ns: any) => {
+    let path = ns.path;
+    path = path.split('/');
+    if (path.length > 1) {
+        return path.slice(1).join('/') + '/' + ns.name.slice(1);
+    }
+
+    return ns.name.slice(1);
+}
+
 let eof = computed(() => {
     let currDir = currentDirectory.value || '!';
     return endOfList[currDir]
@@ -604,7 +616,7 @@ async function getFileList(refresh = false) {
                 maxPage.value = fl.maxPage;
                 endOfList[currDir] = l.endOfList;
             }
-        } catch (err:any) {
+        } catch (err: any) {
             alert(err.message);
         } finally {
             fetching.value = false;
@@ -626,7 +638,7 @@ async function getFileList(refresh = false) {
     fetching.value = false;
 }
 
-function openFile(ns:any) {
+function openFile(ns: any) {
     let path = ns.path;
     let url;
     if (path.split('/').length > 1) {
@@ -829,8 +841,13 @@ thead {
 }
 
 @keyframes motion {
-    0% {margin-top: -5px;}
-    100% {margin-top: 0px;}
+    0% {
+        margin-top: -5px;
+    }
+
+    100% {
+        margin-top: 0px;
+    }
 }
 
 @media (pointer: coarse) {
