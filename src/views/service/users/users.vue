@@ -209,6 +209,7 @@ Modal(:open="openCreateUser" style="width:478px")
                 type="email"
                 @input="e => createParams.email = e.target.value"
                 @keydown="e => moveFocus(e, 'password')"
+                :disabled="promiseRunning"
                 title="Please enter a valid email address." 
                 placeholder="anonymous@anonymous.com"
                 required
@@ -220,6 +221,7 @@ Modal(:open="openCreateUser" style="width:478px")
             input.big#password(
                 @input="e => createParams.password = e.target.value"
                 @keydown="e => moveFocus(e, 'name')"
+                :disabled="promiseRunning"
                 placeholder="User's Password"
                 type='Password'
                 minlength="6"
@@ -232,6 +234,7 @@ Modal(:open="openCreateUser" style="width:478px")
             input.big#name(
                 @input="e => createParams.name = e.target.value"
                 @keydown="e => moveFocus(e, 'phone')"
+                :disabled="promiseRunning"
                 placeholder="User's Name" 
             )
 
@@ -241,6 +244,7 @@ Modal(:open="openCreateUser" style="width:478px")
             input.big#phone(
                 @input="e => createParams.phone_number = e.target.value"
                 @keydown="e => moveFocus(e, 'gender')"
+                :disabled="promiseRunning"
                 placeholder="User's Phone Number"
                 type='text'
             )
@@ -252,6 +256,7 @@ Modal(:open="openCreateUser" style="width:478px")
                 input.big#gender(
                     @input="e => createParams.gender = e.target.value"
                     @keydown="e => moveFocus(e, 'address')"
+                    :disabled="promiseRunning"
                     placeholder="User's Gender"
                     type='text'
                 )
@@ -264,6 +269,7 @@ Modal(:open="openCreateUser" style="width:478px")
                 input.big#address(
                     @input="e => createParams.address = e.target.value"
                     @keydown="e => moveFocus(e, 'birthdate')"
+                    :disabled="promiseRunning"
                     placeholder="User's Address"
                     type='text'
                 ) 
@@ -276,6 +282,7 @@ Modal(:open="openCreateUser" style="width:478px")
                 input.big#birthdate(
                     @input="e => createParams.birthdate = e.target.value"
                     @keydown="e => moveFocus(e, 'picture')"
+                    :disabled="promiseRunning"
                     placeholder="User's Birthdate"
                     type='text'
                 )
@@ -287,6 +294,7 @@ Modal(:open="openCreateUser" style="width:478px")
             input.big#picture(
                 @input="e => createParams.picture = e.target.value"
                 @keydown="e => moveFocus(e, 'profile')"
+                :disabled="promiseRunning"
                 placeholder="URL of the profile picture."
                 type='url'
             )
@@ -297,6 +305,7 @@ Modal(:open="openCreateUser" style="width:478px")
             input.big#profile(
                 @input="e => createParams.profile = e.target.value"
                 @keydown="e => moveFocus(e, 'website')"
+                :disabled="promiseRunning"
                 placeholder="URL of the profile page"
                 type='url'
             )
@@ -307,6 +316,7 @@ Modal(:open="openCreateUser" style="width:478px")
             input.big#website(
                 @input="e => createParams.website = e.target.value"
                 @keydown="e => moveFocus(e, 'nickname')"
+                :disabled="promiseRunning"
                 placeholder="URL of the website"
                 type='url'
             )
@@ -317,6 +327,7 @@ Modal(:open="openCreateUser" style="width:478px")
             input.big#nickname(
                 @input="e => createParams.nickname = e.target.value"
                 @keydown="e => moveFocus(e, 'misc')"
+                :disabled="promiseRunning"
                 placeholder="Nickname of the user"
                 type='text'
             )
@@ -326,6 +337,7 @@ Modal(:open="openCreateUser" style="width:478px")
         label misc 
             input.big#misc(
                 @input="e => createParams.misc = e.target.value"
+                :disabled="promiseRunning"
                 placeholder="Additional string value that can be used freely"
                 type='text'
             )
@@ -370,6 +382,7 @@ Modal(:open="openInviteUser")
             input.big#inviteUserEmail(
                 type="email"
                 @input="e => inviteParams.email = e.target.value"
+                @keydown="e => moveFocus(e, 'inviteUserName')"
                 title="Please enter a valid email address." 
                 placeholder="anonymous@anonymous.com"
                 required
@@ -378,8 +391,9 @@ Modal(:open="openInviteUser")
 
         label Name 
             span(style="color:red") *
-            input.big(
+            input.big#inviteUserName(
                 @input="e => inviteParams.name = e.target.value"
+                @keydown="e => moveFocus(e, 'inviteUserURL')"
                 placeholder="User's Name" 
                 required
             )
@@ -387,7 +401,7 @@ Modal(:open="openInviteUser")
         br
 
         label Redirect URL 
-            input.big(
+            input.big#inviteUserURL(
                 @input="e => redirect = e.target.value"
                 placeholder="URL to redirect when accepted. (optional)"
                 type='url'
@@ -468,8 +482,8 @@ Modal(:open="openDeleteUser")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(type="button" @click="openDeleteUser=false; selectedUser='';") Cancel 
-            button.unFinished.warning(type="button" @click="deleteUser") Delete  
+            button.noLine.warning(type="button" @click="openDeleteUser=false; selectedUser='';") Cancel 
+            button.final.warning(type="button" @click="deleteUser") Delete  
 
 br
 br
@@ -485,7 +499,7 @@ import Locale from '@/components/locale.vue';
 import Pager from '@/code/pager'
 
 import type { Ref } from 'vue';
-import { ref, computed, nextTick, watch, onUnmounted, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { skapi } from '@/code/admin';
 import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
@@ -729,7 +743,7 @@ let moveFocus = (e:any, next:string) => {
     if (e.key == 'Enter') {
         e.preventDefault();
 
-        if (e.target.id == 'email') {
+        if (e.target.id == 'email' || e.target.id == 'inviteUserEmail') {
             if (!e.target.value) {
                 alert('email is required');
                 return false;
@@ -745,14 +759,19 @@ let moveFocus = (e:any, next:string) => {
                 alert('password is required');
                 return false;
             } else {
-                if (e.target.value.length < 6) {
-                    alert('Please enter at least 6 characters');
+                if (e.target.value.length < 6 || e.target.value.length > 60) {
+                    alert('Min 6 characters and Max 60 characters');
                     return false;
                 }
             }
+        } else if (e.target.id == 'inviteUserName') {
+            if (!e.target.value) {
+                alert('name is required');
+                return false;
+            }
         }
         
-        let scrollTarget = document.getElementById('createForm').parentElement;
+        let scrollTarget = e.target.parentElement.parentElement.parentElement;
 
         if (scrollTarget.getBoundingClientRect().height < scrollTarget.scrollHeight) {
             scrollTarget.scrollTop += 70;
@@ -831,7 +850,6 @@ let changeUserState = (state: string) => {
                 selectedUser = {};
                 promiseRunning.value = false;
                 openBlockUser.value = false;
-                // getPage(currentPage.value);
             });
         }).catch(e => alert(e.message));
     } else if(state == 'unblock') {
@@ -845,7 +863,6 @@ let changeUserState = (state: string) => {
                 selectedUser = {};
                 promiseRunning.value = false;
                 openUnblockUser.value = false;
-                // getPage(currentPage.value);
             });
         }).catch(e => alert(e.message));
     }
@@ -855,12 +872,22 @@ let deleteUser = () => {
     promiseRunning.value = true;
 
     currentService.deleteAccount(selectedUser.user_id).then(async() => {
-        await pager.deleteItem(selectedUser.user_id).then(() => {
-            selectedUser = {};
-            promiseRunning.value = false;
-            openDeleteUser.value = false;
-            // getPage(currentPage.value);
-        })
+        for(let i=0; i<listDisplay.value.length; i++) {
+            if (listDisplay.value[i].user_id == selectedUser.user_id) {
+                listDisplay.value.splice(i, 1);
+            }
+        }
+
+        await pager.deleteItem(selectedUser.user_id);
+
+        if (listDisplay.value.length == 0 && maxPage.value > 1 && maxPage.value <= currentPage.value) {
+            currentPage.value--;
+            maxPage.value--;
+        }
+
+        selectedUser = {};
+        promiseRunning.value = false;
+        openDeleteUser.value = false;
     }).catch(e => alert(e.message));
 }
 
@@ -898,7 +925,7 @@ let closeModal = () => {
     .icon {
         position: absolute;
         top: 50%;
-        right: 125px;
+        right: 115px;
         transform: translateY(-50%);
         cursor: pointer;
         user-select: none;
