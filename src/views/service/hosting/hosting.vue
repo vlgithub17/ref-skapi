@@ -128,9 +128,12 @@ template(v-else)
                         span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
 
         template(v-slot:body)
-            tr(v-if='uploadProgress.name')
-                td(colspan="4")
-                    | File: /{{ uploadProgress.name }} {{ uploadProgress.progress }}% {{ uploadCount[0] }} / {{ uploadCount[1] }}
+            template(v-if='uploadProgress.name')
+                .progress( :style="{ width: uploadProgress.progress + '%', height: '3px', background: 'var(--main-color)', position: 'absolute'}")
+                tr.uploadState(style="position:relative")
+                    td
+                        .material-symbols-outlined.center.moving upload
+                    td(colspan="3") File: /{{ uploadProgress.name }} ({{ uploadCount[0] }} / {{ uploadCount[1] }})
             template(v-if="fetching")
                 tr
                     td#loading(colspan="4").
@@ -814,6 +817,17 @@ thead {
     &.show {
         transform: translate(-50%, 0);
     }
+}
+
+.moving {
+    color: var(--main-color);
+    font-size: 24px;
+    animation: motion 0.3s linear 1s infinite alternate;
+}
+
+@keyframes motion {
+    0% {margin-top: -5px;}
+    100% {margin-top: 0px;}
 }
 
 @media (pointer: coarse) {

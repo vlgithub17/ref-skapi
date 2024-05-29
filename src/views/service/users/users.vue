@@ -468,8 +468,8 @@ Modal(:open="openDeleteUser")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.noLine(type="button" @click="openDeleteUser=false; selectedUser='';") Cancel 
-            button.unFinished.warning(type="button" @click="deleteUser") Delete  
+            button.noLine.warning(type="button" @click="openDeleteUser=false; selectedUser='';") Cancel 
+            button.final.warning(type="button" @click="deleteUser") Delete  
 
 br
 br
@@ -831,7 +831,6 @@ let changeUserState = (state: string) => {
                 selectedUser = {};
                 promiseRunning.value = false;
                 openBlockUser.value = false;
-                // getPage(currentPage.value);
             });
         }).catch(e => alert(e.message));
     } else if(state == 'unblock') {
@@ -845,7 +844,6 @@ let changeUserState = (state: string) => {
                 selectedUser = {};
                 promiseRunning.value = false;
                 openUnblockUser.value = false;
-                // getPage(currentPage.value);
             });
         }).catch(e => alert(e.message));
     }
@@ -856,10 +854,14 @@ let deleteUser = () => {
 
     currentService.deleteAccount(selectedUser.user_id).then(async() => {
         await pager.deleteItem(selectedUser.user_id).then(() => {
+            for(let i=0; i<listDisplay.value.length; i++) {
+                if (listDisplay.value[i].user_id == selectedUser.user_id) {
+                    listDisplay.value.splice(i, 1);
+                }
+            }
             selectedUser = {};
             promiseRunning.value = false;
             openDeleteUser.value = false;
-            // getPage(currentPage.value);
         })
     }).catch(e => alert(e.message));
 }
