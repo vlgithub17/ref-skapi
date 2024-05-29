@@ -148,15 +148,15 @@ template(v-else)
                     td(colspan="4")
             template(v-else)
                 tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
-                    td.overflow
+                    td
                         .material-symbols-outlined.fill(v-if='currentDirectory') arrow_upward
-                    td.overflow(colspan="3")
+                    td(colspan="3")
                         template(v-if='currentDirectory')
                             .material-symbols-outlined.fill folder_open
                             | &nbsp;
                         | / {{ currentDirectory }}
                 tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = ns.name.slice(1) }')
-                    td.overflow
+                    td
                         Checkbox(@click.stop v-model='checked[ns.name]')
 
                     td.overflow(v-if='ns.name[0] == "#"')
@@ -797,6 +797,7 @@ thead {
 
 .dragHere {
     outline: 4px solid var(--main-color);
+    border-radius: 4px;
     opacity: 0.3;
 }
 
