@@ -194,12 +194,12 @@ p Search and manage your service records.
 
                 .row.indent 
                     .key Access Group 
-                    .value {{ selectedRecord.table.access_group }}
-                        //- select(v-if="selectedRecord.table.access_group !== 'private'" :value="(selectedRecord?.table?.access_group == '0' || selectedRecord?.table?.access_group == 'Public') ? '0' : '1'")
-                        //-     option(value="0") Public
-                        //-     option(value="1") Authorized
-                        //-     option(value="private") Private
-                        //- template(v-else) {{ selectedRecord.table.access_group }}
+                    .value 
+                        select(v-if="selectedRecord?.table?.access_group !== 'private'" :value="(selectedRecord?.table?.access_group == '0' || selectedRecord?.table?.access_group == 'Public') ? '0' : '1'")
+                            option(value="0") Public
+                            option(value="1") Authorized
+                            option(value="private") Private
+                        template(v-else) {{ selectedRecord?.table?.access_group }}
 
                 .row.indent 
                     .key Subscription 
