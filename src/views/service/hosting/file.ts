@@ -20,7 +20,7 @@ export let uploadFiles = async (files: File[], callback?:()=>void) => {
         form.append('files[]', f);
 
         await currentService.uploadHostFiles(form, {
-            prefix: currentDirectory.value,
+            prefix: currentDir,
             progress: (e) => {
                 if(e.status !== 'progress') return
                 // update progress

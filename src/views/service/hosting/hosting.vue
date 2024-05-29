@@ -33,12 +33,12 @@ template(v-else)
             .smallValue {{ !fetching ? dirInfo.upl ? new Date().toLocaleString() : new Date(dirInfo.upl).toLocaleString() : '...' }}
 
         .infoValue
-            .smallTitle Size
+            .smallTitle Storage in-use
             .smallValue {{ !fetching ? getFileSize(dirInfo.size || 0) : '...' }}
 
-        .infoValue
-            .smallTitle Number of Files
-            .smallValue {{ !fetching ? dirInfo?.cnt || 0 : '...' }}
+        //- .infoValue
+        //-     .smallTitle Number of Files
+        //-     .smallValue {{ !fetching ? dirInfo?.cnt || 0 : '...' }}
 
         .infoValue
             .smallTitle URL
@@ -87,10 +87,6 @@ template(v-else)
 
     .tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
 
-        .iconClick.square(:class="{'nonClickable': noSelection}" @click='deleteSelected=true')
-            .material-symbols-outlined.fill delete
-            span &nbsp;&nbsp;Delete Selected
-
         .iconClick.square(@click='uploadFileInp.click()')
             input(type="file" hidden multiple @change="e=>uploadFiles(e.target.files, ()=>getFileList(true))" ref="uploadFileInp")
             .material-symbols-outlined.fill upload_file
@@ -100,6 +96,10 @@ template(v-else)
             .material-symbols-outlined.fill drive_folder_upload
             span &nbsp;&nbsp;Upload Folder
 
+        .iconClick.square(:class="{'nonClickable': noSelection}" @click='deleteSelected=true')
+            .material-symbols-outlined.fill delete
+            span &nbsp;&nbsp;Delete Selected
+            
         .iconClick.square
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh CDN
@@ -488,17 +488,19 @@ let deleteFiles = async () => {
     try {
         let currDir = currentDirectory.value || '!';
         let pager = folders[currDir].pager;
-        await currentService.deleteHostFiles({ paths: toDel.map(v => v.path + '/' + (()=>{
-            let n = v.name;
-            if(n[0] == '#') {
-                return n.slice(1) + '/';
-            }
-            return n;
-        })()) });
+        await currentService.deleteHostFiles({
+            paths: toDel.map(v => v.path + '/' + (() => {
+                let n = v.name;
+                if (n[0] == '#') {
+                    return n.slice(1) + '/';
+                }
+                return n;
+            })())
+        });
         await Promise.all(toDel.map(v => pager.deleteItem(v.name)));
-        getFileList().then(()=>{
+        getFileList().then(() => {
             // when empty, go back a page
-            if(!listDisplay.value.length && currentPage.value > 1) {
+            if (!listDisplay.value.length && currentPage.value > 1) {
                 currentPage.value--;
             }
         });
@@ -524,7 +526,7 @@ let numberOfSelected = computed(() => {
 
 function getInfo() {
     fetching.value = true;
-    let process = ()=>{
+    let process = () => {
         currentService.getSubdomainInfo().then(s => sdInfo.value = s);
         currentService.getDirInfo().then(dir => {
             if (dir.cnt) {
@@ -599,7 +601,7 @@ async function getFileList(refresh = false) {
                 maxPage.value = fl.maxPage;
                 endOfList[currDir] = l.endOfList;
             }
-        } catch (err) {
+        } catch (err:any) {
             alert(err.message);
         } finally {
             fetching.value = false;
@@ -621,17 +623,17 @@ async function getFileList(refresh = false) {
     fetching.value = false;
 }
 
-function parseUrl(ns) {
+function openFile(ns:any) {
     let path = ns.path;
+    let url;
     if (path.split('/').length > 1) {
-        return `https://${currentSubdomain.value.subdomain}/${path}/${ns.name}`;
+        url = `https://${currentSubdomain.value.subdomain}/${path.split('/').slice(1).join('/')}/${ns.name}`;
+    }
+    else {
+        url = `https://${currentSubdomain.value.subdomain}/${ns.name}`;
     }
 
-    return `https://${currentSubdomain.value.subdomain}/${ns.name}`
-}
-
-function openFile(ns) {
-    window.open(parseUrl(ns), '_blank');
+    window.open(url, '_blank');
 }
 
 let resetIndex = async () => {
