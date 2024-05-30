@@ -821,6 +821,7 @@ export default class Service {
             auth: true
         });
     }
+    
     listHostDirectory(
         params: {
             dir: string; // unix style dir with subdomain. ex) subdomain/folder/subfolder

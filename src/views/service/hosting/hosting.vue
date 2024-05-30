@@ -88,11 +88,11 @@ template(v-else)
     .tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
 
         .iconClick.square(@click='uploadFileInp.click()')
-            input(type="file" hidden multiple @change="e=>uploadFiles(e.target.files, ()=>getFileList(true))" ref="uploadFileInp")
+            input(type="file" hidden multiple @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFileInp")
             .material-symbols-outlined.fill upload_file
             span &nbsp;&nbsp;Upload Files
         .iconClick.square(@click='uploadFolderInp.click()')
-            input(type="file" hidden multiple directory webkitdirectory @change="e=>uploadFiles(e.target.files, ()=>getFileList(true))" ref="uploadFolderInp")
+            input(type="file" hidden multiple directory webkitdirectory @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFolderInp")
             .material-symbols-outlined.fill drive_folder_upload
             span &nbsp;&nbsp;Upload Folder
 
@@ -105,7 +105,7 @@ template(v-else)
             span &nbsp;&nbsp;Refresh CDN
 
 
-    Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'; dragHere = true;}" @dragleave.stop.prevent="dragHere = false;" @drop.stop.prevent="e => {dragHere = false; onDrop(e, ()=>getFileList(true))}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}" resizable)
+    Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'; dragHere = true;}" @dragleave.stop.prevent="dragHere = false;" @drop.stop.prevent="e => {dragHere = false; onDrop(e, getFileList)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}" resizable)
         template(v-slot:head)
             tr
                 th(style="width:1px;")
@@ -259,7 +259,7 @@ import Pager from '@/code/pager';
 import { skapi, getFileSize, dateFormat } from '@/code/admin';
 import { user } from '@/code/user';
 import Checkbox from '@/components/checkbox.vue';
-import { uploadFiles, onDrop, currentDirectory, uploadCount, uploadProgress } from '@/views/service/hosting/file';
+import { folders, uploadFiles, onDrop, currentDirectory, uploadCount, uploadProgress } from '@/views/service/hosting/file';
 
 let dragHere = ref(false);
 // fileinputs
@@ -447,13 +447,12 @@ let currentSubdomain = computed(() => {
 });
 
 let listDisplay = ref([]);
-let folders: any = {};
 let sortBy = ref('name');
 let ascending = ref(true);
 let currentPage = ref(1);
 let endOfList: any = reactive({});
 let maxPage = ref(0);
-let fetching = ref(true);
+let fetching = ref(false);
 
 // checks
 let checked: any = ref({});
@@ -475,7 +474,6 @@ let noSelection = computed(() => {
 let deleteSelected = ref(false);
 
 let deleteFiles = async () => {
-    console.log("hi")
     modalPromise.value = true;
     let toDel = [];
     for (let i in checked.value) {
@@ -502,14 +500,20 @@ let deleteFiles = async () => {
                 return n;
             })())
         });
-        await Promise.all(toDel.map(v => pager.deleteItem(v.name)));
+
+        for(let v of toDel) {
+            await pager.deleteItem(v.name);
+        }
+
         getFileList().then(() => {
             // when empty, go back a page
             if (!listDisplay.value.length && currentPage.value > 1) {
                 currentPage.value--;
             }
         });
+
         deleteSelected.value = false;
+        checkedall.value = false;
     } catch (err: any) {
         alert(err.message);
     } finally {
@@ -534,12 +538,8 @@ function getInfo() {
     let process = () => {
         currentService.getSubdomainInfo().then(s => sdInfo.value = s);
         currentService.getDirInfo().then(dir => {
-            if (dir.cnt) {
-                getFileList(true);
-            }
-            else {
-                fetching.value = false;
-            }
+            fetching.value = false;
+            getFileList();
             dirInfo.value = dir;
         });
     }
@@ -589,7 +589,8 @@ async function getFileList(refresh = false) {
 
     fetching.value = true;
 
-    let hasPage = folders?.[currDir]
+    let hasPage = folders?.[currDir];
+
     if (!hasPage || refresh) {
         maxPage.value = 0;
         currentPage.value = 1;
@@ -616,6 +617,7 @@ async function getFileList(refresh = false) {
                 maxPage.value = fl.maxPage;
                 endOfList[currDir] = l.endOfList;
             }
+            maxPage.value = 1;
         } catch (err: any) {
             alert(err.message);
         } finally {
@@ -634,7 +636,6 @@ async function getFileList(refresh = false) {
     }
 
     checked.value = chk;
-
     fetching.value = false;
 }
 
@@ -664,6 +665,7 @@ let resetIndex = async () => {
         getFileList();
     }
 }
+
 let toggleSort = (search: any) => {
     if (fetching.value) {
         return;

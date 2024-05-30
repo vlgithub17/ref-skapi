@@ -98,32 +98,12 @@ let promiseRunning = ref(false);
 let serviceMode = ref('standard');
 let newServiceName = route.params.name as string;
 
-let createService = () => {
-    promiseRunning.value = true;
-
-    Service.create({ name: newServiceName })
-        .then(async (s) => {
-            if (serviceMode.value == 'trial') {
-                serviceIdList.push(s.id);
-                serviceList[s.id] = s;
-                location.href = '/my-services/' + s.id;
-            } else {
-                let service_info = s;
-                let ticket_id = serviceMode.value;
-                await createSubscription(ticket_id, service_info);
-            }
-        }).catch(err => {
-            promiseRunning.value = false;
-            alert(err.message);
-        })
-}
-
 let createSubscription = async (ticket_id, service_info) => {
     let resolvedCustomer = await customer;
     let product = JSON.parse(import.meta.env.VITE_PRODUCT);
     let customer_id = resolvedCustomer.id;
     let currentUrl = window.location;
-    
+
     let response = await skapi.clientSecretRequest({
         clientSecretName: 'stripe_test',
         url: 'https://api.stripe.com/v1/checkout/sessions',
@@ -154,7 +134,27 @@ let createSubscription = async (ticket_id, service_info) => {
     }
 
     window.location = response.url;
-};
+}
+
+let createService = () => {
+    promiseRunning.value = true;
+
+    Service.create({ name: newServiceName })
+        .then(async (s) => {
+            if (serviceMode.value == 'trial') {
+                serviceIdList.push(s.id);
+                serviceList[s.id] = s;
+                location.href = '/my-services/' + s.id;
+            } else {
+                let service_info = s;
+                let ticket_id = serviceMode.value;
+                await createSubscription(ticket_id, service_info);
+            }
+        }).catch(err => {
+            promiseRunning.value = false;
+            alert(err.message);
+        })
+}
 </script>
 
 <style scoped lang="less">
