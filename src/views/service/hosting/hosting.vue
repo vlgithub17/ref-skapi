@@ -578,7 +578,7 @@ let eof = computed(() => {
 });
 
 watch(currentDirectory, () => {
-    getFileList(true);
+    getFileList();
 });
 
 async function getFileList(refresh = false) {
@@ -606,9 +606,9 @@ async function getFileList(refresh = false) {
 
     let pager = folders[currDir].pager;
 
-    if (refresh || !endOfList[currDir] && hasPage && currentPage.value > maxPage.value) {
+    if (refresh || !endOfList[currDir] && currentPage.value > maxPage.value) {
         try {
-            let l = await currentService.listHostDirectory({ dir: currentDirectory.value }, !refresh)
+            let l = await currentService.listHostDirectory({ dir: currentDirectory.value }, !(refresh || maxPage.value == 0))
             if (l.list.length > 0) {
                 await pager.insertItems(l.list);
                 let fl = pager.getPage(currentPage.value);
