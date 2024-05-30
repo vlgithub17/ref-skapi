@@ -26,7 +26,489 @@ Code
 
 p For more details, please refer to the #[a(href="https://docs.skapi.com/database/create.html" target="_blank") Documentation]
 
+br
+
+h2 Records
+
+hr
+
+p Search and manage your service records.
+
+.tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square
+        .material-symbols-outlined.fill add_circle
+        span &nbsp;&nbsp;Create Record
+
+    .iconClick.square(:class="{'nonClickable': noSelection}")
+        .material-symbols-outlined.fill delete
+        span &nbsp;&nbsp;Delete Selected
+
+    .iconClick.square
+        .material-symbols-outlined.fill refresh
+        span &nbsp;&nbsp;Refresh
+
+.recordPart 
+    Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}" resizable)
+        template(v-slot:head)
+            tr
+                th.center(style='width:100px;padding:0')
+                    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" style='color:black')
+                        .material-symbols-outlined.fill checklist_rtl
+                        .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal")
+                            .inner(style="padding:.5rem 1rem .5rem .5rem")
+                                Checkbox(v-model="filterOptions.table" style="display:flex;") Table
+                                Checkbox(v-model="filterOptions.user_id" style="display:flex") User ID 
+                                Checkbox(v-model="filterOptions.subscription" style="display:flex") Subscription
+                                Checkbox(v-model="filterOptions.reference" style="display:flex") Reference
+                                Checkbox(v-model="filterOptions.index" style="display:flex") Index/Value
+                                Checkbox(v-model="filterOptions.tag" style="display:flex") Tag
+                                Checkbox(v-model="filterOptions.record_id" style="display:flex") Record ID
+                                Checkbox(v-model="filterOptions.updated" style="display:flex") Updated
+                                Checkbox(v-model="filterOptions.uploaded" style="display:flex") Uploaded
+                                Checkbox(v-model="filterOptions.readonly" style="display:flex") ReadOnly 
+                                Checkbox(v-model="filterOptions.ip" style="display:flex") ip 
+                                Checkbox(v-model="filterOptions.files" style="display:flex") Files 
+                                Checkbox(v-model="filterOptions.reference_limit" style="display:flex") Reference  Limit
+                                Checkbox(v-model="filterOptions.allow_multiple_reference" style="display:flex") Referenced 
+                                Checkbox(v-model="filterOptions.data" style="display:flex") Data 
+                    Checkbox(@click.stop v-model='checkedall' @change='checkall' :class='{nonClickable: !listDisplay.length}' style="display:inline-block")
+                    .resizer
+                th.overflow(style='width:160px;')
+                    | Table
+                    .resizer
+                th.overflow(style='width:160px;')
+                    | User ID
+                    .resizer
+                th.center.overflow(style='width:120px;')
+                    | Subscription
+                    .resizer
+                th.overflow(style='width:160px;')
+                    | Reference
+                    .resizer
+                th.overflow(style='width:160px;')
+                    | Index/Value
+                    .resizer
+                th.overflow(style='width:220px;')
+                    | Tag
+                    .resizer
+                th.overflow(style='width:160px;')
+                    | Record ID
+                    .resizer
+                th.overflow(style='width:160px;')
+                    | Updated
+                    .resizer
+                th.overflow(style='width:160px;')
+                    | uploaded
+                    .resizer
+                th.center.overflow(style='width:100px;')
+                    | ReadOnly
+                    .resizer
+                th.overflow(style='width:160px;')
+                    | ip
+                    .resizer
+                th.center.overflow(style='width:100px;')
+                    | Files
+                    .resizer
+                th.center.overflow(style='width:140px;')
+                    | Reference Limit
+                    .resizer
+                th.center.overflow(style='width:110px;')
+                    | Referenced
+                    .resizer
+                th.center.overflow(style='width:190px;')
+                    | Allow multiple reference
+                    .resizer
+                th.overflow(style='width:220px;')
+                    | Data
+                    .resizer
+        template(v-slot:body)
+            tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=rc")
+                td.center.overflow
+                    Checkbox(@click.stop v-model='checked[rc.name]')
+                td.overflow {{ rc.table.name }}
+                td.overflow 
+                    .click {{ rc.user_id }}
+                td.center.overflow {{ rc.table.subscription ? 'required' : '' }}
+                td.overflow {{ rc.reference.record_id }}
+                td.overflow {{ rc.index.name }} / {{ rc.index.value }}
+                td.overflow 
+                    template(v-for="(tag, index) in rc.tags")
+                        span(v-if="rc.tags.length-1 == index") {{ tag }}
+                        span(v-else) {{ tag }}, 
+                td.overflow 
+                    .click {{ rc.record_id }}
+                td.overflow {{ rc.updated }}
+                td.overflow {{ rc.uploaded }}
+                td.center.overflow
+                    .material-symbols-outlined.fill(v-if="rc.readonly") check_circle
+                td.overflow {{ rc.ip }}
+                td.center.overflow {{ rc.bin }}
+                td.center.overflow {{ (rc.reference.reference_limit == null) ? 'infinite' : rc.reference.reference_limit }}
+                td.center.overflow {{ rc.reference.referenced_count }}
+                td.center.overflow
+                    .material-symbols-outlined.fill(v-if="rc.reference.allow_multiple_reference") check_circle
+                td.overflow {{ rc.data }}
+            tr(v-for="i in (10 - listDisplay.length)")
+                    td(:colspan="colspan")
+
+    .detailRecord(:class="{show: showDetail}")
+        template(v-if="selectedRecord")
+            .header
+                .material-symbols-outlined(@click="showDetail=false;") arrow_back
+                .name {{ selectedRecord?.record_id }}
+                .save Save
+            .content 
+                .row
+                    .key Record ID
+                    .value {{ selectedRecord?.record_id }}
+                .row 
+                    .key User ID
+                    .value {{ selectedRecord?.user_id }}
+                .row 
+                    .key Updated
+                    .value {{ selectedRecord?.updated }}
+                .row 
+                    .key Uploaded
+                    .value {{ selectedRecord?.uploaded }}
+                .row 
+                    .key ip
+                    .value {{ selectedRecord?.ip }}
+                .row 
+                    .key Referenced
+                    .value {{ selectedRecord?.reference?.referenced_count }}
+
+                hr
+
+                .row 
+                    .key Read Only
+                    .value
+                        Checkbox
+                
+                .row 
+                    .key Table
+
+                .row.indent
+                    .key Name 
+                    .value 
+                        input.line(:value="selectedRecord?.table?.name")
+
+                .row.indent 
+                    .key Access Group 
+                    .value 
+                        select(v-if="selectedRecord?.table?.access_group !== 'private'" :value="(selectedRecord?.table?.access_group == '0' || selectedRecord?.table?.access_group == 'Public') ? '0' : '1'")
+                            option(value="0") Public
+                            option(value="1") Authorized
+                            option(value="private") Private
+                        template(v-else) {{ selectedRecord?.table?.access_group }}
+
+                .row.indent 
+                    .key Subscription 
+                    .value
+                        //- Checkbox(v-model="selectedRecord?.table?.subscription")
+
+                .row
+                    .key Reference
+
+                .row.indent 
+                    .key Reference ID 
+                    input.line(:value="selectedRecord?.reference?.record_id")
+
+                .row.indent 
+                    .key Reference Limit
+                    input.line(:value="selectedRecord?.reference?.reference_limit == null ? 'null' : selectedRecord?.reference?.reference_limit")
+                    
+                .row.indent 
+                    .key Multiple Reference
+                    select(:value="selectedRecord?.reference?.allow_multiple_reference ? 'true' : 'false'")
+                        option(value='true') Allowed
+                        option(value='false') Not Allowed
+
+                .row 
+                    .key Index 
+
+                .row.indent 
+                    .key Name 
+                    input.line(:value="selectedRecord?.index?.name")
+
+                .row.indent 
+                    .key Value 
+                    input.line(:value="selectedRecord?.index?.value")
+
+                .row 
+                    .key Tags 
+                    .value {{ selectedRecord?.tags }}
+
+                .row 
+                    .key Data 
+                    .value {{ selectedRecord?.data }}
+
+                .row 
+                    .key Files 
+                    .value {{ selectedRecord?.bin }}
+                
+
+
+br
+br
 </template>
-<script setup>
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { user } from '@/code/user';
+import { currentService } from '@/views/service/main';
+import { showDropDown } from '@/assets/js/event.js'
 import Code from '@/components/code.vue';
+import Table from '@/components/table.vue';
+import Checkbox from '@/components/checkbox.vue';
+import Select from '@/components/select.vue';
+
+let filterOptions = ref({
+    table: true,
+    subscription: true,
+    reference: true,
+    index: true,
+    tag: true,
+    record_id: true,
+    updated: true,
+    uploaded: true,
+    readonly: true,
+    ip: true,
+    files: true,
+    user_id: true,
+    reference_limit: true,
+    referenced: true,
+    allow_multiple_reference: true,
+    data: true
+});
+let listDisplay = ref([
+    {
+        service: 'ap210jya6jmJUYO5CmGr',
+        record_id: 'TyUHVYQ22VAmgi5D',
+        user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
+        updated: 1704938348,
+        uploaded: 1704938348,
+        ip: '20.401.23924.432',
+        readonly: false,
+        bin: { 'dfsf': 'fdsfdsfds' },
+        table: {
+            name: 'jojojo',
+            access_group: 'private',
+            subscription: true,
+        },
+        reference: {
+            record_id: 'record iiid',
+            reference_limit: null,
+            allow_multiple_reference: true,
+            referenced_count: 1
+        },
+        index: {
+            name: 'index name',
+            value: 1234
+        },
+        tags: ['tag1', 'tag2', 'tag3'],
+        data: {
+            'key': 'value'
+        }
+    },
+    {
+        service: 'ap210soBLv3kl95KCmGr',
+        record_id: 'TyU7xSdOtgr5gi5D',
+        user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
+        updated: 1704938348,
+        uploaded: 1704938348,
+        ip: '20.401.23924.432',
+        readonly: false,
+        bin: '',
+        table: {
+            name: 'opse',
+            access_group: 'public',
+            subscription: false,
+        },
+        reference: {
+            record_id: 'record id',
+            reference_limit: 2,
+            allow_multiple_reference: false,
+            referenced_count: 1
+        },
+        index: {
+            name: 'index name',
+            value: 1234
+        },
+        tags: ['tag1', 'tag2', 'tag3'],
+        data: {
+            'key': 'value',
+            'ssss': 123434
+        }
+    },
+    {
+        service: 'ap212GYdxocHtyDlCmGr',
+        record_id: 'TyU6Z6FzoGhGgi5D',
+        user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
+        updated: 1704938348,
+        uploaded: 1704938348,
+        ip: '20.401.23924.432',
+        readonly: true,
+        bin: { 'dsdd': 'sdadsadad' },
+        table: {
+            name: 'hook',
+            access_group: 'authorized',
+            subscription: false,
+        },
+        reference: {
+            record_id: 'reccccord id',
+            reference_limit: null,
+            allow_multiple_reference: true,
+            referenced_count: 0
+        },
+        index: {
+            name: 'index name',
+            value: 1234
+        },
+        tags: ['tag1', 'tag2', 'tag3'],
+        data: {
+            'key': 'value'
+        }
+    }
+]);
+let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
+let showDetail = ref(false);
+let selectedRecord = ref({});
+let fetching = ref(false);
+
+// checks
+let checked: any = ref({});
+let checkedall = ref(false);
+let checkall = () => {
+    for (let i in listDisplay.value) {
+        checked.value[listDisplay.value[i].name] = checkedall.value;
+    }
+}
+let noSelection = computed(() => {
+    for (let i in checked.value) {
+        if (checked.value[i]) {
+            return false;
+        }
+    }
+    return true;
+});
 </script>
+<style scoped lang="less">
+.tableMenu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    &>* {
+        margin-bottom: 8px;
+    }
+}
+
+tbody {
+    tr.nsrow {
+        @media (pointer: fine) {
+
+            &:not(.active):hover {
+                background-color: rgba(41, 63, 230, 0.05);
+            }
+        }
+
+        &.active {
+            background-color: rgba(41, 63, 230, 0.10);
+        }
+
+        &:hover {
+            .hide {
+                display: block;
+            }
+        }
+
+        .hide {
+            display: none;
+        }
+    }
+
+    td {
+        .click {
+            color: var(--main-color);
+            font-weight: 500;
+
+            &:hover {
+                text-decoration: underline;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.recordPart {
+    position: relative;
+    overflow: hidden;
+
+    .detailRecord {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        background-color: #fff;
+        transform: translateX(110%);
+        transition: all .3s;
+
+        &.show {
+            transform: translateX(0px);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            padding: 0 20px;
+            font-weight: 500;
+            background-color: #f0f0f0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+
+            .material-symbols-outlined {
+                cursor: pointer;
+            }
+            .name {
+                flex-grow: 1;
+                padding-left: 20px;
+            }
+        }
+
+        .content {
+            padding: 20px;
+            font-size: 0.8rem;
+
+            .row {
+                margin-bottom: 12px;
+
+                > div {
+                    display: inline-block;
+                    vertical-align: middle;
+
+                    &.various {
+                        display: block;
+                    }
+                }
+
+                &.indent {
+                    padding-left: 20px;
+
+                    .key {
+                        font-weight: normal;
+                        width: 150px;
+                    }
+                }
+            }
+            .key {
+                font-weight: 500;
+                width: 170px;
+            }
+            
+        }
+    }
+}
+</style>
