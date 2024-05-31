@@ -154,7 +154,7 @@ p Search and manage your service records.
     .detailRecord(:class="{show: showDetail}")
         template(v-if="selectedRecord")
             .header
-                .material-symbols-outlined(@click="showDetail=false;") arrow_back
+                .material-symbols-outlined(@click="showDetail=false; fileList=[]; uploadFileList=[];") arrow_back
                 .name {{ selectedRecord?.record_id }}
                 .save Save
             .content 
@@ -238,21 +238,22 @@ p Search and manage your service records.
 
                 .row
                     .key(style="margin-bottom: 6px") Data 
-                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 4)" style="width:100%;height:150px;resize: none;") 
+                    //- textarea.value(v-model="jsonData" @keydown.stop="handleEnterKey" style="width:100%;height:150px;resize: none;") 
+                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 4)" @keydown.stop="handleTabKey" style="width:100%;height:150px;resize: none;") 
 
                 .row 
                     .key(style="margin-bottom:6px") Files 
-                    .value.fileWrap(ref="fileWrap" style="width:100%;")
+                    .value.fileWrap(style="width:100%;")
                         template(v-if="fileList")
-                            .file.full(v-for="f in fileList")
+                            .file(v-for="f in fileList")
                                 .material-symbols-outlined.fill do_not_disturb_on
-                                input.line(:value="f?.filename" disabled)
-                        //- template(v-else)
-                            //- .file.empty(ref="emptyFile")
-                            //-     .material-symbols-outlined.fill do_not_disturb_on
-                            //-     input.line
-                            //-     .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
-                            //-         input(@click.stop type="file" @change="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden)
+                                input.line(:value="f?.context" disabled)
+                        template(v-if="uploadFileList")
+                            .file(v-for="uf in uploadFileList")
+                                .material-symbols-outlined.fill do_not_disturb_on
+                                input.line
+                                .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
+                                    input(@click.stop type="file" @change="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden)
                     .add(@click="addFile")
                         .material-symbols-outlined.fill add_circle
                         span Add File
@@ -265,6 +266,7 @@ br
 </template>
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted, watch } from 'vue';
+import { skapi } from '@/code/admin';
 import { user } from '@/code/user';
 import { currentService } from '@/views/service/main';
 import { showDropDown } from '@/assets/js/event.js'
@@ -307,7 +309,8 @@ let listDisplay = ref([
                 url: 'Full URL endpoint of the file',
                 path: 'Path of the file',
                 size: 2384,
-                uploaded: 1704934348
+                uploaded: 1704934348,
+                getFile: () => {console.log('ddd')}
             },
             {
                 access_group: 'public',
@@ -315,7 +318,8 @@ let listDisplay = ref([
                 url: 'Full URL endpoint of the file',
                 path: 'Path of the file',
                 size: 2384,
-                uploaded: 1704934348
+                uploaded: 1704934348,
+                getFile: () => {console.log('ddd')}
             },
         ],
         table: {
@@ -383,7 +387,8 @@ let listDisplay = ref([
                 url: 'Full URL endpoint of the file',
                 path: 'Path of the file',
                 size: 2384,
-                uploaded: 1704934348
+                uploaded: 1704934348,
+                getFile: () => {console.log('ddd')}
             },
             {
                 access_group: 'public',
@@ -391,7 +396,8 @@ let listDisplay = ref([
                 url: 'Full URL endpoint of the file',
                 path: 'Path of the file',
                 size: 2384,
-                uploaded: 1704934348
+                uploaded: 1704934348,
+                getFile: () => {console.log('ddd')}
             },
             {
                 access_group: 'public',
@@ -399,7 +405,8 @@ let listDisplay = ref([
                 url: 'Full URL endpoint of the file',
                 path: 'Path of the file',
                 size: 2384,
-                uploaded: 1704934348
+                uploaded: 1704934348,
+                getFile: () => {console.log('ddd')}
             },
         ],
         table: {
@@ -445,32 +452,77 @@ let noSelection = computed(() => {
     return true;
 });
 
+// json
+let jsonData = ref('');
+
+let handleEnterKey = (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+    
+        let textarea = e.target;
+        let start = textarea.selectionStart;
+        let end = textarea.selectionEnd;
+        let value = textarea.value;
+    
+        // Find the start of the line
+        let lineStart = start;
+        while (lineStart > 0 && value[lineStart - 1] !== '\n') {
+            lineStart--;
+        }
+    
+        // Get the current line
+        let line = value.substring(lineStart, start);
+    
+        // Match indentation (spaces or tabs) at the beginning of the current line
+        let indentMatch = line.match(/^\s*/);
+        let indent = indentMatch ? indentMatch[0] : '';
+    
+        // Insert a new line with the same indentation
+        let newValue = value.substring(0, start) + '\n' + indent + value.substring(end);
+    
+        // Update the textarea's value and adjust the cursor position
+        nextTick(() => {
+            jsonData.value = newValue;
+            textarea.selectionStart = textarea.selectionEnd = start + 1 + indent.length;
+        })
+    }
+}
+
+let handleTabKey = (e) => {
+    // if (e.key == 'Tab') {
+    //     let start = e.target.selectionStart;
+    //     let end = e.target.selectionEnd;
+
+    //     console.log(start, end)
+    // }
+    // console.log(e)
+}
+
+
 // file
-let fileWrap = ref(null);
-let emptyFile = ref(null);
+let uploadFileList = ref([]);
 let fileList = ref([]);
 
 watch(selectedRecord, nv => {
     if (nv?.bin) {
-        for(let b of nv?.bin) {
-            fileList.value.push(b);
+        for (let b of nv?.bin) {
+            fileList.value.push({
+                type: 'binary',
+                context: b.filename,
+                endpoint: b.url,
+                download: () => skapi.getFile(b.url, { dataType: 'download' })
+            })
         }
     }
 })
 
 let addFile = (e) => {
-    // let newDiv = `
-    // <div class="file empty">      
-    //     <div class="material-symbols-outlined fill">do_not_disturb_on</div>
-    //     <input class="line"></input>
-    //     <div class="upload" style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' onclick="e=>{ e.target.children[0].click() }"">
-    //         Choose a file
-    //         <input onclick.stop type="file" onchange="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden></input>
-    //     </div>
-    // </div>`;
-    // nextTick(() => {
-    //     fileWrap.value.insertAdjacentHTML('beforeend', newDiv);
-    // })
+    uploadFileList.value.push({ type: 'binary', context: '' });
+
+    nextTick(() => {
+        let scrollTarget = document.querySelector('.detailRecord .content');
+        scrollTarget.scrollTop = scrollTarget.scrollHeight
+    })
 }
 </script>
 <style scoped lang="less">
