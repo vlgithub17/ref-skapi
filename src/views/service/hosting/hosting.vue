@@ -28,6 +28,7 @@ template(v-else)
             small(style='font-weight: normal' :style='{color: currentSubdomain.status === "Active" ? "var(--text-green)" : currentSubdomain.status === "Removing" ? "var(--caution-color)" : null } ') ({{ currentSubdomain.status }})
 
         hr
+
         .infoValue
             .smallTitle Created
             .smallValue {{ !fetching ? dirInfo.upl ? new Date().toLocaleString() : new Date(dirInfo.upl).toLocaleString() : '...' }}
@@ -35,10 +36,6 @@ template(v-else)
         .infoValue
             .smallTitle Storage in-use
             .smallValue {{ !fetching ? getFileSize(dirInfo.size || 0) : '...' }}
-
-        //- .infoValue
-        //-     .smallTitle Number of Files
-        //-     .smallValue {{ !fetching ? dirInfo?.cnt || 0 : '...' }}
 
         .infoValue
             .smallTitle URL
@@ -501,7 +498,7 @@ let deleteFiles = async () => {
             })())
         });
 
-        for(let v of toDel) {
+        for (let v of toDel) {
             await pager.deleteItem(v.name);
         }
 
@@ -534,7 +531,6 @@ let numberOfSelected = computed(() => {
 //
 
 function getInfo() {
-    fetching.value = true;
     let process = () => {
         currentService.getSubdomainInfo().then(s => sdInfo.value = s);
         currentService.getDirInfo().then(dir => {
@@ -546,6 +542,7 @@ function getInfo() {
 
     let _subd = currentService.service?.subdomain || '';
     if (_subd) {
+        fetching.value = true;
         if (_subd[0] === '*' || _subd[0] === '+') {
             currentService.pendingSubdomain(() => {
                 // + pending
@@ -557,6 +554,9 @@ function getInfo() {
         else if (!sdInfo.value.srvc) {
             process();
         }
+    }
+    else {
+        fetching.value = false;
     }
 }
 
@@ -667,7 +667,8 @@ let resetIndex = async () => {
 }
 
 let toggleSort = (search: any) => {
-    if (fetching.value) {
+    if (fetching.value || !listDisplay.value.length) {
+        // if no list or fetching no nothing
         return;
     }
 
