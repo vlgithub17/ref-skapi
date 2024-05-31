@@ -126,8 +126,8 @@ p Search and manage your service records.
                 td.center.overflow
                     Checkbox(@click.stop v-model='checked[rc.name]')
                 td.overflow {{ rc.table.name }}
-                td.overflow 
-                    .click {{ rc.user_id }}
+                td 
+                    .click.overflow {{ rc.user_id }}
                 td.center.overflow {{ rc.table.subscription ? 'required' : '' }}
                 td.overflow {{ rc.reference.record_id }}
                 td.overflow {{ rc.index.name }} / {{ rc.index.value }}
@@ -135,8 +135,8 @@ p Search and manage your service records.
                     template(v-for="(tag, index) in rc.tags")
                         span(v-if="rc.tags.length-1 == index") {{ tag }}
                         span(v-else) {{ tag }}, 
-                td.overflow 
-                    .click {{ rc.record_id }}
+                td 
+                    .click.overflow {{ rc.record_id }}
                 td.overflow {{ rc.updated }}
                 td.overflow {{ rc.uploaded }}
                 td.center.overflow
@@ -154,7 +154,7 @@ p Search and manage your service records.
     .detailRecord(:class="{show: showDetail}")
         template(v-if="selectedRecord")
             .header
-                .material-symbols-outlined(@click="showDetail=false;") arrow_back
+                .material-symbols-outlined(@click="showDetail=false; fileList=[]; uploadFileList=[];") arrow_back
                 .name {{ selectedRecord?.record_id }}
                 .save Save
             .content 
@@ -184,67 +184,80 @@ p Search and manage your service records.
                     .value
                         Checkbox
                 
-                .row 
+                .row(style="margin-bottom:6px") 
                     .key Table
 
                 .row.indent
                     .key Name 
-                    .value 
-                        input.line(:value="selectedRecord?.table?.name")
+                    input.line.value(:value="selectedRecord?.table?.name")
 
                 .row.indent 
                     .key Access Group 
-                    .value 
-                        select(v-if="selectedRecord?.table?.access_group !== 'private'" :value="(selectedRecord?.table?.access_group == '0' || selectedRecord?.table?.access_group == 'Public') ? '0' : '1'")
-                            option(value="0") Public
-                            option(value="1") Authorized
-                            option(value="private") Private
-                        template(v-else) {{ selectedRecord?.table?.access_group }}
+                    select.value(v-if="selectedRecord?.table?.access_group !== 'private'" :value="(selectedRecord?.table?.access_group == '0' || selectedRecord?.table?.access_group == 'Public') ? '0' : '1'")
+                        option(value="0") Public
+                        option(value="1") Authorized
+                        option(value="private") Private
+                    template(v-else) {{ selectedRecord?.table?.access_group }}
 
                 .row.indent 
                     .key Subscription 
                     .value
                         //- Checkbox(v-model="selectedRecord?.table?.subscription")
 
-                .row
+                .row(style="margin-bottom:6px")
                     .key Reference
 
                 .row.indent 
                     .key Reference ID 
-                    input.line(:value="selectedRecord?.reference?.record_id")
+                    input.line.value(:value="selectedRecord?.reference?.record_id")
 
                 .row.indent 
                     .key Reference Limit
-                    input.line(:value="selectedRecord?.reference?.reference_limit == null ? 'null' : selectedRecord?.reference?.reference_limit")
+                    input.line.value(type="number" min="0" :placeholder="selectedRecord?.reference?.reference_limit == null ? 'null' : ''" :value="selectedRecord?.reference?.reference_limit === null ? '' : selectedRecord?.reference?.reference_limit")
                     
                 .row.indent 
                     .key Multiple Reference
-                    select(:value="selectedRecord?.reference?.allow_multiple_reference ? 'true' : 'false'")
+                    select.value(:value="selectedRecord?.reference?.allow_multiple_reference ? 'true' : 'false'")
                         option(value='true') Allowed
                         option(value='false') Not Allowed
 
-                .row 
+                .row(style="margin-bottom:6px")
                     .key Index 
 
                 .row.indent 
                     .key Name 
-                    input.line(:value="selectedRecord?.index?.name")
+                    input.line.value(:value="selectedRecord?.index?.name")
 
                 .row.indent 
                     .key Value 
-                    input.line(:value="selectedRecord?.index?.value")
+                    input.line.value(:value="selectedRecord?.index?.value")
 
                 .row 
                     .key Tags 
-                    .value {{ selectedRecord?.tags }}
+                    input.line.value(:value="selectedRecord?.tags")
+
+                .row
+                    .key(style="margin-bottom: 6px") Data 
+                    //- textarea.value(v-model="jsonData" @keydown.stop="handleEnterKey" style="width:100%;height:150px;resize: none;") 
+                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 4)" @keydown.stop="handleTabKey" style="width:100%;height:150px;resize: none;") 
 
                 .row 
-                    .key Data 
-                    .value {{ selectedRecord?.data }}
+                    .key(style="margin-bottom:6px") Files 
+                    .value.fileWrap(style="width:100%;")
+                        template(v-if="fileList")
+                            .file(v-for="f in fileList")
+                                .material-symbols-outlined.fill do_not_disturb_on
+                                input.line(:value="f?.context" disabled)
+                        template(v-if="uploadFileList")
+                            .file(v-for="uf in uploadFileList")
+                                .material-symbols-outlined.fill do_not_disturb_on
+                                input.line
+                                .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
+                                    input(@click.stop type="file" @change="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden)
+                    .add(@click="addFile")
+                        .material-symbols-outlined.fill add_circle
+                        span Add File
 
-                .row 
-                    .key Files 
-                    .value {{ selectedRecord?.bin }}
                 
 
 
@@ -252,7 +265,8 @@ br
 br
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick, onMounted, watch } from 'vue';
+import { skapi } from '@/code/admin';
 import { user } from '@/code/user';
 import { currentService } from '@/views/service/main';
 import { showDropDown } from '@/assets/js/event.js'
@@ -288,7 +302,26 @@ let listDisplay = ref([
         uploaded: 1704938348,
         ip: '20.401.23924.432',
         readonly: false,
-        bin: { 'dfsf': 'fdsfdsfds' },
+        bin: [
+            {
+                access_group: 'public',
+                filename: 'file name',
+                url: 'Full URL endpoint of the file',
+                path: 'Path of the file',
+                size: 2384,
+                uploaded: 1704934348,
+                getFile: () => {console.log('ddd')}
+            },
+            {
+                access_group: 'public',
+                filename: 'file name',
+                url: 'Full URL endpoint of the file',
+                path: 'Path of the file',
+                size: 2384,
+                uploaded: 1704934348,
+                getFile: () => {console.log('ddd')}
+            },
+        ],
         table: {
             name: 'jojojo',
             access_group: 'private',
@@ -317,7 +350,7 @@ let listDisplay = ref([
         uploaded: 1704938348,
         ip: '20.401.23924.432',
         readonly: false,
-        bin: '',
+        bin: [],
         table: {
             name: 'opse',
             access_group: 'public',
@@ -347,7 +380,35 @@ let listDisplay = ref([
         uploaded: 1704938348,
         ip: '20.401.23924.432',
         readonly: true,
-        bin: { 'dsdd': 'sdadsadad' },
+        bin: [
+            {
+                access_group: 'public',
+                filename: 'file name',
+                url: 'Full URL endpoint of the file',
+                path: 'Path of the file',
+                size: 2384,
+                uploaded: 1704934348,
+                getFile: () => {console.log('ddd')}
+            },
+            {
+                access_group: 'public',
+                filename: 'file name',
+                url: 'Full URL endpoint of the file',
+                path: 'Path of the file',
+                size: 2384,
+                uploaded: 1704934348,
+                getFile: () => {console.log('ddd')}
+            },
+            {
+                access_group: 'public',
+                filename: 'file name',
+                url: 'Full URL endpoint of the file',
+                path: 'Path of the file',
+                size: 2384,
+                uploaded: 1704934348,
+                getFile: () => {console.log('ddd')}
+            },
+        ],
         table: {
             name: 'hook',
             access_group: 'authorized',
@@ -370,8 +431,8 @@ let listDisplay = ref([
     }
 ]);
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
-let showDetail = ref(false);
 let selectedRecord = ref({});
+let showDetail = ref(false);
 let fetching = ref(false);
 
 // checks
@@ -390,6 +451,79 @@ let noSelection = computed(() => {
     }
     return true;
 });
+
+// json
+let jsonData = ref('');
+
+let handleEnterKey = (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+    
+        let textarea = e.target;
+        let start = textarea.selectionStart;
+        let end = textarea.selectionEnd;
+        let value = textarea.value;
+    
+        // Find the start of the line
+        let lineStart = start;
+        while (lineStart > 0 && value[lineStart - 1] !== '\n') {
+            lineStart--;
+        }
+    
+        // Get the current line
+        let line = value.substring(lineStart, start);
+    
+        // Match indentation (spaces or tabs) at the beginning of the current line
+        let indentMatch = line.match(/^\s*/);
+        let indent = indentMatch ? indentMatch[0] : '';
+    
+        // Insert a new line with the same indentation
+        let newValue = value.substring(0, start) + '\n' + indent + value.substring(end);
+    
+        // Update the textarea's value and adjust the cursor position
+        nextTick(() => {
+            jsonData.value = newValue;
+            textarea.selectionStart = textarea.selectionEnd = start + 1 + indent.length;
+        })
+    }
+}
+
+let handleTabKey = (e) => {
+    // if (e.key == 'Tab') {
+    //     let start = e.target.selectionStart;
+    //     let end = e.target.selectionEnd;
+
+    //     console.log(start, end)
+    // }
+    // console.log(e)
+}
+
+
+// file
+let uploadFileList = ref([]);
+let fileList = ref([]);
+
+watch(selectedRecord, nv => {
+    if (nv?.bin) {
+        for (let b of nv?.bin) {
+            fileList.value.push({
+                type: 'binary',
+                context: b.filename,
+                endpoint: b.url,
+                download: () => skapi.getFile(b.url, { dataType: 'download' })
+            })
+        }
+    }
+})
+
+let addFile = (e) => {
+    uploadFileList.value.push({ type: 'binary', context: '' });
+
+    nextTick(() => {
+        let scrollTarget = document.querySelector('.detailRecord .content');
+        scrollTarget.scrollTop = scrollTarget.scrollHeight
+    })
+}
 </script>
 <style scoped lang="less">
 .tableMenu {
@@ -442,72 +576,111 @@ tbody {
 .recordPart {
     position: relative;
     overflow: hidden;
+}
 
-    .detailRecord {
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 100%;
-        height: 100%;
-        overflow-y: auto;
-        background-color: #fff;
-        transform: translateX(110%);
-        transition: all .3s;
+.detailRecord {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    transform: translateX(110%);
+    transition: all .3s;
 
-        &.show {
-            transform: translateX(0px);
+    &.show {
+        transform: translateX(0px);
+    }
+
+    .header {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 60px;
+        padding: 0 20px;
+        font-weight: 500;
+        background-color: #f0f0f0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+
+        .material-symbols-outlined {
+            cursor: pointer;
         }
+        .name {
+            flex-grow: 1;
+            padding-left: 20px;
+        }
+    }
 
-        .header {
+    .content {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 20px;
+        font-size: 0.8rem;
+
+        .row {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            justify-content: space-between;
-            height: 60px;
-            padding: 0 20px;
+            margin-bottom: 12px;
+
+            &.indent {
+                padding-left: 20px;
+
+                .key {
+                    font-weight: normal;
+                    width: 150px;
+                }
+            }
+        }
+        .key {
             font-weight: 500;
-            background-color: #f0f0f0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+            width: 170px;
+        }
+        .value {
+            flex-grow: 1;
+
+            input {
+                width: 100%;
+            }
+        }
+        .file {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 10px;
 
             .material-symbols-outlined {
                 cursor: pointer;
             }
-            .name {
+            input {
                 flex-grow: 1;
-                padding-left: 20px;
+                width: unset;
+            }
+            .upload {
+                color: var(--main-color);
+                font-weight: 500;
+                cursor: pointer;
+                
+                &:hover {
+                    text-decoration: underline;
+                }
             }
         }
-
-        .content {
-            padding: 20px;
-            font-size: 0.8rem;
-
-            .row {
-                margin-bottom: 12px;
-
-                > div {
-                    display: inline-block;
-                    vertical-align: middle;
-
-                    &.various {
-                        display: block;
-                    }
-                }
-
-                &.indent {
-                    padding-left: 20px;
-
-                    .key {
-                        font-weight: normal;
-                        width: 150px;
-                    }
-                }
-            }
-            .key {
-                font-weight: 500;
-                width: 170px;
-            }
-            
+        .add {
+            width: 100%;
+            text-align: center;
+            padding: 6px 0;
+            color: var(--main-color);
+            background-color: #293fe60d;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
         }
     }
 }
