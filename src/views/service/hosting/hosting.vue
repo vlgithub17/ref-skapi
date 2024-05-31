@@ -84,20 +84,21 @@ template(v-else)
 
     .tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
 
-        .iconClick.square(@click='uploadFileInp.click()')
+        .iconClick.square(@click='uploadFileInp.click()' :class="{'nonClickable': fetching || !user?.email_verified || currentService.service.active <= 0 || cdnPending}")
             input(type="file" hidden multiple @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFileInp")
             .material-symbols-outlined.fill upload_file
             span &nbsp;&nbsp;Upload Files
-        .iconClick.square(@click='uploadFolderInp.click()')
+
+        .iconClick.square(@click='uploadFolderInp.click()' :class="{'nonClickable': fetching || !user?.email_verified || currentService.service.active <= 0 || cdnPending}")
             input(type="file" hidden multiple directory webkitdirectory @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFolderInp")
             .material-symbols-outlined.fill drive_folder_upload
             span &nbsp;&nbsp;Upload Folder
 
-        .iconClick.square(:class="{'nonClickable': noSelection}" @click='deleteSelected=true')
+        .iconClick.square(:class="{'nonClickable': noSelection || fetching || !user?.email_verified || currentService.service.active <= 0 || cdnPending}" @click='deleteSelected=true')
             .material-symbols-outlined.fill delete
             span &nbsp;&nbsp;Delete Selected
 
-        .iconClick.square
+        .iconClick.square(@click='refreshCdn' :class="{'nonClickable': fetching || !user?.email_verified || currentService.service.active <= 0 || cdnPending}")
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh CDN
 
@@ -149,6 +150,8 @@ template(v-else)
                 tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
                     td
                         .material-symbols-outlined.fill(v-if='currentDirectory') arrow_upward
+                        template(v-if="cdnPending")
+                            img.loading(src="@/assets/img/loading.png")
                     td(colspan="3")
                         template(v-if='currentDirectory')
                             .material-symbols-outlined.fill folder_open
@@ -532,7 +535,17 @@ let numberOfSelected = computed(() => {
 
 function getInfo() {
     let process = () => {
-        currentService.getSubdomainInfo().then(s => sdInfo.value = s);
+        currentService.getSubdomainInfo().then(s => {
+            sdInfo.value = s
+            if (s?.invid && s.invid[0] === '@') {
+                cdnPending.value = true;
+                currentService.refreshCDN({
+                    checkStatus: res => {
+                        cdnPending.value = false;
+                    }
+                })
+            }
+        });
         currentService.getDirInfo().then(dir => {
             fetching.value = false;
             getFileList();
@@ -617,6 +630,10 @@ async function getFileList(refresh = false) {
                 maxPage.value = fl.maxPage;
                 endOfList[currDir] = l.endOfList;
             }
+            else {
+                listDisplay.value = [];
+                endOfList[currDir] = true;
+            }
             maxPage.value = 1;
         } catch (err: any) {
             alert(err.message);
@@ -679,7 +696,17 @@ let toggleSort = (search: any) => {
         sortBy.value = search;
     }
 }
+let cdnPending = ref(false);
 
+let refreshCdn = async () => {
+    cdnPending.value = true;
+    await currentService.refreshCDN();
+    currentService.refreshCDN({
+        checkStatus: res => {
+            cdnPending.value = false;
+        }
+    });
+}
 // call getPage when currentPage changes
 watch(currentPage, (n, o) => {
     if (n !== o && n > 0 && (n <= maxPage.value || n > maxPage.value && !endOfList.value)) {

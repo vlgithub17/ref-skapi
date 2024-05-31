@@ -587,7 +587,6 @@ export default class Service {
     }
 
     async refreshCDN(
-        serviceId: string,
         params?: {
             // when true, returns the status of the cdn refresh without running the cdn refresh
             // if callback are given, calls for cdn refresh, then callbacks the cdn refresh status in 3 seconds interval
@@ -599,21 +598,17 @@ export default class Service {
         'COMPLETE' | // only when checkStatus is true and the previous cdn refresh is complete
         'IN_PROCESS' // the cdn refresh is in process
     > {
-        await this.require(Required.ADMIN);
         let { checkStatus = false } = params || {};
 
-        if (!serviceId) throw 'Service ID is required';
-
-        let service = this.services[serviceId];
-        if (!service.subdomain || service.subdomain[0] === '*') {
+        if (!this.service.subdomain || this.service.subdomain[0] === '*') {
             throw 'subdomain does not exists.';
         }
 
         try {
-            let res = await this.request(await this.getAdminEndpoint('refresh-cdn'), {
-                service: serviceId,
-                subdomain: service.subdomain,
-                exec: typeof checkStatus === 'boolean' && checkStatus ? 'status' : 'refresh'
+            let res = await skapi.util.request(this.admin_private_endpoint + 'refresh-cdn', {
+                service: this.id,
+                owner: this.owner,
+                exec: checkStatus ? 'status' : 'refresh'
             }, {
                 auth: true,
                 method: 'post'
@@ -623,14 +618,17 @@ export default class Service {
                 return res;
             }
 
-            return 'IS_QUEUED';
+            if (!checkStatus) {
+                return 'IS_QUEUED';
+            }
 
+            return res;
         }
-        catch (err) {
-            if ((err as SkapiError).message === 'previous cdn refresh is still in queue.') {
+        catch (err: any) {
+            if (err.message === 'previous cdn refresh is still in queue.') {
                 return 'IN_QUEUE';
             }
-            if ((err as SkapiError).message === 'previous cdn refresh is in process.') {
+            if (err.message === 'previous cdn refresh is in process.') {
                 return 'IN_PROCESS';
             }
             else {
@@ -639,17 +637,17 @@ export default class Service {
         }
         finally {
             if (typeof checkStatus === 'function') {
-                let callbackInterval = (serviceId, cb, time = 30000) => {
+                let callbackInterval = (cb: Function, time = 30000) => {
                     setTimeout(() => {
-                        this.refreshCDN(serviceId, { checkStatus: true }).then(res => {
+                        this.refreshCDN({ checkStatus: true }).then(res => {
                             if (res === 'COMPLETE') {
                                 return cb(res);
                             }
-                            callbackInterval(serviceId, cb, time);
+                            callbackInterval(cb, time);
                         });
                     }, time);
                 };
-                callbackInterval(serviceId, checkStatus);
+                callbackInterval(checkStatus);
             }
         }
     }
@@ -821,7 +819,7 @@ export default class Service {
             auth: true
         });
     }
-    
+
     listHostDirectory(
         params: {
             dir: string; // unix style dir with subdomain. ex) subdomain/folder/subfolder
