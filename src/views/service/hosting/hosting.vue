@@ -33,12 +33,12 @@ template(v-else)
             .smallValue {{ !fetching ? dirInfo.upl ? new Date().toLocaleString() : new Date(dirInfo.upl).toLocaleString() : '...' }}
 
         .infoValue
-            .smallTitle Size
+            .smallTitle Storage in-use
             .smallValue {{ !fetching ? getFileSize(dirInfo.size || 0) : '...' }}
 
-        .infoValue
-            .smallTitle Number of Files
-            .smallValue {{ !fetching ? dirInfo?.cnt || 0 : '...' }}
+        //- .infoValue
+        //-     .smallTitle Number of Files
+        //-     .smallValue {{ !fetching ? dirInfo?.cnt || 0 : '...' }}
 
         .infoValue
             .smallTitle URL
@@ -87,25 +87,25 @@ template(v-else)
 
     .tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
 
-        .iconClick.square(:class="{'nonClickable': noSelection}" @click='deleteSelected=true')
-            .material-symbols-outlined.fill delete
-            span &nbsp;&nbsp;Delete Selected
-
         .iconClick.square(@click='uploadFileInp.click()')
-            input(type="file" hidden multiple @change="e=>uploadFiles(e.target.files, ()=>getFileList(true))" ref="uploadFileInp")
+            input(type="file" hidden multiple @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFileInp")
             .material-symbols-outlined.fill upload_file
             span &nbsp;&nbsp;Upload Files
         .iconClick.square(@click='uploadFolderInp.click()')
-            input(type="file" hidden multiple directory webkitdirectory @change="e=>uploadFiles(e.target.files, ()=>getFileList(true))" ref="uploadFolderInp")
+            input(type="file" hidden multiple directory webkitdirectory @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFolderInp")
             .material-symbols-outlined.fill drive_folder_upload
             span &nbsp;&nbsp;Upload Folder
+
+        .iconClick.square(:class="{'nonClickable': noSelection}" @click='deleteSelected=true')
+            .material-symbols-outlined.fill delete
+            span &nbsp;&nbsp;Delete Selected
 
         .iconClick.square
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh CDN
 
 
-    Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'; dragHere = true;}" @dragleave.stop.prevent="dragHere = false;" @drop.stop.prevent="e => {dragHere = false; onDrop(e, ()=>getFileList(true))}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}" resizable)
+    Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'; dragHere = true;}" @dragleave.stop.prevent="dragHere = false;" @drop.stop.prevent="e => {dragHere = false; onDrop(e, getFileList)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}" resizable)
         template(v-slot:head)
             tr
                 th(style="width:1px;")
@@ -133,7 +133,9 @@ template(v-else)
                 tr.uploadState(style="position:relative")
                     td
                         .material-symbols-outlined.center.moving upload
-                    td(colspan="3") File: /{{ uploadProgress.name }} ({{ uploadCount[0] }} / {{ uploadCount[1] }})
+                    td(colspan="3")
+                        | Uploading: /{{ uploadProgress.name }}&nbsp;
+                        b ({{ uploadCount[0] }} / {{ uploadCount[1] }})
             template(v-if="fetching")
                 tr
                     td#loading(colspan="4").
@@ -155,7 +157,7 @@ template(v-else)
                             .material-symbols-outlined.fill folder_open
                             | &nbsp;
                         | / {{ currentDirectory }}
-                tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = ns.name.slice(1) }')
+                tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = setNewDir(ns) }')
                     td
                         Checkbox(@click.stop v-model='checked[ns.name]')
 
@@ -257,7 +259,7 @@ import Pager from '@/code/pager';
 import { skapi, getFileSize, dateFormat } from '@/code/admin';
 import { user } from '@/code/user';
 import Checkbox from '@/components/checkbox.vue';
-import { uploadFiles, onDrop, currentDirectory, uploadCount, uploadProgress } from '@/views/service/hosting/file';
+import { folders, uploadFiles, onDrop, currentDirectory, uploadCount, uploadProgress } from '@/views/service/hosting/file';
 
 let dragHere = ref(false);
 // fileinputs
@@ -445,13 +447,12 @@ let currentSubdomain = computed(() => {
 });
 
 let listDisplay = ref([]);
-let folders: any = {};
 let sortBy = ref('name');
 let ascending = ref(true);
 let currentPage = ref(1);
 let endOfList: any = reactive({});
 let maxPage = ref(0);
-let fetching = ref(true);
+let fetching = ref(false);
 
 // checks
 let checked: any = ref({});
@@ -473,7 +474,6 @@ let noSelection = computed(() => {
 let deleteSelected = ref(false);
 
 let deleteFiles = async () => {
-    console.log("hi")
     modalPromise.value = true;
     let toDel = [];
     for (let i in checked.value) {
@@ -491,21 +491,29 @@ let deleteFiles = async () => {
     try {
         let currDir = currentDirectory.value || '!';
         let pager = folders[currDir].pager;
-        await currentService.deleteHostFiles({ paths: toDel.map(v => v.path + '/' + (()=>{
-            let n = v.name;
-            if(n[0] == '#') {
-                return n.slice(1) + '/';
-            }
-            return n;
-        })()) });
-        await Promise.all(toDel.map(v => pager.deleteItem(v.name)));
-        getFileList().then(()=>{
+        await currentService.deleteHostFiles({
+            paths: toDel.map(v => v.path + '/' + (() => {
+                let n = v.name;
+                if (n[0] == '#') {
+                    return n.slice(1) + '/';
+                }
+                return n;
+            })())
+        });
+
+        for(let v of toDel) {
+            await pager.deleteItem(v.name);
+        }
+
+        getFileList().then(() => {
             // when empty, go back a page
-            if(!listDisplay.value.length && currentPage.value > 1) {
+            if (!listDisplay.value.length && currentPage.value > 1) {
                 currentPage.value--;
             }
         });
+
         deleteSelected.value = false;
+        checkedall.value = false;
     } catch (err: any) {
         alert(err.message);
     } finally {
@@ -527,15 +535,11 @@ let numberOfSelected = computed(() => {
 
 function getInfo() {
     fetching.value = true;
-    let process = ()=>{
+    let process = () => {
         currentService.getSubdomainInfo().then(s => sdInfo.value = s);
         currentService.getDirInfo().then(dir => {
-            if (dir.cnt) {
-                getFileList(true);
-            }
-            else {
-                fetching.value = false;
-            }
+            fetching.value = false;
+            getFileList();
             dirInfo.value = dir;
         });
     }
@@ -558,13 +562,23 @@ function getInfo() {
 
 getInfo();
 
+let setNewDir = (ns: any) => {
+    let path = ns.path;
+    path = path.split('/');
+    if (path.length > 1) {
+        return path.slice(1).join('/') + '/' + ns.name.slice(1);
+    }
+
+    return ns.name.slice(1);
+}
+
 let eof = computed(() => {
     let currDir = currentDirectory.value || '!';
     return endOfList[currDir]
 });
 
 watch(currentDirectory, () => {
-    getFileList(true);
+    getFileList();
 });
 
 async function getFileList(refresh = false) {
@@ -575,7 +589,8 @@ async function getFileList(refresh = false) {
 
     fetching.value = true;
 
-    let hasPage = folders?.[currDir]
+    let hasPage = folders?.[currDir];
+
     if (!hasPage || refresh) {
         maxPage.value = 0;
         currentPage.value = 1;
@@ -592,9 +607,9 @@ async function getFileList(refresh = false) {
 
     let pager = folders[currDir].pager;
 
-    if (refresh || !endOfList[currDir] && hasPage && currentPage.value > maxPage.value) {
+    if (refresh || !endOfList[currDir] && currentPage.value > maxPage.value) {
         try {
-            let l = await currentService.listHostDirectory({ dir: currentDirectory.value }, !refresh)
+            let l = await currentService.listHostDirectory({ dir: currentDirectory.value }, !(refresh || maxPage.value == 0))
             if (l.list.length > 0) {
                 await pager.insertItems(l.list);
                 let fl = pager.getPage(currentPage.value);
@@ -602,7 +617,8 @@ async function getFileList(refresh = false) {
                 maxPage.value = fl.maxPage;
                 endOfList[currDir] = l.endOfList;
             }
-        } catch (err) {
+            maxPage.value = 1;
+        } catch (err: any) {
             alert(err.message);
         } finally {
             fetching.value = false;
@@ -620,21 +636,20 @@ async function getFileList(refresh = false) {
     }
 
     checked.value = chk;
-
     fetching.value = false;
 }
 
-function parseUrl(ns) {
+function openFile(ns: any) {
     let path = ns.path;
+    let url;
     if (path.split('/').length > 1) {
-        return `https://${currentSubdomain.value.subdomain}/${path}/${ns.name}`;
+        url = `https://${currentSubdomain.value.subdomain}/${path.split('/').slice(1).join('/')}/${ns.name}`;
+    }
+    else {
+        url = `https://${currentSubdomain.value.subdomain}/${ns.name}`;
     }
 
-    return `https://${currentSubdomain.value.subdomain}/${ns.name}`
-}
-
-function openFile(ns) {
-    window.open(parseUrl(ns), '_blank');
+    window.open(url, '_blank');
 }
 
 let resetIndex = async () => {
@@ -650,6 +665,7 @@ let resetIndex = async () => {
         getFileList();
     }
 }
+
 let toggleSort = (search: any) => {
     if (fetching.value) {
         return;
@@ -827,8 +843,13 @@ thead {
 }
 
 @keyframes motion {
-    0% {margin-top: -5px;}
-    100% {margin-top: 0px;}
+    0% {
+        margin-top: -5px;
+    }
+
+    100% {
+        margin-top: 0px;
+    }
 }
 
 @media (pointer: coarse) {

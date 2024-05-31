@@ -47,20 +47,8 @@ export default class Pager {
         }
     ): Promise<"Insert Successful"> {
         let { withinRange = false } = options || {};
-
-        this.worker.postMessage({
-            method: 'insert',
-            list: this.list,
-            map: this.map,
-            id: this.id,
-            sortBy: this.sortBy,
-            order: this.order,
-            items: items,
-            withinRange: withinRange
-        });
-
-        for (let item of items) {
-            this.list[item[this.id]] = item;
+        if (!Array.isArray(items)) {
+            items = [items]
         }
 
         return new Promise((res) => {
@@ -68,6 +56,21 @@ export default class Pager {
                 this.map = event.data;
                 res("Insert Successful");
             };
+
+            this.worker.postMessage({
+                method: 'insert',
+                list: this.list,
+                map: this.map,
+                id: this.id,
+                sortBy: this.sortBy,
+                order: this.order,
+                items: items,
+                withinRange: withinRange
+            });
+
+            for (let item of items) {
+                this.list[item[this.id]] = item;
+            }
         });
     }
 
@@ -79,17 +82,6 @@ export default class Pager {
     ): Promise<"Edit Saved"> {
         let { withinRange = false } = options || {};
 
-        this.worker.postMessage({
-            method: 'edit',
-            list: this.list,
-            map: this.map,
-            id: this.id,
-            sortBy: this.sortBy,
-            order: this.order,
-            items: [item],
-            withinRange: withinRange
-        });
-
         return new Promise((res) => {
             this.worker.onmessage = (event: any) => {
                 if (event.data) {
@@ -99,20 +91,20 @@ export default class Pager {
                 Object.assign(this.list[item[this.id]], item);
                 res("Edit Saved");
             };
+            this.worker.postMessage({
+                method: 'edit',
+                list: this.list,
+                map: this.map,
+                id: this.id,
+                sortBy: this.sortBy,
+                order: this.order,
+                items: [item],
+                withinRange: withinRange
+            });
         });
     }
 
     deleteItem(id: string): Promise<"Item Deleted"> {
-        this.worker.postMessage({
-            method: 'delete',
-            list: this.list,
-            map: this.map,
-            id: this.id,
-            sortBy: this.sortBy,
-            order: this.order,
-            items: [this.list[id]]
-        });
-
         return new Promise((res) => {
             this.worker.onmessage = (event: any) => {
                 this.map = event.data;
@@ -120,6 +112,15 @@ export default class Pager {
                 delete this.list[id];
                 res("Item Deleted");
             };
+            this.worker.postMessage({
+                method: 'delete',
+                list: this.list,
+                map: this.map,
+                id: this.id,
+                sortBy: this.sortBy,
+                order: this.order,
+                items: [this.list[id]]
+            });
         });
     }
 
@@ -129,8 +130,8 @@ export default class Pager {
         resultsPerPage?: number; // how many items per page
     }): Promise<"Reset Successful"> {
         let { sortBy, order, resultsPerPage } = option;
-        
-        if(!sortBy && !order && !resultsPerPage) {
+
+        if (!sortBy && !order && !resultsPerPage) {
             return new Promise((res) => {
                 res("Reset Successful");
             });
@@ -140,7 +141,7 @@ export default class Pager {
         this.order = order || this.order;
         this.resultsPerPage = resultsPerPage || this.resultsPerPage;
 
-        if(sortBy === this.sortBy && order === this.order && resultsPerPage === this.resultsPerPage) {
+        if (sortBy === this.sortBy && order === this.order && resultsPerPage === this.resultsPerPage) {
             return new Promise((res) => {
                 res("Reset Successful");
             });
