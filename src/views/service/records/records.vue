@@ -213,7 +213,7 @@ p Search and manage your service records.
 
                 .row.indent 
                     .key Reference Limit
-                    input.line.value(:value="selectedRecord?.reference?.reference_limit == null ? 'null' : selectedRecord?.reference?.reference_limit")
+                    input.line.value(type="number" min="0" :placeholder="selectedRecord?.reference?.reference_limit == null ? 'null' : ''" :value="selectedRecord?.reference?.reference_limit === null ? '' : selectedRecord?.reference?.reference_limit")
                     
                 .row.indent 
                     .key Multiple Reference
@@ -243,16 +243,16 @@ p Search and manage your service records.
                 .row 
                     .key(style="margin-bottom:6px") Files 
                     .value.fileWrap(ref="fileWrap" style="width:100%;")
-                        template(v-if="selectedRecord?.bin")
-                            .file.full
+                        template(v-if="fileList")
+                            .file.full(v-for="f in fileList")
                                 .material-symbols-outlined.fill do_not_disturb_on
-                                input(:value="selectedRecord?.bin?.filename" disabled)
-                        template(v-else)
-                            .file.empty(ref="emptyFile")
-                                .material-symbols-outlined.fill do_not_disturb_on
-                                input.line
-                                .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
-                                    input(@click.stop type="file" @change="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden)
+                                input.line(:value="f?.filename" disabled)
+                        //- template(v-else)
+                            //- .file.empty(ref="emptyFile")
+                            //-     .material-symbols-outlined.fill do_not_disturb_on
+                            //-     input.line
+                            //-     .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
+                            //-         input(@click.stop type="file" @change="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden)
                     .add(@click="addFile")
                         .material-symbols-outlined.fill add_circle
                         span Add File
@@ -264,7 +264,7 @@ br
 br
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick, onMounted, watch } from 'vue';
 import { user } from '@/code/user';
 import { currentService } from '@/views/service/main';
 import { showDropDown } from '@/assets/js/event.js'
@@ -300,14 +300,24 @@ let listDisplay = ref([
         uploaded: 1704938348,
         ip: '20.401.23924.432',
         readonly: false,
-        bin: {
-            access_group: 'public',
-            filename: 'file name',
-            url: 'Full URL endpoint of the file',
-            path: 'Path of the file',
-            size: 2384,
-            uploaded: 1704934348
-        },
+        bin: [
+            {
+                access_group: 'public',
+                filename: 'file name',
+                url: 'Full URL endpoint of the file',
+                path: 'Path of the file',
+                size: 2384,
+                uploaded: 1704934348
+            },
+            {
+                access_group: 'public',
+                filename: 'file name',
+                url: 'Full URL endpoint of the file',
+                path: 'Path of the file',
+                size: 2384,
+                uploaded: 1704934348
+            },
+        ],
         table: {
             name: 'jojojo',
             access_group: 'private',
@@ -336,7 +346,7 @@ let listDisplay = ref([
         uploaded: 1704938348,
         ip: '20.401.23924.432',
         readonly: false,
-        bin: '',
+        bin: [],
         table: {
             name: 'opse',
             access_group: 'public',
@@ -366,7 +376,32 @@ let listDisplay = ref([
         uploaded: 1704938348,
         ip: '20.401.23924.432',
         readonly: true,
-        bin: '',
+        bin: [
+            {
+                access_group: 'public',
+                filename: 'file name',
+                url: 'Full URL endpoint of the file',
+                path: 'Path of the file',
+                size: 2384,
+                uploaded: 1704934348
+            },
+            {
+                access_group: 'public',
+                filename: 'file name',
+                url: 'Full URL endpoint of the file',
+                path: 'Path of the file',
+                size: 2384,
+                uploaded: 1704934348
+            },
+            {
+                access_group: 'public',
+                filename: 'file name',
+                url: 'Full URL endpoint of the file',
+                path: 'Path of the file',
+                size: 2384,
+                uploaded: 1704934348
+            },
+        ],
         table: {
             name: 'hook',
             access_group: 'authorized',
@@ -390,8 +425,6 @@ let listDisplay = ref([
 ]);
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
 let selectedRecord = ref({});
-let fileWrap = ref(null);
-let emptyFile = ref(null);
 let showDetail = ref(false);
 let fetching = ref(false);
 
@@ -412,8 +445,32 @@ let noSelection = computed(() => {
     return true;
 });
 
+// file
+let fileWrap = ref(null);
+let emptyFile = ref(null);
+let fileList = ref([]);
+
+watch(selectedRecord, nv => {
+    if (nv?.bin) {
+        for(let b of nv?.bin) {
+            fileList.value.push(b);
+        }
+    }
+})
+
 let addFile = (e) => {
-    fileWrap.value.append(emptyFile.value);
+    // let newDiv = `
+    // <div class="file empty">      
+    //     <div class="material-symbols-outlined fill">do_not_disturb_on</div>
+    //     <input class="line"></input>
+    //     <div class="upload" style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' onclick="e=>{ e.target.children[0].click() }"">
+    //         Choose a file
+    //         <input onclick.stop type="file" onchange="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden></input>
+    //     </div>
+    // </div>`;
+    // nextTick(() => {
+    //     fileWrap.value.insertAdjacentHTML('beforeend', newDiv);
+    // })
 }
 </script>
 <style scoped lang="less">
