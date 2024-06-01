@@ -666,7 +666,7 @@ export default class Service {
             prefix?: string,
             progress?: (p:
                 {
-                    status: 'loadstart' | 'progress' | 'abort' | 'error' | 'load' | 'timeout' | 'loadend',
+                    status: string; // 'loadstart' | 'progress' | 'abort' | 'error' | 'load' | 'timeout' | 'loadend',
                     progress: number,
                     currentFile: File,
                     completed: File[],

@@ -2,42 +2,6 @@ import { Skapi } from 'skapi-js';
 
 export const skapi = new Skapi(import.meta.env.VITE_ADMIN, 'skapi', { autoLogin: window.localStorage.getItem('remember') === 'true' }, JSON.parse(import.meta.env.VITE_ETC));
 
-export async function getEndpointUrl(dest: string, auth: boolean = true): Promise<string> {
-    const endpoints = await Promise.all([
-        skapi.admin_endpoint,
-        skapi.record_endpoint
-    ]);
-
-    const admin = endpoints[0];
-    const record = endpoints[1];
-    const get_ep = () => {
-        switch (dest) {
-            case 'register-service':
-            case 'get-services':
-            case 'register-subdomain':
-            case 'list-host-directory':
-            case 'refresh-cdn':
-            case 'set-404':
-            case 'subdomain-info':
-                return {
-                    public: admin.admin_public,
-                    private: admin.admin_private
-                };
-
-            case 'storage-info':
-                return {
-                    private: record.record_private,
-                    public: record.record_public
-                };
-
-            default:
-                return null
-        }
-    };
-
-    return (get_ep()?.[auth ? 'private' : 'public'] || '') + dest;
-}
-
 export let dateFormat = (timestamp: number) => {
     let currentDate = new Date(timestamp);
     let year = currentDate.getFullYear();
