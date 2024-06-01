@@ -20,7 +20,7 @@ export type ServiceObj = {
     service: string;
     timestamp: number; // service created time in 13 digit timestamp
     users: number;
-    subdomain?: string,
+    subdomain?: string, // + prefixed when subdomain is in transit, * prefixed when subdomain is in removal process
     subs_id?: string,
     suspended?: boolean; // the service is canceled and suspended, if false, the service can be canceled but still running until the end of period
     email_triggers?: {

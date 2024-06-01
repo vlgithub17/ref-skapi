@@ -10,6 +10,7 @@
         To host your public files, please register a subdomain.
 
     p The subdomain can only be #[span.wordset alphanumeric and hyphen,] #[span.wordset min 4 characters] and #[span.wordset max 32 characters.]
+    
     br
 
     form.register(@submit.prevent='registerSubdomain')
@@ -31,15 +32,15 @@ template(v-else)
 
         .infoValue
             .smallTitle Created
-            .smallValue {{ !fetching ? dirInfo.upl ? new Date(dirInfo.upl).toLocaleString() : new Date().toLocaleString() : '...' }}
+            .smallValue {{ !fetching ? dirInfo?.upl ? new Date(dirInfo.upl).toLocaleString() : new Date().toLocaleString() : '...' }}
 
         .infoValue
             .smallTitle Storage in-use
-            .smallValue {{ !fetching ? getFileSize(dirInfo.size || 0) : '...' }}
+            .smallValue {{ !fetching ? getFileSize(dirInfo?.size || 0) : '...' }}
 
         .infoValue
             .smallTitle URL
-            .smallValue
+            .smallValue(:class='{nonClickable: !user?.email_verified || currentService.service.active <= 0 || cdnPending || fetching}')
                 template(v-if="modifyMode.subdomain")
                     form.register.editValue(@submit.prevent="changeSubdomain")
                         .subdomain
@@ -58,7 +59,7 @@ template(v-else)
 
         .infoValue
             .smallTitle 404 Page
-            .smallValue
+            .smallValue(:class='{nonClickable: !user?.email_verified || currentService.service.active <= 0 || cdnPending || fetching}')
                 template(v-if="modifyMode.page404")
                     form.register.editValue(@submit.prevent="change404" style='flex-grow: 0')
                         input(ref="focus_404" hidden type="file" name='file' required @change="handle404file" :disabled='updatingValue.page404' accept="text/html")
@@ -98,12 +99,17 @@ template(v-else)
             .material-symbols-outlined.fill delete
             span &nbsp;&nbsp;Delete Selected
 
-        .iconClick.square(@click='refreshCdn' :class="{'nonClickable': fetching || !user?.email_verified || currentService.service.active <= 0 || cdnPending}")
+        .iconClick.square(@click='openRefreshCdn=true' :class="{'nonClickable': fetching || !user?.email_verified || currentService.service.active <= 0 || cdnPending}")
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh CDN
 
 
-    Table(@dragover.stop.prevent="e=>{e.dataTransfer.dropEffect = 'copy'; dragHere = true;}" @dragleave.stop.prevent="dragHere = false;" @drop.stop.prevent="e => {dragHere = false; onDrop(e, getFileList)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}" resizable)
+    Table(
+        @dragover.stop.prevent="e=>{if(cdnPending) return; e.dataTransfer.dropEffect = 'copy'; dragHere = true;}"
+        @dragleave.stop.prevent="dragHere = false;"
+        @drop.stop.prevent="e => {dragHere = false; if(!cdnPending) onDrop(e, getFileList)}"
+        :class="{'nonClickable' : cdnPending || fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}"
+        resizable)
         template(v-slot:head)
             tr
                 th(style="width:1px;")
@@ -126,7 +132,15 @@ template(v-else)
                         span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
 
         template(v-slot:body)
-            template(v-if='uploadProgress.name')
+            template(v-if='cdnPending')
+                tr
+                    td(colspan='4')
+                        | Refreshing CDN...&nbsp;
+                        img.loading(src="@/assets/img/loading.png")
+                tr(v-for="i in 9")
+                    td(colspan="4")
+
+            template(v-else-if='uploadProgress.name')
                 .progress( :style="{ width: uploadProgress.progress + '%', height: '3px', background: 'var(--main-color)', position: 'absolute'}")
                 tr.uploadState(style="position:relative")
                     td
@@ -134,18 +148,24 @@ template(v-else)
                     td(colspan="3")
                         | Uploading: /{{ uploadProgress.name }}&nbsp;
                         b ({{ uploadCount[0] }} / {{ uploadCount[1] }})
-            template(v-if="fetching")
+                tr(v-for="i in 9")
+                    td(colspan="4")
+
+            template(v-else-if="fetching")
                 tr
                     td#loading(colspan="4").
                         Loading... &nbsp;
                         #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
                 tr(v-for="i in 9")
                     td(colspan="4")
+
             template(v-else-if="!listDisplay || listDisplay.length === 0")
                 tr
                     td(colspan="4") Drag and drop files here
+
                 tr(v-for="i in 9")
                     td(colspan="4")
+
             template(v-else)
                 tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
                     td
@@ -157,6 +177,7 @@ template(v-else)
                             .material-symbols-outlined.fill folder_open
                             | &nbsp;
                         | / {{ currentDirectory }}
+
                 tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = setNewDir(ns) }')
                     td
                         Checkbox(@click.stop v-model='checked[ns.name]')
@@ -246,6 +267,26 @@ template(v-else)
             template(v-else)
                 button.noLine.warning(@click="openRemove404 = false") Cancel
                 button.final.warning(@click="remove404") Remove
+
+    Modal(:open="openRefreshCdn")
+        h4(style='margin:.5em 0 0;') Refresh CDN
+
+        hr
+
+        div(style='font-size:.8rem;')
+            p.
+                If you have overwritten files, you can refresh the CDN to apply the changes.
+                #[br]
+                While in process you will not be able to upload or delete files.
+                This process will take a few minutes.
+        br
+
+        div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+            template(v-if='modalPromise')
+                img.loading(src="@/assets/img/loading.png")
+            template(v-else)
+                button.noLine.warning(@click="openRefreshCdn = false") Cancel
+                button.final.warning(@click="()=>{refreshCdn();openRefreshCdn=false;}") Refresh
 </template>
 
 <script setup lang="ts">
@@ -307,7 +348,7 @@ let registerSubdomain = async () => {
 //
 
 // edit/change
-
+let openRefreshCdn = ref(false);
 let modifyMode = reactive({
     subdomain: false,
     page404: false
@@ -404,6 +445,7 @@ let remove = () => {
 }
 
 let changeSubdomain = async () => {
+    // when domains are changed, refreshCDN kicks in
     if (currentService.service.subdomain === inputSubdomain) {
         modifyMode.subdomain = false;
         return;
@@ -420,6 +462,12 @@ let changeSubdomain = async () => {
         modifyMode.subdomain = false;
         updatingValue.subdomain = false;
 
+        cdnPending.value = true;
+        currentService.refreshCDN({
+            checkStatus: res => {
+                cdnPending.value = false;
+            }
+        });
     } catch (err: any) {
         updatingValue.subdomain = false;
         alert(err.message);
@@ -542,14 +590,21 @@ function getInfo() {
                 currentService.refreshCDN({
                     checkStatus: res => {
                         cdnPending.value = false;
+                        currentService.getDirInfo().then(dir => {
+                            fetching.value = false;
+                            getFileList(true);
+                            dirInfo.value = dir;
+                        });
                     }
                 })
             }
-        });
-        currentService.getDirInfo().then(dir => {
-            fetching.value = false;
-            getFileList();
-            dirInfo.value = dir;
+            else {
+                currentService.getDirInfo().then(dir => {
+                    fetching.value = false;
+                    getFileList();
+                    dirInfo.value = dir;
+                });
+            }
         });
     }
 
@@ -566,6 +621,9 @@ function getInfo() {
         }
         else if (!sdInfo.value.srvc) {
             process();
+        }
+        else {
+            fetching.value = false;
         }
     }
     else {
