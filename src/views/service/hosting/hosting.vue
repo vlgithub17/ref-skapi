@@ -31,7 +31,7 @@ template(v-else)
 
         .infoValue
             .smallTitle Created
-            .smallValue {{ !fetching ? dirInfo.upl ? new Date().toLocaleString() : new Date(dirInfo.upl).toLocaleString() : '...' }}
+            .smallValue {{ !fetching ? dirInfo.upl ? new Date(dirInfo.upl).toLocaleString() : new Date().toLocaleString() : '...' }}
 
         .infoValue
             .smallTitle Storage in-use
