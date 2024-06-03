@@ -66,24 +66,22 @@ form#searchForm(@submit.prevent="searchUsers")
         input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" :disabled="fetching" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
         input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue" :disabled="fetching")
         .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale'" @click.stop="showLocale = !showLocale") arrow_drop_down
-        button.final(type="submit" style='flex-shrink: 0;') Search
         Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
+    button.final(type="submit" style='flex-shrink: 0;') Search
 
 br
 
 .tableMenu
-    div(style='flex-grow: 1;text-align:right')
-        .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh
-    div
-        .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-            .material-symbols-outlined.fill person_add
-            span &nbsp;&nbsp;Create User
-        .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentService.plan == 'Trial'}")
-            .material-symbols-outlined.fill mark_email_unread
-            span &nbsp;&nbsp;Invite User
+    .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+        .material-symbols-outlined.fill person_add
+        span &nbsp;&nbsp;Create User
 
+    .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentService.plan == 'Trial'}")
+        .material-symbols-outlined.fill mark_email_unread
+        span &nbsp;&nbsp;Invite User
 
 Table(:class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
     template(v-slot:head)
@@ -789,13 +787,13 @@ let createUser = () => {
     }
 
     skapi.signup(createParams).then(async(res) => {
-        console.log(res);
         res.email = res.email_admin;
         await pager.insertItems([res]);
-        console.log(listDisplay.value, maxPage.value, endOfList.value)
-        if (listDisplay.value.length == 10 && maxPage.value <= currentPage.value) {
-            maxPage.value ++;
-        }
+
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        listDisplay.value = disp.list;
+
         document.getElementById("createForm").reset(); 
         gender_public.value = false;
         address_public.value = false;
@@ -882,14 +880,10 @@ let deleteUser = () => {
         }
 
         await pager.deleteItem(selectedUser.user_id);
-        console.log(listDisplay.value.length)
 
-        if (listDisplay.value.length == 0 && maxPage.value > 1 && maxPage.value <= currentPage.value) {
-            currentPage.value--;
-            maxPage.value--;
-        } else if (listDisplay.value.length == 9 && maxPage.value > 1) {
-            getPage(true);
-        }
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        listDisplay.value = disp.list;
 
         selectedUser = {};
         promiseRunning.value = false;
@@ -916,26 +910,35 @@ let closeModal = () => {
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    width: 600px;
+    width: 700px;
     max-width: 100%;
 
+    .customSelect {
+        flex-grow: 1;
+    }
     .search {
         position:relative;
         display: flex;
-        flex-grow: 1;
+        flex-grow: 50;
         gap: 8px;
     }
+    .clickInput {
+        position: relative;
+    }
     .big {
-        padding-right: 1rem;
+        padding-right: 40px;
     }
     .icon {
         position: absolute;
         top: 50%;
-        right: 115px;
+        right: 10px;
         transform: translateY(-50%);
         cursor: pointer;
         user-select: none;
-        // z-index: 99;
+    }
+    .final {
+        flex-grow: 1;
+        width: 140px;
     }
 }
 #calendar,
@@ -973,9 +976,6 @@ let closeModal = () => {
     &>*:first-child {
         margin-right: 8px;
     }
-}
-.iconClick {
-    font-size: 0.7rem;
 }
 .iconClick.arrow {
     padding:0;

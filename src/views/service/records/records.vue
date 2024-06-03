@@ -35,6 +35,27 @@ hr
 p Search and manage your service records.
 
 .tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
+        .material-symbols-outlined.fill checklist_rtl
+        span &nbsp;&nbsp;Show Columns
+        .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal; color:black")
+            .inner(style="padding:.5rem 1rem .5rem .5rem")
+                Checkbox(v-model="filterOptions.table" style="display:flex;") Table
+                Checkbox(v-model="filterOptions.user_id" style="display:flex") User ID 
+                Checkbox(v-model="filterOptions.subscription" style="display:flex") Subscription
+                Checkbox(v-model="filterOptions.reference" style="display:flex") Reference
+                Checkbox(v-model="filterOptions.index" style="display:flex") Index/Value
+                Checkbox(v-model="filterOptions.tag" style="display:flex") Tag
+                Checkbox(v-model="filterOptions.record_id" style="display:flex") Record ID
+                Checkbox(v-model="filterOptions.updated" style="display:flex") Updated
+                Checkbox(v-model="filterOptions.uploaded" style="display:flex") Uploaded
+                Checkbox(v-model="filterOptions.readonly" style="display:flex") ReadOnly 
+                Checkbox(v-model="filterOptions.ip" style="display:flex") ip 
+                Checkbox(v-model="filterOptions.files" style="display:flex") Files 
+                Checkbox(v-model="filterOptions.reference_limit" style="display:flex") Reference  Limit
+                Checkbox(v-model="filterOptions.allow_multiple_reference" style="display:flex") Referenced 
+                Checkbox(v-model="filterOptions.data" style="display:flex") Data
+
     .iconClick.square
         .material-symbols-outlined.fill add_circle
         span &nbsp;&nbsp;Create Record
@@ -51,8 +72,8 @@ p Search and manage your service records.
     Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}" resizable)
         template(v-slot:head)
             tr
-                th.center(style='width:100px;padding:0')
-                    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" style='color:black')
+                th.center(style='width:60px;padding:0')
+                    //- .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" style='color:black')
                         .material-symbols-outlined.fill checklist_rtl
                         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal")
                             .inner(style="padding:.5rem 1rem .5rem .5rem")
@@ -73,82 +94,82 @@ p Search and manage your service records.
                                 Checkbox(v-model="filterOptions.data" style="display:flex") Data 
                     Checkbox(@click.stop v-model='checkedall' @change='checkall' :class='{nonClickable: !listDisplay.length}' style="display:inline-block")
                     .resizer
-                th.overflow(style='width:160px;')
+                th.overflow(v-if="filterOptions.table" style='width:160px;')
                     | Table
                     .resizer
-                th.overflow(style='width:160px;')
+                th.overflow(v-if="filterOptions.user_id" style='width:160px;')
                     | User ID
                     .resizer
-                th.center.overflow(style='width:120px;')
+                th.center.overflow(v-if="filterOptions.subscription" style='width:130px;')
                     | Subscription
                     .resizer
-                th.overflow(style='width:160px;')
+                th.overflow(v-if="filterOptions.reference" style='width:160px;')
                     | Reference
                     .resizer
-                th.overflow(style='width:160px;')
+                th.overflow(v-if="filterOptions.index" style='width:160px;')
                     | Index/Value
                     .resizer
-                th.overflow(style='width:220px;')
+                th.overflow(v-if="filterOptions.tag" style='width:220px;')
                     | Tag
                     .resizer
-                th.overflow(style='width:160px;')
+                th.overflow(v-if="filterOptions.record_id" style='width:160px;')
                     | Record ID
                     .resizer
-                th.overflow(style='width:160px;')
+                th.overflow(v-if="filterOptions.updated" style='width:160px;')
                     | Updated
                     .resizer
-                th.overflow(style='width:160px;')
+                th.overflow(v-if="filterOptions.uploaded" style='width:160px;')
                     | uploaded
                     .resizer
-                th.center.overflow(style='width:100px;')
+                th.center.overflow(v-if="filterOptions.readonly" style='width:100px;')
                     | ReadOnly
                     .resizer
-                th.overflow(style='width:160px;')
+                th.overflow(v-if="filterOptions.ip" style='width:160px;')
                     | ip
                     .resizer
-                th.center.overflow(style='width:100px;')
+                th.center.overflow(v-if="filterOptions.files" style='width:100px;')
                     | Files
                     .resizer
-                th.center.overflow(style='width:140px;')
+                th.center.overflow(v-if="filterOptions.reference_limit" style='width:140px;')
                     | Reference Limit
                     .resizer
-                th.center.overflow(style='width:110px;')
+                th.center.overflow(v-if="filterOptions.referenced" style='width:110px;')
                     | Referenced
                     .resizer
-                th.center.overflow(style='width:190px;')
+                th.center.overflow(v-if="filterOptions.allow_multiple_reference" style='width:190px;')
                     | Allow multiple reference
                     .resizer
-                th.overflow(style='width:220px;')
+                th.overflow(v-if="filterOptions.data" style='width:220px;')
                     | Data
                     .resizer
         template(v-slot:body)
             tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=rc")
-                td.center.overflow
-                    Checkbox(@click.stop v-model='checked[rc.name]')
-                td.overflow {{ rc.table.name }}
-                td 
+                td.center
+                    Checkbox(@click.stop v-model='checked[rc.table.name]')
+                td.overflow(v-if="filterOptions.table") {{ rc.table.name }}
+                td(v-if="filterOptions.user_id") 
                     .click.overflow {{ rc.user_id }}
-                td.center.overflow {{ rc.table.subscription ? 'required' : '' }}
-                td.overflow {{ rc.reference.record_id }}
-                td.overflow {{ rc.index.name }} / {{ rc.index.value }}
-                td.overflow 
+                td.center.overflow(v-if="filterOptions.subscription") {{ rc.table.subscription ? 'required' : '' }}
+                td.overflow(v-if="filterOptions.record_id") {{ rc.reference.record_id }}
+                td.overflow(v-if="filterOptions.index") {{ rc.index.name }} / {{ rc.index.value }}
+                td.overflow(v-if="filterOptions.tag") 
                     template(v-for="(tag, index) in rc.tags")
                         span(v-if="rc.tags.length-1 == index") {{ tag }}
                         span(v-else) {{ tag }}, 
-                td 
+                td(v-if="filterOptions.record_id")
                     .click.overflow {{ rc.record_id }}
-                td.overflow {{ rc.updated }}
-                td.overflow {{ rc.uploaded }}
-                td.center.overflow
+                td.overflow(v-if="filterOptions.updated") {{ rc.updated }}
+                td.overflow(v-if="filterOptions.uploaded") {{ rc.uploaded }}
+                td.center.overflow(v-if="filterOptions.readonly")
                     .material-symbols-outlined.fill(v-if="rc.readonly") check_circle
-                td.overflow {{ rc.ip }}
-                td.center.overflow {{ rc.bin }}
-                td.center.overflow {{ (rc.reference.reference_limit == null) ? 'infinite' : rc.reference.reference_limit }}
-                td.center.overflow {{ rc.reference.referenced_count }}
-                td.center.overflow
+                td.overflow(v-if="filterOptions.ip") {{ rc.ip }}
+                td.center.overflow(v-if="filterOptions.files") {{ rc.bin }}
+                td.center.overflow(v-if="filterOptions.reference_limit") {{ (rc.reference.reference_limit == null) ? 'infinite' : rc.reference.reference_limit }}
+                td.center.overflow(v-if="filterOptions.referenced") {{ rc.reference.referenced_count }}
+                td.center.overflow(v-if="filterOptions.allow_multiple_reference")
                     .material-symbols-outlined.fill(v-if="rc.reference.allow_multiple_reference") check_circle
-                td.overflow {{ rc.data }}
-            tr(v-for="i in (10 - listDisplay.length)")
+                td.overflow(v-if="filterOptions.data") {{ rc.data }}
+            tr(v-for="i in (15 - listDisplay.length)")
                     td(:colspan="colspan")
 
     .detailRecord(:class="{show: showDetail}")
@@ -238,7 +259,7 @@ p Search and manage your service records.
 
                 .row
                     .key(style="margin-bottom: 6px") Data 
-                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 2)" @keydown.stop="handleTabKey" style="width:100%;height:150px;resize: none;tab-size: 2;") 
+                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 2)" @keydown.stop="handleTabKey" style="width:100%;height:150px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;") 
 
                 .row 
                     .key(style="margin-bottom:6px") Files 
@@ -276,6 +297,7 @@ import Select from '@/components/select.vue';
 
 let filterOptions = ref({
     table: true,
+    user_id: true,
     subscription: true,
     reference: true,
     index: true,
@@ -286,7 +308,6 @@ let filterOptions = ref({
     readonly: true,
     ip: true,
     files: true,
-    user_id: true,
     reference_limit: true,
     referenced: true,
     allow_multiple_reference: true,
@@ -309,7 +330,6 @@ let listDisplay = ref([
                 path: 'Path of the file',
                 size: 2384,
                 uploaded: 1704934348,
-                getFile: () => {console.log('ddd')}
             },
             {
                 access_group: 'public',
@@ -318,7 +338,6 @@ let listDisplay = ref([
                 path: 'Path of the file',
                 size: 2384,
                 uploaded: 1704934348,
-                getFile: () => {console.log('ddd')}
             },
         ],
         table: {
@@ -387,7 +406,6 @@ let listDisplay = ref([
                 path: 'Path of the file',
                 size: 2384,
                 uploaded: 1704934348,
-                getFile: () => {console.log('ddd')}
             },
             {
                 access_group: 'public',
@@ -396,7 +414,6 @@ let listDisplay = ref([
                 path: 'Path of the file',
                 size: 2384,
                 uploaded: 1704934348,
-                getFile: () => {console.log('ddd')}
             },
             {
                 access_group: 'public',
@@ -405,7 +422,6 @@ let listDisplay = ref([
                 path: 'Path of the file',
                 size: 2384,
                 uploaded: 1704934348,
-                getFile: () => {console.log('ddd')}
             },
         ],
         table: {
@@ -439,7 +455,7 @@ let checked: any = ref({});
 let checkedall = ref(false);
 let checkall = () => {
     for (let i in listDisplay.value) {
-        checked.value[listDisplay.value[i].name] = checkedall.value;
+        checked.value[listDisplay.value[i].table.name] = checkedall.value;
     }
 }
 let noSelection = computed(() => {
@@ -453,18 +469,30 @@ let noSelection = computed(() => {
 
 // textarea tab key
 let handleTabKey = (e) => {
+    let start = e.target.selectionStart;
+    let end = e.target.selectionEnd;
+    let beforeCursor = e.target.value.slice(0, start);
+    let afterCursor = e.target.value.slice(start);
+
     if (e.key == 'Tab') {
         e.preventDefault();
-        let start = e.target.selectionStart;
-        let end = e.target.selectionEnd;
 
-        // set textarea value to: text before caret + tab + text after caret
-        e.target.value = e.target.value.substring(0, start) +
-        "\t" + e.target.value.substring(end);
+        e.target.value = e.target.value.substring(0, start) + "\t" + e.target.value.substring(end);
 
-        // put caret at right position again
-        e.target.selectionStart =
-        e.target.selectionEnd = start + 1;
+        e.target.setSelectionRange(start + 1, start + 1)
+    } else if (e.key == '{' && e.shiftKey) {
+        e.target.value = beforeCursor + '}' + afterCursor;
+        e.target.setSelectionRange(start, start);
+    } else if (e.key == 'Enter' && beforeCursor.endsWith('{') && afterCursor.startsWith('}')) {
+        let currentLineStart = beforeCursor.lastIndexOf('\n') + 1;
+        let currentIndentation = beforeCursor.slice(currentLineStart).match(/^\s*/)[0];
+        let newIndentation = currentIndentation + '\t';
+
+        e.target.value = beforeCursor + '\n' + newIndentation + '\n' + currentIndentation + afterCursor;
+
+        // let newCursorPosition = beforeCursor.length + newIndentation.length;
+
+        // e.target.setSelectionRange(end+1, end+2);
     }
 }
 
@@ -479,7 +507,6 @@ watch(selectedRecord, nv => {
                 type: 'binary',
                 context: b.filename,
                 endpoint: b.url,
-                download: () => skapi.getFile(b.url, { dataType: 'download' })
             })
         }
     }

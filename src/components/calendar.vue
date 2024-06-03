@@ -3,11 +3,11 @@
     .timeWrap
         .timeNav 
             input#here(type="date" hidden)
-            input.big#year(type="text" :value="currentYear" @change.stop="(e) => updateCalendar(e, 'year')" @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}" style="width:80px")
-            select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
-                option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
-            .goback
+            input.big#year(type="text" :value="currentYear" @change.stop="(e) => updateCalendar(e, 'year')" @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}")
+            .month
                 .material-symbols-outlined.prev(@click="reRender('prev')") arrow_back_ios
+                select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
+                    option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
                 .material-symbols-outlined.next(@click="reRender('next')") arrow_forward_ios
         .timeCont 
             .days 
@@ -337,52 +337,45 @@ let createdDate = (e, date) => {
     }
 
     .timeWrap {
-        padding: 1.4rem;
+        padding: 1.2rem;
 
         .timeNav {
             display: flex;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             align-items: center;
             justify-content: center;
+            gap: 1rem;
             margin-bottom: 28px;
 
             * {
                 text-align: center;
+                flex-grow: 1;
             }
 
-            .goback {
+            .month {
                 display: flex;
-                flex-wrap: nowrap;
-                align-items: center;
-                justify-content: end;
-                padding: 0 7px 0 14px;
+                background-color: unset;
+                border: 0;
+                cursor: pointer;
+                font-size: 0.9rem;
+            }
 
-                * {
-                    cursor: pointer;
-                    font-size: 0.9rem;
-                    user-select: none;
-                }
-
-                .prev {
-                    margin-right: 10px;
+            .prev, .next {
+                flex-grow: 0;
+                cursor: pointer;
+                font-size: 0.9rem;
+                user-select: none;
+                
+                &:hover {
+                    color: var(--main-color);
                 }
             }
 
             select {
                 flex-grow: 1;
-
                 -webkit-appearance: none;
-                /* 크롬 */
                 -moz-appearance: none;
-                /* 파이어폭스 */
-                appearance: none
-            }
-
-            .month {
-                background-color: unset;
-                border: 0;
-                cursor: pointer;
-                font-size: 0.9rem;
+                appearance: none;
             }
         }
 
@@ -486,11 +479,6 @@ let createdDate = (e, date) => {
         .input {
             position: relative;
 
-            // &:hover {
-            //     .delete {
-            //         display: block;
-            //     }
-            // }
             .delete {
                 position: absolute;
                 content: '';
