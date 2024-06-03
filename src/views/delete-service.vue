@@ -65,9 +65,11 @@ let deleteService = async () => {
         window.location = url;
     }
     catch (err) {
-        promiseRunning.value = false;
         alert(err.message);
         return;
+    }
+    finally {
+        promiseRunning.value = false;
     }
 }
 </script>
