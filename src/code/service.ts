@@ -271,6 +271,39 @@ export default class Service {
         return this.subscription;
     }
 
+    async deleteSubscription(): Promise<SubscriptionObj> {
+        await this._subsPromise;
+
+        if (!this.subscription) {
+            return null;
+        }
+
+        if (this.service?.subs_id) {
+            let subs_id = this.service?.subs_id.split('#');
+
+            if (subs_id.length < 2) {
+                return;
+            }
+
+            let SUBSCRIPTION_ID = subs_id[0];
+
+            this.subscription = reactive(await skapi.clientSecretRequest({
+                clientSecretName: 'stripe_test',
+                url: `https://api.stripe.com/v1/subscriptions/${SUBSCRIPTION_ID}`,
+                method: 'DELETE',
+                headers: {
+                    Authorization: 'Bearer $CLIENT_SECRET'
+                },
+                // // data: {
+                // //     cancel_at_period_end: true
+                // // }
+            }));
+        }
+
+        this.checkCancel();
+        return this.subscription;
+    }
+
     async cancelSubscription(): Promise<SubscriptionObj> {
         await this._subsPromise;
 
