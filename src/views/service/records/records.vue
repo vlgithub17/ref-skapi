@@ -238,8 +238,7 @@ p Search and manage your service records.
 
                 .row
                     .key(style="margin-bottom: 6px") Data 
-                    //- textarea.value(v-model="jsonData" @keydown.stop="handleEnterKey" style="width:100%;height:150px;resize: none;") 
-                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 4)" @keydown.stop="handleTabKey" style="width:100%;height:150px;resize: none;") 
+                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 2)" @keydown.stop="handleTabKey" style="width:100%;height:150px;resize: none;tab-size: 2;") 
 
                 .row 
                     .key(style="margin-bottom:6px") Files 
@@ -452,52 +451,22 @@ let noSelection = computed(() => {
     return true;
 });
 
-// json
-let jsonData = ref('');
-
-let handleEnterKey = (e) => {
-    if (e.key === 'Enter') {
+// textarea tab key
+let handleTabKey = (e) => {
+    if (e.key == 'Tab') {
         e.preventDefault();
-    
-        let textarea = e.target;
-        let start = textarea.selectionStart;
-        let end = textarea.selectionEnd;
-        let value = textarea.value;
-    
-        // Find the start of the line
-        let lineStart = start;
-        while (lineStart > 0 && value[lineStart - 1] !== '\n') {
-            lineStart--;
-        }
-    
-        // Get the current line
-        let line = value.substring(lineStart, start);
-    
-        // Match indentation (spaces or tabs) at the beginning of the current line
-        let indentMatch = line.match(/^\s*/);
-        let indent = indentMatch ? indentMatch[0] : '';
-    
-        // Insert a new line with the same indentation
-        let newValue = value.substring(0, start) + '\n' + indent + value.substring(end);
-    
-        // Update the textarea's value and adjust the cursor position
-        nextTick(() => {
-            jsonData.value = newValue;
-            textarea.selectionStart = textarea.selectionEnd = start + 1 + indent.length;
-        })
+        let start = e.target.selectionStart;
+        let end = e.target.selectionEnd;
+
+        // set textarea value to: text before caret + tab + text after caret
+        e.target.value = e.target.value.substring(0, start) +
+        "\t" + e.target.value.substring(end);
+
+        // put caret at right position again
+        e.target.selectionStart =
+        e.target.selectionEnd = start + 1;
     }
 }
-
-let handleTabKey = (e) => {
-    // if (e.key == 'Tab') {
-    //     let start = e.target.selectionStart;
-    //     let end = e.target.selectionEnd;
-
-    //     console.log(start, end)
-    // }
-    // console.log(e)
-}
-
 
 // file
 let uploadFileList = ref([]);

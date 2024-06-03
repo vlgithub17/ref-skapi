@@ -792,7 +792,11 @@ let createUser = () => {
         console.log(res);
         res.email = res.email_admin;
         await pager.insertItems([res]);
-        document.getElementById("createForm").reset();
+        console.log(listDisplay.value, maxPage.value, endOfList.value)
+        if (listDisplay.value.length == 10 && maxPage.value <= currentPage.value) {
+            maxPage.value ++;
+        }
+        document.getElementById("createForm").reset(); 
         gender_public.value = false;
         address_public.value = false;
         birthdate_public.value = false;
@@ -878,10 +882,13 @@ let deleteUser = () => {
         }
 
         await pager.deleteItem(selectedUser.user_id);
+        console.log(listDisplay.value.length)
 
         if (listDisplay.value.length == 0 && maxPage.value > 1 && maxPage.value <= currentPage.value) {
             currentPage.value--;
             maxPage.value--;
+        } else if (listDisplay.value.length == 9 && maxPage.value > 1) {
+            getPage(true);
         }
 
         selectedUser = {};
