@@ -72,37 +72,41 @@ form#searchForm(@submit.prevent="searchUsers")
 br
 
 .tableMenu
-    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-            .material-symbols-outlined.fill refresh
-            span &nbsp;&nbsp;Refresh
+    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
+        .material-symbols-outlined.fill checklist_rtl
+        span &nbsp;&nbsp;Show Columns
+        .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal;color:black")
+            .inner(style="padding:.5rem 1rem .5rem .5rem")
+                Checkbox(v-model="filterOptions.userID" style="display:flex;") User ID
+                Checkbox(v-model="filterOptions.name" style="display:flex") Name
+                Checkbox(v-model="filterOptions.email" style="display:flex") Email
+                Checkbox(v-model="filterOptions.address" style="display:flex") Address
+                Checkbox(v-model="filterOptions.gender" style="display:flex") Gender
+                Checkbox(v-model="filterOptions.locale" style="display:flex") Locale
+                Checkbox(v-model="filterOptions.timestamp" style="display:flex") Date Created 
+                Checkbox(v-model="filterOptions.birthdate" style="display:flex") Birthdate 
+                Checkbox(v-model="filterOptions.picture" style="display:flex") Picture 
+                Checkbox(v-model="filterOptions.profile" style="display:flex") Profile 
+                Checkbox(v-model="filterOptions.website" style="display:flex") Website 
+                Checkbox(v-model="filterOptions.nickname" style="display:flex") Nickname
+
     .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill person_add
         span &nbsp;&nbsp;Create User
-
+        
     .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentService.plan == 'Trial'}")
         .material-symbols-outlined.fill mark_email_unread
         span &nbsp;&nbsp;Invite User
+
+    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+            .material-symbols-outlined.fill refresh
+            span &nbsp;&nbsp;Refresh
 
 Table(:class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
     template(v-slot:head)
         tr
             th.center(style='width:80px;padding:0')
-                .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" style='color:black')
-                    .material-symbols-outlined.fill checklist_rtl
-                    .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal")
-                        .inner(style="padding:.5rem 1rem .5rem .5rem")
-                            Checkbox(v-model="filterOptions.userID" style="display:flex;") User ID
-                            Checkbox(v-model="filterOptions.name" style="display:flex") Name
-                            Checkbox(v-model="filterOptions.email" style="display:flex") Email
-                            Checkbox(v-model="filterOptions.address" style="display:flex") Address
-                            Checkbox(v-model="filterOptions.gender" style="display:flex") Gender
-                            Checkbox(v-model="filterOptions.locale" style="display:flex") Locale
-                            Checkbox(v-model="filterOptions.timestamp" style="display:flex") Date Created 
-                            Checkbox(v-model="filterOptions.birthdate" style="display:flex") Birthdate 
-                            Checkbox(v-model="filterOptions.picture" style="display:flex") Picture 
-                            Checkbox(v-model="filterOptions.profile" style="display:flex") Profile 
-                            Checkbox(v-model="filterOptions.website" style="display:flex") Website 
-                            Checkbox(v-model="filterOptions.nickname" style="display:flex") Nickname 
+                .material-symbols-outlined.fill manage_accounts 
                 .resizer
             th.overflow(v-if="filterOptions.email" style="width:200px")
                 | Email
@@ -965,7 +969,7 @@ let closeModal = () => {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    flex-direction: row-reverse;
+    // flex-direction: row-reverse;
 
     &>* {
         margin: 8px 0;
