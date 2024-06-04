@@ -29,7 +29,7 @@ br
     br
     br
     br
-    
+
     .bottom
         template(v-if="promiseRunning")
             img.loading(src="@/assets/img/loading.png")
@@ -56,17 +56,21 @@ let iUnderstand = ref(false);
 let promiseRunning = ref(false);
 let serviceId = route.params.id as string;
 
-let deleteService = () => {
+let deleteService = async () => {
     promiseRunning.value = true;
-    currentService.deleteService()
-        .then(() => {
-            let url = window.location.origin + '/my-services';
-            window.location = url;
-        })
-        .catch(err => {
-            promiseRunning.value = false;
-            alert(err.message);
-        });
+    try {
+        await currentService.deleteSubscription();
+        await currentService.deleteService();
+        let url = window.location.origin + '/my-services';
+        window.location = url;
+    }
+    catch (err) {
+        alert(err.message);
+        return;
+    }
+    finally {
+        promiseRunning.value = false;
+    }
 }
 </script>
 
