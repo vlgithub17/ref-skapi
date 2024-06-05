@@ -32,6 +32,7 @@ label._checkbox {
 
     &>div {
         font-size: 0.8rem;
+        white-space: nowrap;
     }
 
     span+div:not(:empty) {

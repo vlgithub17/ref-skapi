@@ -73,25 +73,6 @@ p Search and manage your service records.
         template(v-slot:head)
             tr
                 th.center(style='width:60px;padding:0')
-                    //- .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" style='color:black')
-                        .material-symbols-outlined.fill checklist_rtl
-                        .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal")
-                            .inner(style="padding:.5rem 1rem .5rem .5rem")
-                                Checkbox(v-model="filterOptions.table" style="display:flex;") Table
-                                Checkbox(v-model="filterOptions.user_id" style="display:flex") User ID 
-                                Checkbox(v-model="filterOptions.subscription" style="display:flex") Subscription
-                                Checkbox(v-model="filterOptions.reference" style="display:flex") Reference
-                                Checkbox(v-model="filterOptions.index" style="display:flex") Index/Value
-                                Checkbox(v-model="filterOptions.tag" style="display:flex") Tag
-                                Checkbox(v-model="filterOptions.record_id" style="display:flex") Record ID
-                                Checkbox(v-model="filterOptions.updated" style="display:flex") Updated
-                                Checkbox(v-model="filterOptions.uploaded" style="display:flex") Uploaded
-                                Checkbox(v-model="filterOptions.readonly" style="display:flex") ReadOnly 
-                                Checkbox(v-model="filterOptions.ip" style="display:flex") ip 
-                                Checkbox(v-model="filterOptions.files" style="display:flex") Files 
-                                Checkbox(v-model="filterOptions.reference_limit" style="display:flex") Reference  Limit
-                                Checkbox(v-model="filterOptions.allow_multiple_reference" style="display:flex") Referenced 
-                                Checkbox(v-model="filterOptions.data" style="display:flex") Data 
                     Checkbox(@click.stop v-model='checkedall' @change='checkall' :class='{nonClickable: !listDisplay.length}' style="display:inline-block")
                     .resizer
                 th.overflow(v-if="filterOptions.table" style='width:160px;')
@@ -478,21 +459,20 @@ let handleTabKey = (e) => {
         e.preventDefault();
 
         e.target.value = e.target.value.substring(0, start) + "\t" + e.target.value.substring(end);
-
-        e.target.setSelectionRange(start + 1, start + 1)
+        e.target.setSelectionRange(start + 1, start + 1);
     } else if (e.key == '{' && e.shiftKey) {
         e.target.value = beforeCursor + '}' + afterCursor;
         e.target.setSelectionRange(start, start);
     } else if (e.key == 'Enter' && beforeCursor.endsWith('{') && afterCursor.startsWith('}')) {
+        e.preventDefault();
+
         let currentLineStart = beforeCursor.lastIndexOf('\n') + 1;
         let currentIndentation = beforeCursor.slice(currentLineStart).match(/^\s*/)[0];
         let newIndentation = currentIndentation + '\t';
+        let newCursorPosition = beforeCursor.length + newIndentation.length + 1;
 
         e.target.value = beforeCursor + '\n' + newIndentation + '\n' + currentIndentation + afterCursor;
-
-        // let newCursorPosition = beforeCursor.length + newIndentation.length;
-
-        // e.target.setSelectionRange(end+1, end+2);
+        e.target.setSelectionRange(newCursorPosition, newCursorPosition);
     }
 }
 
