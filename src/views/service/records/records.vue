@@ -127,7 +127,11 @@ p Search and manage your service records.
             tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=rc")
                 td.center
                     Checkbox(@click.stop v-model='checked[rc.table.name]')
-                td.overflow(v-if="filterOptions.table") {{ rc.table.name }}
+                td.overflow(v-if="filterOptions.table") 
+                    span.material-symbols-outlined.fill(v-if="rc.table.access_group == 'private'") vpn_key
+                    span.material-symbols-outlined.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
+                    span.material-symbols-outlined.fill(v-if="rc.table.access_group == 0 || rc.table.access_group == 'public'") language
+                    span(style="margin-left: 8px") {{ rc.table.name }}
                 td(v-if="filterOptions.user_id") 
                     .click.overflow {{ rc.user_id }}
                 td.center.overflow(v-if="filterOptions.subscription") {{ rc.table.subscription ? 'required' : '' }}
@@ -196,7 +200,7 @@ p Search and manage your service records.
 
                 .row.indent 
                     .key Access Group 
-                    select.value(v-if="selectedRecord?.table?.access_group !== 'private'" :value="(selectedRecord?.table?.access_group == '0' || selectedRecord?.table?.access_group == 'Public') ? '0' : '1'")
+                    select.value(v-if="selectedRecord?.table?.access_group !== 'private'" :value="selectedRecord?.table?.access_group")
                         option(value="0") Public
                         option(value="1") Authorized
                         option(value="private") Private
@@ -249,7 +253,7 @@ p Search and manage your service records.
                         template(v-if="selectedRecord?.bin")
                             template(v-for="(value, key) in selectedRecord?.bin")
                                 .file(v-for="item in value")
-                                    .material-symbols-outlined.fill do_not_disturb_on
+                                    .material-symbols-outlined.fill(@click="deleteFile(item, key)") do_not_disturb_on
                                     input.line.key(:value="key" disabled)
                                     input.line.value(:value="item.filename" disabled)
 
@@ -366,7 +370,7 @@ let listDisplay = ref([
         readonly: false,
         table: {
             name: 'opse',
-            access_group: 'public',
+            access_group: 0,
             subscription: false,
         },
         reference: {
@@ -417,7 +421,7 @@ let listDisplay = ref([
         },
         table: {
             name: 'hook',
-            access_group: 'authorized',
+            access_group: 1,
             subscription: false,
         },
         reference: {
@@ -508,6 +512,7 @@ let handleTabKey = (e) => {
 
 // file
 let uploadFileList = ref([]);
+let deleteFileList = ref([]);
 
 let addFile = (e) => {
     uploadFileList.value.push({ type: 'binary', key: '', context: '' });
@@ -516,6 +521,10 @@ let addFile = (e) => {
         let scrollTarget = document.querySelector('.detailRecord .content');
         scrollTarget.scrollTop = scrollTarget.scrollHeight
     })
+}
+let deleteFile = (i, k) => {
+    deleteFileList.value[k] = i;
+    console.log(deleteFileList.value)
 }
 </script>
 <style scoped lang="less">
@@ -528,6 +537,14 @@ let addFile = (e) => {
         margin-bottom: 8px;
     }
 }
+
+// .tableWrap {
+//     transform: translateY(-17px);
+
+//     &::-webkit-scrollbar {
+//         height: 17px; /* adjust based on your scrollbar size */
+//     }
+// }
 
 tbody {
     tr.nsrow {
@@ -585,10 +602,6 @@ tbody {
 
     &.show {
         transform: translateX(0px);
-    }
-
-    form {
-        
     }
 
     .header {

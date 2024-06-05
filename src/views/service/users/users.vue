@@ -72,7 +72,7 @@ form#searchForm(@submit.prevent="searchUsers")
 br
 
 .tableMenu
-    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
+    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill checklist_rtl
         span &nbsp;&nbsp;Show Columns
         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal;color:black")
