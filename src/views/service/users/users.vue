@@ -72,7 +72,7 @@ form#searchForm(@submit.prevent="searchUsers")
 br
 
 .tableMenu
-    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
+    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill checklist_rtl
         span &nbsp;&nbsp;Show Columns
         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal;color:black")
@@ -636,23 +636,30 @@ watch(searchFor, (n, o) => {
 })
 
 // computed fetch params
+let updateEndTime = ref(false);
 let callParams = computed(() => {
+    let dates = searchValue.value.split('~').map(d => d.trim());
+    let startDate = dates?.[0] ? new Date(dates?.[0]).getTime() : 0;
+    let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : new Date().getTime();
+    let result = {};
+
+    if (updateEndTime.value) {
+        endDate = new Date().getTime();
+    }
+
     switch (searchFor.value) {
         case 'timestamp':
         case 'birthdate':
-            let dates = searchValue.value.split('~').map(d => d.trim());
-            let startDate = dates?.[0] ? new Date(dates?.[0]).getTime() : 0;
-            let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : new Date().getTime();
 
             if (startDate && endDate) {
-                return {
+                result = {
                     service: currentService.id,
                     searchFor: searchFor.value,
                     value: startDate,
                     range: endDate
                 }
             } else {
-                return {
+                result = {
                     service: currentService.id,
                     searchFor: searchFor.value,
                     value: startDate ? startDate : endDate,
@@ -660,20 +667,22 @@ let callParams = computed(() => {
                 }
             }
         case 'user_id':
-            return {
+            result = {
                 service: currentService.id,
                 searchFor: searchFor.value,
                 value: searchValue.value
             }
 
         default:
-            return {
+            result = {
                 service: currentService.id,
                 searchFor: searchValue.value == '' ? 'timestamp' : searchFor.value,
                 value: searchValue.value == '' ? 0 : searchValue.value,
                 condition: '>='
             }
     }
+
+    return result;
 });
 
 let currentParams = callParams.value;
@@ -685,6 +694,7 @@ let getPage = async (refresh?: boolean) => {
     
     if (refresh) {
         endOfList.value = false;
+        updateEndTime.value = true;
     }
 
     if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {

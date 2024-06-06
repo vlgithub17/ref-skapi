@@ -56,7 +56,7 @@ p Search and manage your service records.
                 Checkbox(v-model="filterOptions.allow_multiple_reference" style="display:flex") Referenced 
                 Checkbox(v-model="filterOptions.data" style="display:flex") Data
 
-    .iconClick.square
+    .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; }")
         .material-symbols-outlined.fill add_circle
         span &nbsp;&nbsp;Create Record
 
@@ -127,7 +127,11 @@ p Search and manage your service records.
             tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=rc")
                 td.center
                     Checkbox(@click.stop v-model='checked[rc.table.name]')
-                td.overflow(v-if="filterOptions.table") {{ rc.table.name }}
+                td.overflow(v-if="filterOptions.table") 
+                    span.material-symbols-outlined.fill(v-if="rc.table.access_group == 'private'") vpn_key
+                    span.material-symbols-outlined.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
+                    span.material-symbols-outlined.fill(v-if="rc.table.access_group == 0 || rc.table.access_group == 'public'") language
+                    span(style="margin-left: 8px") {{ rc.table.name }}
                 td(v-if="filterOptions.user_id") 
                     .click.overflow {{ rc.user_id }}
                 td.center.overflow(v-if="filterOptions.subscription") {{ rc.table.subscription ? 'required' : '' }}
@@ -153,38 +157,39 @@ p Search and manage your service records.
             tr(v-for="i in (15 - listDisplay.length)")
                     td(:colspan="colspan")
 
-    .detailRecord(:class="{show: showDetail}")
+    form.detailRecord(:class="{show: showDetail}")
         template(v-if="selectedRecord")
             .header
-                .material-symbols-outlined(@click="showDetail=false; fileList=[]; uploadFileList=[];") arrow_back
-                .name {{ selectedRecord?.record_id }}
-                .save Save
+                .material-symbols-outlined(@click="showDetail=false; uploadFileList=[];") arrow_back
+                .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
+                button.noLine(type="submit") Save
             .content 
-                .row
-                    .key Record ID
-                    .value {{ selectedRecord?.record_id }}
-                .row 
-                    .key User ID
-                    .value {{ selectedRecord?.user_id }}
-                .row 
-                    .key Updated
-                    .value {{ selectedRecord?.updated }}
-                .row 
-                    .key Uploaded
-                    .value {{ selectedRecord?.uploaded }}
-                .row 
-                    .key ip
-                    .value {{ selectedRecord?.ip }}
-                .row 
-                    .key Referenced
-                    .value {{ selectedRecord?.reference?.referenced_count }}
+                template(v-if="selectedRecord?.record_id")
+                    .row
+                        .key Record ID
+                        .value {{ selectedRecord?.record_id }}
+                    .row 
+                        .key User ID
+                        .value {{ selectedRecord?.user_id }}
+                    .row 
+                        .key Updated
+                        .value {{ selectedRecord?.updated }}
+                    .row 
+                        .key Uploaded
+                        .value {{ selectedRecord?.uploaded }}
+                    .row 
+                        .key ip
+                        .value {{ selectedRecord?.ip }}
+                    .row 
+                        .key Referenced
+                        .value {{ selectedRecord?.reference?.referenced_count }}
 
-                hr
+                    hr
 
                 .row 
                     .key Read Only
                     .value
-                        Checkbox
+                        Checkbox(v-model="selectedRecord_readOnly")
                 
                 .row(style="margin-bottom:6px") 
                     .key Table
@@ -195,7 +200,7 @@ p Search and manage your service records.
 
                 .row.indent 
                     .key Access Group 
-                    select.value(v-if="selectedRecord?.table?.access_group !== 'private'" :value="(selectedRecord?.table?.access_group == '0' || selectedRecord?.table?.access_group == 'Public') ? '0' : '1'")
+                    select.value(v-if="selectedRecord?.table?.access_group !== 'private'" :value="selectedRecord?.table?.access_group")
                         option(value="0") Public
                         option(value="1") Authorized
                         option(value="private") Private
@@ -204,7 +209,7 @@ p Search and manage your service records.
                 .row.indent 
                     .key Subscription 
                     .value
-                        //- Checkbox(v-model="selectedRecord?.table?.subscription")
+                        Checkbox(v-model="selectedRecord_subscription")
 
                 .row(style="margin-bottom:6px")
                     .key Reference
@@ -245,22 +250,24 @@ p Search and manage your service records.
                 .row 
                     .key(style="margin-bottom:6px") Files 
                     .value.fileWrap(style="width:100%;")
-                        template(v-if="fileList")
-                            .file(v-for="f in fileList")
-                                .material-symbols-outlined.fill do_not_disturb_on
-                                input.line(:value="f?.context" disabled)
+                        template(v-if="selectedRecord?.bin")
+                            template(v-for="(value, key) in selectedRecord?.bin")
+                                .file(v-for="item in value")
+                                    .material-symbols-outlined.fill(@click="deleteFile(item, key)") do_not_disturb_on
+                                    input.line.key(:value="key" disabled)
+                                    input.line.value(:value="item.filename" disabled)
+
                         template(v-if="uploadFileList")
                             .file(v-for="uf in uploadFileList")
                                 .material-symbols-outlined.fill do_not_disturb_on
-                                input.line
-                                .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
-                                    input(@click.stop type="file" @change="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden)
+                                input.line.key
+                                .value.flex
+                                    input.line
+                                    .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
+                                        input(@click.stop type="file" @change="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden)
                     .add(@click="addFile")
                         .material-symbols-outlined.fill add_circle
                         span Add File
-
-                
-
 
 br
 br
@@ -303,24 +310,36 @@ let listDisplay = ref([
         uploaded: 1704938348,
         ip: '20.401.23924.432',
         readonly: false,
-        bin: [
-            {
-                access_group: 'public',
-                filename: 'file name',
-                url: 'Full URL endpoint of the file',
-                path: 'Path of the file',
-                size: 2384,
-                uploaded: 1704934348,
-            },
-            {
-                access_group: 'public',
-                filename: 'file name',
-                url: 'Full URL endpoint of the file',
-                path: 'Path of the file',
-                size: 2384,
-                uploaded: 1704934348,
-            },
-        ],
+        bin: {
+            'keyyyy' : [
+                {
+                    access_group: 'public',
+                    filename: 'file111111',
+                    url: 'Full URL endpoint of the file',
+                    path: 'Path of the file',
+                    size: 2384,
+                    uploaded: 1704934348,
+                },
+                {
+                    access_group: 'public',
+                    filename: 'file22222',
+                    url: 'Full URL endpoint of the file',
+                    path: 'Path of the file',
+                    size: 2384,
+                    uploaded: 1704934348,
+                }
+            ],
+            'soyeee' : [
+                {
+                    access_group: 'public',
+                    filename: 'file3333333',
+                    url: 'Full URL endpoint of the file',
+                    path: 'Path of the file',
+                    size: 2384,
+                    uploaded: 1704934348,
+                }
+            ]
+        },
         table: {
             name: 'jojojo',
             access_group: 'private',
@@ -349,10 +368,9 @@ let listDisplay = ref([
         uploaded: 1704938348,
         ip: '20.401.23924.432',
         readonly: false,
-        bin: [],
         table: {
             name: 'opse',
-            access_group: 'public',
+            access_group: 0,
             subscription: false,
         },
         reference: {
@@ -379,35 +397,31 @@ let listDisplay = ref([
         uploaded: 1704938348,
         ip: '20.401.23924.432',
         readonly: true,
-        bin: [
-            {
-                access_group: 'public',
-                filename: 'file name',
-                url: 'Full URL endpoint of the file',
-                path: 'Path of the file',
-                size: 2384,
-                uploaded: 1704934348,
-            },
-            {
-                access_group: 'public',
-                filename: 'file name',
-                url: 'Full URL endpoint of the file',
-                path: 'Path of the file',
-                size: 2384,
-                uploaded: 1704934348,
-            },
-            {
-                access_group: 'public',
-                filename: 'file name',
-                url: 'Full URL endpoint of the file',
-                path: 'Path of the file',
-                size: 2384,
-                uploaded: 1704934348,
-            },
-        ],
+        bin: {
+            'keyyyy' : [
+                {
+                    access_group: 'public',
+                    filename: 'file name',
+                    url: 'Full URL endpoint of the file',
+                    path: 'Path of the file',
+                    size: 2384,
+                    uploaded: 1704934348,
+                }
+            ],
+            'soyeee' : [
+                {
+                    access_group: 'public',
+                    filename: 'file name',
+                    url: 'Full URL endpoint of the file',
+                    path: 'Path of the file',
+                    size: 2384,
+                    uploaded: 1704934348,
+                }
+            ]
+        },
         table: {
             name: 'hook',
-            access_group: 'authorized',
+            access_group: 1,
             subscription: false,
         },
         reference: {
@@ -426,8 +440,28 @@ let listDisplay = ref([
         }
     }
 ]);
-let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
 let selectedRecord = ref({});
+let createRecordTemplate = {
+    table: {
+        name: '',
+        access_group: 0,
+        subscription: false,
+    },
+    index: {
+        name: '',
+        value: '',
+    },
+    reference: {
+        allow_multiple_reference: true,
+        reference_limit: null
+    },
+    tags: [],
+    readonly: false
+};
+let selectedRecord_readOnly = ref(selectedRecord?.readonly);
+let selectedRecord_subscription = ref(selectedRecord?.table?.subscription);
+
+let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
 let showDetail = ref(false);
 let fetching = ref(false);
 
@@ -478,27 +512,19 @@ let handleTabKey = (e) => {
 
 // file
 let uploadFileList = ref([]);
-let fileList = ref([]);
-
-watch(selectedRecord, nv => {
-    if (nv?.bin) {
-        for (let b of nv?.bin) {
-            fileList.value.push({
-                type: 'binary',
-                context: b.filename,
-                endpoint: b.url,
-            })
-        }
-    }
-})
+let deleteFileList = ref([]);
 
 let addFile = (e) => {
-    uploadFileList.value.push({ type: 'binary', context: '' });
+    uploadFileList.value.push({ type: 'binary', key: '', context: '' });
 
     nextTick(() => {
         let scrollTarget = document.querySelector('.detailRecord .content');
         scrollTarget.scrollTop = scrollTarget.scrollHeight
     })
+}
+let deleteFile = (i, k) => {
+    deleteFileList.value[k] = i;
+    console.log(deleteFileList.value)
 }
 </script>
 <style scoped lang="less">
@@ -511,6 +537,14 @@ let addFile = (e) => {
         margin-bottom: 8px;
     }
 }
+
+// .tableWrap {
+//     transform: translateY(-17px);
+
+//     &::-webkit-scrollbar {
+//         height: 17px; /* adjust based on your scrollbar size */
+//     }
+// }
 
 tbody {
     tr.nsrow {
@@ -589,6 +623,10 @@ tbody {
             flex-grow: 1;
             padding-left: 20px;
         }
+        button {
+            padding: 0;
+            font-size: 0.9rem;
+        }
     }
 
     .content {
@@ -634,8 +672,24 @@ tbody {
                 cursor: pointer;
             }
             input {
-                flex-grow: 1;
                 width: unset;
+            }
+            .key {
+                flex-grow: 1;
+            }
+            .value {
+                flex-grow: 2;
+
+                &.flex {
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    gap: 10px;
+
+                    input {
+                        flex-grow: 1;
+                    }
+                }
             }
             .upload {
                 color: var(--main-color);
