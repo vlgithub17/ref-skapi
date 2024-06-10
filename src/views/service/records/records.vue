@@ -57,7 +57,7 @@ p Search and manage your service records.
                 Checkbox(v-model="filterOptions.allow_multiple_reference" style="display:flex") Multiple Referenced 
                 Checkbox(v-model="filterOptions.data" style="display:flex") Data
 
-    .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; }")
+    .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; fileList=[]; }")
         .material-symbols-outlined.fill add_circle
         span &nbsp;&nbsp;Create Record
 
@@ -247,7 +247,7 @@ p Search and manage your service records.
 
                 .row
                     .key(style="margin-bottom: 6px") Data 
-                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 2)" @keydown.stop="handleTabKey" style="width:100%;height:150px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;") 
+                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 2)" @keydown.stop="handleKey" style="width:100%;height:150px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;") 
 
                 .row 
                     .key(style="margin-bottom:6px") Files 
@@ -255,7 +255,7 @@ p Search and manage your service records.
                         template(v-if="fileList")
                             .file(v-for="(value, index) in fileList")
                                 .material-symbols-outlined.fill(@click="deleteFile(value, index)") do_not_disturb_on
-                                template(v-if="value.key && value.filename")
+                                template(v-if="value.key && value.filename && !value.add")
                                     input.line.key(v-model="value.key" disabled)
                                     input.line.value(v-model="value.filename" disabled)
                                 template(v-else)
@@ -264,20 +264,6 @@ p Search and manage your service records.
                                         input.line(v-model="value.filename" required readonly)
                                         .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
                                             input(@click.stop type="file" @change="e=>{ value.filename = e.target.files[0].name }" required hidden)
-                        //- template(v-if="uploadFileList")
-                        //-     .file(v-for="uf in uploadFileList")
-                        //-         .material-symbols-outlined.fill(@click="deleteFile(value)") do_not_disturb_on
-                        //-         input.line.key(required)
-                        //-         .value.flex
-                        //-             input.line(required readonly)
-                        //-             .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
-                        //-                 input(@click.stop type="file" @change="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden)
-                        //- template(v-if="selectedRecord?.bin")
-                        //-     template(v-for="(value, key) in selectedRecord?.bin")
-                        //-         .file(v-for="item in value")
-                        //-             .material-symbols-outlined.fill(@click="deleteFile(item, key)") do_not_disturb_on
-                        //-             input.line.key(:value="key" disabled)
-                        //-             input.line.value(:value="item.filename" disabled)
 
                     .add(@click="addFile")
                         .material-symbols-outlined.fill add_circle
@@ -524,7 +510,7 @@ let noSelection = computed(() => {
 });
 
 // textarea tab key
-let handleTabKey = (e) => {
+let handleKey = (e) => {
     let start = e.target.selectionStart;
     let end = e.target.selectionEnd;
     let beforeCursor = e.target.value.slice(0, start);
@@ -535,29 +521,40 @@ let handleTabKey = (e) => {
 
         e.target.value = e.target.value.substring(0, start) + "\t" + e.target.value.substring(end);
         e.target.setSelectionRange(start + 1, start + 1);
-    } else if (e.key == '{' && e.shiftKey) {
-        e.target.value = beforeCursor + '}' + afterCursor;
-        e.target.setSelectionRange(start, start);
-    } else if (e.key == 'Enter' && beforeCursor.endsWith('{') && afterCursor.startsWith('}')) {
+    } else if (e.key == 'Enter') {
         e.preventDefault();
+
+        let indentMatch = beforeCursor.match(/(\n|\s)*$/);
+        let startCount = (indentMatch.input.split("{").length - 1);
+        let endCount = (indentMatch.input.split("}").length - 1);
 
         let currentLineStart = beforeCursor.lastIndexOf('\n') + 1;
         let currentIndentation = beforeCursor.slice(currentLineStart).match(/^\s*/)[0];
         let newIndentation = currentIndentation + '\t';
         let newCursorPosition = beforeCursor.length + newIndentation.length + 1;
 
-        e.target.value = beforeCursor + '\n' + newIndentation + '\n' + currentIndentation + afterCursor;
-        e.target.setSelectionRange(newCursorPosition, newCursorPosition);
+        if (beforeCursor.endsWith('{') && afterCursor.startsWith('}') || beforeCursor.endsWith('[') && afterCursor.startsWith(']')) {
+            e.target.value = beforeCursor + '\n' + newIndentation + '\n' + currentIndentation + afterCursor;
+            e.target.setSelectionRange(newCursorPosition, newCursorPosition);
+        } else {
+            if (startCount > endCount) {
+                e.target.value = beforeCursor + '\n' + currentIndentation + currentIndentation + afterCursor;
+                e.target.setSelectionRange(beforeCursor.length + newIndentation.length, beforeCursor.length + newIndentation.length);
+            }
+        }
+    } else if (e.key == '{' && e.shiftKey) {
+        e.target.value = beforeCursor + '}' + afterCursor;
+        e.target.setSelectionRange(start, start);
+    } else if (e.key == '[') {
+        e.target.value = beforeCursor + ']' + afterCursor;
+        e.target.setSelectionRange(start, start);
     }
 }
 
 // file
-let uploadFileList = ref([]);
 let deleteFileList = ref([]);
-
 let addFile = (e) => {
-    // uploadFileList.value.push({ type: 'binary', key: '', context: '' });
-    fileList.value.push({ type: 'binary', key: '', filename: '' });
+    fileList.value.push({ add: true, key: '', filename: '' });
 
     nextTick(() => {
         let scrollTarget = document.querySelector('.detailRecord .content');
@@ -565,7 +562,6 @@ let addFile = (e) => {
     })
 }
 let deleteFile = (item, index) => {
-    // console.log(item)
     if (!item.key || !item.filename) {
         fileList.value.splice(index, 1);
     } else {
@@ -575,7 +571,6 @@ let deleteFile = (item, index) => {
                 fileList.value.splice(i, 1);
         	}
         });
-        // console.log(deleteFileList.value)
     }
 }
 </script>

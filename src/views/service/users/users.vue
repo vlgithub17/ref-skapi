@@ -89,6 +89,7 @@ br
                 Checkbox(v-model="filterOptions.profile" style="display:flex") Profile 
                 Checkbox(v-model="filterOptions.website" style="display:flex") Website 
                 Checkbox(v-model="filterOptions.nickname" style="display:flex") Nickname
+                Checkbox(v-model="filterOptions.misc" style="display:flex") Misc
 
     .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill person_add
@@ -102,7 +103,7 @@ br
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh
 
-Table(:class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
+Table(:key="tableKey" :class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
     template(v-slot:head)
         tr
             th.center(style='width:80px;padding:0')
@@ -574,9 +575,11 @@ let selectOptions = [
     },
 ]
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
+let tableKey = ref(0);
 
 watch(filterOptions.value, nv => {
     colspan = Object.values(filterOptions.value).filter(value => value).length + 1;
+    tableKey.value++;
 }, { immediate: true })
 
 // modal related
@@ -902,6 +905,10 @@ let deleteUser = () => {
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
+
+        if(disp.maxPage > 0 && disp.maxPage < currentPage.value && !disp.list.length) {
+            currentPage.value--;
+        }
 
         selectedUser = {};
         promiseRunning.value = false;
