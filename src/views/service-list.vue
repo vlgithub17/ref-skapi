@@ -56,7 +56,9 @@ main#serviceList
                         td.overflow {{ serviceList[id].service.name }}
                         td.center(style="white-space:nowrap")
                             // plans
-                            .state(:style="{fontWeight: serviceList[id].service.plan === 'Canceled' ? 'normal' : null, color: serviceList[id].service.plan === 'Canceled' ? 'var(--caution-color)' : null}") {{ serviceList[id].service.plan }}
+                            .state(v-if="serviceList[id].service.subs_id && !serviceList[id].subscription")
+                                img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")
+                            .state(v-else :style="{fontWeight: serviceList[id].service.plan === 'Canceled' ? 'normal' : null, color: serviceList[id].service.plan === 'Canceled' ? 'var(--caution-color)' : null}") {{ serviceList[id].service.plan }}
                         td.center
                             // active state
                             .state(v-if="serviceList[id].service.active > 0" style="color:var(--text-green);font-weight:normal;") Running

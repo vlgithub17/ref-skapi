@@ -9,13 +9,13 @@
         #[br]
         To host your public files, please register a subdomain.
 
-    p The subdomain can only be #[span.wordset alphanumeric and hyphen,] #[span.wordset min 4 characters] and #[span.wordset max 32 characters.]
+    p The subdomain can only be #[span.wordset alphanumeric and hyphen,] should be at least #[span.wordset 6 characters] minimum and #[span.wordset max 32 characters.]
     
     br
 
     form.register(@submit.prevent='registerSubdomain')
         .subdomain
-            input.big(v-model='subdomain' pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="4" maxlength="32" :disabled="promiseRunning" placeholder="your-subdomain" required)
+            input.big(v-model='subdomain' pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="6" maxlength="32" :disabled="promiseRunning" placeholder="your-subdomain" required)
         button.final(style='min-width: 124px;' :disabled='promiseRunning' :class='{nonClickable: promiseRunning}')
             template(v-if="promiseRunning")
                 img.loading(src="@/assets/img/loading.png")

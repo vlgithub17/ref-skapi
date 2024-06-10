@@ -5,7 +5,7 @@ import { Countries } from './countries';
 const regions = JSON.parse(import.meta.env.VITE_REG);
 
 export type ServiceObj = {
-    active: number; // 0 = disabled / -1 = suspended
+    active: number; // 0 = disabled / -1 = suspended / 1 = active
     api_key: string;
     cors: string; // "url, url"
     created_locale: string; // country code ex) KR

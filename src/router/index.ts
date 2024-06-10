@@ -175,6 +175,12 @@ const router = createRouter(
               name: 'clientsecret',
               component: () => import('@/views/service/client_secret.vue')
             },
+
+            {
+              path: 'etc/records',
+              name: 'etc-records',
+              component: () => import('@/views/service/records/record_search_example.vue')
+            },
           ]
         },
       ]
