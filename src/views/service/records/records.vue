@@ -53,7 +53,8 @@ p Search and manage your service records.
                 Checkbox(v-model="filterOptions.ip" style="display:flex") ip 
                 Checkbox(v-model="filterOptions.files" style="display:flex") Files 
                 Checkbox(v-model="filterOptions.reference_limit" style="display:flex") Reference  Limit
-                Checkbox(v-model="filterOptions.allow_multiple_reference" style="display:flex") Referenced 
+                Checkbox(v-model="filterOptions.referenced" style="display:flex") Referenced 
+                Checkbox(v-model="filterOptions.allow_multiple_reference" style="display:flex") Multiple Referenced 
                 Checkbox(v-model="filterOptions.data" style="display:flex") Data
 
     .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; }")
@@ -69,7 +70,7 @@ p Search and manage your service records.
         span &nbsp;&nbsp;Refresh
 
 .recordPart 
-    Table(:class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}" resizable)
+    Table(:key="tableKey" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}" resizable)
         template(v-slot:head)
             tr
                 th.center(style='width:60px;padding:0')
@@ -135,12 +136,13 @@ p Search and manage your service records.
                 td(v-if="filterOptions.user_id") 
                     .click.overflow {{ rc.user_id }}
                 td.center.overflow(v-if="filterOptions.subscription") {{ rc.table.subscription ? 'required' : '' }}
-                td.overflow(v-if="filterOptions.record_id") {{ rc.reference.record_id }}
+                td.overflow(v-if="filterOptions.reference") {{ rc.reference.record_id }}
                 td.overflow(v-if="filterOptions.index") {{ rc.index.name }} / {{ rc.index.value }}
                 td.overflow(v-if="filterOptions.tag") 
                     template(v-for="(tag, index) in rc.tags")
                         span(v-if="rc.tags.length-1 == index") {{ tag }}
                         span(v-else) {{ tag }}, 
+                td.overflow(v-if="filterOptions.record_id") {{ rc.record_id }}
                 td(v-if="filterOptions.record_id")
                     .click.overflow {{ rc.record_id }}
                 td.overflow(v-if="filterOptions.updated") {{ rc.updated }}
@@ -155,12 +157,12 @@ p Search and manage your service records.
                     .material-symbols-outlined.fill(v-if="rc.reference.allow_multiple_reference") check_circle
                 td.overflow(v-if="filterOptions.data") {{ rc.data }}
             tr(v-for="i in (15 - listDisplay.length)")
-                    td(:colspan="colspan")
+                td(:colspan="colspan")
 
     form.detailRecord(:class="{show: showDetail}")
         template(v-if="selectedRecord")
             .header
-                .material-symbols-outlined(@click="showDetail=false; uploadFileList=[];") arrow_back
+                .material-symbols-outlined(@click="showDetail=false; selectedRecord={}; fileList=[];") arrow_back
                 .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
                 button.noLine(type="submit") Save
             .content 
@@ -250,21 +252,33 @@ p Search and manage your service records.
                 .row 
                     .key(style="margin-bottom:6px") Files 
                     .value.fileWrap(style="width:100%;")
-                        template(v-if="selectedRecord?.bin")
-                            template(v-for="(value, key) in selectedRecord?.bin")
-                                .file(v-for="item in value")
-                                    .material-symbols-outlined.fill(@click="deleteFile(item, key)") do_not_disturb_on
-                                    input.line.key(:value="key" disabled)
-                                    input.line.value(:value="item.filename" disabled)
+                        template(v-if="fileList")
+                            .file(v-for="(value, index) in fileList")
+                                .material-symbols-outlined.fill(@click="deleteFile(value, index)") do_not_disturb_on
+                                template(v-if="value.key && value.filename")
+                                    input.line.key(v-model="value.key" disabled)
+                                    input.line.value(v-model="value.filename" disabled)
+                                template(v-else)
+                                    input.line.key(v-model="value.key" required)
+                                    .value.flex
+                                        input.line(v-model="value.filename" required readonly)
+                                        .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
+                                            input(@click.stop type="file" @change="e=>{ value.filename = e.target.files[0].name }" required hidden)
+                        //- template(v-if="uploadFileList")
+                        //-     .file(v-for="uf in uploadFileList")
+                        //-         .material-symbols-outlined.fill(@click="deleteFile(value)") do_not_disturb_on
+                        //-         input.line.key(required)
+                        //-         .value.flex
+                        //-             input.line(required readonly)
+                        //-             .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
+                        //-                 input(@click.stop type="file" @change="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden)
+                        //- template(v-if="selectedRecord?.bin")
+                        //-     template(v-for="(value, key) in selectedRecord?.bin")
+                        //-         .file(v-for="item in value")
+                        //-             .material-symbols-outlined.fill(@click="deleteFile(item, key)") do_not_disturb_on
+                        //-             input.line.key(:value="key" disabled)
+                        //-             input.line.value(:value="item.filename" disabled)
 
-                        template(v-if="uploadFileList")
-                            .file(v-for="uf in uploadFileList")
-                                .material-symbols-outlined.fill do_not_disturb_on
-                                input.line.key
-                                .value.flex
-                                    input.line
-                                    .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
-                                        input(@click.stop type="file" @change="e=>{ e.target.parentNode.previousSibling.value = e.target.files[0].name }" required hidden)
                     .add(@click="addFile")
                         .material-symbols-outlined.fill add_circle
                         span Add File
@@ -282,6 +296,7 @@ import Code from '@/components/code.vue';
 import Table from '@/components/table.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Select from '@/components/select.vue';
+import { convertToObject } from 'typescript';
 
 let filterOptions = ref({
     table: true,
@@ -460,10 +475,36 @@ let createRecordTemplate = {
 };
 let selectedRecord_readOnly = ref(selectedRecord?.readonly);
 let selectedRecord_subscription = ref(selectedRecord?.table?.subscription);
-
-let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
 let showDetail = ref(false);
 let fetching = ref(false);
+let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
+let tableKey = ref(0);
+
+watch(filterOptions.value, nv => {
+    colspan = Object.values(filterOptions.value).filter(value => value).length + 1;
+    tableKey.value++;
+}, { immediate: true })
+
+let fileList = ref([]);
+watch(() => selectedRecord.value, nv => {
+    if (nv && nv?.bin) {
+        let normBin = (key, obj) => {
+            fileList.value.push({
+                type: 'binary',
+                key,
+                filename: obj.filename,
+                endpoint: obj.url,
+                download: () => skapi.getFile(obj.url, { dataType: 'download' })
+            })
+        }
+        for (let k in nv?.bin) {
+            let b = nv?.bin[k];
+            for (let i of b) {
+                normBin(k, i);
+            }
+        }
+    }
+})
 
 // checks
 let checked: any = ref({});
@@ -515,16 +556,27 @@ let uploadFileList = ref([]);
 let deleteFileList = ref([]);
 
 let addFile = (e) => {
-    uploadFileList.value.push({ type: 'binary', key: '', context: '' });
+    // uploadFileList.value.push({ type: 'binary', key: '', context: '' });
+    fileList.value.push({ type: 'binary', key: '', filename: '' });
 
     nextTick(() => {
         let scrollTarget = document.querySelector('.detailRecord .content');
         scrollTarget.scrollTop = scrollTarget.scrollHeight
     })
 }
-let deleteFile = (i, k) => {
-    deleteFileList.value[k] = i;
-    console.log(deleteFileList.value)
+let deleteFile = (item, index) => {
+    // console.log(item)
+    if (!item.key || !item.filename) {
+        fileList.value.splice(index, 1);
+    } else {
+        deleteFileList.value.push(item);
+        fileList.value.forEach((f, i)=> {
+        	if(f.key === item.key && f.filename === item.filename) {
+                fileList.value.splice(i, 1);
+        	}
+        });
+        // console.log(deleteFileList.value)
+    }
 }
 </script>
 <style scoped lang="less">

@@ -575,6 +575,10 @@ let selectOptions = [
 ]
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
 
+watch(filterOptions.value, nv => {
+    colspan = Object.values(filterOptions.value).filter(value => value).length + 1;
+}, { immediate: true })
+
 // modal related
 let promiseRunning = ref(false);
 let openInviteUser = ref(false);
