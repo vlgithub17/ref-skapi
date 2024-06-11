@@ -4,14 +4,18 @@ form(@submit.prevent='extractForm')
     input(type='hidden' name='service' :value='currentService.id')
     input(type='hidden' name='owner' :value='currentService.owner')
 
+    br
+
     // 선택
     input(name='record_id' placeholder='record id')
 
+    br
     br
 
     // 필수
     input(name='table[name]' placeholder='table.name' required)
 
+    br
     br
 
     select(name='table[access_group]')
@@ -20,10 +24,12 @@ form(@submit.prevent='extractForm')
         option(value='private') Private
 
     br
+    br
 
     // 선택
     input(name='table[subscription]' placeholder='subscription (user id)')
 
+    br
     br
 
     // 선택
@@ -43,17 +49,22 @@ form(@submit.prevent='extractForm')
         option(value='$user_id') Uploaders user id
 
     br
+    br
 
     template(v-if='index !== "none"')
         template(v-if='index == "name"')
             input(name='index[name]' placeholder='index name' required)
 
             br
+            br
 
             select(v-model='indexValueType')
                 option(value='text' selected) String
                 option(value='number') Number
                 option(value='checkbox') Boolean
+        
+            br  
+            br
 
         input(name='index[value]' :type='indexValueType' placeholder='index value' :required='indexValueType !== "checkbox"' v-model='indexValue')
 
@@ -68,12 +79,14 @@ form(@submit.prevent='extractForm')
 
             input(v-if='indexCondition == "range"' name='index[range]' :type='indexValueType' placeholder='index range' required)
 
-    br
+            br
+            br
 
     // tag, 선택
 
     input(name='tag' placeholder='tag1, tag2, ...')
 
+    br
     br
 
     input(type='submit' value='search')
