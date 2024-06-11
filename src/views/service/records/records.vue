@@ -159,7 +159,7 @@ p Search and manage your service records.
             tr(v-for="i in (15 - listDisplay.length)")
                 td(:colspan="colspan")
 
-    form.detailRecord(:class="{show: showDetail}")
+    form.detailRecord(:class="{show: showDetail}" @submit.prevent="uploadRecord")
         template(v-if="selectedRecord")
             .header
                 .material-symbols-outlined(@click="showDetail=false; selectedRecord={}; fileList=[];") arrow_back
@@ -170,9 +170,13 @@ p Search and manage your service records.
                     .row
                         .key Record ID
                         .value {{ selectedRecord?.record_id }}
+                        // record_id needed for update
+                        input(:value='selectedRecord?.record_id' name='config[record_id]' hidden)
                     .row 
                         .key User ID
                         .value {{ selectedRecord?.user_id }}
+                        // user_id info needed for uploadRecord()
+                        input(:value='selectedRecord?.user_id' name='user_id' hidden)
                     .row 
                         .key Updated
                         .value {{ selectedRecord?.updated }}
@@ -191,18 +195,18 @@ p Search and manage your service records.
                 .row 
                     .key Read Only
                     .value
-                        Checkbox(v-model="selectedRecord_readOnly")
+                        Checkbox(v-model="selectedRecord_readOnly" name='config[readonly]')
                 
                 .row(style="margin-bottom:6px") 
                     .key Table
 
                 .row.indent
                     .key Name 
-                    input.line.value(:value="selectedRecord?.table?.name")
+                    input.line.value(:value="selectedRecord?.table?.name" name='config[table][name]')
 
                 .row.indent 
                     .key Access Group 
-                    select.value(v-if="selectedRecord?.table?.access_group !== 'private'" :value="selectedRecord?.table?.access_group")
+                    select.value(v-if="selectedRecord?.table?.access_group !== 'private'" :value="selectedRecord?.table?.access_group" name='config[table][access_group]')
                         option(value="0") Public
                         option(value="1") Authorized
                         option(value="private") Private
@@ -211,43 +215,46 @@ p Search and manage your service records.
                 .row.indent 
                     .key Subscription 
                     .value
-                        Checkbox(v-model="selectedRecord_subscription")
+                        Checkbox(v-model="selectedRecord_subscription" name='config[table][subscription]')
 
                 .row(style="margin-bottom:6px")
                     .key Reference
 
                 .row.indent 
                     .key Reference ID 
-                    input.line.value(:value="selectedRecord?.reference?.record_id")
+                    input.line.value(:value="selectedRecord?.reference?.record_id" name='config[reference][record_id]')
 
                 .row.indent 
                     .key Reference Limit
-                    input.line.value(type="number" min="0" :placeholder="selectedRecord?.reference?.reference_limit == null ? 'null' : ''" :value="selectedRecord?.reference?.reference_limit === null ? '' : selectedRecord?.reference?.reference_limit")
+                    input.line.value(type="number" min="0" :placeholder="selectedRecord?.reference?.reference_limit == null ? 'Infinite' : ''" :value="selectedRecord?.reference?.reference_limit === null ? '' : selectedRecord?.reference?.reference_limit" name='config[reference][reference_limit]')
                     
                 .row.indent 
                     .key Multiple Reference
-                    select.value(:value="selectedRecord?.reference?.allow_multiple_reference ? 'true' : 'false'")
-                        option(value='true') Allowed
-                        option(value='false') Not Allowed
+                    .value
+                        Checkbox(:value="selectedRecord?.reference?.allow_multiple_reference" name='config[reference][allow_multiple_reference]')
+                    //- select.value(:value="selectedRecord?.reference?.allow_multiple_reference ? 'true' : 'false'")
+                    //-     option(value='true') Allowed
+                    //-     option(value='false') Not Allowed
 
                 .row(style="margin-bottom:6px")
                     .key Index 
 
                 .row.indent 
                     .key Name 
-                    input.line.value(:value="selectedRecord?.index?.name")
-
+                    input.line.value(:value="selectedRecord?.index?.name" name='config[index][name]')
+                
+                // data type 선택할수 있어야함: number, string, boolean
                 .row.indent 
                     .key Value 
-                    input.line.value(:value="selectedRecord?.index?.value")
+                    input.line.value(:value="selectedRecord?.index?.value" name='config[index][value]')
 
                 .row 
                     .key Tags 
-                    input.line.value(:value="selectedRecord?.tags")
+                    input.line.value(:value="selectedRecord?.tags" name='config[tags]')
 
                 .row
                     .key(style="margin-bottom: 6px") Data 
-                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 2)" @keydown.stop="handleKey" style="width:100%;height:150px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;") 
+                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 2)" @keydown.stop="handleKey" style="width:100%;height:150px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" name='data')
 
                 .row 
                     .key(style="margin-bottom:6px") Files 
@@ -263,7 +270,7 @@ p Search and manage your service records.
                                     .value.flex
                                         input.line(v-model="value.filename" required readonly)
                                         .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
-                                            input(@click.stop type="file" @change="e=>{ value.filename = e.target.files[0].name }" required hidden)
+                                            input(@click.stop type="file" @change="e=>{ value.filename = e.target.files[0].name }" required hidden :name='value.key')
 
                     .add(@click="addFile")
                         .material-symbols-outlined.fill add_circle
@@ -283,7 +290,7 @@ import Table from '@/components/table.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Select from '@/components/select.vue';
 import { convertToObject } from 'typescript';
-
+import { uploadRecord } from '@/views/service/records/record';
 let filterOptions = ref({
     table: true,
     user_id: true,

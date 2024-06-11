@@ -39,7 +39,9 @@ form(@submit.prevent='extractForm')
 
     // index 선택
     p Index
+    
     hr
+    
     select(v-model='index')
         option(value='none' selected) None
         option(value='name') Index name
@@ -82,9 +84,13 @@ form(@submit.prevent='extractForm')
             br
             br
 
-    // tag, 선택
+    p Tag
+    
+    hr
+    
+    // tag, 하나만 검색 가능
 
-    input(name='tag' placeholder='tag1, tag2, ...')
+    input(name='tag' placeholder='tag search')
 
     br
     br
