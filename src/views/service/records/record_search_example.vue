@@ -142,6 +142,8 @@ async function extractForm(e) {
     let form = skapi.util.extractFormData(e);
     let params = form.data;
 
+    console.log(form)
+
     if (params?.index?.condition === 'range') {
         delete params.index.condition;
     }

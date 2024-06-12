@@ -15,6 +15,7 @@ let { disabled, modelValue = ref(false), name } = defineProps({
     },
     name: String
 });
+const emit = defineEmits(['update:modelValue']);
 const slots = useSlots();
 let hasSlotContent = ref(false);
 onMounted(() => {
