@@ -1,6 +1,7 @@
 <template lang="pug">
 label._checkbox(:class="{'nonClickable' : disabled}" :style='{opacity: disabled ? ".5" : "1", "align-items": hasSlotContent ? "flex-start" : "center"}')
-    input(type="checkbox" :checked='modelValue' @input="e=>{modelValue = e.target.checked;$emit('update:modelValue', e.target.checked)}" :disabled="disabled" :name="name" hidden)
+    //- input(type="checkbox" :checked='modelValue' @input="e=>{modelValue = e.target.checked;$emit('update:modelValue', e.target.checked)}" :disabled="disabled" :name="name" hidden)
+    input(type="checkbox" :checked='modelValue' @input="e=>{$emit('update:modelValue', e.target.checked)}" :disabled="disabled" :name="name" hidden)
     span.material-symbols-outlined(:class='{fill:modelValue !== null}' :style='{"margin-top": hasSlotContent ? "-3px" : null}') {{ modelValue === null ? 'indeterminate_check_box' : modelValue ? 'check_box' : 'check_box_outline_blank' }}
     div
         slot

@@ -377,6 +377,7 @@ import Checkbox from '@/components/checkbox.vue';
 import Select from '@/components/select.vue';
 import { convertToObject } from 'typescript';
 import { uploadRecord } from '@/views/service/records/record';
+
 let filterOptions = ref({
     table: true,
     user_id: true,
@@ -562,6 +563,7 @@ let indexValueType = ref('text');
 let indexValue = ref('');
 let indexCondition = ref('=');
 let conditionDisabled = ref(false);
+
 watch(index, (n) => {
     conditionDisabled.value = false;
     indexValueType.value = 'text';
