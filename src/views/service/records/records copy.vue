@@ -35,87 +35,20 @@ hr
 p Search and manage your service records.
 
 form#searchForm(@submit.prevent="searchRecords")
-    .inner
-        input(type='hidden' name='service' :value='currentService.id')
-        input(type='hidden' name='owner' :value='currentService.owner')
+    input(type='hidden' name='service' :value='currentService.id')
+    input(type='hidden' name='owner' :value='currentService.owner')
 
-        .groupWrap
-            .material-symbols-outlined.fill.group(:class="{active : table_access_group == 'public'}" title="public" @click.stop="table_access_group = 'public'") language
-            .material-symbols-outlined.fill.group(:class="{active : table_access_group == 'authorized'}" title="authorized" @click.stop="table_access_group = 'authorized'") person
-            .material-symbols-outlined.fill.group(:class="{active : table_access_group == 'private'}" title="private" @click.stop="table_access_group = 'private'") vpn_key
-        .search
-            input.big(name='table[name]' :placeholder="table_access_group + ' table.name'" required style="padding-right: 40px;")
-            .material-symbols-outlined.fill.icon(@click.stop="showAdvanced = !showAdvanced") manage_search
-        button.final(type="submit" style='flex-shrink: 0;') Search
+    Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}")
+    .search
+        input.big(v-if="searchFor == 'table'" name='table[name]' placeholder='table.name' required)
+        input.big(v-if="searchFor == 'user_id'" name='user_id' placeholder='user id' required)
+        input.big(v-if="searchFor == 'record_id'" name='record_id' placeholder='record id')
+    button.final(type="submit" style='flex-shrink: 0;') Search
 
-        // table 검색일때 추가적인 필드
-        .advanced(v-if="showAdvanced" style="width:100%")
-            .infoBox
-                //- .smallTitle(style="margin-bottom: 8px") Access Group 
-                //- div
-                //-     .radio(style="display:inline-block; margin-right:20px")
-                //-         input#access_public(type="radio" name="access_group" value="public")
-                //-         label(for="access_public" style="display:inline-block; font-weight:300") Public
-                //-     .radio(style="display:inline-block; margin-right:20px")
-                //-         input#access_authorized(type="radio" name="access_group" value="authorized")
-                //-         label(for="access_authorized" style="display:inline-block; font-weight:300") Authorized
-                //-     .radio(style="display:inline-block; margin-right:20px")
-                //-         input#access_private(type="radio" name="access_group" value="private")
-                //-         label(for="access_private" style="display:inline-block; font-weight:300") Private
-
-                //- br
-
-                .smallTitle(style="margin-bottom: 8px") Subscription ID
-                input.big(pattern='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' title='Subscription ID should be the user\'s ID' name='subscription' placeholder="Subscription ID")
-
-                br
-                br
-
-                .smallTitle(style="margin-bottom: 8px") Referenced ID
-                input.big(name='reference' placeholder='referenced record id')
-
-                br
-                br
-
-                .smallTitle(style="margin-bottom: 8px") Tag
-                input.big(name='tag' placeholder='tag search')
-
-                br
-                br
-
-                .smallTitle(style="margin-bottom: 8px") Index
-                select(v-model='index' style="width:100%; height:44px; margin-bottom:10px")
-                    option(value='none' selected) None
-                    option(value='name') Index name
-                    option(value='$updated') Updated Date
-                    option(value='$uploaded') Uploaded Date
-                    option(value='$referenced_count') Number of referenced
-                    option(value='$user_id') Uploaders user id
-
-                input.big(v-if='index == "name"' name='index[name]' placeholder='index name' style="margin-bottom:10px" required)
-
-                .value(v-if='index !== "none"' style="display:flex; flex-wrap:wrap; gap:10px;")
-                    select(v-if='index == "name"' v-model='indexValueType' style="flex-grow:1; height:44px")
-                        option(value='text' selected) String
-                        option(value='number') Number
-                        option(value='checkbox') Boolean
-
-                    input.big(v-if="indexValueType !== 'checkbox'" name='index[value]' :type='indexValueType' placeholder='index value' :required='indexValueType !== "checkbox"' v-model='indexValue' style="flex-grow:50; width:unset")
-                    select(v-else v-model="indexValue" style="flex-grow:50")
-                        option(value=true name='index[value]' selected) True
-                        option(value=false name='index[value]') False
-
-                    template(v-if='index !== "$user_id" && indexValueType !== "checkbox"')
-                        select(v-model='indexCondition' :disabled='conditionDisabled' style="flex-grow:1; height:44px")
-                            option(value='=' selected) equal
-                            option(value='>=') greater or equal
-                            option(value='>') greater
-                            option(value='<=') less or equal
-                            option(value='<') less
-                            option(value='range') range
-
-                        input(v-if='indexCondition == "range"' name='index[range]' :type='indexValueType' placeholder='index range' style="flex-grow:1; height:44px" required)
-
+    // table 검색일때 추가적인 필드
+    .advanced(v-if="searchFor == 'table'" style="width:100%")
+        label Subscription
+            input.line(type="text" pattern='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' title='Subscription ID should be the user\'s ID' name='subscription' placeholder="Subscription ID")
 
 br
 
@@ -244,7 +177,7 @@ br
             tr(v-for="i in (15 - listDisplay.length)")
                 td(:colspan="colspan")
 
-    form.detailRecord(:class="{show: showDetail}" @submit.prevent="uploadRecord")
+    form.detailRecord(:class="{show: showDetail}")
         template(v-if="selectedRecord")
             .header
                 .material-symbols-outlined(@click="showDetail=false; selectedRecord={}; fileList=[];") arrow_back
@@ -255,13 +188,9 @@ br
                     .row
                         .key Record ID
                         .value {{ selectedRecord?.record_id }}
-                        // record_id needed for update
-                        input(:value='selectedRecord?.record_id' name='config[record_id]' hidden)
                     .row 
                         .key User ID
                         .value {{ selectedRecord?.user_id }}
-                        // user_id info needed for uploadRecord()
-                        input(:value='selectedRecord?.user_id' name='user_id' hidden)
                     .row 
                         .key Updated
                         .value {{ selectedRecord?.updated }}
@@ -280,18 +209,18 @@ br
                 .row 
                     .key Read Only
                     .value
-                        Checkbox(v-model="selectedRecord_readOnly" name='config[readonly]')
+                        Checkbox(v-model="selectedRecord_readOnly")
                 
                 .row(style="margin-bottom:6px") 
                     .key Table
 
                 .row.indent
                     .key Name 
-                    input.line.value(:value="selectedRecord?.table?.name" name='config[table][name]')
+                    input.line.value(:value="selectedRecord?.table?.name")
 
                 .row.indent 
                     .key Access Group 
-                    select.value(v-if="selectedRecord?.table?.access_group !== 'private'" :value="selectedRecord?.table?.access_group" name='config[table][access_group]')
+                    select.value(v-if="selectedRecord?.table?.access_group !== 'private'" :value="selectedRecord?.table?.access_group")
                         option(value="0") Public
                         option(value="1") Authorized
                         option(value="private") Private
@@ -300,46 +229,43 @@ br
                 .row.indent 
                     .key Subscription 
                     .value
-                        Checkbox(v-model="selectedRecord_subscription" name='config[table][subscription]')
+                        Checkbox(v-model="selectedRecord_subscription")
 
                 .row(style="margin-bottom:6px")
                     .key Reference
 
                 .row.indent 
                     .key Reference ID 
-                    input.line.value(:value="selectedRecord?.reference?.record_id" name='config[reference][record_id]')
+                    input.line.value(:value="selectedRecord?.reference?.record_id")
 
                 .row.indent 
                     .key Reference Limit
-                    input.line.value(type="number" min="0" :placeholder="selectedRecord?.reference?.reference_limit == null ? 'Infinite' : ''" :value="selectedRecord?.reference?.reference_limit === null ? '' : selectedRecord?.reference?.reference_limit" name='config[reference][reference_limit]')
+                    input.line.value(type="number" min="0" :placeholder="selectedRecord?.reference?.reference_limit == null ? 'null' : ''" :value="selectedRecord?.reference?.reference_limit === null ? '' : selectedRecord?.reference?.reference_limit")
                     
                 .row.indent 
                     .key Multiple Reference
-                    .value
-                        Checkbox(:value="selectedRecord?.reference?.allow_multiple_reference" name='config[reference][allow_multiple_reference]')
-                    //- select.value(:value="selectedRecord?.reference?.allow_multiple_reference ? 'true' : 'false'")
-                    //-     option(value='true') Allowed
-                    //-     option(value='false') Not Allowed
+                    select.value(:value="selectedRecord?.reference?.allow_multiple_reference ? 'true' : 'false'")
+                        option(value='true') Allowed
+                        option(value='false') Not Allowed
 
                 .row(style="margin-bottom:6px")
                     .key Index 
 
                 .row.indent 
                     .key Name 
-                    input.line.value(:value="selectedRecord?.index?.name" name='config[index][name]')
-                
-                // data type 선택할수 있어야함: number, string, boolean
+                    input.line.value(:value="selectedRecord?.index?.name")
+
                 .row.indent 
                     .key Value 
-                    input.line.value(:value="selectedRecord?.index?.value" name='config[index][value]')
+                    input.line.value(:value="selectedRecord?.index?.value")
 
                 .row 
                     .key Tags 
-                    input.line.value(:value="selectedRecord?.tags" name='config[tags]')
+                    input.line.value(:value="selectedRecord?.tags")
 
                 .row
                     .key(style="margin-bottom: 6px") Data 
-                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 2)" @keydown.stop="handleKey" style="width:100%;height:150px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" name='data')
+                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 2)" @keydown.stop="handleKey" style="width:100%;height:150px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;") 
 
                 .row 
                     .key(style="margin-bottom:6px") Files 
@@ -355,7 +281,7 @@ br
                                     .value.flex
                                         input.line(v-model="value.filename" required readonly)
                                         .upload(style='white-space: nowrap;overflow: hidden;flex-shrink: 1;text-overflow: ellipsis;' @click='e=>{ e.target.children[0].click() }') Choose a file
-                                            input(@click.stop type="file" @change="e=>{ value.filename = e.target.files[0].name }" required hidden :name='value.key')
+                                            input(@click.stop type="file" @change="e=>{ value.filename = e.target.files[0].name }" required hidden)
 
                     .add(@click="addFile")
                         .material-symbols-outlined.fill add_circle
@@ -376,7 +302,6 @@ import Table from '@/components/table.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Select from '@/components/select.vue';
 import { convertToObject } from 'typescript';
-import { uploadRecord } from '@/views/service/records/record';
 
 let filterOptions = ref({
     table: true,
@@ -553,41 +478,24 @@ let createRecordTemplate = {
     tags: [],
     readonly: false
 };
-let selectedRecord_readOnly = ref(false);
-let selectedRecord_subscription = ref(false);
+let selectedRecord_readOnly = ref(selectedRecord?.readonly);
+let selectedRecord_subscription = ref(selectedRecord?.table?.subscription);
+let searchFor: Ref<"table" | "user" | "record_id"> = ref('table');
 let searchValue: Ref<string> = ref('');
-let showAdvanced = ref(false);
-let table_access_group = ref('public');
-let index = ref('none');
-let indexValueType = ref('text');
-let indexValue = ref('');
-let indexCondition = ref('=');
-let conditionDisabled = ref(false);
-
-watch(index, (n) => {
-    conditionDisabled.value = false;
-    indexValueType.value = 'text';
-    indexCondition.value = '=';
-    switch (n) {
-        case '$user_id':
-            indexValueType.value = 'text';
-            indexCondition.value = '=';
-            conditionDisabled.value = true;
-            break;
-        case 'name':
-            break;
-        case '$referenced_count':
-            indexValueType.value = 'number';
-            break;
-        default:
-            // updated, uploaded
-            indexValueType.value = 'datetime-local';
+let selectOptions = [
+    {
+        option: 'Table Name',
+        value: 'table'
+    },
+    {
+        option: 'User ID',
+        value: 'user_id'
+    },
+    {
+        option: 'Record ID',
+        value: 'record_id'
     }
-})
-
-watch(indexValueType, n => {
-    indexValue.value = '';
-})
+]
 let showDetail = ref(false);
 let fetching = ref(false);
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
@@ -600,26 +508,20 @@ watch(filterOptions.value, nv => {
 
 let fileList = ref([]);
 watch(() => selectedRecord.value, nv => {
-    if (nv) {
-        console.log(nv)
-        selectedRecord_readOnly.value = nv?.readonly ? nv?.readonly : false;
-        selectedRecord_subscription.value = nv?.table?.subscription || false;
-
-        if(nv?.bin) {
-            let normBin = (key, obj) => {
-                fileList.value.push({
-                    type: 'binary',
-                    key,
-                    filename: obj.filename,
-                    endpoint: obj.url,
-                    download: () => skapi.getFile(obj.url, { dataType: 'download' })
-                })
-            }
-            for (let k in nv?.bin) {
-                let b = nv?.bin[k];
-                for (let i of b) {
-                    normBin(k, i);
-                }
+    if (nv && nv?.bin) {
+        let normBin = (key, obj) => {
+            fileList.value.push({
+                type: 'binary',
+                key,
+                filename: obj.filename,
+                endpoint: obj.url,
+                download: () => skapi.getFile(obj.url, { dataType: 'download' })
+            })
+        }
+        for (let k in nv?.bin) {
+            let b = nv?.bin[k];
+            for (let i of b) {
+                normBin(k, i);
             }
         }
     }
@@ -709,104 +611,22 @@ let deleteFile = (item, index) => {
 </script>
 <style scoped lang="less">
 #searchForm {
-    max-width: 700px;
-    margin: 0 auto;
-    
-    .inner {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px;
-    }
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 700px;
+    max-width: 100%;
+
     .customSelect {
         flex-grow: 1;
     }
     .search {
-        position: relative;
         flex-grow: 50;
-
-        .icon {
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            user-select: none;
-        }
-    }
-    .groupWrap {
-        flex-grow: 1;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-radius: 8px;
-        border-style: hidden;
-        cursor: pointer;
-        user-select: none;
-
-        .group {
-            position: relative;
-            height: 44px;
-            padding: 10px;
-            flex-grow: 1;
-            text-align: center;
-            background-color: #fff;
-            color: rgba(0, 0, 0, 0.4);
-
-            &::after {
-                position: absolute;
-                content: '';
-                top: 0;
-                left: -1px;
-                bottom: 0;
-                right: 0;
-                border: 1px solid rgba(0, 0, 0, 0.5);
-            }
-            
-            &:first-child {
-                border-radius: 8px 0 0 8px;
-
-                &::after {
-                    border-radius: 8px 0 0 8px;
-                }
-            }
-            &:nth-child(2) {
-                &::after {
-                    border-left: 0;
-                }
-            }
-            &:last-child {
-                border-radius: 0 8px 8px 0;
-
-                &::after {
-                    border-left: 0;
-                    border-radius: 0 8px 8px 0;
-                }
-            }
-
-            &.active {
-                background-color: rgba(41, 63, 230, 0.05);
-                color: var(--main-color);
-
-                &::after {
-                    border: 1px solid var(--main-color);
-                }
-            }
-        }
     }
     .final {
         flex-grow: 1;
         width: 140px;
-    }
-    .advanced {
-        font-size: 0.8rem;
-        user-select: none;
-        
-        .infoBox {
-            input {
-                outline: 0;
-                background-color: rgba(0,0,0,0.05);
-            }
-        }
     }
 }
 
