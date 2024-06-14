@@ -40,51 +40,37 @@ form#searchForm(@submit.prevent="searchRecords")
         input(type='hidden' name='owner' :value='currentService.owner')
 
         .groupWrap
-            .material-symbols-outlined.fill.group(:class="{active : table_access_group == 'public'}" title="public" @click.stop="table_access_group = 'public'") language
-            .material-symbols-outlined.fill.group(:class="{active : table_access_group == 'authorized'}" title="authorized" @click.stop="table_access_group = 'authorized'") person
-            .material-symbols-outlined.fill.group(:class="{active : table_access_group == 'private'}" title="private" @click.stop="table_access_group = 'private'") vpn_key
+            .material-symbols-outlined.fill.group(:class="{active : searchFormValue.table.access_group == 'public'}" title="public" @click.stop="searchFormValue.table.access_group = 'public'") language
+            .material-symbols-outlined.fill.group(:class="{active : searchFormValue.table.access_group == 'authorized'}" title="authorized" @click.stop="searchFormValue.table.access_group = 'authorized'") person
+            .material-symbols-outlined.fill.group(:class="{active : searchFormValue.table.access_group == 'private'}" title="private" @click.stop="searchFormValue.table.access_group = 'private'") vpn_key
         .search
-            input.big(name='table[name]' :placeholder="table_access_group + ' table.name'" required style="padding-right: 40px;")
+            input.big(@input="e => {searchFormValue.table.name = e.target.value}" :placeholder="searchFormValue.table.access_group + ' table.name'" required style="padding-right: 40px;")
             .material-symbols-outlined.fill.icon(@click.stop="showAdvanced = !showAdvanced") manage_search
         button.final(type="submit" style='flex-shrink: 0;') Search
 
         // table 검색일때 추가적인 필드
         .advanced(v-if="showAdvanced" style="width:100%")
             .infoBox
-                //- .smallTitle(style="margin-bottom: 8px") Access Group 
-                //- div
-                //-     .radio(style="display:inline-block; margin-right:20px")
-                //-         input#access_public(type="radio" name="access_group" value="public")
-                //-         label(for="access_public" style="display:inline-block; font-weight:300") Public
-                //-     .radio(style="display:inline-block; margin-right:20px")
-                //-         input#access_authorized(type="radio" name="access_group" value="authorized")
-                //-         label(for="access_authorized" style="display:inline-block; font-weight:300") Authorized
-                //-     .radio(style="display:inline-block; margin-right:20px")
-                //-         input#access_private(type="radio" name="access_group" value="private")
-                //-         label(for="access_private" style="display:inline-block; font-weight:300") Private
-
-                //- br
-
                 .smallTitle(style="margin-bottom: 8px") Subscription ID
-                input.big(pattern='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' title='Subscription ID should be the user\'s ID' name='subscription' placeholder="Subscription ID")
+                input.big(@input="e => {searchFormValue.table.subscription = e.target.value}" pattern='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' title='Subscription ID should be the user\'s ID' name='subscription' placeholder="Subscription ID")
 
                 br
                 br
 
                 .smallTitle(style="margin-bottom: 8px") Referenced ID
-                input.big(name='reference' placeholder='referenced record id')
+                input.big(@input="e => {searchFormValue.reference = e.target.value}" name='reference' placeholder='referenced record id')
 
                 br
                 br
 
                 .smallTitle(style="margin-bottom: 8px") Tag
-                input.big(name='tag' placeholder='tag search')
+                input.big(@input="e => {searchFormValue.tag = e.target.value}" name='tag' placeholder='tag search')
 
                 br
                 br
 
                 .smallTitle(style="margin-bottom: 8px") Index
-                select(v-model='index' style="width:100%; height:44px; margin-bottom:10px")
+                select(v-model='searchFormValue.index.name' style="width:100%; height:44px; margin-bottom:10px")
                     option(value='none' selected) None
                     option(value='name') Index name
                     option(value='$updated') Updated Date
@@ -92,21 +78,21 @@ form#searchForm(@submit.prevent="searchRecords")
                     option(value='$referenced_count') Number of referenced
                     option(value='$user_id') Uploaders user id
 
-                input.big(v-if='index == "name"' name='index[name]' placeholder='index name' style="margin-bottom:10px" required)
+                input.big(v-if='searchFormValue.index.name == "name"' v-model='searchFormValue.index.value' name='index[name]' placeholder='index name' style="margin-bottom:10px" required)
 
-                .value(v-if='index !== "none"' style="display:flex; flex-wrap:wrap; gap:10px;")
-                    select(v-if='index == "name"' v-model='indexValueType' style="flex-grow:1; height:44px")
+                .value(v-if='searchFormValue.index.name !== "none"' style="display:flex; flex-wrap:wrap; gap:10px;")
+                    select(v-if='searchFormValue.index.name == "name"' v-model='searchFormValue.index.type' style="flex-grow:1; height:44px")
                         option(value='text' selected) String
                         option(value='number') Number
                         option(value='checkbox') Boolean
 
-                    input.big(v-if="indexValueType !== 'checkbox'" name='index[value]' :type='indexValueType' placeholder='index value' :required='indexValueType !== "checkbox"' v-model='indexValue' style="flex-grow:50; width:unset")
-                    select(v-else v-model="indexValue" style="flex-grow:50")
+                    input.big(v-if="searchFormValue.index.type !== 'checkbox'" name='index[value]' :type='searchFormValue.index.type' placeholder='index value' :required='searchFormValue.index.type !== "checkbox"' v-model='searchFormValue.index.value' style="flex-grow:50; width:unset")
+                    select(v-else v-model="searchFormValue.index.value" style="flex-grow:50")
                         option(value=true name='index[value]' selected) True
                         option(value=false name='index[value]') False
 
-                    template(v-if='index !== "$user_id" && indexValueType !== "checkbox"')
-                        select(v-model='indexCondition' :disabled='conditionDisabled' style="flex-grow:1; height:44px")
+                    template(v-if='searchFormValue.index.name !== "$user_id" && searchFormValue.index.type !== "checkbox"')
+                        select(v-model='searchFormValue.index.condition' :disabled='conditionDisabled' style="flex-grow:1; height:44px")
                             option(value='=' selected) equal
                             option(value='>=') greater or equal
                             option(value='>') greater
@@ -114,8 +100,7 @@ form#searchForm(@submit.prevent="searchRecords")
                             option(value='<') less
                             option(value='range') range
 
-                        input(v-if='indexCondition == "range"' name='index[range]' :type='indexValueType' placeholder='index range' style="flex-grow:1; height:44px" required)
-
+                        input(v-if='searchFormValue.index.condition == "range"' name='index[range]' :type='searchFormValue.index.type' placeholder='index range' style="flex-grow:1; height:44px" required)
 
 br
 
@@ -210,44 +195,57 @@ br
                     | Data
                     .resizer
         template(v-slot:body)
-            tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=rc")
-                td.center
-                    Checkbox(@click.stop v-model='checked[rc.table.name]')
-                td.overflow(v-if="filterOptions.table") 
-                    span.material-symbols-outlined.fill(v-if="rc.table.access_group == 'private'") vpn_key
-                    span.material-symbols-outlined.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
-                    span.material-symbols-outlined.fill(v-if="rc.table.access_group == 0 || rc.table.access_group == 'public'") language
-                    span(style="margin-left: 8px") {{ rc.table.name }}
-                td(v-if="filterOptions.user_id") 
-                    .click.overflow {{ rc.user_id }}
-                td.center.overflow(v-if="filterOptions.subscription") {{ rc.table.subscription ? 'required' : '' }}
-                td.overflow(v-if="filterOptions.reference") {{ rc.reference.record_id }}
-                td.overflow(v-if="filterOptions.index") {{ rc.index.name }} / {{ rc.index.value }}
-                td.overflow(v-if="filterOptions.tag") 
-                    template(v-for="(tag, index) in rc.tags")
-                        span(v-if="rc.tags.length-1 == index") {{ tag }}
-                        span(v-else) {{ tag }}, 
-                td.overflow(v-if="filterOptions.record_id") {{ rc.record_id }}
-                td(v-if="filterOptions.record_id")
-                    .click.overflow {{ rc.record_id }}
-                td.overflow(v-if="filterOptions.updated") {{ rc.updated }}
-                td.overflow(v-if="filterOptions.uploaded") {{ rc.uploaded }}
-                td.center.overflow(v-if="filterOptions.readonly")
-                    .material-symbols-outlined.fill(v-if="rc.readonly") check_circle
-                td.overflow(v-if="filterOptions.ip") {{ rc.ip }}
-                td.center.overflow(v-if="filterOptions.files") {{ rc.bin }}
-                td.center.overflow(v-if="filterOptions.reference_limit") {{ (rc.reference.reference_limit == null) ? 'infinite' : rc.reference.reference_limit }}
-                td.center.overflow(v-if="filterOptions.referenced") {{ rc.reference.referenced_count }}
-                td.center.overflow(v-if="filterOptions.allow_multiple_reference")
-                    .material-symbols-outlined.fill(v-if="rc.reference.allow_multiple_reference") check_circle
-                td.overflow(v-if="filterOptions.data") {{ rc.data }}
-            tr(v-for="i in (15 - listDisplay.length)")
-                td(:colspan="colspan")
+            template(v-if="fetching")
+                tr
+                    td#loading(:colspan="colspan").
+                        Loading Records ... &nbsp;
+                        #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+                tr(v-for="i in 14")
+                    td(:colspan="colspan")
+            template(v-else-if="!listDisplay || listDisplay.length === 0")
+                tr
+                    td#noUsers(:colspan="colspan") No Records
+                tr(v-for="i in 14")
+                    td(:colspan="colspan")
+            template(v-else)
+                tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=JSON.parse(JSON.stringify(rc))")
+                    td.center
+                        Checkbox(@click.stop v-model='checked[rc.table.name]')
+                    td.overflow(v-if="filterOptions.table") 
+                        span.material-symbols-outlined.fill(v-if="rc.table.access_group == 'private'") vpn_key
+                        span.material-symbols-outlined.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
+                        span.material-symbols-outlined.fill(v-if="rc.table.access_group == 0 || rc.table.access_group == 'public'") language
+                        span(style="margin-left: 8px") {{ rc.table.name }}
+                    td(v-if="filterOptions.user_id") 
+                        .click.overflow {{ rc.user_id }}
+                    td.center.overflow(v-if="filterOptions.subscription") {{ rc.table.subscription ? 'required' : '' }}
+                    td.overflow(v-if="filterOptions.reference") {{ rc.reference.record_id }}
+                    td.overflow(v-if="filterOptions.index") {{ rc.index.name }} / {{ rc.index.value }}
+                    td.overflow(v-if="filterOptions.tag") 
+                        template(v-for="(tag, index) in rc.tags")
+                            span(v-if="rc.tags.length-1 == index") {{ tag }}
+                            span(v-else) {{ tag }}, 
+                    td.overflow(v-if="filterOptions.record_id") {{ rc.record_id }}
+                    td(v-if="filterOptions.record_id")
+                        .click.overflow {{ rc.record_id }}
+                    td.overflow(v-if="filterOptions.updated") {{ rc.updated }}
+                    td.overflow(v-if="filterOptions.uploaded") {{ rc.uploaded }}
+                    td.center.overflow(v-if="filterOptions.readonly")
+                        .material-symbols-outlined.fill(v-if="rc.readonly") check_circle
+                    td.overflow(v-if="filterOptions.ip") {{ rc.ip }}
+                    td.center.overflow(v-if="filterOptions.files") {{ rc.bin }}
+                    td.center.overflow(v-if="filterOptions.reference_limit") {{ (rc.reference.reference_limit == null) ? 'infinite' : rc.reference.reference_limit }}
+                    td.center.overflow(v-if="filterOptions.referenced") {{ rc.reference.referenced_count }}
+                    td.center.overflow(v-if="filterOptions.allow_multiple_reference")
+                        .material-symbols-outlined.fill(v-if="rc.reference.allow_multiple_reference") check_circle
+                    td.overflow(v-if="filterOptions.data") {{ rc.data }}
+                tr(v-for="i in (15 - listDisplay.length)")
+                    td(:colspan="colspan")
 
     form.detailRecord(:class="{show: showDetail}" @submit.prevent="uploadRecord")
         template(v-if="selectedRecord")
             .header
-                .material-symbols-outlined(@click="showDetail=false; selectedRecord={}; fileList=[];") arrow_back
+                .material-symbols-outlined(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[];") arrow_back
                 .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
                 button.noLine(type="submit") Save
             .content 
@@ -287,15 +285,15 @@ br
 
                 .row.indent
                     .key Name 
-                    input.line.value(:value="selectedRecord?.table?.name" name='config[table][name]')
+                    input.line.value(v-model="selectedRecord.table.name" name='config[table][name]')
 
                 .row.indent 
                     .key Access Group 
-                    select.value(v-if="selectedRecord?.table?.access_group !== 'private'" :value="selectedRecord?.table?.access_group" name='config[table][access_group]')
+                    template(v-if="selectedRecord?.record_id && selectedRecord?.table?.access_group == 'private'") {{ selectedRecord?.table?.access_group }}
+                    select.value(v-else v-model="selectedRecord.table.access_group" name='config[table][access_group]')
                         option(value="0") Public
                         option(value="1") Authorized
                         option(value="private") Private
-                    template(v-else) {{ selectedRecord?.table?.access_group }}
 
                 .row.indent 
                     .key Subscription 
@@ -307,16 +305,16 @@ br
 
                 .row.indent 
                     .key Reference ID 
-                    input.line.value(:value="selectedRecord?.reference?.record_id" name='config[reference][record_id]')
+                    input.line.value(v-model="selectedRecord.reference.record_id" name='config[reference][record_id]')
 
                 .row.indent 
                     .key Reference Limit
-                    input.line.value(type="number" min="0" :placeholder="selectedRecord?.reference?.reference_limit == null ? 'Infinite' : ''" :value="selectedRecord?.reference?.reference_limit === null ? '' : selectedRecord?.reference?.reference_limit" name='config[reference][reference_limit]')
+                    input.line.value(type="number" min="0" :placeholder="selectedRecord.reference.reference_limit == null ? 'Infinite' : ''" v-model="selectedRecord.reference.reference_limit" name='config[reference][reference_limit]')
                     
                 .row.indent 
                     .key Multiple Reference
                     .value
-                        Checkbox(:value="selectedRecord?.reference?.allow_multiple_reference" name='config[reference][allow_multiple_reference]')
+                        Checkbox(v-model="selectedRecord.reference.allow_multiple_reference" name='config[reference][allow_multiple_reference]')
                     //- select.value(:value="selectedRecord?.reference?.allow_multiple_reference ? 'true' : 'false'")
                     //-     option(value='true') Allowed
                     //-     option(value='false') Not Allowed
@@ -326,20 +324,20 @@ br
 
                 .row.indent 
                     .key Name 
-                    input.line.value(:value="selectedRecord?.index?.name" name='config[index][name]')
+                    input.line.value(v-model="selectedRecord.index.name" name='config[index][name]')
                 
                 // data type 선택할수 있어야함: number, string, boolean
                 .row.indent 
                     .key Value 
-                    input.line.value(:value="selectedRecord?.index?.value" name='config[index][value]')
+                    input.line.value(v-model="selectedRecord.index.value" name='config[index][value]')
 
                 .row 
                     .key Tags 
-                    input.line.value(:value="selectedRecord?.tags" name='config[tags]')
+                    input.line.value(v-model="selectedRecord.tags" name='config[tags]')
 
                 .row
                     .key(style="margin-bottom: 6px") Data 
-                    textarea.value(:value="JSON.stringify(selectedRecord?.data, null, 2)" @keydown.stop="handleKey" style="width:100%;height:150px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" name='data')
+                    textarea.value(v-model="selectedRecord_data" @keydown.stop="handleKey" style="width:100%;height:150px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" name='data')
 
                 .row 
                     .key(style="margin-bottom:6px") Files 
@@ -365,19 +363,22 @@ br
 br
 </template>
 <script setup lang="ts">
-import type { Ref } from 'vue';
-import { ref, computed, nextTick, onMounted, watch } from 'vue';
-import { skapi } from '@/code/admin';
-import { user } from '@/code/user';
-import { currentService } from '@/views/service/main';
-import { showDropDown } from '@/assets/js/event.js'
 import Code from '@/components/code.vue';
 import Table from '@/components/table.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Select from '@/components/select.vue';
+import Pager from '@/code/pager'
+
+import type { Ref } from 'vue';
+import { ref, computed, nextTick, reactive, watch } from 'vue';
+import { skapi } from '@/code/admin';
+import { user } from '@/code/user';
+import { currentService } from '@/views/service/main';
+import { showDropDown } from '@/assets/js/event.js'
 import { convertToObject } from 'typescript';
 import { uploadRecord } from '@/views/service/records/record';
 
+// table columns
 let filterOptions = ref({
     table: true,
     user_id: true,
@@ -396,146 +397,271 @@ let filterOptions = ref({
     allow_multiple_reference: true,
     data: true
 });
-let listDisplay = ref([
-    {
-        service: 'ap210jya6jmJUYO5CmGr',
-        record_id: 'TyUHVYQ22VAmgi5D',
-        user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
-        updated: 1704938348,
-        uploaded: 1704938348,
-        ip: '20.401.23924.432',
-        readonly: false,
-        bin: {
-            'keyyyy' : [
-                {
-                    access_group: 'public',
-                    filename: 'file111111',
-                    url: 'Full URL endpoint of the file',
-                    path: 'Path of the file',
-                    size: 2384,
-                    uploaded: 1704934348,
-                },
-                {
-                    access_group: 'public',
-                    filename: 'file22222',
-                    url: 'Full URL endpoint of the file',
-                    path: 'Path of the file',
-                    size: 2384,
-                    uploaded: 1704934348,
-                }
-            ],
-            'soyeee' : [
-                {
-                    access_group: 'public',
-                    filename: 'file3333333',
-                    url: 'Full URL endpoint of the file',
-                    path: 'Path of the file',
-                    size: 2384,
-                    uploaded: 1704934348,
-                }
-            ]
-        },
-        table: {
-            name: 'jojojo',
-            access_group: 'private',
-            subscription: true,
-        },
-        reference: {
-            record_id: 'record iiid',
-            reference_limit: null,
-            allow_multiple_reference: true,
-            referenced_count: 1
-        },
-        index: {
-            name: 'index name',
-            value: 1234
-        },
-        tags: ['tag1', 'tag2', 'tag3'],
-        data: {
-            'key': 'value'
-        }
+
+// ui/ux related
+let tableKey = ref(0);
+let fetching = ref(false);
+let maxPage = ref(0);
+let currentPage: Ref<number> = ref(1);
+let endOfList = ref(false);
+let showDetail = ref(false);
+let showAdvanced = ref(false);
+let conditionDisabled = ref(false);
+let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
+watch(filterOptions.value, nv => {
+    colspan = Object.values(filterOptions.value).filter(value => value).length + 1;
+    tableKey.value++;
+}, { immediate: true })
+
+// search
+let searchFormValue = reactive({
+    table: {
+        name: '',
+        access_group: 'public',
+        subscription: '',
     },
-    {
-        service: 'ap210soBLv3kl95KCmGr',
-        record_id: 'TyU7xSdOtgr5gi5D',
-        user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
-        updated: 1704938348,
-        uploaded: 1704938348,
-        ip: '20.401.23924.432',
-        readonly: false,
-        table: {
-            name: 'opse',
-            access_group: 0,
-            subscription: false,
-        },
-        reference: {
-            record_id: 'record id',
-            reference_limit: 2,
-            allow_multiple_reference: false,
-            referenced_count: 1
-        },
-        index: {
-            name: 'index name',
-            value: 1234
-        },
-        tags: ['tag1', 'tag2', 'tag3'],
-        data: {
-            'key': 'value',
-            'ssss': 123434
-        }
+    index: {
+        name: 'none',
+        type: 'text',
+        value: '',
+        condition: '=',
+        range: ''
     },
-    {
-        service: 'ap212GYdxocHtyDlCmGr',
-        record_id: 'TyU6Z6FzoGhGgi5D',
-        user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
-        updated: 1704938348,
-        uploaded: 1704938348,
-        ip: '20.401.23924.432',
-        readonly: true,
-        bin: {
-            'keyyyy' : [
-                {
-                    access_group: 'public',
-                    filename: 'file name',
-                    url: 'Full URL endpoint of the file',
-                    path: 'Path of the file',
-                    size: 2384,
-                    uploaded: 1704934348,
-                }
-            ],
-            'soyeee' : [
-                {
-                    access_group: 'public',
-                    filename: 'file name',
-                    url: 'Full URL endpoint of the file',
-                    path: 'Path of the file',
-                    size: 2384,
-                    uploaded: 1704934348,
-                }
-            ]
-        },
-        table: {
-            name: 'hook',
-            access_group: 1,
-            subscription: false,
-        },
-        reference: {
-            record_id: 'reccccord id',
-            reference_limit: null,
-            allow_multiple_reference: true,
-            referenced_count: 0
-        },
-        index: {
-            name: 'index name',
-            value: 1234
-        },
-        tags: ['tag1', 'tag2', 'tag3'],
-        data: {
-            'key': 'value'
-        }
+    tag: '',
+    reference: ''
+});
+watch(() => searchFormValue.index.name, (n) => {
+    conditionDisabled.value = false;
+    searchFormValue.index.type = 'text';
+    searchFormValue.index.condition = '=';
+    switch (n) {
+        case '$user_id':
+            searchFormValue.index.type = 'text';
+            searchFormValue.index.condition = '=';
+            conditionDisabled.value = true;
+            break;
+        case 'name':
+            break;
+        case '$referenced_count':
+            searchFormValue.index.type = 'number';
+            break;
+        default:
+            // updated, uploaded
+            searchFormValue.index.type = 'datetime-local';
     }
-]);
-let selectedRecord = ref({});
+})
+watch(() => searchFormValue.index.type, n => {
+    searchFormValue.index.value = '';
+})
+
+// records
+// let listDisplay = ref([
+//     {
+//         service: 'ap210jya6jmJUYO5CmGr',
+//         record_id: 'TyUHVYQ22VAmgi5D',
+//         user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
+//         updated: 1704938348,
+//         uploaded: 1704938348,
+//         ip: '20.401.23924.432',
+//         readonly: false,
+//         bin: {
+//             'keyyyy' : [
+//                 {
+//                     access_group: 'public',
+//                     filename: 'file111111',
+//                     url: 'Full URL endpoint of the file',
+//                     path: 'Path of the file',
+//                     size: 2384,
+//                     uploaded: 1704934348,
+//                 },
+//                 {
+//                     access_group: 'public',
+//                     filename: 'file22222',
+//                     url: 'Full URL endpoint of the file',
+//                     path: 'Path of the file',
+//                     size: 2384,
+//                     uploaded: 1704934348,
+//                 }
+//             ],
+//             'soyeee' : [
+//                 {
+//                     access_group: 'public',
+//                     filename: 'file3333333',
+//                     url: 'Full URL endpoint of the file',
+//                     path: 'Path of the file',
+//                     size: 2384,
+//                     uploaded: 1704934348,
+//                 }
+//             ]
+//         },
+//         table: {
+//             name: 'jojojo',
+//             access_group: 'private',
+//             subscription: true,
+//         },
+//         reference: {
+//             record_id: 'record iiid',
+//             reference_limit: null,
+//             allow_multiple_reference: true,
+//             referenced_count: 1
+//         },
+//         index: {
+//             name: 'index name',
+//             value: 1234
+//         },
+//         tags: ['tag1', 'tag2', 'tag3'],
+//         data: {
+//             'key': 'value'
+//         }
+//     },
+//     {
+//         service: 'ap210soBLv3kl95KCmGr',
+//         record_id: 'TyU7xSdOtgr5gi5D',
+//         user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
+//         updated: 1704938348,
+//         uploaded: 1704938348,
+//         ip: '20.401.23924.432',
+//         readonly: false,
+//         table: {
+//             name: 'opse',
+//             access_group: 0,
+//             subscription: false,
+//         },
+//         reference: {
+//             record_id: 'record id',
+//             reference_limit: 2,
+//             allow_multiple_reference: false,
+//             referenced_count: 1
+//         },
+//         index: {
+//             name: 'index name',
+//             value: 1234
+//         },
+//         tags: ['tag1', 'tag2', 'tag3'],
+//         data: {
+//             'key': 'value',
+//             'ssss': 123434
+//         }
+//     },
+//     {
+//         service: 'ap212GYdxocHtyDlCmGr',
+//         record_id: 'TyU6Z6FzoGhGgi5D',
+//         user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
+//         updated: 1704938348,
+//         uploaded: 1704938348,
+//         ip: '20.401.23924.432',
+//         readonly: true,
+//         bin: {
+//             'keyyyy' : [
+//                 {
+//                     access_group: 'public',
+//                     filename: 'file name',
+//                     url: 'Full URL endpoint of the file',
+//                     path: 'Path of the file',
+//                     size: 2384,
+//                     uploaded: 1704934348,
+//                 }
+//             ],
+//             'soyeee' : [
+//                 {
+//                     access_group: 'public',
+//                     filename: 'file name',
+//                     url: 'Full URL endpoint of the file',
+//                     path: 'Path of the file',
+//                     size: 2384,
+//                     uploaded: 1704934348,
+//                 }
+//             ]
+//         },
+//         table: {
+//             name: 'hook',
+//             access_group: 1,
+//             subscription: false,
+//         },
+//         reference: {
+//             record_id: 'reccccord id',
+//             reference_limit: null,
+//             allow_multiple_reference: true,
+//             referenced_count: 0
+//         },
+//         index: {
+//             name: 'index name',
+//             value: 1234
+//         },
+//         tags: ['tag1', 'tag2', 'tag3'],
+//         data: {
+//             'key': 'value'
+//         }
+//     }
+// ]);
+let pager: Pager = null;
+let listDisplay = ref([]);
+let fileList = ref([]);
+
+let currentParams = searchFormValue;
+
+let getPage = async (refresh?: boolean) => {
+    if (!pager) {
+        return;
+    }
+    
+    if (refresh) {
+        endOfList.value = false;
+    }
+
+    if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
+        listDisplay.value = pager.getPage(currentPage.value).list;
+        return;
+    }
+
+    if (!currentParams.table.name) {
+        currentParams = null;
+    }
+
+    if (!endOfList.value || refresh) {
+        fetching.value = true;
+
+        let fetchedData = await skapi.getRecords(Object.assign({service: currentService.id}, currentParams || {}), { fetchMore: !refresh });
+
+        console.log(fetchedData)
+
+        // save endOfList status
+        endOfList.value = fetchedData.endOfList;
+
+        // insert data in pager
+        if (fetchedData.list.length > 0) {
+            await pager.insertItems(fetchedData.list);
+        }
+
+        // get page from pager
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        listDisplay.value = disp.list;
+
+        if(disp.maxPage > 0 && disp.maxPage < currentPage.value && !disp.list.length) {
+            currentPage.value--;
+        }
+
+        fetching.value = false;
+    }
+}
+
+let init = async () => {
+    currentPage.value = 1;
+
+    // setup pagers
+    pager = await Pager.init({
+        id: 'record_id',
+        resultsPerPage: 10,
+        sortBy: searchFormValue.index.name ? 'index.value' : 'record_id',
+        order: searchFormValue.index.condition.includes('<') ? 'desc' : 'asc',
+    });
+
+    getPage(true);
+}
+
+init();
+
 let createRecordTemplate = {
     table: {
         name: '',
@@ -547,63 +673,24 @@ let createRecordTemplate = {
         value: '',
     },
     reference: {
-        allow_multiple_reference: true,
+        record_id: '',
+        allow_multiple_reference: false,
         reference_limit: null
     },
     tags: [],
-    readonly: false
+    readonly: false,
 };
+
+let selectedRecord = ref(createRecordTemplate);
 let selectedRecord_readOnly = ref(false);
 let selectedRecord_subscription = ref(false);
-let searchValue: Ref<string> = ref('');
-let showAdvanced = ref(false);
-let table_access_group = ref('public');
-let index = ref('none');
-let indexValueType = ref('text');
-let indexValue = ref('');
-let indexCondition = ref('=');
-let conditionDisabled = ref(false);
-
-watch(index, (n) => {
-    conditionDisabled.value = false;
-    indexValueType.value = 'text';
-    indexCondition.value = '=';
-    switch (n) {
-        case '$user_id':
-            indexValueType.value = 'text';
-            indexCondition.value = '=';
-            conditionDisabled.value = true;
-            break;
-        case 'name':
-            break;
-        case '$referenced_count':
-            indexValueType.value = 'number';
-            break;
-        default:
-            // updated, uploaded
-            indexValueType.value = 'datetime-local';
-    }
-})
-
-watch(indexValueType, n => {
-    indexValue.value = '';
-})
-let showDetail = ref(false);
-let fetching = ref(false);
-let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
-let tableKey = ref(0);
-
-watch(filterOptions.value, nv => {
-    colspan = Object.values(filterOptions.value).filter(value => value).length + 1;
-    tableKey.value++;
-}, { immediate: true })
-
-let fileList = ref([]);
+let selectedRecord_data = ref({});
 watch(() => selectedRecord.value, nv => {
     if (nv) {
         console.log(nv)
-        selectedRecord_readOnly.value = nv?.readonly ? nv?.readonly : false;
+        selectedRecord_readOnly.value = nv?.readonly || false;
         selectedRecord_subscription.value = nv?.table?.subscription || false;
+        selectedRecord_data.value = JSON.stringify(nv?.data, null, 2) || '';
 
         if(nv?.bin) {
             let normBin = (key, obj) => {
@@ -624,6 +711,18 @@ watch(() => selectedRecord.value, nv => {
         }
     }
 })
+
+// skapi.getRecords({
+//     service: currentService.id
+// }, { limit: 50, fetchMore:false }).then(u => {
+//     console.log(u)
+// })
+
+// watch(selectedRecord_readOnly, (ov, nv) => {
+//     if(ov !== nv) {
+//         console.log(nv, selectedRecord.value)
+//     }
+// })
 
 // checks
 let checked: any = ref({});
@@ -700,9 +799,9 @@ let deleteFile = (item, index) => {
     } else {
         deleteFileList.value.push(item);
         fileList.value.forEach((f, i)=> {
-        	if(f.key === item.key && f.filename === item.filename) {
+            if(f.key === item.key && f.filename === item.filename) {
                 fileList.value.splice(i, 1);
-        	}
+            }
         });
     }
 }
