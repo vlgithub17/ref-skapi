@@ -104,8 +104,8 @@ form#searchForm(@submit.prevent="searchRecords")
 
 br
 
-.tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
-    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
+.tableMenu
+    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill checklist_rtl
         span &nbsp;&nbsp;Show Columns
         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal; color:black")
@@ -127,15 +127,15 @@ br
                 Checkbox(v-model="filterOptions.allow_multiple_reference" style="display:flex") Multiple Referenced 
                 Checkbox(v-model="filterOptions.data" style="display:flex") Data
 
-    .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; fileList=[]; }")
+    .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; fileList=[]; }" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill add_circle
         span &nbsp;&nbsp;Create Record
 
-    .iconClick.square(:class="{'nonClickable': noSelection}")
+    .iconClick.square(:class="{'nonClickable': noSelection || fetching || !user?.email_verified || currentService.service.active <= 0}" )
         .material-symbols-outlined.fill delete
         span &nbsp;&nbsp;Delete Selected
 
-    .iconClick.square
+    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill refresh
         span &nbsp;&nbsp;Refresh
 
@@ -315,21 +315,29 @@ br
                     .key Multiple Reference
                     .value
                         Checkbox(v-model="selectedRecord.reference.allow_multiple_reference" name='config[reference][allow_multiple_reference]')
-                    //- select.value(:value="selectedRecord?.reference?.allow_multiple_reference ? 'true' : 'false'")
-                    //-     option(value='true') Allowed
-                    //-     option(value='false') Not Allowed
 
                 .row(style="margin-bottom:6px")
                     .key Index 
+                    Checkbox(v-model="indexValue")
 
-                .row.indent 
-                    .key Name 
-                    input.line.value(v-model="selectedRecord.index.name" name='config[index][name]')
-                
-                // data type 선택할수 있어야함: number, string, boolean
-                .row.indent 
-                    .key Value 
-                    input.line.value(v-model="selectedRecord.index.value" name='config[index][value]')
+                template(v-if='indexValue')
+                    .row.indent 
+                        .key Name 
+                        input.line.value(v-model='selectedRecord.index.value' name='config[index][name]' placeholder='index name' required)
+
+                    .row.indent
+                        .key Value
+                        .value(style="display:flex; flex-wrap:wrap; gap:10px;")
+                            select(v-model='indexType' style="flex-grow:1;")
+                                option(value='text' selected) String
+                                option(value='number') Number
+                                option(value='boolean') Boolean
+
+                            input.line(v-if="indexType !== 'boolean'" name='config[index][value]' :type='indexType' placeholder='index value' :required='indexType !== "checkbox"' style="flex-grow:30; width:unset")
+                            
+                            select(v-else v-model="indexValue" style="flex-grow:30")
+                                option(value=true name='config[index][value]' selected) True
+                                option(value=false name='config[index][value]') False
 
                 .row 
                     .key Tags 
@@ -406,6 +414,9 @@ let currentPage: Ref<number> = ref(1);
 let endOfList = ref(false);
 let showDetail = ref(false);
 let showAdvanced = ref(false);
+let indexValue = ref(false);
+let indexType = ref('text');
+let indexCondition = ref('=');
 let conditionDisabled = ref(false);
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
 watch(filterOptions.value, nv => {
@@ -614,12 +625,13 @@ let getPage = async (refresh?: boolean) => {
         return;
     }
 
-    if (!currentParams.table.name) {
-        currentParams = null;
-    }
-
-    if (!endOfList.value || refresh) {
+    else if (!endOfList.value || refresh) {
         fetching.value = true;
+
+
+        if (!currentParams?.table?.name) {
+            currentParams = null;
+        }
 
         let fetchedData = await skapi.getRecords(Object.assign({service: currentService.id}, currentParams || {}), { fetchMore: !refresh });
 
@@ -631,12 +643,15 @@ let getPage = async (refresh?: boolean) => {
         // insert data in pager
         if (fetchedData.list.length > 0) {
             await pager.insertItems(fetchedData.list);
+            console.log(pager)
         }
 
         // get page from pager
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
+        console.log(disp)
+        console.log(listDisplay.value)
 
         if(disp.maxPage > 0 && disp.maxPage < currentPage.value && !disp.list.length) {
             currentPage.value--;
