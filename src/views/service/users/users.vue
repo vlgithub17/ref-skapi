@@ -807,7 +807,7 @@ let createUser = () => {
         Object.assign(createParams, {gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value})
     }
 
-    skapi.signup(createParams).then(async(res) => {
+    currentService.admin_signup(createParams).then(async(res) => {
         res.email = res.email_admin;
         await pager.insertItems([res]);
 
@@ -832,17 +832,16 @@ let inviteUser = () => {
     promiseRunning.value = true;
     error.value = '';
 
-    skapi.signup(inviteParams, {
+    currentService.admin_signup(inviteParams, {
         signup_confirmation: redirect || false
     }).then((res) => {
         promiseRunning.value = false;
         openInviteUser.value = false;
     }).catch((err) => {
         if (err.code === 'EXISTS') {
-            skapi.resendInvitation({
+            currentService.resendInvitation({
                 redirect: redirect || '',
-                email,
-                service: currentService.id
+                email: inviteParams.email
             }).then(() => {
                 promiseRunning.value = false;
                 openInviteUser.value = false;

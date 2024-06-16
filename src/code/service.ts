@@ -4,6 +4,90 @@ import { Countries } from './countries';
 
 const regions = JSON.parse(import.meta.env.VITE_REG);
 
+type UserProfilePublicSettings = {
+    /** User's E-mail is public when true. E-Mail should be verified. */
+    email_public?: boolean;
+    /** User's phone number is public when true. Phone number should be verified. */
+    phone_number_public?: boolean;
+    /** User's address is public when true. */
+    address_public?: boolean;
+    /** User's gender is public when true. */
+    gender_public?: boolean;
+    /** User's birthdate is public when true. */
+    birthdate_public?: boolean;
+}
+
+export type UserAttributes = {
+    /** User's name */
+    name?: string;
+    /**
+     * User's E-Mail for signin.<br>
+     * 64 character max.<br>
+     * When E-Mail is changed, E-Mail verified state will be changed to false.
+     * E-Mail is only visible to others when set to public.
+     * E-Mail should be verified to set to public.
+     * */
+    email?: string;
+    /**
+     * User's phone number. Format: "+0012341234"<br>
+     * When phone number is changed, phone number verified state will be changed to false.
+     * Phone number is only visible to others when set to public.
+     * Phone number should be verified to set to public.
+     */
+    phone_number?: string;
+    /** User's address, only visible to others when set to public. */
+    address?: string | {
+        /**
+         * Full mailing address, formatted for display or use on a mailing label. This field MAY contain multiple lines, separated by newlines. Newlines can be represented either as a carriage return/line feed pair ("\r\n") or as a single line feed character ("\n").
+         * street_address
+         * Full street address component, which MAY include house number, street name, Post Office Box, and multi-line extended street address information. This field MAY contain multiple lines, separated by newlines. Newlines can be represented either as a carriage return/line feed pair ("\r\n") or as a single line feed character ("\n").
+        */
+        formatted: string;
+        // City or locality component.
+        locality: string;
+        // State, province, prefecture, or region component.
+        region: string;
+        // Zip code or postal code component.
+        postal_code: string;
+        // Country name component.
+        country: string;
+    };
+    /**
+     * User's gender. Can be "female" and "male".
+     * Other values may be used when neither of the defined values are applicable.
+     * Only visible to others when set to public.
+     */
+    gender?: string;
+    /** User's birthdate. String format: "1969-07-16", only visible to others when set to public.*/
+    birthdate?: string;
+
+    /** Additional string value that can be used freely. This is only accessible to the owner of the account and the admins. */
+    misc?: string;
+    picture?: string;
+    profile?: string;
+    website?: string;
+    nickname?: string;
+};
+
+export type UserProfile = {
+    /** Service id of the user account. */
+    service: string;
+    /** User ID of the service owner. */
+    owner: string;
+    /** Access level of the user's account. */
+    access_group: number;
+    /** User's ID. */
+    user_id: string;
+    /** Country code of where user first signed up from. */
+    locale: string;
+    /** Shows true when user has verified their E-Mail. */
+    email_verified?: boolean;
+    /** Shows true when user has verified their phone number. */
+    phone_number_verified?: boolean;
+    /** Shows 'PASS' if the user's account signup was successful. 'MEMBER' if signup confirmation was successful. */
+    signup_ticket?: string;
+} & UserAttributes & UserProfilePublicSettings;
+
 export type ServiceObj = {
     active: number; // 0 = disabled / -1 = suspended / 1 = active
     api_key: string;
@@ -167,6 +251,24 @@ export default class Service {
             this.requestNewsletterSender({ group_numb: 0 });
             this.requestNewsletterSender({ group_numb: 1 });
         }
+    }
+
+    async admin_signup(
+        form: UserAttributes & UserProfilePublicSettings & { email: String; password?: String; username?: string; } & {
+            access_group?: number;
+            service?: string;
+        },
+        option?: {
+            signup_confirmation?: boolean | string;
+            email_subscription?: boolean;
+        }): Promise<UserProfile & { email_admin: string; }> {
+
+        let params: any = form;
+        params.signup_confirmation = option?.signup_confirmation || false;
+        params.email_subscription = option?.email_subscription || false;
+
+        // cognito signup process below
+        return await skapi.util.request("admin-signup", Object.assign({ service: this.id, owner: this.owner }, params), { auth: true });
     }
 
     // get newsletter mail address
