@@ -151,7 +151,7 @@ let parseBinEndpoint = async (r: string[]) => {
     return binObj;
 }
 
-export let uploadRecord = async (e: SubmitEvent, progress: (c: any) => void) => {
+export let uploadRecord = async (e: SubmitEvent, remove_bin?:{[key:string]:any}[], progress?: (c: any) => void) => {
     // extract form values based on input names
     let toUpload: {
         data: {
@@ -201,7 +201,7 @@ export let uploadRecord = async (e: SubmitEvent, progress: (c: any) => void) => 
     // uncomment below to upload
 
     // upload json data first
-    let rec = await skapi.postRecord(data, config);
+    let rec = await skapi.postRecord(Object.assign({remove_bin}, data), config);
 
     // upload files if any
     if (files.length) {
@@ -217,7 +217,7 @@ export let uploadRecord = async (e: SubmitEvent, progress: (c: any) => void) => 
             progress
         }
 
-        let { bin_endpoints } = await skapi.uploadFiles.bind(this)(bin_formData, uploadFileParams);
+        let { bin_endpoints } = await skapi.uploadFiles(bin_formData, uploadFileParams);
 
         let bin = await parseBinEndpoint(bin_endpoints);
 
