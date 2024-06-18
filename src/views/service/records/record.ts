@@ -2,107 +2,6 @@ import { skapi } from "@/code/admin"
 import { currentService } from "../main";
 import { ref, computed } from "vue";
 import jsonCrawler from 'jsoncrawler'; // https://github.com/broadwayinc/jsoncrawler 참고
-// import Pager from '@/code/pager'
-// import type { Ref } from 'vue';
-
-// export let pager: Pager = null;
-// export let searchFor: Ref<"table" | "reference"> = ref('table');
-// export let searchValue: Ref<string | number> = ref('');
-// export let listDisplay = ref(null);
-
-// export let fetching = ref(false);
-// export let maxPage = ref(0);
-// export let currentPage: Ref<number> = ref(1);
-// export let endOfList = ref(false);
-
-// let updateEndTime = ref(false);
-// // let callParams = computed(() => {
-// //     let result = {};
-
-// //     switch (searchFor.value) {
-// //         case 'table':
-// //             result = {
-// //                 service: currentService.id,
-// //                 searchFor: searchFor.value,
-// //             }
-// //         case 'reference':
-// //             result = {
-// //                 service: currentService.id,
-// //                 searchFor: searchFor.value,
-// //                 value: searchValue.value
-// //             }
-
-// //         default:
-// //             result = {
-// //                 service: currentService.id,
-// //                 searchFor: searchValue.value == '' ? 'record_id' : searchFor.value,
-// //                 value: searchValue.value == '' ? 0 : searchValue.value,
-// //                 condition: '>='
-// //             }
-// //     }
-
-// //     return result;
-// // });
-
-// let currentParams = {
-//     service: currentService.id,
-//     searchFor: 'record_id'
-// };
-
-// export let init = async () => {
-//     currentPage.value = 1;
-
-//     // setup pagers
-//     pager = await Pager.init({
-//         id: 'record_id',
-//         resultsPerPage: 15,
-//         sortBy: !searchValue.value ? 'record_id' : currentParams.searchFor,
-//         order: !searchValue.value ? 'desc' : 'asc',
-//     });
-
-//     getPage(true);
-// }
-
-// export let getPage = async (refresh?: boolean) => {
-//     if (!pager) {
-//         return;
-//     }
-    
-//     if (refresh) {
-//         endOfList.value = false;
-//         updateEndTime.value = true;
-//     }
-
-//     if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
-//         listDisplay.value = pager.getPage(currentPage.value).list;
-//         return;
-//     }
-
-//     else if (!endOfList.value || refresh) {
-//         fetching.value = true;
-
-//         let fetchedData = await skapi.getRecords(currentParams, { fetchMore: !refresh, ascending: !searchValue.value ? false : true });
-
-//         // save endOfList status
-//         endOfList.value = fetchedData.endOfList;
-
-//         // insert data in pager
-//         if (fetchedData.list.length > 0) {
-//             await pager.insertItems(fetchedData.list);
-//         }
-
-//         // get page from pager
-//         let disp = pager.getPage(currentPage.value);
-//         maxPage.value = disp.maxPage;
-//         listDisplay.value = disp.list;
-
-//         if(disp.maxPage > 0 && disp.maxPage < currentPage.value && !disp.list.length) {
-//             currentPage.value--;
-//         }
-
-//         fetching.value = false;
-//     }
-// }
 
 let parseBinEndpoint = async (r: string[]) => {
     let binObj: any = {};
@@ -151,7 +50,7 @@ let parseBinEndpoint = async (r: string[]) => {
     return binObj;
 }
 
-export let uploadRecord = async (e: SubmitEvent, progress: (c: any) => void) => {
+export let uploadRecord = async (e: SubmitEvent, remove_bin?:{[key:string]:any}[], progress?: (c: any) => void) => {
     // extract form values based on input names
     let toUpload: {
         data: {
@@ -201,7 +100,7 @@ export let uploadRecord = async (e: SubmitEvent, progress: (c: any) => void) => 
     // uncomment below to upload
 
     // upload json data first
-    let rec = await skapi.postRecord(data, config);
+    let rec = await skapi.postRecord(Object.assign({remove_bin}, data), config);
 
     // upload files if any
     if (files.length) {
@@ -217,7 +116,7 @@ export let uploadRecord = async (e: SubmitEvent, progress: (c: any) => void) => 
             progress
         }
 
-        let { bin_endpoints } = await skapi.uploadFiles.bind(this)(bin_formData, uploadFileParams);
+        let { bin_endpoints } = await skapi.uploadFiles(bin_formData, uploadFileParams);
 
         let bin = await parseBinEndpoint(bin_endpoints);
 

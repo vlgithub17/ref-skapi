@@ -144,10 +144,13 @@ br
         template(v-slot:head)
             tr
                 th.center(style='width:60px;padding:0')
-                    Checkbox(@click.stop v-model='checkedall' @change='checkall' :class='{nonClickable: !listDisplay.length}' style="display:inline-block")
+                    Checkbox(@click.stop v-model='checkedall' @change='checkall' :class='{nonClickable: !listDisplay || !listDisplay.length}' style="display:inline-block")
                     .resizer
                 th.overflow(v-if="filterOptions.table" style='width:160px;')
                     | Table
+                    .resizer
+                th.overflow(v-if="filterOptions.record_id" style='width:160px;')
+                    | Record ID
                     .resizer
                 th.overflow(v-if="filterOptions.user_id" style='width:160px;')
                     | User ID
@@ -163,9 +166,6 @@ br
                     .resizer
                 th.overflow(v-if="filterOptions.tag" style='width:220px;')
                     | Tag
-                    .resizer
-                th.overflow(v-if="filterOptions.record_id" style='width:160px;')
-                    | Record ID
                     .resizer
                 th.overflow(v-if="filterOptions.updated" style='width:160px;')
                     | Updated
@@ -210,30 +210,35 @@ br
             template(v-else)
                 tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=JSON.parse(JSON.stringify(rc))")
                     td.center
-                        Checkbox(@click.stop v-model='checked[rc.table.name]')
+                        Checkbox(@click.stop v-model='checked[rc?.table?.name]')
                     td.overflow(v-if="filterOptions.table") 
                         span.material-symbols-outlined.fill(v-if="rc.table.access_group == 'private'") vpn_key
                         span.material-symbols-outlined.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
                         span.material-symbols-outlined.fill(v-if="rc.table.access_group == 0 || rc.table.access_group == 'public'") language
-                        span(style="margin-left: 8px") {{ rc.table.name }}
+                        span(style="margin-left: 8px") {{ rc?.table?.name }}
+                    td(v-if="filterOptions.record_id")
+                        .click.overflow(@click.stop="copyID") {{ rc.record_id }}
                     td(v-if="filterOptions.user_id") 
-                        .click.overflow {{ rc.user_id }}
-                    td.center.overflow(v-if="filterOptions.subscription") {{ rc.table.subscription ? 'required' : '' }}
-                    td.overflow(v-if="filterOptions.reference") {{ rc.reference.record_id }}
-                    td.overflow(v-if="filterOptions.index") {{ rc.index.name }} / {{ rc.index.value }}
+                        .click.overflow(@click.stop="copyID") {{ rc.user_id }}
+                    td.center.overflow(v-if="filterOptions.subscription") {{ rc.table.subscription ? 'Required' : '-' }}
+                    td(v-if="filterOptions.reference")
+                        .click.overflow(v-if="rc?.reference?.record_id" @click.stop="copyID") {{ rc?.reference?.record_id }}
+                        template(v-else) -
+                    td.overflow(v-if="filterOptions.index") 
+                        template(v-if="rc?.index") {{ rc?.index?.name }} / {{ rc?.index?.value }}
+                        template(v-else) -
                     td.overflow(v-if="filterOptions.tag") 
-                        template(v-for="(tag, index) in rc.tags")
+                        template(v-if="rc?.tags" v-for="(tag, index) in rc.tags")
                             span(v-if="rc.tags.length-1 == index") {{ tag }}
                             span(v-else) {{ tag }}, 
-                    td.overflow(v-if="filterOptions.record_id") {{ rc.record_id }}
-                    td(v-if="filterOptions.record_id")
-                        .click.overflow {{ rc.record_id }}
+                        template(v-else) -
                     td.overflow(v-if="filterOptions.updated") {{ rc.updated }}
                     td.overflow(v-if="filterOptions.uploaded") {{ rc.uploaded }}
                     td.center.overflow(v-if="filterOptions.readonly")
                         .material-symbols-outlined.fill(v-if="rc.readonly") check_circle
+                        template(v-else) -
                     td.overflow(v-if="filterOptions.ip") {{ rc.ip }}
-                    td.center.overflow(v-if="filterOptions.files") {{ rc.bin }}
+                    td.center.overflow(v-if="filterOptions.files") {{ bins[rc.record_id] }}
                     td.center.overflow(v-if="filterOptions.reference_limit") {{ (rc.reference.reference_limit == null) ? 'infinite' : rc.reference.reference_limit }}
                     td.center.overflow(v-if="filterOptions.referenced") {{ rc.reference.referenced_count }}
                     td.center.overflow(v-if="filterOptions.allow_multiple_reference")
@@ -242,13 +247,16 @@ br
                 tr(v-for="i in (15 - listDisplay.length)")
                     td(:colspan="colspan")
 
-    form.detailRecord(:class="{show: showDetail}" @submit.prevent="uploadRecord")
+    form.detailRecord(:class="{show: showDetail}" @submit.prevent="upload")
         template(v-if="selectedRecord")
             .header
-                .material-symbols-outlined(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[];") arrow_back
+                .material-symbols-outlined(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[]; indexValue=false;" :class="{nonClickable: fetching}") arrow_back
                 .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
-                button.noLine(type="submit") Save
-            .content 
+                template(v-if="fetching")
+                    img.loading(src="@/assets/img/loading.png")
+                template(v-else)
+                    button.noLine(type="submit") Save
+            .content(:class="{nonClickable: fetching}")
                 template(v-if="selectedRecord?.record_id")
                     .row
                         .key Record ID
@@ -323,21 +331,21 @@ br
                 template(v-if='indexValue')
                     .row.indent 
                         .key Name 
-                        input.line.value(v-model='selectedRecord.index.value' name='config[index][name]' placeholder='index name' required)
+                        input.line.value(v-model='selectedRecord.index.name' name='config[index][name]' placeholder='index name' required)
 
                     .row.indent
                         .key Value
                         .value(style="display:flex; flex-wrap:wrap; gap:10px;")
                             select(v-model='indexType' style="flex-grow:1;")
-                                option(value='text' selected) String
+                                option(value='string' selected) String
                                 option(value='number') Number
                                 option(value='boolean') Boolean
 
-                            input.line(v-if="indexType !== 'boolean'" name='config[index][value]' :type='indexType' placeholder='index value' :required='indexType !== "checkbox"' style="flex-grow:30; width:unset")
+                            input.line(v-if="indexType !== 'boolean'" v-model="selectedRecord.index.value" name='config[index][value]' :type='indexType' placeholder='index value' :required='indexType !== "checkbox"' style="flex-grow:30; width:unset")
                             
-                            select(v-else v-model="indexValue" style="flex-grow:30")
-                                option(value=true name='config[index][value]' selected) True
-                                option(value=false name='config[index][value]') False
+                            select(v-else v-model="selectedRecord.index.value" style="flex-grow:30")
+                                option(value='true' name='config[index][value]' selected) True
+                                option(value='false' name='config[index][value]') False
 
                 .row 
                     .key Tags 
@@ -415,7 +423,7 @@ let endOfList = ref(false);
 let showDetail = ref(false);
 let showAdvanced = ref(false);
 let indexValue = ref(false);
-let indexType = ref('text');
+let indexType = ref('string');
 let indexCondition = ref('=');
 let conditionDisabled = ref(false);
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
@@ -465,151 +473,21 @@ watch(() => searchFormValue.index.type, n => {
     searchFormValue.index.value = '';
 })
 
-// records
-// let listDisplay = ref([
-//     {
-//         service: 'ap210jya6jmJUYO5CmGr',
-//         record_id: 'TyUHVYQ22VAmgi5D',
-//         user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
-//         updated: 1704938348,
-//         uploaded: 1704938348,
-//         ip: '20.401.23924.432',
-//         readonly: false,
-//         bin: {
-//             'keyyyy' : [
-//                 {
-//                     access_group: 'public',
-//                     filename: 'file111111',
-//                     url: 'Full URL endpoint of the file',
-//                     path: 'Path of the file',
-//                     size: 2384,
-//                     uploaded: 1704934348,
-//                 },
-//                 {
-//                     access_group: 'public',
-//                     filename: 'file22222',
-//                     url: 'Full URL endpoint of the file',
-//                     path: 'Path of the file',
-//                     size: 2384,
-//                     uploaded: 1704934348,
-//                 }
-//             ],
-//             'soyeee' : [
-//                 {
-//                     access_group: 'public',
-//                     filename: 'file3333333',
-//                     url: 'Full URL endpoint of the file',
-//                     path: 'Path of the file',
-//                     size: 2384,
-//                     uploaded: 1704934348,
-//                 }
-//             ]
-//         },
-//         table: {
-//             name: 'jojojo',
-//             access_group: 'private',
-//             subscription: true,
-//         },
-//         reference: {
-//             record_id: 'record iiid',
-//             reference_limit: null,
-//             allow_multiple_reference: true,
-//             referenced_count: 1
-//         },
-//         index: {
-//             name: 'index name',
-//             value: 1234
-//         },
-//         tags: ['tag1', 'tag2', 'tag3'],
-//         data: {
-//             'key': 'value'
-//         }
-//     },
-//     {
-//         service: 'ap210soBLv3kl95KCmGr',
-//         record_id: 'TyU7xSdOtgr5gi5D',
-//         user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
-//         updated: 1704938348,
-//         uploaded: 1704938348,
-//         ip: '20.401.23924.432',
-//         readonly: false,
-//         table: {
-//             name: 'opse',
-//             access_group: 0,
-//             subscription: false,
-//         },
-//         reference: {
-//             record_id: 'record id',
-//             reference_limit: 2,
-//             allow_multiple_reference: false,
-//             referenced_count: 1
-//         },
-//         index: {
-//             name: 'index name',
-//             value: 1234
-//         },
-//         tags: ['tag1', 'tag2', 'tag3'],
-//         data: {
-//             'key': 'value',
-//             'ssss': 123434
-//         }
-//     },
-//     {
-//         service: 'ap212GYdxocHtyDlCmGr',
-//         record_id: 'TyU6Z6FzoGhGgi5D',
-//         user_id: 'bf305ace-03b5-4f9d-b88f-291458748ca3',
-//         updated: 1704938348,
-//         uploaded: 1704938348,
-//         ip: '20.401.23924.432',
-//         readonly: true,
-//         bin: {
-//             'keyyyy' : [
-//                 {
-//                     access_group: 'public',
-//                     filename: 'file name',
-//                     url: 'Full URL endpoint of the file',
-//                     path: 'Path of the file',
-//                     size: 2384,
-//                     uploaded: 1704934348,
-//                 }
-//             ],
-//             'soyeee' : [
-//                 {
-//                     access_group: 'public',
-//                     filename: 'file name',
-//                     url: 'Full URL endpoint of the file',
-//                     path: 'Path of the file',
-//                     size: 2384,
-//                     uploaded: 1704934348,
-//                 }
-//             ]
-//         },
-//         table: {
-//             name: 'hook',
-//             access_group: 1,
-//             subscription: false,
-//         },
-//         reference: {
-//             record_id: 'reccccord id',
-//             reference_limit: null,
-//             allow_multiple_reference: true,
-//             referenced_count: 0
-//         },
-//         index: {
-//             name: 'index name',
-//             value: 1234
-//         },
-//         tags: ['tag1', 'tag2', 'tag3'],
-//         data: {
-//             'key': 'value'
-//         }
-//     }
-// ]);
 let pager: Pager = null;
-let listDisplay = ref([]);
+let listDisplay = ref(null);
 let fileList = ref([]);
-
 let currentParams = searchFormValue;
+let reserved_index = {
+    none: 'record_id',
+    name: 'index.value',
+    $uploaded: 'record_id',
+    $updated: 'updated',
+    $referenced_count: 'referenced_count',
+    $user_id: 'record_id'
+}
+let bins: {
+    [record_id: string]: { [key:string]: any }
+} = {};
 
 let getPage = async (refresh?: boolean) => {
     if (!pager) {
@@ -634,8 +512,11 @@ let getPage = async (refresh?: boolean) => {
         }
 
         let fetchedData = await skapi.getRecords(Object.assign({service: currentService.id}, currentParams || {}), { fetchMore: !refresh });
-
-        console.log(fetchedData)
+        fetchedData.list = fetchedData.list.map(r=>{
+            bins[r.record_id] = r?.bin || {};
+            delete r.bin;
+            return r;
+        })
 
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
@@ -643,20 +524,19 @@ let getPage = async (refresh?: boolean) => {
         // insert data in pager
         if (fetchedData.list.length > 0) {
             await pager.insertItems(fetchedData.list);
-            console.log(pager)
         }
 
         // get page from pager
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
-        console.log(disp)
-        console.log(listDisplay.value)
 
         if(disp.maxPage > 0 && disp.maxPage < currentPage.value && !disp.list.length) {
             currentPage.value--;
         }
 
+        console.log(bins)
+        
         fetching.value = false;
     }
 }
@@ -668,7 +548,7 @@ let init = async () => {
     pager = await Pager.init({
         id: 'record_id',
         resultsPerPage: 10,
-        sortBy: searchFormValue.index.name ? 'index.value' : 'record_id',
+        sortBy: reserved_index[searchFormValue.index.name],
         order: searchFormValue.index.condition.includes('<') ? 'desc' : 'asc',
     });
 
@@ -724,20 +604,45 @@ watch(() => selectedRecord.value, nv => {
                 }
             }
         }
+
+        if(nv?.index?.name) {
+            indexValue.value = true;
+            let value = JSON.parse(JSON.stringify(nv?.index?.value));
+            indexType.value = typeof(value);
+        }
     }
 })
 
-// skapi.getRecords({
-//     service: currentService.id
-// }, { limit: 50, fetchMore:false }).then(u => {
-//     console.log(u)
-// })
+let upload = async(e: SubmitEvent) => {
+    fetching.value = true;
 
-// watch(selectedRecord_readOnly, (ov, nv) => {
-//     if(ov !== nv) {
-//         console.log(nv, selectedRecord.value)
-//     }
-// })
+    await uploadRecord(e);
+
+    fetching.value = false;
+    showDetail.value = false; 
+    indexValue.value = false;
+    selectedRecord.value = createRecordTemplate; 
+    fileList.value = []; 
+    init();
+}
+
+let copyID = (e) => {
+    let target = e.currentTarget;
+    let copy = target.textContent;
+    let doc = document.createElement('textarea');
+
+    doc.textContent = target.textContent;
+    document.body.append(doc);
+    doc.select();
+    document.execCommand('copy');
+    doc.remove();
+
+    target.classList.add('clicked');
+
+    setTimeout(() => {
+        target.classList.remove('clicked');
+    }, 1000);
+}
 
 // checks
 let checked: any = ref({});
@@ -968,12 +873,33 @@ tbody {
 
     td {
         .click {
+            position: relative;
             color: var(--main-color);
             font-weight: 500;
+            
+            &::after {
+                position: absolute;
+                content: 'copied!';
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                text-align: center;
+                background-color: var(--main-color);
+                color: #fff;
+                display: none;
+            }
 
             &:hover {
                 text-decoration: underline;
                 cursor: pointer;
+            }
+
+            &.clicked {
+                &::after {
+                    display: block;
+                }
             }
         }
     }
