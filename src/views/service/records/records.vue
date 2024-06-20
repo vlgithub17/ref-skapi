@@ -423,6 +423,12 @@ let filterOptions = ref({
     data: true
 });
 
+let fileLength = computed(() => {
+    for(let i in bins) {
+        console.log(bins[i])
+    }
+})
+
 // ui/ux related
 let tableKey = ref(0);
 let fetching = ref(false);
@@ -546,7 +552,19 @@ let getPage = async (refresh?: boolean) => {
             currentPage.value--;
         }
 
-        console.log(bins)
+        // console.log(listDisplay.value)
+        for(let i in bins) {
+            if(Object.keys(bins[i]).length) {
+                for(let j in bins[i]) {
+                    console.log(bins[i][j]);
+                    bins[i].length = bins[i][j].length;
+                }
+            } else {
+                bins[i].length = 0
+            }
+        }
+
+        console.log(bins)   
         
         fetching.value = false;
     }
@@ -594,11 +612,13 @@ let selectedRecord_data = ref({});
 watch(() => selectedRecord.value, nv => {
     if (nv) {
         console.log(nv)
+        deleteFileList.value = [];
         selectedRecord_readOnly.value = nv?.readonly || false;
         selectedRecord_subscription.value = nv?.table?.subscription || false;
         selectedRecord_data.value = JSON.stringify(nv?.data, null, 2) || '';
 
         if(Object.keys(bins).includes(nv.record_id)) {
+            // console.log(bins[nv.record_id])
             let normBin = (key, obj) => {
                 fileList.value.push({
                     type: 'binary',
@@ -609,9 +629,11 @@ watch(() => selectedRecord.value, nv => {
                 })
             }
             for (let k in bins[nv.record_id]) {
-                let b = bins[nv.record_id][k];
-                for (let i of b) {
-                    normBin(k, i);
+                if (k !== 'length') {
+                    let b = bins[nv.record_id][k];
+                    for (let i of b) {
+                        normBin(k, i);
+                    }                    
                 }
             }
         }
@@ -631,7 +653,9 @@ watch(() => selectedRecord.value, nv => {
 let upload = async(e: SubmitEvent) => {
     fetching.value = true;
 
-    await uploadRecord(e);
+    let remove_bin = deleteFileList.value;
+
+    await uploadRecord(e, remove_bin);
 
     fetching.value = false;
     showDetail.value = false; 
