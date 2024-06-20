@@ -238,7 +238,7 @@ br
                         .material-symbols-outlined.fill(v-if="rc.readonly") check_circle
                         template(v-else) -
                     td.overflow(v-if="filterOptions.ip") {{ rc.ip }}
-                    td.center.overflow(v-if="filterOptions.files") {{ bins[rc.record_id] }}
+                    td.center.overflow(v-if="filterOptions.files") {{ bins[rc.record_id].length }}
                     td.center.overflow(v-if="filterOptions.reference_limit") {{ (rc.reference.reference_limit == null) ? 'infinite' : rc.reference.reference_limit }}
                     td.center.overflow(v-if="filterOptions.referenced") {{ rc.reference.referenced_count }}
                     td.center.overflow(v-if="filterOptions.allow_multiple_reference")
@@ -331,7 +331,7 @@ br
                 template(v-if='indexValue')
                     .row.indent 
                         .key Name 
-                        input.line.value(v-model='selectedRecord.index.name' name='config[index][name]' placeholder='index name' required)
+                        input.line.value(v-model='index_name' name='config[index][name]' placeholder='index name' required)
 
                     .row.indent
                         .key Value
@@ -341,9 +341,9 @@ br
                                 option(value='number') Number
                                 option(value='boolean') Boolean
 
-                            input.line(v-if="indexType !== 'boolean'" v-model="selectedRecord.index.value" name='config[index][value]' :type='indexType' placeholder='index value' :required='indexType !== "checkbox"' style="flex-grow:30; width:unset")
+                            input.line(v-if="indexType !== 'boolean'" v-model="index_value" name='config[index][value]' :type='indexType' placeholder='index value' :required='indexType !== "checkbox"' style="flex-grow:30; width:unset")
                             
-                            select(v-else v-model="selectedRecord.index.value" style="flex-grow:30")
+                            select(v-else v-model="index_value" style="flex-grow:30")
                                 option(value='true' name='config[index][value]' selected) True
                                 option(value='false' name='config[index][value]') False
 
@@ -374,6 +374,15 @@ br
                     .add(@click="addFile")
                         .material-symbols-outlined.fill add_circle
                         span Add File
+
+.tableMenu(v-if="!showDetail" style='display:block;text-align:center;')
+    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage === 1 }")
+        .material-symbols-outlined.bold chevron_left
+        span Previous&nbsp;&nbsp;
+    | &nbsp;&nbsp;
+    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
+        span &nbsp;&nbsp;Next
+        .material-symbols-outlined.bold chevron_right
 
 br
 br
@@ -425,6 +434,8 @@ let showAdvanced = ref(false);
 let indexValue = ref(false);
 let indexType = ref('string');
 let indexCondition = ref('=');
+let index_name = ref('');
+let index_value = ref('');
 let conditionDisabled = ref(false);
 let colspan = Object.values(filterOptions.value).filter(value => value === true).length + 1;
 watch(filterOptions.value, nv => {
@@ -587,7 +598,7 @@ watch(() => selectedRecord.value, nv => {
         selectedRecord_subscription.value = nv?.table?.subscription || false;
         selectedRecord_data.value = JSON.stringify(nv?.data, null, 2) || '';
 
-        if(nv?.bin) {
+        if(Object.keys(bins).includes(nv.record_id)) {
             let normBin = (key, obj) => {
                 fileList.value.push({
                     type: 'binary',
@@ -597,18 +608,22 @@ watch(() => selectedRecord.value, nv => {
                     download: () => skapi.getFile(obj.url, { dataType: 'download' })
                 })
             }
-            for (let k in nv?.bin) {
-                let b = nv?.bin[k];
+            for (let k in bins[nv.record_id]) {
+                let b = bins[nv.record_id][k];
                 for (let i of b) {
                     normBin(k, i);
                 }
             }
         }
 
+        console.log(fileList.value)
+
         if(nv?.index?.name) {
             indexValue.value = true;
             let value = JSON.parse(JSON.stringify(nv?.index?.value));
             indexType.value = typeof(value);
+            index_name.value = nv?.index?.name;
+            index_value.value = nv?.index?.value;
         }
     }
 })
@@ -839,14 +854,6 @@ let deleteFile = (item, index) => {
     }
 }
 
-// .tableWrap {
-//     transform: translateY(-17px);
-
-//     &::-webkit-scrollbar {
-//         height: 17px; /* adjust based on your scrollbar size */
-//     }
-// }
-
 tbody {
     tr.nsrow {
         @media (pointer: fine) {
@@ -885,6 +892,7 @@ tbody {
                 bottom: 0;
                 left: 0;
                 width: 100%;
+                border-radius: 4px;
                 text-align: center;
                 background-color: var(--main-color);
                 color: #fff;
