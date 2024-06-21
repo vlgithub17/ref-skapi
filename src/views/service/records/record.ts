@@ -79,7 +79,7 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?:{[k
     }
     else {
         // string number to actual number
-        toUpload.data.config.table.access_group = parseInt(toUpload.data.config.table.access_group);
+        // toUpload.data.config.table.access_group = parseInt(toUpload.data.config.table.access_group);
 
         // set json string to actual data
         data = toUpload.data.data ? JSON.parse(toUpload.data.data) : null;
