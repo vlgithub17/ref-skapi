@@ -423,12 +423,6 @@ let filterOptions = ref({
     data: true
 });
 
-let fileLength = computed(() => {
-    for(let i in bins) {
-        console.log(bins[i])
-    }
-})
-
 // ui/ux related
 let tableKey = ref(0);
 let fetching = ref(false);
@@ -552,20 +546,17 @@ let getPage = async (refresh?: boolean) => {
             currentPage.value--;
         }
 
-        // console.log(listDisplay.value)
         for(let i in bins) {
+            bins[i].length = 0;
             if(Object.keys(bins[i]).length) {
                 for(let j in bins[i]) {
-                    console.log(bins[i][j]);
-                    bins[i].length = bins[i][j].length;
+                    if (j !== 'length') {
+                        bins[i].length += bins[i][j].length;
+                    }
                 }
-            } else {
-                bins[i].length = 0
             }
         }
 
-        console.log(bins)   
-        
         fetching.value = false;
     }
 }
@@ -611,7 +602,6 @@ let selectedRecord_subscription = ref(false);
 let selectedRecord_data = ref({});
 watch(() => selectedRecord.value, nv => {
     if (nv) {
-        console.log(nv)
         deleteFileList.value = [];
         selectedRecord_readOnly.value = nv?.readonly || false;
         selectedRecord_subscription.value = nv?.table?.subscription || false;
@@ -653,16 +643,24 @@ watch(() => selectedRecord.value, nv => {
 let upload = async(e: SubmitEvent) => {
     fetching.value = true;
 
-    let remove_bin = deleteFileList.value;
+    let remove_bin = [];
 
-    await uploadRecord(e, remove_bin);
+    for (let i in deleteFileList.value) {
+        remove_bin.push(deleteFileList.value[i].endpoint)
+    }
+
+    if (selectedRecord.value?.record_id) {
+        await uploadRecord(e, true, remove_bin);
+    } else {
+        await uploadRecord(e, false);
+    }
 
     fetching.value = false;
     showDetail.value = false; 
     indexValue.value = false;
     selectedRecord.value = createRecordTemplate; 
     fileList.value = []; 
-    init();
+    getPage(true);
 }
 
 let copyID = (e) => {
