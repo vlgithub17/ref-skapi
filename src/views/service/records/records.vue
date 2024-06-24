@@ -44,7 +44,7 @@ form#searchForm(@submit.prevent="searchRecords")
             .material-symbols-outlined.fill.group(:class="{active : searchFormValue.table.access_group == 'authorized'}" title="authorized" @click.stop="searchFormValue.table.access_group = 'authorized'") person
             .material-symbols-outlined.fill.group(:class="{active : searchFormValue.table.access_group == 'private'}" title="private" @click.stop="searchFormValue.table.access_group = 'private'") vpn_key
         .search
-            input.big(@input="e => {searchFormValue.table.name = e.target.value}" :placeholder="searchFormValue.table.access_group + ' table.name'" required style="padding-right: 40px;")
+            input.big(@input="e => {searchFormValue.table.name = e.target.value}" :placeholder="searchFormValue.table.access_group + ' table.name'" :required="showAdvanced === true && (searchFormValue.table.subscription || searchFormValue.reference || searchFormValue.tag || searchFormValue.index.name !== 'none')" style="padding-right: 40px;")
             .material-symbols-outlined.fill.icon(@click.stop="showAdvanced = !showAdvanced") manage_search
         button.final(type="submit" style='flex-shrink: 0;') Search
 
@@ -299,8 +299,8 @@ br
                     .key Access Group 
                     template(v-if="selectedRecord?.record_id && selectedRecord?.table?.access_group == 'private'") {{ selectedRecord?.table?.access_group }}
                     select.value(v-else v-model="selectedRecord.table.access_group" name='config[table][access_group]')
-                        option(value="0") Public
-                        option(value="1") Authorized
+                        option(value="public") Public
+                        option(value="authorized") Authorized
                         option(value="private") Private
 
                 .row.indent 
@@ -423,12 +423,6 @@ let filterOptions = ref({
     data: true
 });
 
-let fileLength = computed(() => {
-    for(let i in bins) {
-        console.log(bins[i])
-    }
-})
-
 // ui/ux related
 let tableKey = ref(0);
 let fetching = ref(false);
@@ -493,8 +487,8 @@ watch(() => searchFormValue.index.type, n => {
 let pager: Pager = null;
 let listDisplay = ref(null);
 let fileList = ref([]);
-let currentParams = searchFormValue;
-let reserved_index = {
+// let currentParams = searchFormValue;
+let reserved_index: {[key: string]: string} = {
     none: 'record_id',
     name: 'index.value',
     $uploaded: 'record_id',
@@ -505,6 +499,62 @@ let reserved_index = {
 let bins: {
     [record_id: string]: { [key:string]: any }
 } = {};
+
+let callParams = computed(() => {
+    let params = {
+        service: currentService.id,
+        table: {
+            name: searchFormValue.table.name,
+            access_group: searchFormValue.table.access_group === 'private' ? 'private' : parseInt(searchFormValue.table.access_group),
+            subscription: searchFormValue.table.subscription
+        },
+        index: {
+            name: searchFormValue.index.name,
+            value: (() => {
+                let val = searchFormValue.index.value;
+                try {
+                    val = JSON.parse(val);
+                }
+                catch (err) { }
+                return val;
+            })(),
+            condition: searchFormValue.index.condition === '~' ? '=' : searchFormValue.index.condition,
+            range: searchFormValue.index.condition === '~' ? (() => {
+                let val = searchFormValue.index.range;
+                try {
+                    val = JSON.parse(val);
+                }
+                catch (err) { }
+                return val;
+            })() : undefined,
+        },
+        tag: searchFormValue.tag || undefined,
+        reference: searchFormValue.reference || undefined,
+    }
+
+    // if (params.table.name && !params.table.subscription) {
+    //     delete params.table.subscription;
+    // }
+    if (!params.table.name) {
+        delete params.table;
+    }
+    if (!params.reference) {
+        delete params.reference;
+    }
+    if (!params.tag) {
+        delete params.tag;
+    }
+    if (params.index.name == 'none') {
+        delete params.index;
+    }
+    
+
+    return params
+})
+
+console.log(callParams.value)
+
+let currentParams = callParams.value;
 
 let getPage = async (refresh?: boolean) => {
     if (!pager) {
@@ -523,12 +573,15 @@ let getPage = async (refresh?: boolean) => {
     else if (!endOfList.value || refresh) {
         fetching.value = true;
 
+        // console.log(currentParams?.table?.name)
 
-        if (!currentParams?.table?.name) {
-            currentParams = null;
-        }
+        // if (!currentParams?.table?.name) {
+        //     currentParams = null;
+        // }
 
-        let fetchedData = await skapi.getRecords(Object.assign({service: currentService.id}, currentParams || {}), { fetchMore: !refresh });
+        console.log(currentParams)
+
+        let fetchedData = await skapi.getRecords(currentParams, { fetchMore: !refresh });
         fetchedData.list = fetchedData.list.map(r=>{
             bins[r.record_id] = r?.bin || {};
             delete r.bin;
@@ -552,20 +605,17 @@ let getPage = async (refresh?: boolean) => {
             currentPage.value--;
         }
 
-        // console.log(listDisplay.value)
         for(let i in bins) {
+            bins[i].length = 0;
             if(Object.keys(bins[i]).length) {
                 for(let j in bins[i]) {
-                    console.log(bins[i][j]);
-                    bins[i].length = bins[i][j].length;
+                    if (j !== 'length') {
+                        bins[i].length += bins[i][j].length;
+                    }
                 }
-            } else {
-                bins[i].length = 0
             }
         }
 
-        console.log(bins)   
-        
         fetching.value = false;
     }
 }
@@ -577,7 +627,7 @@ let init = async () => {
     pager = await Pager.init({
         id: 'record_id',
         resultsPerPage: 10,
-        sortBy: reserved_index[searchFormValue.index.name],
+        sortBy: reserved_index[searchFormValue.index.name] || 'index.value',
         order: searchFormValue.index.condition.includes('<') ? 'desc' : 'asc',
     });
 
@@ -589,7 +639,7 @@ init();
 let createRecordTemplate = {
     table: {
         name: '',
-        access_group: 0,
+        access_group: 'public',
         subscription: false,
     },
     index: {
@@ -650,19 +700,39 @@ watch(() => selectedRecord.value, nv => {
     }
 })
 
+let searchRecords = () => {
+    if (!searchFormValue.table.name && !searchFormValue.table.subscription && !searchFormValue.reference && !searchFormValue.tag && searchFormValue.index.name == 'none') {
+        init();
+    }
+
+    if (!showAdvanced.value && searchFormValue.table.name) {
+        currentParams = searchFormValue.table;
+        init();
+        console.log(currentParams)
+    }
+}
+
 let upload = async(e: SubmitEvent) => {
     fetching.value = true;
 
-    let remove_bin = deleteFileList.value;
+    let remove_bin = [];
 
-    await uploadRecord(e, remove_bin);
+    for (let i in deleteFileList.value) {
+        remove_bin.push(deleteFileList.value[i].endpoint)
+    }
+
+    if (selectedRecord.value?.record_id) {
+        await uploadRecord(e, true, remove_bin);
+    } else {
+        await uploadRecord(e, false);
+    }
 
     fetching.value = false;
     showDetail.value = false; 
     indexValue.value = false;
     selectedRecord.value = createRecordTemplate; 
     fileList.value = []; 
-    init();
+    getPage(true);
 }
 
 let copyID = (e) => {

@@ -50,7 +50,8 @@ let parseBinEndpoint = async (r: string[]) => {
     return binObj;
 }
 
-export let uploadRecord = async (e: SubmitEvent, remove_bin?:{[key:string]:any}[], progress?: (c: any) => void) => {
+// remove_bin 파일 전체를 넣어도 되고 endpoint만 보내도 됨
+export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?:{[key:string]:any}[], progress?: (c: any) => void) => {
     // extract form values based on input names
     let toUpload: {
         data: {
@@ -64,6 +65,8 @@ export let uploadRecord = async (e: SubmitEvent, remove_bin?:{[key:string]:any}[
         }[]
     } = skapi.util.extractFormData(e);
 
+    console.log(toUpload)
+
     let data = undefined;
     let config:any = {};
     let access_group = toUpload.data.config?.table?.access_group;
@@ -76,12 +79,10 @@ export let uploadRecord = async (e: SubmitEvent, remove_bin?:{[key:string]:any}[
     }
     else {
         // string number to actual number
-        toUpload.data.config.table.access_group = parseInt(toUpload.data.config.table.access_group);
+        // toUpload.data.config.table.access_group = parseInt(toUpload.data.config.table.access_group);
 
         // set json string to actual data
-        if (toUpload.data.data) {
-            data = toUpload.data.data ? JSON.parse(toUpload.data.data) : null;
-        }
+        data = toUpload.data.data ? JSON.parse(toUpload.data.data) : null;
     }
 
     config = toUpload.data.config;
@@ -100,7 +101,12 @@ export let uploadRecord = async (e: SubmitEvent, remove_bin?:{[key:string]:any}[
     // uncomment below to upload
 
     // upload json data first
-    let rec = await skapi.postRecord(Object.assign({remove_bin}, data), config);
+    let rec;
+    if (edit) {
+        rec = await skapi.postRecord(data, Object.assign({record_id: toUpload.data.config?.record_id, remove_bin}, config));
+    } else {
+        rec = await skapi.postRecord(data, config);
+    }
 
     // upload files if any
     if (files.length) {
