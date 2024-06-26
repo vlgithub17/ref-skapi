@@ -103,89 +103,92 @@ br
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh
 
-Table(:key="tableKey" :class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
-    template(v-slot:head)
-        tr
-            th.center(style='width:80px;padding:0')
-                .material-symbols-outlined.fill manage_accounts 
-                .resizer
-            th.overflow(v-if="filterOptions.email" style="width:200px")
-                | Email
-                .resizer
-            th.overflow(v-if="filterOptions.userID" style="width:160px")
-                | User ID
-                .resizer
-            th.overflow(v-if="filterOptions.name" style="width:160px")
-                | Name
-                .resizer
-            th.overflow(v-if="filterOptions.timestamp" style="width:200px")
-                | Sign Up Date
-                .resizer
-            th.overflow(v-if="filterOptions.address" style="width:160px")
-                | Address
-                .resizer
-            th.center.overflow(v-if="filterOptions.locale" style="width:96px;")
-                | Locale
-                .resizer
-            th.center.overflow(v-if="filterOptions.gender" style="width:96px;")
-                | Gender
-                .resizer
-            th.center.overflow(v-if="filterOptions.birthdate" style="width:140px;")
-                | Birthdate
-                .resizer
-            th.center.overflow(v-if="filterOptions.nickname" style="width:140px;")
-                | Nickname
-                .resizer
-            th.overflow(v-if="filterOptions.picture" style="width:160px;")
-                | Picture
-                .resizer
-            th.overflow(v-if="filterOptions.profile" style="width:160px;")
-                | Profile
-                .resizer
-            th.overflow(v-if="filterOptions.website" style="width:160px;")
-                | Website
-                .resizer
-            th.overflow(v-if="filterOptions.misc" style="width:200px;")
-                | Misc
-                .resizer
+.userPart
+    template(v-if="fetching")
+        #loading.
+            Loading Records ... &nbsp;
+            #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+
+    Table(:key="tableKey" :class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
+
+        template(v-slot:head)
+            tr
+                th.center(style='width:80px;padding:0')
+                    .material-symbols-outlined.fill manage_accounts 
+                    .resizer
+                th.overflow(v-if="filterOptions.email" style="width:200px")
+                    | Email
+                    .resizer
+                th.overflow(v-if="filterOptions.userID" style="width:160px")
+                    | User ID
+                    .resizer
+                th.overflow(v-if="filterOptions.name" style="width:160px")
+                    | Name
+                    .resizer
+                th.overflow(v-if="filterOptions.timestamp" style="width:200px")
+                    | Sign Up Date
+                    .resizer
+                th.overflow(v-if="filterOptions.address" style="width:160px")
+                    | Address
+                    .resizer
+                th.center.overflow(v-if="filterOptions.locale" style="width:96px;")
+                    | Locale
+                    .resizer
+                th.center.overflow(v-if="filterOptions.gender" style="width:96px;")
+                    | Gender
+                    .resizer
+                th.center.overflow(v-if="filterOptions.birthdate" style="width:140px;")
+                    | Birthdate
+                    .resizer
+                th.center.overflow(v-if="filterOptions.nickname" style="width:140px;")
+                    | Nickname
+                    .resizer
+                th.overflow(v-if="filterOptions.picture" style="width:160px;")
+                    | Picture
+                    .resizer
+                th.overflow(v-if="filterOptions.profile" style="width:160px;")
+                    | Profile
+                    .resizer
+                th.overflow(v-if="filterOptions.website" style="width:160px;")
+                    | Website
+                    .resizer
+                th.overflow(v-if="filterOptions.misc" style="width:200px;")
+                    | Misc
+                    .resizer
 
 
-    template(v-slot:body)
-        template(v-if="fetching")
-            tr
-                td#loading(:colspan="colspan").
-                    Loading Users ... &nbsp;
-                    #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-            tr(v-for="i in 9")
-                td(:colspan="colspan")
-        template(v-else-if="!listDisplay || listDisplay.length === 0")
-            tr
-                td#noUsers(:colspan="colspan") No Users
-            tr(v-for="i in 9")
-                td(:colspan="colspan")
-        template(v-else) 
-            tr(v-for="(user, index) in listDisplay") 
-                td.center.optionCol.overflow(style="padding:0")
-                    .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
-                    template(v-if="user.approved.includes('suspended')")
-                        .material-symbols-outlined.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
-                    template(v-else)
-                        .material-symbols-outlined.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
-                td.overflow(v-if="filterOptions.email") {{ user.email }}
-                td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
-                td.overflow(v-if="filterOptions.name") {{ user.name }}
-                td.overflow(v-if="filterOptions.timestamp") {{ new Date(user.timestamp).toLocaleString() }}
-                td.overflow(v-if="filterOptions.address") {{ user.address || '-' }}
-                td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
-                td.center.overflow(v-if="filterOptions.gender") {{ user.gender || '-' }}
-                td.center.overflow(v-if="filterOptions.birthdate") {{ user.birthdate || '-' }}
-                td.center.overflow(v-if="filterOptions.nickname") {{ user.nickname || '-' }}
-                td.overflow(v-if="filterOptions.picture") {{ user.picture || '-' }}
-                td.overflow(v-if="filterOptions.profile") {{ user.profile || '-' }}
-                td.overflow(v-if="filterOptions.website") {{ user.website || '-' }}
-                td.overflow(v-if="filterOptions.misc") {{ user.misc || '-' }}
-            tr(v-for="i in (10 - listDisplay.length)")
-                td(:colspan="colspan")
+        template(v-slot:body)
+            template(v-if="fetching")
+                tr(v-for="i in 10")
+                    td(:colspan="colspan")
+            template(v-else-if="!listDisplay || listDisplay.length === 0")
+                tr
+                    td#noUsers(:colspan="colspan") No Users
+                tr(v-for="i in 9")
+                    td(:colspan="colspan")
+            template(v-else) 
+                tr(v-for="(user, index) in listDisplay") 
+                    td.center.optionCol.overflow(style="padding:0")
+                        .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
+                        template(v-if="user.approved.includes('suspended')")
+                            .material-symbols-outlined.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
+                        template(v-else)
+                            .material-symbols-outlined.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
+                    td.overflow(v-if="filterOptions.email") {{ user.email }}
+                    td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
+                    td.overflow(v-if="filterOptions.name") {{ user.name }}
+                    td.overflow(v-if="filterOptions.timestamp") {{ new Date(user.timestamp).toLocaleString() }}
+                    td.overflow(v-if="filterOptions.address") {{ user.address || '-' }}
+                    td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
+                    td.center.overflow(v-if="filterOptions.gender") {{ user.gender || '-' }}
+                    td.center.overflow(v-if="filterOptions.birthdate") {{ user.birthdate || '-' }}
+                    td.center.overflow(v-if="filterOptions.nickname") {{ user.nickname || '-' }}
+                    td.overflow(v-if="filterOptions.picture") {{ user.picture || '-' }}
+                    td.overflow(v-if="filterOptions.profile") {{ user.profile || '-' }}
+                    td.overflow(v-if="filterOptions.website") {{ user.website || '-' }}
+                    td.overflow(v-if="filterOptions.misc") {{ user.misc || '-' }}
+                tr(v-for="i in (10 - listDisplay.length)")
+                    td(:colspan="colspan")
         
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage === 1 }")
@@ -995,7 +998,21 @@ let closeModal = () => {
         margin: 8px 0;
     }
 }
-
+.userPart {
+    position: relative;
+    overflow: hidden;
+}
+#loading {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    height: 60px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    font-size: 0.8rem;
+}
 .optionCol {
     &>*:first-child {
         margin-right: 8px;

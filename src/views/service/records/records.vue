@@ -49,7 +49,7 @@ form#searchForm(@submit.prevent="init()")
             button.icon(v-if="!showAdvanced" type="submit" style="border:0;padding:0")
                 .material-symbols-outlined.fill search
             //- .material-symbols-outlined.fill.icon(@click.stop="showAdvanced = !showAdvanced; searchFormValue.index.for = 'none'") manage_search
-        button.btn(type="button" @click.stop="showAdvanced = !showAdvanced; searchFormValue.index.for = 'none'" :class="{final: showAdvanced, unFinished: !showAdvanced}") Advanced
+        button.btn(type="button" @click.stop="showAdvanced = !showAdvanced;" :class="{final: showAdvanced, unFinished: !showAdvanced}") Advanced
         //- button.final(type="submit" style='flex-shrink: 0;') Search
 
         // table 검색일때 추가적인 필드
@@ -138,11 +138,11 @@ br
                 Checkbox(v-model="filterOptions.allow_multiple_reference" style="display:flex") Multiple Referenced 
                 Checkbox(v-model="filterOptions.data" style="display:flex") Data
 
-    .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; fileList=[]; }" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; fileList=[]; }" :class="{'nonClickable' : showDetail || uploading || fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill add_circle
         span &nbsp;&nbsp;Create Record
 
-    .iconClick.square(@click="deleteRecords" :class="{'nonClickable': noSelection || fetching || !user?.email_verified || currentService.service.active <= 0}" )
+    .iconClick.square(@click="openDeleteRecords=true" :class="{'nonClickable': noSelection || fetching || !user?.email_verified || currentService.service.active <= 0}" )
         .material-symbols-outlined.fill delete
         span &nbsp;&nbsp;Delete Selected
 
@@ -151,6 +151,11 @@ br
         span &nbsp;&nbsp;Refresh
 
 .recordPart 
+    template(v-if="fetching")
+        #loading.
+            Loading Records ... &nbsp;
+            #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+            
     Table(:key="tableKey" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}" resizable)
         template(v-slot:head)
             tr
@@ -207,11 +212,7 @@ br
                     .resizer
         template(v-slot:body)
             template(v-if="fetching")
-                tr
-                    td#loading(:colspan="colspan").
-                        Loading Records ... &nbsp;
-                        #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-                tr(v-for="i in 14")
+                tr(v-for="i in 15")
                     td(:colspan="colspan")
             template(v-else-if="!listDisplay || listDisplay.length === 0")
                 tr
@@ -237,10 +238,8 @@ br
                         template(v-else) -
                     td.overflow(v-if="filterOptions.index") 
                         template(v-if="rc?.index") 
-                            span(v-if="typeof(rc?.index?.value) == 'number'" style="font-weight:bold") #
-                            span(v-if="typeof(rc?.index?.value) == 'string'" style="font-weight:bold") T
-                            span.material-symbols-outlined.fill(v-if="typeof(rc?.index?.value) == 'boolean'") toggle_off
-                            span(style="margin-left:8px") {{ rc?.index?.name }} / {{ rc?.index?.value }}
+                            span(v-if="typeof(rc?.index?.value) == 'string'") {{ rc?.index?.name }} / "{{ rc?.index?.value }}"
+                            span(v-else) {{ rc?.index?.name }} / {{ rc?.index?.value }}
                         template(v-else) -
                     td.overflow(v-if="filterOptions.tag") 
                         template(v-if="rc?.tags" v-for="(tag, index) in rc.tags")
@@ -267,11 +266,11 @@ br
             .header
                 .material-symbols-outlined(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[]; indexValue=false;" :class="{nonClickable: fetching}") arrow_back
                 .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
-                template(v-if="fetching")
+                template(v-if="uploading")
                     img.loading(src="@/assets/img/loading.png")
                 template(v-else)
                     button.noLine(type="submit") Save
-            .content(:class="{nonClickable: fetching}")
+            .content(:class="{nonClickable: uploading}")
                 template(v-if="selectedRecord?.record_id")
                     .row
                         .key Record ID
@@ -399,6 +398,27 @@ br
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
 
+// delete records
+Modal(:open="openDeleteRecords")
+    h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete Records
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            You sure want to delete {{ Object.values(checked).filter(value => value === true).length > 1 ? Object.values(checked).filter(value => value === true).length + ' records' : 'the record'}}?
+            #[br]
+            This action cannot be undone.
+
+    br
+
+    div(style="display: flex; align-items: center; justify-content: space-between;")
+        div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine.warning(type="button" @click="openDeleteRecords=false;") Cancel 
+            button.final.warning(type="button" @click="deleteRecords") Delete
+
 br
 br
 </template>
@@ -407,6 +427,7 @@ import Code from '@/components/code.vue';
 import Table from '@/components/table.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Select from '@/components/select.vue';
+import Modal from '@/components/modal.vue';
 import Pager from '@/code/pager'
 
 import type { Ref } from 'vue';
@@ -442,6 +463,8 @@ let filterOptions = ref({
 });
 
 // ui/ux related
+let openDeleteRecords = ref(false);
+let promiseRunning = ref(false);
 let tableKey = ref(0);
 let fetching = ref(false);
 let maxPage = ref(0);
@@ -483,7 +506,7 @@ let reserved_index: {[key: string]: string} = {
     name: 'index.value',
     $uploaded: 'record_id',
     $updated: 'updated',
-    $referenced_count: 'referenced_count',
+    $referenced_count: 'reference.referenced_count',
     $user_id: 'record_id'
 }
 let bins: {
@@ -626,18 +649,23 @@ let getPage = async (refresh?: boolean) => {
             return r;
         })
 
+        console.log({fetchedData})
+
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
 
         // insert data in pager
         if (fetchedData.list.length > 0) {
             await pager.insertItems(fetchedData.list);
+            console.log(pager)
         }
 
         // get page from pager
         let disp = pager.getPage(currentPage.value);
+        console.log(disp)
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
+
 
         if(disp.maxPage > 0 && disp.maxPage < currentPage.value && !disp.list.length) {
             currentPage.value--;
@@ -733,7 +761,6 @@ watch(() => selectedRecord.value, nv => {
 
         if(nv?.index?.name) {
             indexValue.value = true;
-            // let value = JSON.parse(JSON.stringify(nv?.index?.value));
             indexType.value = typeof(nv?.index?.value);
             index_name.value = nv?.index?.name;
             index_value.value = JSON.stringify(nv?.index?.value);
@@ -741,8 +768,9 @@ watch(() => selectedRecord.value, nv => {
     }
 })
 
+let uploading = ref(false);
 let upload = async(e: SubmitEvent) => {
-    fetching.value = true;
+    uploading.value = true;
 
     let remove_bin = [];
 
@@ -750,30 +778,55 @@ let upload = async(e: SubmitEvent) => {
         remove_bin.push(deleteFileList.value[i].endpoint)
     }
 
-    // if (indexType.value == 'number' || indexType.value == 'boolean') {
-    //     index_value.value = JSON.parse(index_value.value);
-    // }
+    try {
+        if (selectedRecord.value?.record_id) {
+            await uploadRecord(e, true, remove_bin);
+        } else {
+            await uploadRecord(e, false);
+        }
 
-    if (selectedRecord.value?.record_id) {
-        await uploadRecord(e, true, remove_bin);
-    } else {
-        await uploadRecord(e, false);
+        uploading.value = false;
+        showDetail.value = false; 
+        indexValue.value = false;
+        index_name.value = '';
+        index_value.value = '';
+        selectedRecord.value = createRecordTemplate; 
+        fileList.value = []; 
+        getPage(true);
     }
-
-    fetching.value = false;
-    showDetail.value = false; 
-    indexValue.value = false;
-    index_name.value = '';
-    index_value.value = '';
-    selectedRecord.value = createRecordTemplate; 
-    fileList.value = []; 
-    getPage(true);
+    catch(err:any) {
+        uploading.value = false;
+        alert(err.message)
+    }
 }
 
 let deleteRecords = () => {
-    // fetching.value = true;
+    promiseRunning.value = true;
 
-    console.log(checked.value)
+    let deleteIds = Object.entries(checked.value).filter(([key, value]) => value === true).map(([key, value]) => key);
+
+    skapi.deleteRecords({service: currentService.id, record_id: deleteIds}).then(async(r) => {
+        for(let id of deleteIds) {
+            for(let i=0; i<listDisplay.value.length; i++) {
+                if (listDisplay.value[i].record_id == id) {
+                    listDisplay.value.splice(i, 1);
+                }
+            }
+            await pager.deleteItem(id);
+        }
+
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        listDisplay.value = disp.list;
+
+        if(disp.maxPage > 0 && disp.maxPage < currentPage.value && !disp.list.length) {
+            currentPage.value--;
+        }
+
+        checked.value = {};
+        promiseRunning.value = false;
+        openDeleteRecords.value = false;
+    })
 }
 
 let copyID = (e) => {
@@ -1055,6 +1108,18 @@ tbody {
 .recordPart {
     position: relative;
     overflow: hidden;
+}
+
+#loading {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    height: 60px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    font-size: 0.8rem;
 }
 
 .detailRecord {
