@@ -35,11 +35,11 @@
         hr
         nav.bottom 
             .link
-                router-link.prev(v-if="currentRouter" :to="`/my-services/${currentService.id}/${prevRouter}`")
+                router-link.prev(v-if="currentRouter && titleList[index-1]" :to="`/my-services/${currentService.id}/${prevRouter}`")
                     .desc Prev Page
                     .title {{ titleList[index-1] }}
             .link
-                router-link.next(v-if="currentRouter !== 'hosting'" :to="`/my-services/${currentService.id}/${nextRouter}`")
+                router-link.next(v-if="currentRouter !== 'hosting' && titleList[index+1]" :to="`/my-services/${currentService.id}/${nextRouter}`")
                     .desc Next Page
                     .title {{ titleList[index+1] }}
         br
@@ -92,6 +92,11 @@ watch(serviceList, nv => {
 watch(() => route, nv => {
     currentRouter.value = nv.path.split('/')[3];
     index = routerList.indexOf(currentRouter.value);
+
+    // if(currentService.service.group <= 1) {
+    //     routerList = ['service', 'dashboard', 'users', 'clientsecret', 'records'];
+    //     titleList = ['Getting Started', 'Dashboard & Settings', 'Users', 'Client Secret Key', 'Database'];
+    // }
 
     if(index == -1) {
         nextRouter.value = 'dashboard';

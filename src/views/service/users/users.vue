@@ -600,7 +600,6 @@ let createParams = {
     email: '',
     name: '',
     password: '',
-    service: currentService.id,
     phone_number: '',
     gender: '',
     address: '',
@@ -613,9 +612,7 @@ let createParams = {
 }
 let inviteParams = {
     email: '',
-    name: '',
-    access_group: 1,
-    service: currentService.id
+    name: ''
 }
 let redirect = '';
 let error = ref('');
@@ -653,14 +650,15 @@ let callParams = computed(() => {
     let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : new Date().getTime();
     let result = {};
 
-    if (updateEndTime.value) {
+    if (updateEndTime.value && !endDate) {
         endDate = new Date().getTime();
     }
 
     switch (searchFor.value) {
         case 'timestamp':
         case 'birthdate':
-
+            
+            console.log(startDate, endDate)
             if (startDate && endDate) {
                 result = {
                     service: currentService.id,
@@ -676,26 +674,28 @@ let callParams = computed(() => {
                     condition: startDate ? '>=' : '<='
                 }
             }
+            break;
         case 'user_id':
             result = {
                 service: currentService.id,
                 searchFor: searchFor.value,
                 value: searchValue.value
             }
+            break;
 
         default:
             result = {
                 service: currentService.id,
                 searchFor: searchValue.value == '' ? 'timestamp' : searchFor.value,
-                value: searchValue.value == '' ? 0 : searchValue.value,
-                condition: '>='
+                value: searchValue.value == '' ? new Date().getTime() : searchValue.value,
+                condition: '<='
             }
     }
 
     return result;
 });
 
-let currentParams = callParams.value;
+// let currentParams = callParams.value;
 
 let getPage = async (refresh?: boolean) => {
     if (!pager) {
@@ -715,7 +715,7 @@ let getPage = async (refresh?: boolean) => {
     else if (!endOfList.value || refresh) {
         fetching.value = true;
 
-        let fetchedData = await skapi.getUsers(currentParams, { fetchMore: !refresh, ascending: !searchValue.value ? false : true });
+        let fetchedData = await skapi.getUsers(callParams.value, { fetchMore: !refresh, ascending: !searchValue.value ? false : true });
 
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
@@ -745,9 +745,11 @@ let init = async () => {
     pager = await Pager.init({
         id: 'user_id',
         resultsPerPage: 10,
-        sortBy: !searchValue.value ? 'timestamp' : currentParams.searchFor,
+        sortBy: !searchValue.value ? 'timestamp' : callParams.value.searchFor,
         order: !searchValue.value ? 'desc' : 'asc',
     });
+
+    console.log(callParams.value)
 
     getPage(true);
 }
@@ -755,8 +757,8 @@ let init = async () => {
 init();
 
 let searchUsers = () => {
-    currentParams = callParams.value;
-    console.log(currentParams)
+    // currentParams = callParams.value;
+    // console.log(currentParams)
     init();
 }
 
@@ -807,10 +809,10 @@ let createUser = () => {
     error.value = '';
 
     if (gender_public.value || address_public.value || birthdate_public.value){
-        Object.assign(createParams, {gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value})
+        Object.assign({gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value}, createParams)
     }
 
-    currentService.admin_signup(createParams).then(async(res) => {
+    currentService.admin_signup(Object.assign({service: currentService.id}, createParams)).then(async(res) => {
         res.email = res.email_admin;
         await pager.insertItems([res]);
 
@@ -819,6 +821,9 @@ let createUser = () => {
         listDisplay.value = disp.list;
 
         document.getElementById("createForm").reset(); 
+        for(let i in createParams) {
+            createParams[i] = '';
+        }
         gender_public.value = false;
         address_public.value = false;
         birthdate_public.value = false;
@@ -827,7 +832,8 @@ let createUser = () => {
         getPage();
     }).catch((err) => {
         promiseRunning.value = false;
-        error.value = err.message;
+        // error.value = err.message;
+        alert(err.message);
     });
 }
 
@@ -835,11 +841,14 @@ let inviteUser = () => {
     promiseRunning.value = true;
     error.value = '';
 
-    currentService.admin_signup(inviteParams, {
+    currentService.admin_signup(Object.assign({access_group: 1, service: currentService.id}, inviteParams), {
         signup_confirmation: redirect || false
     }).then((res) => {
         promiseRunning.value = false;
         openInviteUser.value = false;
+        for(let i in inviteParams) {
+            inviteParams[i] = '';
+        }
     }).catch((err) => {
         if (err.code === 'EXISTS') {
             currentService.resendInvitation({
@@ -850,12 +859,14 @@ let inviteUser = () => {
                 openInviteUser.value = false;
             }).catch((err) => {
                 promiseRunning.value = false;
-                error.value = err.message;
+                // error.value = err.message;
+                alert(err.message);
             });
         }
         else {
             promiseRunning.value = false;
-            error.value = err.message;
+            // error.value = err.message;
+            alert(err.message);
         }
     });
 }
@@ -924,6 +935,9 @@ let closeModal = () => {
         openInviteUser.value = false;
     } else if(openCreateUser.value) {
         document.getElementById("createForm").reset();
+        for(let i in createParams) {
+            createParams[i] = '';
+        }
         gender_public.value = false;
         address_public.value = false;
         birthdate_public.value = false;
