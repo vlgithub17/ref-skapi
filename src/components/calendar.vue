@@ -185,16 +185,16 @@ let periodDateSetting = () => {
     }
 }
 
-let updateCalendar = async (e, what) => {
-    if (e.target.value.length > 4) {
-        alert('maxLength 4');
-        return
-    } else if (e.target.value < 1900 || e.target.value > 9999) {
-        alert('Enter from 1900 to 9999');
-        return
-    }
-    
+let updateCalendar = async (e, what) => {    
     if (what == 'year') {
+        if (e.target.value.length > 4) {
+            alert('maxLength 4');
+            return
+        } else if (e.target.value < 1900 || e.target.value > 9999) {
+            alert('Enter from 1900 to 9999');
+            return
+        }
+
         currentYear.value = e.target.value;
     } else if (what == 'month') {
         currentMonth.value = e.target.value;

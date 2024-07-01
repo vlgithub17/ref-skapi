@@ -29,6 +29,22 @@
                 span.name File Hosting
     main.right 
         router-view
+        br
+        br
+        br
+        hr
+        nav.bottom 
+            .link
+                router-link.prev(v-if="currentRouter && titleList[index-1]" :to="`/my-services/${currentService.id}/${prevRouter}`")
+                    .desc Prev Page
+                    .title {{ titleList[index-1] }}
+            .link
+                router-link.next(v-if="currentRouter !== 'hosting' && titleList[index+1]" :to="`/my-services/${currentService.id}/${nextRouter}`")
+                    .desc Next Page
+                    .title {{ titleList[index+1] }}
+        br
+        br
+
     
 div(v-else style='text-align: center;margin-top: 100px;')
     img.loading(src="@/assets/img/loading.png")
@@ -36,7 +52,7 @@ div(v-else style='text-align: center;margin-top: 100px;')
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
 import { loginState } from '@/code/user';
 import { serviceList } from '@/views/service-list';
 import { currentService, setService, serviceMainLoaded } from '@/views/service/main';
@@ -46,6 +62,13 @@ const router = useRouter();
 const route = useRoute();
 
 let serviceId = route.path.split('/')[2];
+let currentRouter = ref('');
+let routerList = ['service', 'dashboard', 'users', 'clientsecret', 'records', 'mail', 'newsletter', 'hosting'];
+let titleList = ['Getting Started', 'Dashboard & Settings', 'Users', 'Client Secret Key', 'Database', 'Automated Email', 'Bulk Email', 'File Hosting'];
+
+let index = 0;
+let prevRouter = ref('');
+let nextRouter = ref('');
 
 watch(loginState, nv => {
     if (!nv) {
@@ -66,6 +89,26 @@ watch(serviceList, nv => {
     }
 }, { immediate: true });
 
+watch(() => route, nv => {
+    currentRouter.value = nv.path.split('/')[3];
+    index = routerList.indexOf(currentRouter.value);
+
+    // if(currentService.service.group <= 1) {
+    //     routerList = ['service', 'dashboard', 'users', 'clientsecret', 'records'];
+    //     titleList = ['Getting Started', 'Dashboard & Settings', 'Users', 'Client Secret Key', 'Database'];
+    // }
+
+    if(index == -1) {
+        nextRouter.value = 'dashboard';
+    } else if(index == 1) {
+        prevRouter.value = '';
+        nextRouter.value = routerList[index+1];
+    } else {
+        prevRouter.value = routerList[index-1];
+        nextRouter.value = routerList[index+1];
+    }
+}, { immediate: true, deep: true});
+
 </script>
 
 <style lang="less" scoped>
@@ -85,6 +128,40 @@ watch(serviceList, nv => {
         width: 50%;
         flex-grow: 1;
         padding: 8px;
+    }
+
+    .bottom {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+
+        .link {
+            flex-grow: 1;
+
+            a {
+                display: block;
+                border: 1px solid rgba(0, 0, 0, 0.15);
+                border-radius: 8px;
+                padding: 11px 16px 13px;
+                text-decoration: none;
+                transition: all .25s;
+
+                &:hover {
+                    border: 1px solid rgba(41, 63, 230, 0.6);
+                }
+                &.next {
+                    text-align: right;
+                }
+                .desc {
+                    color: rgba(0,0,0,0.4);
+                    font-size: 0.8rem;
+                }
+                .title {
+                    color: var(--main-color);
+                }
+            }
+        }   
     }
 }
 

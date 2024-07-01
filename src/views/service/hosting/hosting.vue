@@ -104,93 +104,92 @@ template(v-else)
             span &nbsp;&nbsp;Refresh CDN
 
 
-    Table(
-        @dragover.stop.prevent="e=>{if(cdnPending) return; e.dataTransfer.dropEffect = 'copy'; dragHere = true;}"
-        @dragleave.stop.prevent="dragHere = false;"
-        @drop.stop.prevent="e => {dragHere = false; if(!cdnPending) onDrop(e, getFileList)}"
-        :class="{'nonClickable' : cdnPending || fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}"
-        resizable)
-        template(v-slot:head)
-            tr
-                th(style="width:1px;")
-                    Checkbox(@click.stop v-model='checkedall' @change='checkall' :class='{nonClickable: !listDisplay.length}')
-                    .resizer
-                th(style='width:320px;')
-                    span(@click='toggleSort("name")')
-                        | Filename
-                        .material-symbols-outlined.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-                    .resizer
+    .hostingPart
+        template(v-if="cdnPending")
+            #loading.
+                Refreshing CDN ... &nbsp;
+                #[img.loading(src="@/assets/img/loading.png")]
 
-                th(style='width:160px;')
-                    span(@click='toggleSort("size")')
-                        | Size
-                        span.material-symbols-outlined.fill(v-if='sortBy === "size"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-                    .resizer
-                th(style='width:220px;')
-                    span(@click='toggleSort("upl")')
-                        | Uploaded
-                        span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-
-        template(v-slot:body)
-            template(v-if='cdnPending')
+        template(v-if="fetching")
+            #loading.
+                Loading ... &nbsp;
+                #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+        
+        Table(
+            @dragover.stop.prevent="e=>{if(cdnPending) return; e.dataTransfer.dropEffect = 'copy'; dragHere = true;}"
+            @dragleave.stop.prevent="dragHere = false;"
+            @drop.stop.prevent="e => {dragHere = false; if(!cdnPending) onDrop(e, getFileList)}"
+            :class="{'nonClickable' : cdnPending || fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}"
+            resizable)
+            template(v-slot:head)
                 tr
-                    td(colspan='4')
-                        | Refreshing CDN...&nbsp;
-                        img.loading(src="@/assets/img/loading.png")
-                tr(v-for="i in 9")
-                    td(colspan="4")
+                    th(style="width:1px;")
+                        Checkbox(@click.stop v-model='checkedall' @change='checkall' :class='{nonClickable: !listDisplay.length}')
+                        .resizer
+                    th(style='width:320px;')
+                        span(@click='toggleSort("name")')
+                            | Filename
+                            .material-symbols-outlined.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                        .resizer
 
-            template(v-else-if='uploadProgress.name')
-                .progress( :style="{ width: uploadProgress.progress + '%', height: '3px', background: 'var(--main-color)', position: 'absolute'}")
-                tr.uploadState(style="position:relative")
-                    td
-                        .material-symbols-outlined.center.moving upload
-                    td(colspan="3")
-                        | Uploading: /{{ uploadProgress.name }}&nbsp;
-                        b ({{ uploadCount[0] }} / {{ uploadCount[1] }})
-                tr(v-for="i in 9")
-                    td(colspan="4")
+                    th(style='width:160px;')
+                        span(@click='toggleSort("size")')
+                            | Size
+                            span.material-symbols-outlined.fill(v-if='sortBy === "size"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                        .resizer
+                    th(style='width:220px;')
+                        span(@click='toggleSort("upl")')
+                            | Uploaded
+                            span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
 
-            template(v-else-if="fetching")
-                tr
-                    td#loading(colspan="4").
-                        Loading... &nbsp;
-                        #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-                tr(v-for="i in 9")
-                    td(colspan="4")
+            template(v-slot:body)
+                template(v-if='cdnPending || fetching')
+                    tr(v-for="i in 10")
+                        td(colspan="4")
 
-            template(v-else-if="!listDisplay || listDisplay.length === 0")
-                tr
-                    td(colspan="4") Drag and drop files here
+                template(v-else-if='uploadProgress.name')
+                    .progress( :style="{ width: uploadProgress.progress + '%', height: '3px', background: 'var(--main-color)', position: 'absolute'}")
+                    tr.uploadState(style="position:relative")
+                        td
+                            .material-symbols-outlined.center.moving upload
+                        td(colspan="3")
+                            | Uploading: /{{ uploadProgress.name }}&nbsp;
+                            b ({{ uploadCount[0] }} / {{ uploadCount[1] }})
+                    tr(v-for="i in 9")
+                        td(colspan="4")
 
-                tr(v-for="i in 9")
-                    td(colspan="4")
+                template(v-else-if="!listDisplay || listDisplay.length === 0")
+                    tr
+                        td(colspan="4") Drag and drop files here
 
-            template(v-else)
-                tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
-                    td
-                        .material-symbols-outlined.fill(v-if='currentDirectory') arrow_upward
-                        template(v-if="cdnPending")
-                            img.loading(src="@/assets/img/loading.png")
-                    td(colspan="3")
-                        template(v-if='currentDirectory')
-                            .material-symbols-outlined.fill folder_open
-                            | &nbsp;
-                        | / {{ currentDirectory }}
+                    tr(v-for="i in 9")
+                        td(colspan="4")
 
-                tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = setNewDir(ns) }')
-                    td
-                        Checkbox(@click.stop v-model='checked[ns.name]')
+                template(v-else)
+                    tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
+                        td
+                            .material-symbols-outlined.fill(v-if='currentDirectory') arrow_upward
+                            template(v-if="cdnPending")
+                                img.loading(src="@/assets/img/loading.png")
+                        td(colspan="3")
+                            template(v-if='currentDirectory')
+                                .material-symbols-outlined.fill folder_open
+                                | &nbsp;
+                            | / {{ currentDirectory }}
 
-                    td.overflow(v-if='ns.name[0] == "#"')
-                        span.material-symbols-outlined.fill(style='vertical-align: sub;') folder
-                        | &nbsp;{{ ns.name.slice(1) }}
-                    td.overflow(v-else) {{ ns.name }}
-                    td.overflow {{ getFileSize(ns.size) }}
-                    td.overflow {{ new Date(ns.upl).toLocaleString() }}
+                    tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = setNewDir(ns) }')
+                        td
+                            Checkbox(@click.stop v-model='checked[ns.name]')
 
-                tr(v-for="i in (10 - listDisplay.length)")
-                    td(colspan="4")
+                        td.overflow(v-if='ns.name[0] == "#"')
+                            span.material-symbols-outlined.fill(style='vertical-align: sub;') folder
+                            | &nbsp;{{ ns.name.slice(1) }}
+                        td.overflow(v-else) {{ ns.name }}
+                        td.overflow {{ getFileSize(ns.size) }}
+                        td.overflow {{ new Date(ns.upl).toLocaleString() }}
+
+                    tr(v-for="i in (10 - listDisplay.length)")
+                        td(colspan="4")
 
     br
 
@@ -895,6 +894,23 @@ thead {
     &>* {
         margin-bottom: 8px;
     }
+}
+
+.hostingPart {
+    position: relative;
+    overflow: hidden;
+}
+
+#loading {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    height: 60px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    font-size: 0.8rem;
 }
 
 .dragHere {

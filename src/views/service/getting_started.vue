@@ -38,6 +38,15 @@ p For more details, please refer to the #[a(href="https://docs.skapi.com/introdu
 
 br
 
+//- .routerWrap
+    .routerButton
+    .routerButton
+        router-link(:to="`/my-services/${currentService.id}/dashboard`")
+            .desc Next Page
+            .title Dashboard & Settings
+
+
+br
 </template>
 
 <script setup>

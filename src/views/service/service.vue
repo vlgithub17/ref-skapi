@@ -25,7 +25,7 @@ section.infoBox
     .state
         .smallTitle Subscription
         .smallValue(:style='{fontWeight:currentService.service.plan == "Canceled" ? "normal" : null, color:currentService.service.plan == "Canceled" ? "var(--caution-color)" : null}')
-            span {{ currentService.service.plan }}&nbsp;
+            span {{ currentService.service.plan || currentService.plan }}&nbsp;
             router-link.editHandle(:to='`/subscription/${currentService.id}`' @click="editCors") [CHANGE]
 
     .state 
@@ -111,7 +111,7 @@ section.infoBox
             .smallTitle Service Name
             template(v-if="modifyMode.name")
                 form.editValue(@submit.prevent="changeName")
-                    input.big(type="text" ref="focus_name" placeholder="Maximum 40 characters" maxlength="40" :value='inputName' @input="(e) => inputName = e.target.value" required)
+                    input.big(type="text" ref="focus_name" placeholder="Maximum 40 characters" maxlength="40" :value='inputName' @input="(e) => inputName = e.target.value" :disabled="updatingValue.name" required)
 
                     template(v-if="updatingValue.name")
                         img.loading(src="@/assets/img/loading.png")
@@ -249,6 +249,7 @@ let changeName = () => {
         }).then(() => {
             updatingValue.name = false;
             currentService.service.name = inputName;
+            console.log(currentService)
             modifyMode.name = false;
         }).catch(err => {
             updatingValue.name = false;
