@@ -317,10 +317,10 @@ br
                         option(value="authorized") Authorized
                         option(value="private") Private
 
-                .row.indent 
+                .row.indent(:class="{disabled : selectedRecord.table.access_group == 'public'}")
                     .key Subscription 
                     .value
-                        Checkbox(v-model="selectedRecord_subscription" name='config[table][subscription]')
+                        Checkbox(v-model="selectedRecord_subscription" name='config[table][subscription]' :disabled="selectedRecord.table.access_group == 'public'")
 
                 .row(style="margin-bottom:6px")
                     .key Reference
