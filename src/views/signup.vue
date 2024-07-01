@@ -89,15 +89,15 @@ let promiseRunning = ref(false);
 let passwordField = ref(null);
 let confirmPasswordField = ref(null);
 let error = ref(null);
-let form = {
+let form = ref({
     email: '',
     password: '',
     password_confirm: '',
     subscribe: true,
-};
+});
 
 let validatePassword = () => {
-    if (form.password_confirm !== form.password) {
+    if (form.value.password_confirm !== form.value.password) {
         confirmPasswordField.value.setCustomValidity('Password does not match');
         confirmPasswordField.value.reportValidity();
     }
@@ -108,17 +108,17 @@ let signup = (e) => {
     promiseRunning.value = true;
 
     let params = {
-        email: form.email,
-        password: form.password,
+        email: form.value.email,
+        password: form.value.password,
     }
     let options = {
         signup_confirmation: '/success',
-        email_subscription: form.subscribe
+        email_subscription: form.value.subscribe
     }
 
     skapi.signup(params, options).then(res => {
         console.log(res);
-        router.push({ path: '/confirmation', query: { email: form.email } })
+        router.push({ path: '/confirmation', query: { email: form.value.email } })
     }).catch(err => {
         console.log(err)
         promiseRunning.value = false;
