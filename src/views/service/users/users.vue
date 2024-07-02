@@ -645,12 +645,13 @@ watch(searchFor, (n, o) => {
 // computed fetch params
 let callParams = computed(() => {
     let dates = searchValue.value.split('~').map(d => d.trim());
-    let startDate = dates?.[0] ? new Date(dates?.[0]).getTime() : 0;
-    let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : '';
     let result = {};
-
+    
     switch (searchFor.value) {
         case 'timestamp':
+            let startDate = dates?.[0] ? new Date(dates?.[0]).getTime() : 0;
+            let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : '';
+            
             if (startDate && endDate) {
                 result = {
                     service: currentService.id,
@@ -688,15 +689,27 @@ let callParams = computed(() => {
 
             break;
             
-        // case 'birthdate':
-        //     result = {
-        //         service: currentService.id,
-        //         searchFor: searchFor.value,
-        //         value: searchValue.value,
-        //         condition: '>='
-        //     }
+        case 'birthdate':
+            let start = dates?.[0];
+            let end = dates?.[1];
 
-        //     break;
+            if (start && end) {
+                result = {
+                    service: currentService.id,
+                    searchFor: searchFor.value,
+                    value: start,
+                    range: end
+                }
+            } else if (start || end) {
+                result = {
+                    service: currentService.id,
+                    searchFor: searchFor.value,
+                    value: start ? start : end,
+                    condition: start ? '>=' : '<='
+                }
+            }
+
+            break;
 
         default:
             result = {
