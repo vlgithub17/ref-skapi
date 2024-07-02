@@ -645,12 +645,13 @@ watch(searchFor, (n, o) => {
 // computed fetch params
 let callParams = computed(() => {
     let dates = searchValue.value.split('~').map(d => d.trim());
-    let startDate = dates?.[0] ? new Date(dates?.[0]).getTime() : 0;
-    let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : '';
     let result = {};
-
+    
     switch (searchFor.value) {
         case 'timestamp':
+            let startDate = dates?.[0] ? new Date(dates?.[0]).getTime() : 0;
+            let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : '';
+            
             if (startDate && endDate) {
                 result = {
                     service: currentService.id,
