@@ -643,16 +643,11 @@ watch(searchFor, (n, o) => {
 })
 
 // computed fetch params
-let updateEndTime = ref(false);
 let callParams = computed(() => {
     let dates = searchValue.value.split('~').map(d => d.trim());
     let startDate = dates?.[0] ? new Date(dates?.[0]).getTime() : 0;
     let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : new Date().getTime();
     let result = {};
-
-    if (updateEndTime.value && !endDate) {
-        endDate = new Date().getTime();
-    }
 
     switch (searchFor.value) {
         case 'timestamp':
@@ -695,8 +690,6 @@ let callParams = computed(() => {
     return result;
 });
 
-// let currentParams = callParams.value;
-
 let getPage = async (refresh?: boolean) => {
     if (!pager) {
         return;
@@ -704,7 +697,7 @@ let getPage = async (refresh?: boolean) => {
     
     if (refresh) {
         endOfList.value = false;
-        updateEndTime.value = true;
+        callParams.value.value = new Date().getTime();
     }
 
     if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
