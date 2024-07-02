@@ -688,15 +688,27 @@ let callParams = computed(() => {
 
             break;
             
-        // case 'birthdate':
-        //     result = {
-        //         service: currentService.id,
-        //         searchFor: searchFor.value,
-        //         value: searchValue.value,
-        //         condition: '>='
-        //     }
+        case 'birthdate':
+            let start = dates?.[0];
+            let end = dates?.[1];
 
-        //     break;
+            if (start && end) {
+                result = {
+                    service: currentService.id,
+                    searchFor: searchFor.value,
+                    value: start,
+                    range: end
+                }
+            } else if (start || end) {
+                result = {
+                    service: currentService.id,
+                    searchFor: searchFor.value,
+                    value: start ? start : end,
+                    condition: start ? '>=' : '<='
+                }
+            }
+
+            break;
 
         default:
             result = {
