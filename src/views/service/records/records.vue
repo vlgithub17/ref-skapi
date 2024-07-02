@@ -34,7 +34,8 @@ hr
 
 p Search and manage your service records.
 
-form#searchForm(@submit.prevent="searchRecords")
+//- form#searchForm(@submit.prevent="con()")
+form#searchForm(@submit.prevent="init()")
     .inner
         input(type='hidden' name='service' :value='currentService.id')
         input(type='hidden' name='owner' :value='currentService.owner')
@@ -45,32 +46,35 @@ form#searchForm(@submit.prevent="searchRecords")
             .material-symbols-outlined.fill.group(:class="{active : searchFormValue.table.access_group == 'private'}" title="private" @click.stop="searchFormValue.table.access_group = 'private'") vpn_key
         .search
             input.big(@input="e => {searchFormValue.table.name = e.target.value}" :placeholder="searchFormValue.table.access_group + ' table.name'" :required="showAdvanced === true && (searchFormValue.table.subscription || searchFormValue.reference || searchFormValue.tag || searchFormValue.index.name !== 'none')" style="padding-right: 40px;")
-            .material-symbols-outlined.fill.icon(@click.stop="showAdvanced = !showAdvanced") manage_search
-        button.final(type="submit" style='flex-shrink: 0;') Search
+            button.icon(v-if="!showAdvanced" type="submit" style="border:0;padding:0")
+                .material-symbols-outlined.fill search
+            //- .material-symbols-outlined.fill.icon(@click.stop="showAdvanced = !showAdvanced; searchFormValue.index.for = 'none'") manage_search
+        button.btn(type="button" @click.stop="showAdvanced = !showAdvanced;" :class="{final: showAdvanced, unFinished: !showAdvanced}") Advanced
+        //- button.final(type="submit" style='flex-shrink: 0;') Search
 
         // table 검색일때 추가적인 필드
         .advanced(v-if="showAdvanced" style="width:100%")
             .infoBox
                 .smallTitle(style="margin-bottom: 8px") Subscription ID
-                input.big(@input="e => {searchFormValue.table.subscription = e.target.value}" pattern='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' title='Subscription ID should be the user\'s ID' name='subscription' placeholder="Subscription ID")
+                input.big(v-model="searchFormValue.table.subscription" pattern='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' title='Subscription ID should be the user\'s ID' name='subscription' placeholder="Subscription ID")
 
                 br
                 br
 
                 .smallTitle(style="margin-bottom: 8px") Referenced ID
-                input.big(@input="e => {searchFormValue.reference = e.target.value}" name='reference' placeholder='referenced record id')
+                input.big(v-model="searchFormValue.reference" name='reference' placeholder='referenced record id')
 
                 br
                 br
 
                 .smallTitle(style="margin-bottom: 8px") Tag
-                input.big(@input="e => {searchFormValue.tag = e.target.value}" name='tag' placeholder='tag search')
+                input.big(v-model="searchFormValue.tag" name='tag' placeholder='tag search')
 
                 br
                 br
 
                 .smallTitle(style="margin-bottom: 8px") Index
-                select(v-model='searchFormValue.index.name' style="width:100%; height:44px; margin-bottom:10px")
+                select(v-model='searchFormValue.index.for' style="width:100%; height:44px; margin-bottom:10px")
                     option(value='none' selected) None
                     option(value='name') Index name
                     option(value='$updated') Updated Date
@@ -78,20 +82,20 @@ form#searchForm(@submit.prevent="searchRecords")
                     option(value='$referenced_count') Number of referenced
                     option(value='$user_id') Uploaders user id
 
-                input.big(v-if='searchFormValue.index.name == "name"' v-model='searchFormValue.index.value' name='index[name]' placeholder='index name' style="margin-bottom:10px" required)
+                input.big(v-if='searchFormValue.index.for == "name"' v-model='searchFormValue.index.name' name='index[name]' placeholder='index name' style="margin-bottom:10px" required)
 
-                .value(v-if='searchFormValue.index.name !== "none"' style="display:flex; flex-wrap:wrap; gap:10px;")
-                    select(v-if='searchFormValue.index.name == "name"' v-model='searchFormValue.index.type' style="flex-grow:1; height:44px")
+                .value(v-if='searchFormValue.index.for !== "none"' style="display:flex; flex-wrap:wrap; gap:10px;")
+                    select(v-if='searchFormValue.index.for == "name"' v-model='searchFormValue.index.type' style="flex-grow:1; height:44px")
                         option(value='text' selected) String
                         option(value='number') Number
                         option(value='checkbox') Boolean
 
                     input.big(v-if="searchFormValue.index.type !== 'checkbox'" name='index[value]' :type='searchFormValue.index.type' placeholder='index value' :required='searchFormValue.index.type !== "checkbox"' v-model='searchFormValue.index.value' style="flex-grow:50; width:unset")
                     select(v-else v-model="searchFormValue.index.value" style="flex-grow:50")
-                        option(value=true name='index[value]' selected) True
-                        option(value=false name='index[value]') False
+                        option(value='true' name='index[value]' selected) True
+                        option(value='false' name='index[value]') False
 
-                    template(v-if='searchFormValue.index.name !== "$user_id" && searchFormValue.index.type !== "checkbox"')
+                    template(v-if='searchFormValue.index.for !== "$user_id" && searchFormValue.index.type !== "checkbox"')
                         select(v-model='searchFormValue.index.condition' :disabled='conditionDisabled' style="flex-grow:1; height:44px")
                             option(value='=' selected) equal
                             option(value='>=') greater or equal
@@ -101,6 +105,13 @@ form#searchForm(@submit.prevent="searchRecords")
                             option(value='range') range
 
                         input(v-if='searchFormValue.index.condition == "range"' name='index[range]' :type='searchFormValue.index.type' placeholder='index range' style="flex-grow:1; height:44px" required)
+
+                br
+                br
+                
+                div(style="display:flex; justify-content:end; flex-wrap:wrap; gap:10px;")
+                    button.unFinished(type="button" @click.stop="resetAdvanced" style="width:140px; flex-grow:1") Clear Filter
+                    button.final(type="submit" style="width:140px; flex-grow:9;") Search
 
 br
 
@@ -127,11 +138,11 @@ br
                 Checkbox(v-model="filterOptions.allow_multiple_reference" style="display:flex") Multiple Referenced 
                 Checkbox(v-model="filterOptions.data" style="display:flex") Data
 
-    .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; fileList=[]; }" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; fileList=[]; }" :class="{'nonClickable' : showDetail || uploading || fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill add_circle
         span &nbsp;&nbsp;Create Record
 
-    .iconClick.square(:class="{'nonClickable': noSelection || fetching || !user?.email_verified || currentService.service.active <= 0}" )
+    .iconClick.square(@click="openDeleteRecords=true" :class="{'nonClickable': noSelection || fetching || !user?.email_verified || currentService.service.active <= 0}" )
         .material-symbols-outlined.fill delete
         span &nbsp;&nbsp;Delete Selected
 
@@ -140,6 +151,11 @@ br
         span &nbsp;&nbsp;Refresh
 
 .recordPart 
+    template(v-if="fetching")
+        #loading.
+            Loading Records ... &nbsp;
+            #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+            
     Table(:key="tableKey" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}" resizable)
         template(v-slot:head)
             tr
@@ -196,11 +212,7 @@ br
                     .resizer
         template(v-slot:body)
             template(v-if="fetching")
-                tr
-                    td#loading(:colspan="colspan").
-                        Loading Records ... &nbsp;
-                        #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-                tr(v-for="i in 14")
+                tr(v-for="i in 15")
                     td(:colspan="colspan")
             template(v-else-if="!listDisplay || listDisplay.length === 0")
                 tr
@@ -210,7 +222,7 @@ br
             template(v-else)
                 tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=JSON.parse(JSON.stringify(rc))")
                     td.center
-                        Checkbox(@click.stop v-model='checked[rc?.table?.name]')
+                        Checkbox(@click.stop v-model='checked[rc?.record_id]')
                     td.overflow(v-if="filterOptions.table") 
                         span.material-symbols-outlined.fill(v-if="rc.table.access_group == 'private'") vpn_key
                         span.material-symbols-outlined.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
@@ -225,7 +237,9 @@ br
                         .click.overflow(v-if="rc?.reference?.record_id" @click.stop="copyID") {{ rc?.reference?.record_id }}
                         template(v-else) -
                     td.overflow(v-if="filterOptions.index") 
-                        template(v-if="rc?.index") {{ rc?.index?.name }} / {{ rc?.index?.value }}
+                        template(v-if="rc?.index") 
+                            span(v-if="typeof(rc?.index?.value) == 'string'") {{ rc?.index?.name }} / "{{ rc?.index?.value }}"
+                            span(v-else) {{ rc?.index?.name }} / {{ rc?.index?.value }}
                         template(v-else) -
                     td.overflow(v-if="filterOptions.tag") 
                         template(v-if="rc?.tags" v-for="(tag, index) in rc.tags")
@@ -252,11 +266,11 @@ br
             .header
                 .material-symbols-outlined(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[]; indexValue=false;" :class="{nonClickable: fetching}") arrow_back
                 .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
-                template(v-if="fetching")
+                template(v-if="uploading")
                     img.loading(src="@/assets/img/loading.png")
                 template(v-else)
                     button.noLine(type="submit") Save
-            .content(:class="{nonClickable: fetching}")
+            .content(:class="{nonClickable: uploading}")
                 template(v-if="selectedRecord?.record_id")
                     .row
                         .key Record ID
@@ -297,16 +311,16 @@ br
 
                 .row.indent 
                     .key Access Group 
-                    template(v-if="selectedRecord?.record_id && selectedRecord?.table?.access_group == 'private'") {{ selectedRecord?.table?.access_group }}
+                    template(v-if="selectedRecord?.record_id && selectedRecord_private") {{ selectedRecord?.table?.access_group }}
                     select.value(v-else v-model="selectedRecord.table.access_group" name='config[table][access_group]')
                         option(value="public") Public
                         option(value="authorized") Authorized
                         option(value="private") Private
 
-                .row.indent 
+                .row.indent(:class="{disabled : selectedRecord.table.access_group == 'public'}")
                     .key Subscription 
                     .value
-                        Checkbox(v-model="selectedRecord_subscription" name='config[table][subscription]')
+                        Checkbox(v-model="selectedRecord_subscription" name='config[table][subscription]' :disabled="selectedRecord.table.access_group == 'public'")
 
                 .row(style="margin-bottom:6px")
                     .key Reference
@@ -343,9 +357,9 @@ br
 
                             input.line(v-if="indexType !== 'boolean'" v-model="index_value" name='config[index][value]' :type='indexType' placeholder='index value' :required='indexType !== "checkbox"' style="flex-grow:30; width:unset")
                             
-                            select(v-else v-model="index_value" style="flex-grow:30")
-                                option(value='true' name='config[index][value]' selected) True
-                                option(value='false' name='config[index][value]') False
+                            select(v-else v-model="index_value" name='config[index][value]' style="flex-grow:30")
+                                option(value='true' selected) True
+                                option(value='false') False
 
                 .row 
                     .key Tags 
@@ -384,6 +398,27 @@ br
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.bold chevron_right
 
+// delete records
+Modal(:open="openDeleteRecords")
+    h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete Records
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            You sure want to delete {{ Object.values(checked).filter(value => value === true).length > 1 ? Object.values(checked).filter(value => value === true).length + ' records' : 'the record'}}?
+            #[br]
+            This action cannot be undone.
+
+    br
+
+    div(style="display: flex; align-items: center; justify-content: space-between;")
+        div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
+            img.loading(src="@/assets/img/loading.png")
+        template(v-else)
+            button.noLine.warning(type="button" @click="openDeleteRecords=false;") Cancel 
+            button.final.warning(type="button" @click="deleteRecords") Delete
+
 br
 br
 </template>
@@ -392,6 +427,7 @@ import Code from '@/components/code.vue';
 import Table from '@/components/table.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Select from '@/components/select.vue';
+import Modal from '@/components/modal.vue';
 import Pager from '@/code/pager'
 
 import type { Ref } from 'vue';
@@ -403,6 +439,9 @@ import { showDropDown } from '@/assets/js/event.js'
 import { convertToObject } from 'typescript';
 import { uploadRecord } from '@/views/service/records/record';
 
+let con = () => {
+    console.log(searchFormValue)
+}
 // table columns
 let filterOptions = ref({
     table: true,
@@ -424,6 +463,8 @@ let filterOptions = ref({
 });
 
 // ui/ux related
+let openDeleteRecords = ref(false);
+let promiseRunning = ref(false);
 let tableKey = ref(0);
 let fetching = ref(false);
 let maxPage = ref(0);
@@ -441,9 +482,37 @@ let colspan = Object.values(filterOptions.value).filter(value => value === true)
 watch(filterOptions.value, nv => {
     colspan = Object.values(filterOptions.value).filter(value => value).length + 1;
     tableKey.value++;
-}, { immediate: true })
+}, { immediate: true });
+watch(indexType, nv => {
+    if (nv == 'boolean') {
+        index_value.value = 'true';
+    } else {
+        index_value.value = '';
+    }
+})
+watch(currentPage, (n, o) => {
+    if (n !== o && n > 0 && (n <= maxPage.value || n > maxPage.value && !endOfList.value)) {
+        getPage();
+    }
+    else {
+        currentPage.value = o;
+    }
+});
 
-// search
+let pager: Pager = null;
+let listDisplay = ref(null);
+let reserved_index: {[key: string]: string} = {
+    none: 'record_id',
+    name: 'index.value',
+    $uploaded: 'record_id',
+    $updated: 'updated',
+    $referenced_count: 'reference.referenced_count',
+    $user_id: 'record_id'
+}
+let bins: {
+    [record_id: string]: { [key:string]: any }
+} = {};
+
 let searchFormValue = reactive({
     table: {
         name: '',
@@ -451,7 +520,8 @@ let searchFormValue = reactive({
         subscription: '',
     },
     index: {
-        name: 'none',
+        for: 'none',
+        name: '',
         type: 'text',
         value: '',
         condition: '=',
@@ -460,12 +530,20 @@ let searchFormValue = reactive({
     tag: '',
     reference: ''
 });
-watch(() => searchFormValue.index.name, (n) => {
+let resetAdvanced = () => {
+    console.log(searchFormValue)
+    searchFormValue.table.subscription = '';
+    searchFormValue.reference = '';
+    searchFormValue.tag = '';
+    searchFormValue.index.for = 'none';
+}
+watch(() => searchFormValue.index.for, (n) => {
     conditionDisabled.value = false;
     searchFormValue.index.type = 'text';
     searchFormValue.index.condition = '=';
     switch (n) {
         case '$user_id':
+            searchFormValue.index.name = n;
             searchFormValue.index.type = 'text';
             searchFormValue.index.condition = '=';
             conditionDisabled.value = true;
@@ -473,43 +551,29 @@ watch(() => searchFormValue.index.name, (n) => {
         case 'name':
             break;
         case '$referenced_count':
+            searchFormValue.index.name = n;
             searchFormValue.index.type = 'number';
             break;
         default:
             // updated, uploaded
+            searchFormValue.index.name = n;
             searchFormValue.index.type = 'datetime-local';
     }
 })
-watch(() => searchFormValue.index.type, n => {
+watch(() => searchFormValue.index.type, (n) => {
     searchFormValue.index.value = '';
 })
 
-let pager: Pager = null;
-let listDisplay = ref(null);
-let fileList = ref([]);
-// let currentParams = searchFormValue;
-let reserved_index: {[key: string]: string} = {
-    none: 'record_id',
-    name: 'index.value',
-    $uploaded: 'record_id',
-    $updated: 'updated',
-    $referenced_count: 'referenced_count',
-    $user_id: 'record_id'
-}
-let bins: {
-    [record_id: string]: { [key:string]: any }
-} = {};
-
 let callParams = computed(() => {
     let params = {
-        service: currentService.id,
         table: {
             name: searchFormValue.table.name,
-            access_group: searchFormValue.table.access_group === 'private' ? 'private' : parseInt(searchFormValue.table.access_group),
+            access_group: searchFormValue.table.access_group === 'private' ? 'private' : searchFormValue.table.access_group,
             subscription: searchFormValue.table.subscription
         },
         index: {
             name: searchFormValue.index.name,
+            // value: searchFormValue.index.value,
             value: (() => {
                 let val = searchFormValue.index.value;
                 try {
@@ -532,9 +596,9 @@ let callParams = computed(() => {
         reference: searchFormValue.reference || undefined,
     }
 
-    // if (params.table.name && !params.table.subscription) {
-    //     delete params.table.subscription;
-    // }
+    if (!params.table.subscription) {
+        delete params.table.subscription;
+    }
     if (!params.table.name) {
         delete params.table;
     }
@@ -544,17 +608,14 @@ let callParams = computed(() => {
     if (!params.tag) {
         delete params.tag;
     }
-    if (params.index.name == 'none') {
+    if (searchFormValue.index.for == 'none') {
         delete params.index;
     }
-    
 
+    // console.log(params)
+    
     return params
 })
-
-console.log(callParams.value)
-
-let currentParams = callParams.value;
 
 let getPage = async (refresh?: boolean) => {
     if (!pager) {
@@ -573,20 +634,22 @@ let getPage = async (refresh?: boolean) => {
     else if (!endOfList.value || refresh) {
         fetching.value = true;
 
-        // console.log(currentParams?.table?.name)
+        if (searchFormValue.index.type == 'datetime-local') {
+            let dateObject = new Date(searchFormValue.index.value);
 
-        // if (!currentParams?.table?.name) {
-        //     currentParams = null;
-        // }
+            searchFormValue.index.value = dateObject.getTime();
+        }
 
-        console.log(currentParams)
+        console.log(callParams.value)
 
-        let fetchedData = await skapi.getRecords(currentParams, { fetchMore: !refresh });
+        let fetchedData = await skapi.getRecords(Object.assign({service: currentService.id}, callParams.value), { fetchMore: !refresh });
         fetchedData.list = fetchedData.list.map(r=>{
             bins[r.record_id] = r?.bin || {};
             delete r.bin;
             return r;
         })
+
+        console.log({fetchedData})
 
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
@@ -594,12 +657,15 @@ let getPage = async (refresh?: boolean) => {
         // insert data in pager
         if (fetchedData.list.length > 0) {
             await pager.insertItems(fetchedData.list);
+            console.log(pager)
         }
 
         // get page from pager
         let disp = pager.getPage(currentPage.value);
+        console.log(disp)
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
+
 
         if(disp.maxPage > 0 && disp.maxPage < currentPage.value && !disp.list.length) {
             currentPage.value--;
@@ -615,7 +681,7 @@ let getPage = async (refresh?: boolean) => {
                 }
             }
         }
-
+        
         fetching.value = false;
     }
 }
@@ -626,8 +692,8 @@ let init = async () => {
     // setup pagers
     pager = await Pager.init({
         id: 'record_id',
-        resultsPerPage: 10,
-        sortBy: reserved_index[searchFormValue.index.name] || 'index.value',
+        resultsPerPage: 15,
+        sortBy: reserved_index[searchFormValue.index.for] || 'index.value',
         order: searchFormValue.index.condition.includes('<') ? 'desc' : 'asc',
     });
 
@@ -654,15 +720,18 @@ let createRecordTemplate = {
     tags: [],
     readonly: false,
 };
-
 let selectedRecord = ref(createRecordTemplate);
+let selectedRecord_private = ref(false);
 let selectedRecord_readOnly = ref(false);
 let selectedRecord_subscription = ref(false);
 let selectedRecord_data = ref({});
+let fileList = ref([]);
+
 watch(() => selectedRecord.value, nv => {
     if (nv) {
         console.log(nv)
         deleteFileList.value = [];
+        nv?.table?.access_group == 'private' ? selectedRecord_private.value = true : selectedRecord_private.value = false;
         selectedRecord_readOnly.value = nv?.readonly || false;
         selectedRecord_subscription.value = nv?.table?.subscription || false;
         selectedRecord_data.value = JSON.stringify(nv?.data, null, 2) || '';
@@ -692,28 +761,16 @@ watch(() => selectedRecord.value, nv => {
 
         if(nv?.index?.name) {
             indexValue.value = true;
-            let value = JSON.parse(JSON.stringify(nv?.index?.value));
-            indexType.value = typeof(value);
+            indexType.value = typeof(nv?.index?.value);
             index_name.value = nv?.index?.name;
-            index_value.value = nv?.index?.value;
+            index_value.value = JSON.stringify(nv?.index?.value);
         }
     }
 })
 
-let searchRecords = () => {
-    if (!searchFormValue.table.name && !searchFormValue.table.subscription && !searchFormValue.reference && !searchFormValue.tag && searchFormValue.index.name == 'none') {
-        init();
-    }
-
-    if (!showAdvanced.value && searchFormValue.table.name) {
-        currentParams = searchFormValue.table;
-        init();
-        console.log(currentParams)
-    }
-}
-
+let uploading = ref(false);
 let upload = async(e: SubmitEvent) => {
-    fetching.value = true;
+    uploading.value = true;
 
     let remove_bin = [];
 
@@ -721,18 +778,55 @@ let upload = async(e: SubmitEvent) => {
         remove_bin.push(deleteFileList.value[i].endpoint)
     }
 
-    if (selectedRecord.value?.record_id) {
-        await uploadRecord(e, true, remove_bin);
-    } else {
-        await uploadRecord(e, false);
-    }
+    try {
+        if (selectedRecord.value?.record_id) {
+            await uploadRecord(e, true, remove_bin);
+        } else {
+            await uploadRecord(e, false);
+        }
 
-    fetching.value = false;
-    showDetail.value = false; 
-    indexValue.value = false;
-    selectedRecord.value = createRecordTemplate; 
-    fileList.value = []; 
-    getPage(true);
+        uploading.value = false;
+        showDetail.value = false; 
+        indexValue.value = false;
+        index_name.value = '';
+        index_value.value = '';
+        selectedRecord.value = createRecordTemplate; 
+        fileList.value = []; 
+        getPage(true);
+    }
+    catch(err:any) {
+        uploading.value = false;
+        alert(err.message)
+    }
+}
+
+let deleteRecords = () => {
+    promiseRunning.value = true;
+
+    let deleteIds = Object.entries(checked.value).filter(([key, value]) => value === true).map(([key, value]) => key);
+
+    skapi.deleteRecords({service: currentService.id, record_id: deleteIds}).then(async(r) => {
+        for(let id of deleteIds) {
+            for(let i=0; i<listDisplay.value.length; i++) {
+                if (listDisplay.value[i].record_id == id) {
+                    listDisplay.value.splice(i, 1);
+                }
+            }
+            await pager.deleteItem(id);
+        }
+
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        listDisplay.value = disp.list;
+
+        if(disp.maxPage > 0 && disp.maxPage < currentPage.value && !disp.list.length) {
+            currentPage.value--;
+        }
+
+        checked.value = {};
+        promiseRunning.value = false;
+        openDeleteRecords.value = false;
+    })
 }
 
 let copyID = (e) => {
@@ -758,7 +852,7 @@ let checked: any = ref({});
 let checkedall = ref(false);
 let checkall = () => {
     for (let i in listDisplay.value) {
-        checked.value[listDisplay.value[i].table.name] = checkedall.value;
+        checked.value[listDisplay.value[i].record_id] = checkedall.value;
     }
 }
 let noSelection = computed(() => {
@@ -859,6 +953,10 @@ let deleteFile = (item, index) => {
             right: 10px;
             transform: translateY(-50%);
             user-select: none;
+
+            &::before {
+                display: none;
+            }
         }
     }
     .groupWrap {
@@ -921,7 +1019,7 @@ let deleteFile = (item, index) => {
             }
         }
     }
-    .final {
+    .btn {
         flex-grow: 1;
         width: 140px;
     }
@@ -1010,6 +1108,18 @@ tbody {
 .recordPart {
     position: relative;
     overflow: hidden;
+}
+
+#loading {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    height: 60px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    font-size: 0.8rem;
 }
 
 .detailRecord {

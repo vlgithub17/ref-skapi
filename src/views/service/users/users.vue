@@ -103,89 +103,92 @@ br
             .material-symbols-outlined.fill refresh
             span &nbsp;&nbsp;Refresh
 
-Table(:key="tableKey" :class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
-    template(v-slot:head)
-        tr
-            th.center(style='width:80px;padding:0')
-                .material-symbols-outlined.fill manage_accounts 
-                .resizer
-            th.overflow(v-if="filterOptions.email" style="width:200px")
-                | Email
-                .resizer
-            th.overflow(v-if="filterOptions.userID" style="width:160px")
-                | User ID
-                .resizer
-            th.overflow(v-if="filterOptions.name" style="width:160px")
-                | Name
-                .resizer
-            th.overflow(v-if="filterOptions.timestamp" style="width:200px")
-                | Sign Up Date
-                .resizer
-            th.overflow(v-if="filterOptions.address" style="width:160px")
-                | Address
-                .resizer
-            th.center.overflow(v-if="filterOptions.locale" style="width:96px;")
-                | Locale
-                .resizer
-            th.center.overflow(v-if="filterOptions.gender" style="width:96px;")
-                | Gender
-                .resizer
-            th.center.overflow(v-if="filterOptions.birthdate" style="width:140px;")
-                | Birthdate
-                .resizer
-            th.center.overflow(v-if="filterOptions.nickname" style="width:140px;")
-                | Nickname
-                .resizer
-            th.overflow(v-if="filterOptions.picture" style="width:160px;")
-                | Picture
-                .resizer
-            th.overflow(v-if="filterOptions.profile" style="width:160px;")
-                | Profile
-                .resizer
-            th.overflow(v-if="filterOptions.website" style="width:160px;")
-                | Website
-                .resizer
-            th.overflow(v-if="filterOptions.misc" style="width:200px;")
-                | Misc
-                .resizer
+.userPart
+    template(v-if="fetching")
+        #loading.
+            Loading Records ... &nbsp;
+            #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+
+    Table(:key="tableKey" :class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
+
+        template(v-slot:head)
+            tr
+                th.center(style='width:80px;padding:0')
+                    .material-symbols-outlined.fill manage_accounts 
+                    .resizer
+                th.overflow(v-if="filterOptions.email" style="width:200px")
+                    | Email
+                    .resizer
+                th.overflow(v-if="filterOptions.userID" style="width:160px")
+                    | User ID
+                    .resizer
+                th.overflow(v-if="filterOptions.name" style="width:160px")
+                    | Name
+                    .resizer
+                th.overflow(v-if="filterOptions.timestamp" style="width:200px")
+                    | Sign Up Date
+                    .resizer
+                th.overflow(v-if="filterOptions.address" style="width:160px")
+                    | Address
+                    .resizer
+                th.center.overflow(v-if="filterOptions.locale" style="width:96px;")
+                    | Locale
+                    .resizer
+                th.center.overflow(v-if="filterOptions.gender" style="width:96px;")
+                    | Gender
+                    .resizer
+                th.center.overflow(v-if="filterOptions.birthdate" style="width:140px;")
+                    | Birthdate
+                    .resizer
+                th.center.overflow(v-if="filterOptions.nickname" style="width:140px;")
+                    | Nickname
+                    .resizer
+                th.overflow(v-if="filterOptions.picture" style="width:160px;")
+                    | Picture
+                    .resizer
+                th.overflow(v-if="filterOptions.profile" style="width:160px;")
+                    | Profile
+                    .resizer
+                th.overflow(v-if="filterOptions.website" style="width:160px;")
+                    | Website
+                    .resizer
+                th.overflow(v-if="filterOptions.misc" style="width:200px;")
+                    | Misc
+                    .resizer
 
 
-    template(v-slot:body)
-        template(v-if="fetching")
-            tr
-                td#loading(:colspan="colspan").
-                    Loading Users ... &nbsp;
-                    #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-            tr(v-for="i in 9")
-                td(:colspan="colspan")
-        template(v-else-if="!listDisplay || listDisplay.length === 0")
-            tr
-                td#noUsers(:colspan="colspan") No Users
-            tr(v-for="i in 9")
-                td(:colspan="colspan")
-        template(v-else) 
-            tr(v-for="(user, index) in listDisplay") 
-                td.center.optionCol.overflow(style="padding:0")
-                    .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
-                    template(v-if="user.approved.includes('suspended')")
-                        .material-symbols-outlined.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
-                    template(v-else)
-                        .material-symbols-outlined.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
-                td.overflow(v-if="filterOptions.email") {{ user.email }}
-                td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
-                td.overflow(v-if="filterOptions.name") {{ user.name }}
-                td.overflow(v-if="filterOptions.timestamp") {{ new Date(user.timestamp).toLocaleString() }}
-                td.overflow(v-if="filterOptions.address") {{ user.address || '-' }}
-                td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
-                td.center.overflow(v-if="filterOptions.gender") {{ user.gender || '-' }}
-                td.center.overflow(v-if="filterOptions.birthdate") {{ user.birthdate || '-' }}
-                td.center.overflow(v-if="filterOptions.nickname") {{ user.nickname || '-' }}
-                td.overflow(v-if="filterOptions.picture") {{ user.picture || '-' }}
-                td.overflow(v-if="filterOptions.profile") {{ user.profile || '-' }}
-                td.overflow(v-if="filterOptions.website") {{ user.website || '-' }}
-                td.overflow(v-if="filterOptions.misc") {{ user.misc || '-' }}
-            tr(v-for="i in (10 - listDisplay.length)")
-                td(:colspan="colspan")
+        template(v-slot:body)
+            template(v-if="fetching")
+                tr(v-for="i in 10")
+                    td(:colspan="colspan")
+            template(v-else-if="!listDisplay || listDisplay.length === 0")
+                tr
+                    td#noUsers(:colspan="colspan") No Users
+                tr(v-for="i in 9")
+                    td(:colspan="colspan")
+            template(v-else) 
+                tr(v-for="(user, index) in listDisplay") 
+                    td.center.optionCol.overflow(style="padding:0")
+                        .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
+                        template(v-if="user.approved.includes('suspended')")
+                            .material-symbols-outlined.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
+                        template(v-else)
+                            .material-symbols-outlined.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
+                    td.overflow(v-if="filterOptions.email") {{ user.email }}
+                    td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
+                    td.overflow(v-if="filterOptions.name") {{ user.name }}
+                    td.overflow(v-if="filterOptions.timestamp") {{ new Date(user.timestamp).toLocaleString() }}
+                    td.overflow(v-if="filterOptions.address") {{ user.address || '-' }}
+                    td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
+                    td.center.overflow(v-if="filterOptions.gender") {{ user.gender || '-' }}
+                    td.center.overflow(v-if="filterOptions.birthdate") {{ user.birthdate || '-' }}
+                    td.center.overflow(v-if="filterOptions.nickname") {{ user.nickname || '-' }}
+                    td.overflow(v-if="filterOptions.picture") {{ user.picture || '-' }}
+                    td.overflow(v-if="filterOptions.profile") {{ user.profile || '-' }}
+                    td.overflow(v-if="filterOptions.website") {{ user.website || '-' }}
+                    td.overflow(v-if="filterOptions.misc") {{ user.misc || '-' }}
+                tr(v-for="i in (10 - listDisplay.length)")
+                    td(:colspan="colspan")
         
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage === 1 }")
@@ -597,7 +600,6 @@ let createParams = {
     email: '',
     name: '',
     password: '',
-    service: currentService.id,
     phone_number: '',
     gender: '',
     address: '',
@@ -610,9 +612,7 @@ let createParams = {
 }
 let inviteParams = {
     email: '',
-    name: '',
-    access_group: 1,
-    service: currentService.id
+    name: ''
 }
 let redirect = '';
 let error = ref('');
@@ -643,21 +643,17 @@ watch(searchFor, (n, o) => {
 })
 
 // computed fetch params
-let updateEndTime = ref(false);
 let callParams = computed(() => {
     let dates = searchValue.value.split('~').map(d => d.trim());
     let startDate = dates?.[0] ? new Date(dates?.[0]).getTime() : 0;
     let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : new Date().getTime();
     let result = {};
 
-    if (updateEndTime.value) {
-        endDate = new Date().getTime();
-    }
-
     switch (searchFor.value) {
         case 'timestamp':
         case 'birthdate':
-
+            
+            console.log(startDate, endDate)
             if (startDate && endDate) {
                 result = {
                     service: currentService.id,
@@ -673,26 +669,26 @@ let callParams = computed(() => {
                     condition: startDate ? '>=' : '<='
                 }
             }
+            break;
         case 'user_id':
             result = {
                 service: currentService.id,
                 searchFor: searchFor.value,
                 value: searchValue.value
             }
+            break;
 
         default:
             result = {
                 service: currentService.id,
                 searchFor: searchValue.value == '' ? 'timestamp' : searchFor.value,
-                value: searchValue.value == '' ? 0 : searchValue.value,
-                condition: '>='
+                value: searchValue.value == '' ? new Date().getTime() : searchValue.value,
+                condition: '<='
             }
     }
 
     return result;
 });
-
-let currentParams = callParams.value;
 
 let getPage = async (refresh?: boolean) => {
     if (!pager) {
@@ -701,7 +697,7 @@ let getPage = async (refresh?: boolean) => {
     
     if (refresh) {
         endOfList.value = false;
-        updateEndTime.value = true;
+        callParams.value.value = new Date().getTime();
     }
 
     if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
@@ -712,7 +708,7 @@ let getPage = async (refresh?: boolean) => {
     else if (!endOfList.value || refresh) {
         fetching.value = true;
 
-        let fetchedData = await skapi.getUsers(currentParams, { fetchMore: !refresh, ascending: !searchValue.value ? false : true });
+        let fetchedData = await skapi.getUsers(callParams.value, { fetchMore: !refresh, ascending: !searchValue.value ? false : true });
 
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
@@ -742,9 +738,11 @@ let init = async () => {
     pager = await Pager.init({
         id: 'user_id',
         resultsPerPage: 10,
-        sortBy: !searchValue.value ? 'timestamp' : currentParams.searchFor,
+        sortBy: !searchValue.value ? 'timestamp' : callParams.value.searchFor,
         order: !searchValue.value ? 'desc' : 'asc',
     });
+
+    console.log(callParams.value)
 
     getPage(true);
 }
@@ -752,8 +750,8 @@ let init = async () => {
 init();
 
 let searchUsers = () => {
-    currentParams = callParams.value;
-    console.log(currentParams)
+    // currentParams = callParams.value;
+    // console.log(currentParams)
     init();
 }
 
@@ -804,10 +802,10 @@ let createUser = () => {
     error.value = '';
 
     if (gender_public.value || address_public.value || birthdate_public.value){
-        Object.assign(createParams, {gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value})
+        Object.assign({gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value}, createParams)
     }
 
-    currentService.admin_signup(createParams).then(async(res) => {
+    currentService.admin_signup(Object.assign({service: currentService.id}, createParams)).then(async(res) => {
         res.email = res.email_admin;
         await pager.insertItems([res]);
 
@@ -816,6 +814,9 @@ let createUser = () => {
         listDisplay.value = disp.list;
 
         document.getElementById("createForm").reset(); 
+        for(let i in createParams) {
+            createParams[i] = '';
+        }
         gender_public.value = false;
         address_public.value = false;
         birthdate_public.value = false;
@@ -824,7 +825,8 @@ let createUser = () => {
         getPage();
     }).catch((err) => {
         promiseRunning.value = false;
-        error.value = err.message;
+        // error.value = err.message;
+        alert(err.message);
     });
 }
 
@@ -832,11 +834,14 @@ let inviteUser = () => {
     promiseRunning.value = true;
     error.value = '';
 
-    currentService.admin_signup(inviteParams, {
+    currentService.admin_signup(Object.assign({access_group: 1, service: currentService.id}, inviteParams), {
         signup_confirmation: redirect || false
     }).then((res) => {
         promiseRunning.value = false;
         openInviteUser.value = false;
+        for(let i in inviteParams) {
+            inviteParams[i] = '';
+        }
     }).catch((err) => {
         if (err.code === 'EXISTS') {
             currentService.resendInvitation({
@@ -847,12 +852,14 @@ let inviteUser = () => {
                 openInviteUser.value = false;
             }).catch((err) => {
                 promiseRunning.value = false;
-                error.value = err.message;
+                // error.value = err.message;
+                alert(err.message);
             });
         }
         else {
             promiseRunning.value = false;
-            error.value = err.message;
+            // error.value = err.message;
+            alert(err.message);
         }
     });
 }
@@ -921,6 +928,9 @@ let closeModal = () => {
         openInviteUser.value = false;
     } else if(openCreateUser.value) {
         document.getElementById("createForm").reset();
+        for(let i in createParams) {
+            createParams[i] = '';
+        }
         gender_public.value = false;
         address_public.value = false;
         birthdate_public.value = false;
@@ -995,7 +1005,21 @@ let closeModal = () => {
         margin: 8px 0;
     }
 }
-
+.userPart {
+    position: relative;
+    overflow: hidden;
+}
+#loading {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    height: 60px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    font-size: 0.8rem;
+}
 .optionCol {
     &>*:first-child {
         margin-right: 8px;

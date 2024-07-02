@@ -65,6 +65,7 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?:{[k
         }[]
     } = skapi.util.extractFormData(e);
 
+    console.log(e)
     console.log(toUpload)
 
     let data = undefined;
@@ -80,6 +81,11 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?:{[k
     else {
         // string number to actual number
         // toUpload.data.config.table.access_group = parseInt(toUpload.data.config.table.access_group);
+
+        let indexValue = toUpload.data.config?.index?.value;
+        if(indexValue && (typeof(indexValue) == 'number' || typeof(indexValue) == 'boolean')) {
+            toUpload.data.config.index.value = JSON.parse(toUpload.data.config.index.value);
+        }
 
         // set json string to actual data
         data = toUpload.data.data ? JSON.parse(toUpload.data.data) : null;
