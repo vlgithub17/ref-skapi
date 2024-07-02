@@ -51,20 +51,20 @@ hr
 
 p Search and manage your service users.
 
-form#searchForm(@submit.prevent="searchUsers")
-    Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}")
+form#searchForm(@submit.prevent="init()")
+    Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}" style="--moreVert-width:100%")
     .search
         .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" :class="{'nonClickable' : fetching}" @click.stop="showCalendar = !showCalendar;")
             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" readonly)
             .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
             Calendar(v-model="searchValue" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
-        input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue" :disabled="fetching")
+        //- input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue" :disabled="fetching")
         input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue" :disabled="fetching")
         input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchValue" :disabled="fetching")
         input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue" :disabled="fetching")
         input.big#searchInput(v-else-if="searchFor === 'locale'" type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue" :disabled="fetching")
         input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" :disabled="fetching" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-        input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue" :disabled="fetching")
+        input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue" :disabled="fetching" type="email")
         .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale'" @click.stop="showLocale = !showLocale") arrow_drop_down
         Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
     button.final(type="submit" style='flex-shrink: 0;') Search
@@ -288,7 +288,7 @@ Modal(:open="openCreateUser" style="width:478px")
                     @input="e => createParams.birthdate = e.target.value"
                     @keydown="e => moveFocus(e, 'picture')"
                     :disabled="promiseRunning"
-                    placeholder="User's Birthdate"
+                    placeholder="User's Birthdate (YYYY-MM-DD)"
                     type='text'
                 )
             Checkbox(v-model="birthdate_public") public
@@ -552,10 +552,10 @@ let selectOptions = [
         option: 'Email',
         value: 'email'
     },
-    {
-        option: 'Phone Number',
-        value: 'phone_number'
-    },
+    // {
+    //     option: 'Phone Number',
+    //     value: 'phone_number'
+    // },
     {
         option: 'Address',
         value: 'address'
@@ -646,14 +646,11 @@ watch(searchFor, (n, o) => {
 let callParams = computed(() => {
     let dates = searchValue.value.split('~').map(d => d.trim());
     let startDate = dates?.[0] ? new Date(dates?.[0]).getTime() : 0;
-    let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : new Date().getTime();
+    let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : '';
     let result = {};
 
     switch (searchFor.value) {
         case 'timestamp':
-        case 'birthdate':
-            
-            console.log(startDate, endDate)
             if (startDate && endDate) {
                 result = {
                     service: currentService.id,
@@ -661,35 +658,64 @@ let callParams = computed(() => {
                     value: startDate,
                     range: endDate
                 }
-            } else {
+            } else if (startDate || endDate) {
                 result = {
                     service: currentService.id,
                     searchFor: searchFor.value,
                     value: startDate ? startDate : endDate,
                     condition: startDate ? '>=' : '<='
                 }
+            } else {
+                result = {
+                    service: currentService.id,
+                    searchFor: searchFor.value,
+                    value: new Date().getTime(),
+                    condition: '<='
+                }
             }
+
             break;
+
         case 'user_id':
+        case 'email':
+        case 'phone_number':
             result = {
                 service: currentService.id,
                 searchFor: searchFor.value,
-                value: searchValue.value
+                value: searchValue.value,
+                condition: '='
             }
+
             break;
+            
+        // case 'birthdate':
+        //     result = {
+        //         service: currentService.id,
+        //         searchFor: searchFor.value,
+        //         value: searchValue.value,
+        //         condition: '>='
+        //     }
+
+        //     break;
 
         default:
             result = {
                 service: currentService.id,
-                searchFor: searchValue.value == '' ? 'timestamp' : searchFor.value,
-                value: searchValue.value == '' ? new Date().getTime() : searchValue.value,
-                condition: '<='
+                searchFor: searchFor.value,
+                value: searchValue.value,
+                condition: '>='
             }
     }
 
     return result;
 });
 
+// let updateEndTime = ref(false);
+// watch(() => updateEndTime, nv => {
+//     if (nv) {
+//         callParams.value.value = new Date().getTime();
+//     }
+// })
 let getPage = async (refresh?: boolean) => {
     if (!pager) {
         return;
@@ -697,7 +723,6 @@ let getPage = async (refresh?: boolean) => {
     
     if (refresh) {
         endOfList.value = false;
-        callParams.value.value = new Date().getTime();
     }
 
     if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
@@ -707,6 +732,14 @@ let getPage = async (refresh?: boolean) => {
 
     else if (!endOfList.value || refresh) {
         fetching.value = true;
+
+        if (!searchValue.value) {
+            callParams.value.searchFor = 'timestamp';
+            callParams.value.value = new Date().getTime();
+            callParams.value.condition = '<=';
+        }
+
+        console.log(callParams.value)
 
         let fetchedData = await skapi.getUsers(callParams.value, { fetchMore: !refresh, ascending: !searchValue.value ? false : true });
 
@@ -742,18 +775,10 @@ let init = async () => {
         order: !searchValue.value ? 'desc' : 'asc',
     });
 
-    console.log(callParams.value)
-
     getPage(true);
 }
 
 init();
-
-let searchUsers = () => {
-    // currentParams = callParams.value;
-    // console.log(currentParams)
-    init();
-}
 
 let moveFocus = (e:any, next:string) => {
     if (e.key == 'Enter') {
@@ -802,8 +827,10 @@ let createUser = () => {
     error.value = '';
 
     if (gender_public.value || address_public.value || birthdate_public.value){
-        Object.assign({gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value}, createParams)
+        createParams = Object.assign({gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value}, createParams)
     }
+
+    console.log({createParams})
 
     currentService.admin_signup(Object.assign({service: currentService.id}, createParams)).then(async(res) => {
         res.email = res.email_admin;
