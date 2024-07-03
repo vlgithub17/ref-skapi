@@ -121,10 +121,12 @@ let signup = (e) => {
         router.push({ path: '/confirmation', query: { email: form.value.email } })
     }).catch(err => {
         console.log(err)
+        console.log(err.code)
         promiseRunning.value = false;
 
         switch (err.code) {
             case 'EXISTS':
+            case 'UsernameExistsException' :
                 error.value = "This email is already in use";
                 break;
             default:

@@ -33,7 +33,7 @@ main#serviceList
                         | Users
                         .resizer
                     th.th.center.overflow(style="width:144px;")
-                        | Datebase
+                        | Database
                         .resizer
                     th.th.center.overflow(style="width:144px;")
                         | File Storage
@@ -112,6 +112,12 @@ let goServiceDashboard = (service: { [key: string]: any }) => {
 
 let newServiceName = ref('')
 let createService = ()=>{
+    let regex = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g;
+    if (newServiceName.value.slice(0, 1).match(regex)) {
+        alert('Special characters are not allowed');
+
+        return
+    }
     router.push('/create/' + newServiceName.value);
 }
 
