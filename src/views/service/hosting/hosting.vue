@@ -44,7 +44,7 @@ template(v-else)
                 template(v-if="modifyMode.subdomain")
                     form.register.editValue(@submit.prevent="changeSubdomain")
                         .subdomain
-                            input#modifySubdomain.big(ref="focus_subdomain" :disabled="updatingValue.subdomain || null" type="text"  pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="4" maxlength="32" placeholder="your-subdomain" required :value='inputSubdomain' @input="(e) => {e.target.setCustomValidity(''); inputSubdomain = e.target.value;}")
+                            input#modifySubdomain.big(ref="focus_subdomain" :disabled="updatingValue.subdomain || null" type="text"  pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="6" maxlength="32" placeholder="your-subdomain" required :value='inputSubdomain' @input="(e) => {e.target.setCustomValidity(''); inputSubdomain = e.target.value;}")
 
                         template(v-if="updatingValue.subdomain")
                             img.loading(src="@/assets/img/loading.png")
@@ -110,7 +110,7 @@ template(v-else)
                 Refreshing CDN ... &nbsp;
                 #[img.loading(src="@/assets/img/loading.png")]
 
-        template(v-if="fetching")
+        template(v-if="fetching && !cdnPending")
             #loading.
                 Loading ... &nbsp;
                 #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
@@ -342,6 +342,8 @@ let registerSubdomain = async () => {
     } catch (err: any) {
         promiseRunning.value = false;
         alert(err.message);
+        console.log(err)
+        console.log(err.code)
     }
 }
 //
@@ -469,7 +471,9 @@ let changeSubdomain = async () => {
         });
     } catch (err: any) {
         updatingValue.subdomain = false;
-        alert(err.message);
+        alert(err);
+        console.log(err)
+        console.log(err.code)
     }
 }
 
@@ -932,6 +936,8 @@ thead {
     transition: all .15s;
     background-color: var(--main-color);
     color: #fff;
+    user-select:none;
+    pointer-events: none;
 
     &.show {
         transform: translate(-50%, 0);
