@@ -34,6 +34,10 @@ br
                     | Haven’t received the email?&nbsp;
                     span.click(@click="resend") Re-send
 
+            div
+                | Have you completed the email authentication?
+                router-link(to='/login') Login
+
             br
 
             .error(v-if="error") 
