@@ -454,6 +454,11 @@ let changeSubdomain = async () => {
         return;
     }
 
+    if (inputSubdomain.charAt(0).match(/[0-9-]/)) {
+        alert("텍스트의 제일 처음에 숫자와 하이픈이 올 수 없습니다.");
+        return;
+    }
+
     updatingValue.subdomain = true;
 
     try {
@@ -478,8 +483,6 @@ let changeSubdomain = async () => {
         console.log(err.code)
     }
 }
-
-//
 
 let currentSubdomain = computed(() => {
     let sd = currentService.service.subdomain;
