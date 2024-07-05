@@ -18,6 +18,10 @@ br
         template(v-else)
             span Haven’t received the email?&nbsp;
             span.click(@click="resend") Re-send
+
+    .resend(style="margin-top:8px")
+        | Have you completed the email authentication?&nbsp;
+        router-link(to='/login') Login
 </template>
 
 <script setup lang="ts">
