@@ -29,7 +29,7 @@ br
                     .material-symbols-outlined.fill visibility_off
 
         .actions
-            Checkbox(style='font-weight:unset;' @change="(e)=>{setLocalspanStorage(e)}" :disabled='promiseRunning' v-model='remVal') Remember Me
+            Checkbox(style='font-weight:unset;' @change="(e)=>{setLocalStorage(e)}" :disabled='promiseRunning' v-model='remVal') Remember Me
             RouterLink(to="/forgot" :class='{disabled: promiseRunning}') Forgot Password?
 
         br
@@ -62,7 +62,7 @@ br
 import { useRoute, useRouter } from 'vue-router';
 import { skapi } from '@/code/admin'
 import { user, updateUser } from '@/code/user'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import Checkbox from '@/components/checkbox.vue';
 const router = useRouter();
 const route = useRoute();
@@ -76,6 +76,14 @@ let form = {
     password: '',
 };
 let enableAccount = ref(false);
+
+onMounted(() => {
+    if (window.localStorage.getItem('remember') === 'true') {
+        remVal.value = true;
+    } else {
+        remVal.value = false;
+    }
+})
 let setLocalStorage = (e) => {
     localStorage.setItem('remember', e.target.checked ? 'true' : 'false');
 }

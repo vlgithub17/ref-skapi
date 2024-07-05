@@ -44,7 +44,7 @@ template(v-else)
                 template(v-if="modifyMode.subdomain")
                     form.register.editValue(@submit.prevent="changeSubdomain")
                         .subdomain
-                            input#modifySubdomain.big(ref="focus_subdomain" :disabled="updatingValue.subdomain || null" type="text"  pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="4" maxlength="32" placeholder="your-subdomain" required :value='inputSubdomain' @input="(e) => {e.target.setCustomValidity(''); inputSubdomain = e.target.value;}")
+                            input#modifySubdomain.big(ref="focus_subdomain" :disabled="updatingValue.subdomain || null" type="text"  pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="6" maxlength="32" placeholder="your-subdomain" required :value='inputSubdomain' @input="(e) => {e.target.setCustomValidity(''); inputSubdomain = e.target.value;}")
 
                         template(v-if="updatingValue.subdomain")
                             img.loading(src="@/assets/img/loading.png")
@@ -63,7 +63,7 @@ template(v-else)
                 template(v-if="modifyMode.page404")
                     form.register.editValue(@submit.prevent="change404" style='flex-grow: 0')
                         input(ref="focus_404" hidden type="file" name='file' required @change="handle404file" :disabled='updatingValue.page404' accept="text/html")
-                        .input.editHandle(style='font-size: .8rem;margin-right: 8px;' @click='focus_404.click()' :class='{nonClickable:updatingValue.page404}') {{ selected404File || sdInfo?.['404'] || 'Select HTML File' }}
+                        .input.editHandle(style='font-size: .8rem;margin-right: 8px;' @click='focus_404.click()' :class='{nonClickable:updatingValue.page404}') {{ selected404File || sdInfo?.['404'] || 'Click here to select a file' }}
                         template(v-if="updatingValue.page404")
                             //- img.loading(src="@/assets/img/loading.png")
                             pre(style='margin:0;font-size: .8rem;font-weight:normal' v-if='progress404 < 100') {{ progress404 }}%
@@ -74,8 +74,10 @@ template(v-else)
 
                 div(v-else)
                     .smallValue.editValue
-                        span.editHandle(style='font-size: .8rem;margin-right: 8px;' :class='{nonClickable:sdInfo?.["404"] && sdInfo?.["404"] === "..."}' @click="open404FileInp") {{ sdInfo?.['404'] || 'Select HTML File' }}
-                        span.material-symbols-outlined.cancel.fill(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true") delete
+                        span(:class='{nonClickable:sdInfo?.["404"] && sdInfo?.["404"] === "..."}') {{ sdInfo?.['404'] || '-' }}
+                        span.editHandle(:class='{nonClickable:sdInfo?.["404"] && sdInfo?.["404"] === "..."}' @click="open404FileInp") {{ sdInfo?.['404'] ? '[EDIT]' : '[UPLOAD]'}}
+                        span.editHandle(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true" style="color:var(--caution-color)") [REMOVE]
+                        //- span.material-symbols-outlined.cancel.fill(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true") delete
 
         div(style="text-align:right")
             .iconClick(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
@@ -110,7 +112,7 @@ template(v-else)
                 Refreshing CDN ... &nbsp;
                 #[img.loading(src="@/assets/img/loading.png")]
 
-        template(v-if="fetching")
+        template(v-if="fetching && !cdnPending")
             #loading.
                 Loading ... &nbsp;
                 #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
@@ -342,6 +344,8 @@ let registerSubdomain = async () => {
     } catch (err: any) {
         promiseRunning.value = false;
         alert(err.message);
+        console.log(err)
+        console.log(err.code)
     }
 }
 //
@@ -469,7 +473,9 @@ let changeSubdomain = async () => {
         });
     } catch (err: any) {
         updatingValue.subdomain = false;
-        alert(err.message);
+        alert(err);
+        console.log(err)
+        console.log(err.code)
     }
 }
 
@@ -932,6 +938,8 @@ thead {
     transition: all .15s;
     background-color: var(--main-color);
     color: #fff;
+    user-select:none;
+    pointer-events: none;
 
     &.show {
         transform: translate(-50%, 0);

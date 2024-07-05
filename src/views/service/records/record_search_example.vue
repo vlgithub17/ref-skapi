@@ -108,6 +108,7 @@ let indexValueType = ref('text');
 let indexValue = ref('');
 let indexCondition = ref('=');
 let conditionDisabled = ref(false);
+
 watch(index, (n) => {
     conditionDisabled.value = false;
     indexValueType.value = 'text';
