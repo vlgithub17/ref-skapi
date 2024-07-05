@@ -454,8 +454,8 @@ let changeSubdomain = async () => {
         return;
     }
 
-    if (inputSubdomain.charAt(0).match(/[0-9-]/)) {
-        alert("텍스트의 제일 처음에 숫자와 하이픈이 올 수 없습니다.");
+    if (inputSubdomain.charAt(0) == '-' && inputSubdomain.charAt(inputSubdomain.length - 1) == '-') {
+        alert("The text cannot start or end with a hyphen.");
         return;
     }
 
