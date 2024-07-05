@@ -63,7 +63,7 @@ template(v-else)
                 template(v-if="modifyMode.page404")
                     form.register.editValue(@submit.prevent="change404" style='flex-grow: 0')
                         input(ref="focus_404" hidden type="file" name='file' required @change="handle404file" :disabled='updatingValue.page404' accept="text/html")
-                        .input.editHandle(style='font-size: .8rem;margin-right: 8px;' @click='focus_404.click()' :class='{nonClickable:updatingValue.page404}') {{ selected404File || sdInfo?.['404'] || 'Select HTML File' }}
+                        .input.editHandle(style='font-size: .8rem;margin-right: 8px;' @click='focus_404.click()' :class='{nonClickable:updatingValue.page404}') {{ selected404File || sdInfo?.['404'] || 'Click here to select a file' }}
                         template(v-if="updatingValue.page404")
                             //- img.loading(src="@/assets/img/loading.png")
                             pre(style='margin:0;font-size: .8rem;font-weight:normal' v-if='progress404 < 100') {{ progress404 }}%
@@ -74,8 +74,10 @@ template(v-else)
 
                 div(v-else)
                     .smallValue.editValue
-                        span.editHandle(style='font-size: .8rem;margin-right: 8px;' :class='{nonClickable:sdInfo?.["404"] && sdInfo?.["404"] === "..."}' @click="open404FileInp") {{ sdInfo?.['404'] || 'Select HTML File' }}
-                        span.material-symbols-outlined.cancel.fill(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true") delete
+                        span(:class='{nonClickable:sdInfo?.["404"] && sdInfo?.["404"] === "..."}') {{ sdInfo?.['404'] || '-' }}
+                        span.editHandle(:class='{nonClickable:sdInfo?.["404"] && sdInfo?.["404"] === "..."}' @click="open404FileInp") {{ sdInfo?.['404'] ? '[EDIT]' : '[UPLOAD]'}}
+                        span.editHandle(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true" style="color:var(--caution-color)") [REMOVE]
+                        //- span.material-symbols-outlined.cancel.fill(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true") delete
 
         div(style="text-align:right")
             .iconClick(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
