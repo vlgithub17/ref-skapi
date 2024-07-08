@@ -142,7 +142,18 @@ function traverseFileTree(item: { [key: string]: any }, path = '') {
     return new Promise((resolve) => {
         if (item.isFile) {
             item.file(function (file: { [key: string]: any }) {
+                if (!file.type) {
+                    function getExtensionOfFilename(filename) {
+                        var _fileLen = filename.length;
+                        var _lastDot = filename.lastIndexOf('.');
+                        var _fileExt = filename.substring(_lastDot, _fileLen).toLowerCase();
+                        return _fileExt;
+                    }
+                    let type = getExtensionOfFilename(file.name);
+                    console.log(type)
+                }
                 resolve([{ file, path: path + file.name }]);
+                console.log(file)
             });
         } else if (item.isDirectory) {
             let dirReader = item.createReader();
@@ -177,8 +188,6 @@ export let onDrop = async (e: any, callback?: () => void) => {
     allFiles.forEach(({ file, path }) => {
         formData.append('files[]', file, path);
     });
-
-    console.log(formData.getAll('files[]'))
 
     uploadFiles(formData.getAll('files[]') as File[], callback);
 }
