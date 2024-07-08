@@ -798,6 +798,7 @@ export default class Service {
     async uploadHostFiles(
         fileList: FormData | HTMLFormElement | SubmitEvent,
         params: {
+            contentTypeMapping?: {[fileName:string]: string},
             prefix?: string,
             progress?: (p:
                 {
@@ -879,10 +880,14 @@ export default class Service {
             if (!(f instanceof File)) {
                 continue;
             }
+            
+            let fn = (f.webkitRelativePath || f.name).split('/');
+            let fns = fn[fn.length-1];
+            let ct = params?.contentTypeMapping?.[fns] || null;
 
             let signedParams = Object.assign({
                 key: prefix + (f.webkitRelativePath || f.name),
-                contentType: f.type || null
+                contentType: f.type || ct
             }, getSignedParams);
 
             let { fields = null, url } = await skapi.util.request(this.record_private_endpoint + 'get-signed-url', signedParams, { auth: true });
