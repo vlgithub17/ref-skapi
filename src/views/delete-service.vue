@@ -17,9 +17,9 @@ br
 
         li All your service users and data will be deleted permanently.
 
-        li All your hosted file will be deleted immediately.
+        li All your hosted files will be deleted immediately.
 
-        li You will loose your subdomain registeration.
+        li You will lose your subdomain registration.
 
     p Are you sure you want to delete your service "#[b {{currentService.service.name}}]"?
 
