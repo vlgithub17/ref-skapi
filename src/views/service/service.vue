@@ -240,6 +240,13 @@ let editName = () => {
 }
 let changeName = () => {
     if (currentService.service.name !== inputName) {
+        let regex = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g;
+        if (inputName.match(regex)) {
+            alert('Special characters are not allowed');
+
+            return
+        }
+
         let previous = currentService.service.name;
 
         updatingValue.name = true;
