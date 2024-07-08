@@ -454,6 +454,11 @@ let changeSubdomain = async () => {
         return;
     }
 
+    if (inputSubdomain.charAt(0) == '-' && inputSubdomain.charAt(inputSubdomain.length - 1) == '-') {
+        alert("The text cannot start or end with a hyphen.");
+        return;
+    }
+
     updatingValue.subdomain = true;
 
     try {
@@ -478,8 +483,6 @@ let changeSubdomain = async () => {
         console.log(err.code)
     }
 }
-
-//
 
 let currentSubdomain = computed(() => {
     let sd = currentService.service.subdomain;
