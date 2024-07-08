@@ -178,5 +178,7 @@ export let onDrop = async (e: any, callback?: () => void) => {
         formData.append('files[]', file, path);
     });
 
+    console.log(formData.getAll('files[]'))
+
     uploadFiles(formData.getAll('files[]') as File[], callback);
 }
