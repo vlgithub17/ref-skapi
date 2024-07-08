@@ -113,7 +113,7 @@ let goServiceDashboard = (service: { [key: string]: any }) => {
 let newServiceName = ref('')
 let createService = ()=>{
     let regex = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g;
-    if (newServiceName.value.slice(0, 1).match(regex)) {
+    if (newServiceName.value.match(regex)) {
         alert('Special characters are not allowed');
 
         return
