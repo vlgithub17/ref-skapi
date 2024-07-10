@@ -459,6 +459,11 @@ let changeSubdomain = async () => {
         return;
     }
 
+    if (/--/.test(inputSubdomain)) {
+        alert('Please enter a valid input matching the pattern.');
+        return;
+    }
+
     updatingValue.subdomain = true;
 
     try {
