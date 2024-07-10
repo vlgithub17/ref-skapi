@@ -1,5 +1,44 @@
 <template lang="pug">
 
+h3(style="display:inline-block; user-select:none") Using 3rd party APIs with Client Secret Key
+span.updown(@click="showDes = !showDes" style="user-select:none")
+    .material-symbols-outlined.fill(v-if="showDes" style="color:#fafaff; padding-bottom:5px") arrow_drop_up
+    .material-symbols-outlined.fill(v-else style="color:#fafaff; padding-bottom:3px") arrow_drop_down
+
+template(v-if="showDes")
+    p(style='margin-bottom: 0').
+        When using a 3rd party API that requires a client secret key in your website,
+        register them in Skapi and make secure requests to your APIs #[span.wordset without exposing] your #[span.wordset client secret key.]
+
+    Code
+        pre.
+            skapi.#[span(style="color:#44E9FF") clientSecretRequest]({
+                clientSecretName: #[span(style="color:#FFED91") "myapi"],
+                url: #[span(style="color:#FFED91") "https://api.openai.com/v1/images/generations"],
+                method: #[span(style="color:#FFED91") "POST"],
+                headers: {
+                    #[span(style="color:#FFED91") "Content-Type"]: #[span(style="color:#FFED91") "application/json"],
+                    Authorization: #[span(style="color:#FFED91") "Bearer $CLIENT_SECRET"]
+                },
+                data: {
+                    model: #[span(style="color:#FFED91") "dall-e-3"],
+                    "prompt": #[span(style="color:#FFED91") "A cute baby sea otter"],
+                    n: #[span(style="color:#FFED91") 1],
+                    size: #[span(style="color:#FFED91") "1024x1024"]
+                }
+            }).#[span(style="color:#44E9FF") then]( result => console.#[span(style="color:#44E9FF") log](result) );
+
+    p.
+        The example above shows how you can request #[b OpenAI]'s #[b DALL·E 3] in your project.
+    p.
+        It is using the client secret key stored under the name: "#[b myapi]".
+        #[br]
+        The placeholder: "#[b $CLIENT_SECRET]" will be replaced to the actual client secret key from the backend.
+
+    p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
+
+br
+
 h2 Client Secret Key
 
 hr
@@ -64,43 +103,6 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
 
 br
 
-h3 Using 3rd party APIs with Client Secret Key
-
-hr
-
-p(style='margin-bottom: 0').
-    When using a 3rd party API that requires a client secret key in your website,
-    register them in Skapi and make secure requests to your APIs #[span.wordset without exposing] your #[span.wordset client secret key.]
-
-Code
-    pre.
-        skapi.#[span(style="color:#44E9FF") clientSecretRequest]({
-            clientSecretName: #[span(style="color:#FFED91") "myapi"],
-            url: #[span(style="color:#FFED91") "https://api.openai.com/v1/images/generations"],
-            method: #[span(style="color:#FFED91") "POST"],
-            headers: {
-                #[span(style="color:#FFED91") "Content-Type"]: #[span(style="color:#FFED91") "application/json"],
-                Authorization: #[span(style="color:#FFED91") "Bearer $CLIENT_SECRET"]
-            },
-            data: {
-                model: #[span(style="color:#FFED91") "dall-e-3"],
-                "prompt": #[span(style="color:#FFED91") "A cute baby sea otter"],
-                n: #[span(style="color:#FFED91") 1],
-                size: #[span(style="color:#FFED91") "1024x1024"]
-            }
-        }).#[span(style="color:#44E9FF") then]( result => console.#[span(style="color:#44E9FF") log](result) );
-
-p.
-    The example above shows how you can request #[b OpenAI]'s #[b DALL·E 3] in your project.
-p.
-    It is using the client secret key stored under the name: "#[b myapi]".
-    #[br]
-    The placeholder: "#[b $CLIENT_SECRET]" will be replaced to the actual client secret key from the backend.
-
-p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
-
-br
-
 Modal(:open="deleteClientKey")
     h4(style='margin:.5em 0 0;') Delete Client Secret
     hr
@@ -130,6 +132,7 @@ import { user } from '@/code/user';
 import { currentService } from '@/views/service/main';
 
 let updating = ref(false);
+let showDes = ref(false);
 let addMode = ref(false);
 let editMode = ref(false);
 let deleteKeyLoad = ref(false);
@@ -261,6 +264,15 @@ let saveKey = async (key) => {
 }
 </script>
 <style scoped lang="less">
+.updown {
+    background-color: #fff;
+    background-color: var(--main-color);
+    border-radius: 50%;
+    margin-left: 8px;
+    cursor: pointer;
+    box-shadow: rgba(41, 63, 230, 0.24) 0px 1px 8px;
+}
+
 input {
     width: 100%;
 }
