@@ -1,5 +1,6 @@
 import { reactive, ref } from "vue";
 import { currentService } from '@/views/service/main';
+import mime from 'mime';
 
 export let fileToUpload = ref();
 export let currentDirectory = ref('');
@@ -8,7 +9,7 @@ export let uploadCount = reactive([0, 0]); // fin / total
 export let uploadProgress: any = reactive({});  // { name: fileName, progress: percent(number) }
 export let folders: any = {};
 
-export let uploadFiles = async (files: File[], callback?: () => void) => {
+export let uploadFiles = async (files: File[], callback?: () => void, contentTypeMapping?:{[fname:string]:string}) => {
     // uploads one by one
 
     uploadCount[1] += files.length;
@@ -21,6 +22,7 @@ export let uploadFiles = async (files: File[], callback?: () => void) => {
         form.append('files[]', f);
 
         await currentService.uploadHostFiles(form, {
+            contentTypeMapping,
             prefix: currentDir,
             progress: async (e) => {
                 if (e.status !== 'progress') {
@@ -138,10 +140,22 @@ export let uploadFiles = async (files: File[], callback?: () => void) => {
     }
 }
 
+let contentTypeMapping:{[filename:string]: string} = {};
+
 function traverseFileTree(item: { [key: string]: any }, path = '') {
     return new Promise((resolve) => {
         if (item.isFile) {
             item.file(function (file: { [key: string]: any }) {
+                if (!file.type) {
+                    function getExtensionOfFilename(filename:string) {
+                        var _fileLen = filename.length;
+                        var _lastDot = filename.lastIndexOf('.');
+                        var _fileExt = filename.substring(_lastDot, _fileLen).toLowerCase();
+                        return _fileExt;
+                    }
+                    let type = getExtensionOfFilename(file.name);
+                    contentTypeMapping[file.name] = mime.getType(type);
+                }
                 resolve([{ file, path: path + file.name }]);
             });
         } else if (item.isDirectory) {
@@ -178,5 +192,5 @@ export let onDrop = async (e: any, callback?: () => void) => {
         formData.append('files[]', file, path);
     });
 
-    uploadFiles(formData.getAll('files[]') as File[], callback);
+    uploadFiles(formData.getAll('files[]') as File[], callback, contentTypeMapping);
 }

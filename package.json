@@ -13,6 +13,7 @@
   "dependencies": {
     "jsoncrawler": "^0.2.1",
     "less": "^4.2.0",
+    "mime": "^4.0.4",
     "pug": "^3.0.2",
     "skapi-js": "^1.0.103-beta.1",
     "vue": "^3.4.15",

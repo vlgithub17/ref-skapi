@@ -8,6 +8,7 @@ import Subscription from '@/views/subscription/subscription.vue'
 import AccountSetting from '@/views/account-setting.vue'
 import MyServices from '@/views/service-list.vue'
 import ServiceMain from '@/views/service/main.vue'
+import NotFound from '@/views/notFound.vue'
 import { skapi } from '@/code/admin'
 
 let checkUser = async (t, f, n)=>{
@@ -185,6 +186,15 @@ const router = createRouter(
         },
       ]
     },
+    {
+      path: "/404page",
+      name: "404page",
+      component: NotFound
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      redirect: "/404page"
+    }
   ]
 })
 

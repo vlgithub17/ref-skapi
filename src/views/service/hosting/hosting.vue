@@ -459,6 +459,11 @@ let changeSubdomain = async () => {
         return;
     }
 
+    if (/--/.test(inputSubdomain)) {
+        alert('Hyphens cannot be used consecutively.');
+        return;
+    }
+
     updatingValue.subdomain = true;
 
     try {
