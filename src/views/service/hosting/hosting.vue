@@ -460,7 +460,7 @@ let changeSubdomain = async () => {
     }
 
     if (/--/.test(inputSubdomain)) {
-        alert('Please enter a valid input matching the pattern.');
+        alert('Hyphens cannot be used consecutively.');
         return;
     }
 
