@@ -525,6 +525,7 @@ let currentTemp = computed(() => {
 
 let converter = (html: string, parsed: boolean, inv: boolean) => {
     if (!parsed) {
+        html = html.replaceAll('style="font-weight: bold"', 'style="font-weight: bold; pointer-events: none;"');
         return html;
     }
     html = html.replaceAll('${code}', '123456');
