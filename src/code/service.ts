@@ -254,6 +254,12 @@ export default class Service {
         this.plan = this.planCode[service.group];
         service.plan = this.plan;
         this.service = reactive(service);
+
+        if (this.service?.subdomain) {
+            this.getSubdomainInfo();
+            this.refreshCDN({ checkStatus: true });
+        }
+
         this._subsPromise = this.getSubscription();
         this.getStorageInfo();
         if (service.group > 1) {
@@ -593,7 +599,7 @@ export default class Service {
         return this.service;
     }
 
-    async getSubdomainInfo(): Promise<{
+    async getSubdomainInfo(cb?: () => void): Promise<{
         srvc: string;
         subd: string;
         ownr: string;
@@ -605,27 +611,30 @@ export default class Service {
         let pendingStat = info.stat.includes('change:') ? 'transit' : info.stat.includes('remove') ? 'removing' : false;
         this.pending.subdomain = pendingStat;
 
-        if(pendingStat) {
-            this.pendingSubdomain(() => {});
+        if (pendingStat) {
+            this.pendingSubdomain(typeof cb === 'function' ? cb : () => { });
+        }
+        else {
+            this.service.subdomain = info.subd;
         }
 
         return info;
     }
 
-    pendingSubdomain(cb: (service: ServiceObj) => void, time = 1000) {
+    pendingSubdomain(cb: () => void, time = 1000) {
         if (this.service?.subdomain && (this.service.subdomain?.[0] === '+' || this.service.subdomain?.[0] === '*')) {
-            this.refresh().then(() => {
-                if (!this.service?.subdomain || this.service?.subdomain && this.service.subdomain[0] !== '+' && this.service.subdomain[0] !== '*') {
-                    return cb(this.service);
-                }
-                else {
+            this.getSubdomainInfo(cb).then((info) => {
+                if (info.stat.includes('change:') || info.stat.includes('remove')) {
                     time *= 1.2;
                     setTimeout(() => this.pendingSubdomain(cb, time), time);
+                }
+                else {
+                    return cb();
                 }
             });
         }
         else {
-            return cb(this.service);
+            return cb();
         }
     }
 
@@ -726,6 +735,26 @@ export default class Service {
         }
     }
 
+    cdnPendingRunning = false;
+    cdnPending(cb?: () => void) {
+        this.cdnPendingRunning = true;
+        let callbackInterval = (cb: Function, time = 30000) => {
+            setTimeout(() => {
+                this.refreshCDN({ checkStatus: true }).then(res => {
+                    if (res === 'COMPLETE') {
+                        this.cdnPendingRunning = false;
+                        this.pending.cdn = false;
+                        return cb(res);
+                    }
+                    this.pending.cdn = true;
+                    callbackInterval(cb, time);
+                });
+            }, time);
+        };
+
+        callbackInterval(typeof cb === 'function' ? cb : () => { });
+    }
+
     async refreshCDN(
         params?: {
             // when true, returns the status of the cdn refresh without running the cdn refresh
@@ -743,9 +772,9 @@ export default class Service {
         if (!this.service.subdomain || this.service.subdomain[0] === '*') {
             throw 'subdomain does not exists.';
         }
-
+        let res;
         try {
-            let res = await skapi.util.request(this.admin_private_endpoint + 'refresh-cdn', {
+            res = await skapi.util.request(this.admin_private_endpoint + 'refresh-cdn', {
                 service: this.id,
                 owner: this.owner,
                 exec: checkStatus ? 'status' : 'refresh'
@@ -755,11 +784,23 @@ export default class Service {
             });
 
             if (checkStatus === true) {
+                if (res !== 'COMPLETE') {
+                    this.pending.cdn = true;
+                    if (!this.cdnPendingRunning) {
+                        this.cdnPending();
+                    }
+                }
+                else {
+                    this.pending.cdn = false;
+                }
                 return res;
             }
 
             if (!checkStatus) {
                 this.pending.cdn = true;
+                if (!this.cdnPendingRunning) {
+                    this.cdnPending();
+                }
                 return 'IS_QUEUED';
             }
 
@@ -767,30 +808,14 @@ export default class Service {
         }
         catch (err: any) {
             if (err.message === 'previous cdn refresh is still in queue.') {
-                this.pending.cdn = true;
                 return 'IN_QUEUE';
             }
             if (err.message === 'previous cdn refresh is in process.') {
-                this.pending.cdn = true;
                 return 'IN_PROCESS';
             }
             else {
-                this.pending.cdn = false;
                 throw err;
             }
-        }
-        finally {
-            let callbackInterval = (cb: Function, time = 30000) => {
-                setTimeout(() => {
-                    this.refreshCDN({ checkStatus: true }).then(res => {
-                        if (res === 'COMPLETE') {
-                            return cb(res);
-                        }
-                        callbackInterval(cb, time);
-                    });
-                }, time);
-            };
-            callbackInterval(typeof checkStatus === 'function' ? checkStatus : () => { });
         }
     }
 
