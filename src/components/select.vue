@@ -3,8 +3,8 @@
     button(type='button')
         span {{ showValue }}
         span.material-symbols-outlined arrow_drop_down
-    .moreVert(style="--moreVert-left:0;display:none")
-        .inner(style="padding:0.8rem;padding-right:1rem")
+    .moreVert(style="--moreVert-left:0;display:none;width:unset")
+        .inner
             .more(v-for="(o) in selectOptions" @click="showValue=o.option; emit('update:modelValue', o.value)") {{ o.option }}
 </template>
 
