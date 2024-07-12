@@ -1003,6 +1003,8 @@ body {
         display: flex;
         flex-grow: 50;
         gap: 8px;
+        flex-shrink: 0;
+        min-width: 290px;
     }
     .clickInput {
         position: relative;
