@@ -184,7 +184,9 @@ br
                     td.overflow(v-if="filterOptions.name") {{ user.name }}
                     td.overflow(v-if="filterOptions.timestamp") {{ new Date(user.timestamp).toLocaleString() }}
                     td.overflow(v-if="filterOptions.address") {{ user.address || '-' }}
-                    td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
+                    //- td.center(v-if="filterOptions.locale" style='font-size:0.8rem') {{ Countries?.[user.locale].flag || '-' }}
+                    td.center(v-if="filterOptions.locale" style='font-size:0.8rem')
+                        img(:src="'https://flagcdn.com/' + user.locale.toLowerCase() + '.svg'" style="width:16px; object-fit:contain")
                     td.center.overflow(v-if="filterOptions.gender") {{ user.gender || '-' }}
                     td.center.overflow(v-if="filterOptions.birthdate") {{ user.birthdate || '-' }}
                     td.center.overflow(v-if="filterOptions.nickname") {{ user.nickname || '-' }}
@@ -515,9 +517,6 @@ import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
 import { currentService, serviceUsers } from '@/views/service/main';
 import { Countries } from '@/code/countries';
-import { polyfillCountryFlagEmojis } from "country-flag-emoji-polyfill";
-
-polyfillCountryFlagEmojis();
 
 let pager: Pager = null;
 
