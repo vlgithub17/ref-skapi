@@ -58,7 +58,7 @@ p Search and manage your service users.
 form#searchForm(@submit.prevent="init()")
     Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}" style="--moreVert-width:100%")
     .search
-        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" :class="{'nonClickable' : fetching}" @click.stop="showCalendar = !showCalendar;")
+        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" :class="{'nonClickable' : fetching}" @click="showCalendar = !showCalendar;")
             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" name="date" readonly)
             .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
             Calendar(v-model="searchValue" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
@@ -66,7 +66,7 @@ form#searchForm(@submit.prevent="init()")
         input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue" name="address" :disabled="fetching")
         input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchValue" name="gender" :disabled="fetching")
         input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue" name="name" :disabled="fetching")
-        .clickInput(v-else-if="searchFor === 'locale'" :class="{'nonClickable' : fetching}" @click.stop="showLocale = !showLocale")
+        .clickInput(v-else-if="searchFor === 'locale'" :class="{'nonClickable' : fetching}" @click="showLocale = !showLocale")
             input.big#searchInput(type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue" name="locale" :disabled="fetching" readonly)
             .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale'") arrow_drop_down
             Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
