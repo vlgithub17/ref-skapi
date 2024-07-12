@@ -235,6 +235,15 @@ export default class Service {
     _orgPlan = '';
     _subsPromise;
     newsletterSender: Promise<string>[] = [];
+
+    pending: {
+        subdomain: false | 'removing' | 'transit' | string;
+        cdn: boolean; // true when cdn refresh is in process
+    } = reactive({
+        subdomain: false,
+        cdn: false
+    });
+
     constructor(id: string, service: ServiceObj, endpoints: string[]) {
         this.id = id;
         this.admin_private_endpoint = endpoints[0];
@@ -467,10 +476,12 @@ export default class Service {
 
         if (this.service.subdomain) {
             let subdomain = this.service.subdomain;
-            if (this.service?.subdomain[0] === '*' || this.service?.subdomain[0] === '+') {
+            let pendingSubdomain = subdomain[0] === '+' || subdomain[0] === '*';
+            if (pendingSubdomain) {
                 subdomain = subdomain.slice(1);
             }
 
+            // get host storage info
             wait.push(
                 skapi.util.request(this.admin_private_endpoint + 'host-directory', { service: this.id, owner: this.owner, info: true, dir: subdomain }, { auth: true })
                     .then((r: any) => { this.storageInfo.host = r?.size || 0; }));
@@ -582,14 +593,23 @@ export default class Service {
         return this.service;
     }
 
-    getSubdomainInfo(): Promise<{
+    async getSubdomainInfo(): Promise<{
         srvc: string;
         subd: string;
         ownr: string;
         stat: 'remove' | 'change:(subdomain to be changed to)' | 'active' | string;
         ["404"]?: string;
     }> {
-        return skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service: this.id, owner: this.owner }, { auth: true });
+        this.pending.subdomain = false;
+        let info = await skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service: this.id, owner: this.owner }, { auth: true });
+        let pendingStat = info.stat.includes('change:') ? 'transit' : info.stat.includes('remove') ? 'removing' : false;
+        this.pending.subdomain = pendingStat;
+
+        if(pendingStat) {
+            this.pendingSubdomain(() => {});
+        }
+
+        return info;
     }
 
     pendingSubdomain(cb: (service: ServiceObj) => void, time = 1000) {
@@ -615,20 +635,7 @@ export default class Service {
             cb?: (service: ServiceObj) => void; // callback runs when the subdomain process is complete
         }
     ): Promise<ServiceObj> {
-        let invalid = [
-            'baksa',
-            'desktop',
-            'mobile',
-            'skapi',
-            'broadwayinc',
-            'broadway',
-            'documentation'
-        ];
-
         let { subdomain = '' } = params;
-        if (subdomain && (subdomain.length < 4 || invalid.includes(subdomain))) {
-            throw 'The subdomain has been taken.';
-        }
 
         if (this.service?.subdomain === subdomain) {
             return this.service;
@@ -649,12 +656,10 @@ export default class Service {
         });
 
         if (typeof resp !== 'string') {
-            Object.assign(this.service, resp);
+            this.service.subdomain = resp.subdomain;
         }
 
-        if (typeof params.cb === 'function') {
-            this.pendingSubdomain(params.cb);
-        }
+        this.pendingSubdomain(typeof params.cb === 'function' ? params.cb : () => { });
 
         return this.service;
     }
@@ -754,6 +759,7 @@ export default class Service {
             }
 
             if (!checkStatus) {
+                this.pending.cdn = true;
                 return 'IS_QUEUED';
             }
 
@@ -761,29 +767,30 @@ export default class Service {
         }
         catch (err: any) {
             if (err.message === 'previous cdn refresh is still in queue.') {
+                this.pending.cdn = true;
                 return 'IN_QUEUE';
             }
             if (err.message === 'previous cdn refresh is in process.') {
+                this.pending.cdn = true;
                 return 'IN_PROCESS';
             }
             else {
+                this.pending.cdn = false;
                 throw err;
             }
         }
         finally {
-            if (typeof checkStatus === 'function') {
-                let callbackInterval = (cb: Function, time = 30000) => {
-                    setTimeout(() => {
-                        this.refreshCDN({ checkStatus: true }).then(res => {
-                            if (res === 'COMPLETE') {
-                                return cb(res);
-                            }
-                            callbackInterval(cb, time);
-                        });
-                    }, time);
-                };
-                callbackInterval(checkStatus);
-            }
+            let callbackInterval = (cb: Function, time = 30000) => {
+                setTimeout(() => {
+                    this.refreshCDN({ checkStatus: true }).then(res => {
+                        if (res === 'COMPLETE') {
+                            return cb(res);
+                        }
+                        callbackInterval(cb, time);
+                    });
+                }, time);
+            };
+            callbackInterval(typeof checkStatus === 'function' ? checkStatus : () => { });
         }
     }
 
@@ -798,7 +805,7 @@ export default class Service {
     async uploadHostFiles(
         fileList: FormData | HTMLFormElement | SubmitEvent,
         params: {
-            contentTypeMapping?: {[fileName:string]: string},
+            contentTypeMapping?: { [fileName: string]: string },
             prefix?: string,
             progress?: (p:
                 {
@@ -880,9 +887,9 @@ export default class Service {
             if (!(f instanceof File)) {
                 continue;
             }
-            
+
             let fn = (f.webkitRelativePath || f.name).split('/');
-            let fns = fn[fn.length-1];
+            let fns = fn[fn.length - 1];
             let ct = params?.contentTypeMapping?.[fns] || null;
 
             let signedParams = Object.assign({
@@ -1045,6 +1052,10 @@ export default class Service {
                 break;
             }
         }
+
+        let pendingStat = this.service.subdomain[0] === '+' ? 'transit' : this.service.subdomain[0] === '*' ? 'removing' : false;
+        this.pending.subdomain = pendingStat;
+
         return this.service;
     }
 

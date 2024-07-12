@@ -599,6 +599,7 @@ function getInfo() {
         currentService.getSubdomainInfo().then(s => {
             sdInfo.value = s
             if (s?.invid && s.invid[0] === '@') {
+                // cdn refreshing
                 cdnPending.value = true;
                 currentService.refreshCDN({
                     checkStatus: res => {
@@ -625,10 +626,10 @@ function getInfo() {
     if (_subd) {
         fetching.value = true;
         if (_subd[0] === '*' || _subd[0] === '+') {
-            currentService.pendingSubdomain(() => {
+            currentService.pendingSubdomain((service) => {
                 // + pending
                 // * removing
-                subdomain.value = currentService.service.subdomain;
+                subdomain.value = service.subdomain;
                 process();
             });
         }
