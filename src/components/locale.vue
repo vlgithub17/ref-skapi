@@ -3,7 +3,7 @@
     .wrap
         .country(v-for="(c, key) in Countries" @click="handleCountryClick(key)" :class="{'selected' : selectedFlag == key}") 
             //- span.flag(v-html="showFlagImg(c.flag_unicode)")
-            span.flag {{ (c.flag) }}
+            span.flag {{ c.flag }}
             .name {{ key }} - {{ c.name }}
 </template>
 <script setup>
