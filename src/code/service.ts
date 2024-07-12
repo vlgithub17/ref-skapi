@@ -256,6 +256,9 @@ export default class Service {
         this.service = reactive(service);
 
         if (this.service?.subdomain) {
+            let pendingStat = this.service.subdomain[0] === '+' ? 'transit' : this.service.subdomain[0] === '*' ? 'removing' : false;
+            this.pending.subdomain = pendingStat;
+            
             this.getSubdomainInfo();
             this.refreshCDN({ checkStatus: true });
         }
@@ -1080,6 +1083,18 @@ export default class Service {
 
         let pendingStat = this.service.subdomain[0] === '+' ? 'transit' : this.service.subdomain[0] === '*' ? 'removing' : false;
         this.pending.subdomain = pendingStat;
+        
+        if (this.service?.subdomain) {
+            this.getSubdomainInfo();
+            this.refreshCDN({ checkStatus: true });
+        }
+
+        this._subsPromise = this.getSubscription();
+        this.getStorageInfo();
+        if (service.group > 1) {
+            this.requestNewsletterSender({ group_numb: 0 });
+            this.requestNewsletterSender({ group_numb: 1 });
+        }
 
         return this.service;
     }

@@ -337,7 +337,7 @@ let registerSubdomain = async () => {
         await currentService.registerSubdomain({
             subdomain: subdomain.value, cb: (srvc) => {
                 promiseRunning.value = false;
-                getInfo();
+                // getInfo();
             }
         });
 
@@ -436,9 +436,8 @@ let remove404 = async () => {
 let removeHosting = ref(false);
 let remove = () => {
     modalPromise.value = true;
-    currentService.registerSubdomain({
-        cb: () => null
-    }).then(() => {
+    currentService.registerSubdomain()
+    .then(() => {
         removeHosting.value = false;
         modalPromise.value = false;
     }).catch(err => {
@@ -469,18 +468,18 @@ let changeSubdomain = async () => {
     try {
         await currentService.registerSubdomain({
             subdomain: inputSubdomain,
-            cb: getInfo
+            // cb: getInfo
         });
 
         modifyMode.subdomain = false;
         updatingValue.subdomain = false;
 
-        cdnPending.value = true;
-        currentService.refreshCDN({
-            checkStatus: res => {
-                cdnPending.value = false;
-            }
-        });
+        // cdnPending.value = true;
+        // currentService.refreshCDN({
+        //     checkStatus: res => {
+        //         cdnPending.value = false;
+        //     }
+        // });
     } catch (err: any) {
         updatingValue.subdomain = false;
         alert(err);
@@ -594,58 +593,75 @@ let numberOfSelected = computed(() => {
 
 //
 
-function getInfo() {
-    let process = () => {
-        currentService.getSubdomainInfo().then(s => {
-            sdInfo.value = s
-            if (s?.invid && s.invid[0] === '@') {
-                // cdn refreshing
-                cdnPending.value = true;
-                currentService.refreshCDN({
-                    checkStatus: res => {
-                        cdnPending.value = false;
-                        currentService.getDirInfo().then(dir => {
-                            fetching.value = false;
-                            getFileList(true);
-                            dirInfo.value = dir;
-                        });
-                    }
-                })
-            }
-            else {
-                currentService.getDirInfo().then(dir => {
-                    fetching.value = false;
-                    getFileList();
-                    dirInfo.value = dir;
-                });
-            }
-        });
-    }
-
-    let _subd = currentService.service?.subdomain || '';
-    if (_subd) {
+watch(
+    () => currentService.pending.subdomain,
+    (n, o) => {
         fetching.value = true;
-        if (_subd[0] === '*' || _subd[0] === '+') {
-            currentService.pendingSubdomain((service) => {
-                // + pending
-                // * removing
-                subdomain.value = service.subdomain;
-                process();
+        if(!n && currentService.service.subdomain) {
+            currentService.getDirInfo().then(dir => {
+                fetching.value = false;
+                getFileList();
+                dirInfo.value = dir;
             });
         }
-        else if (!sdInfo.value.srvc) {
-            process();
-        }
-        else {
-            fetching.value = false;
-        }
+    },
+    {
+        immediate: true
     }
-    else {
-        fetching.value = false;
-    }
-}
+);
 
-getInfo();
+// function getInfo() {
+//     let process = () => {
+//         currentService.getSubdomainInfo().then(s => {
+//             sdInfo.value = s
+//             if (s?.invid && s.invid[0] === '@') {
+//                 // cdn refreshing
+//                 cdnPending.value = true;
+//                 currentService.refreshCDN({
+//                     checkStatus: res => {
+//                         cdnPending.value = false;
+//                         currentService.getDirInfo().then(dir => {
+//                             fetching.value = false;
+//                             getFileList(true);
+//                             dirInfo.value = dir;
+//                         });
+//                     }
+//                 })
+//             }
+//             else {
+//                 currentService.getDirInfo().then(dir => {
+//                     fetching.value = false;
+//                     getFileList();
+//                     dirInfo.value = dir;
+//                 });
+//             }
+//         });
+//     }
+
+//     let _subd = currentService.service?.subdomain || '';
+//     if (_subd) {
+//         fetching.value = true;
+//         if (_subd[0] === '*' || _subd[0] === '+') {
+//             currentService.pendingSubdomain((service) => {
+//                 // + pending
+//                 // * removing
+//                 subdomain.value = service.subdomain;
+//                 process();
+//             });
+//         }
+//         else if (!sdInfo.value.srvc) {
+//             process();
+//         }
+//         else {
+//             fetching.value = false;
+//         }
+//     }
+//     else {
+//         fetching.value = false;
+//     }
+// }
+
+// getInfo();
 
 let setNewDir = (ns: any) => {
     let path = ns.path;
@@ -768,16 +784,20 @@ let toggleSort = (search: any) => {
         sortBy.value = search;
     }
 }
-let cdnPending = ref(false);
+// let cdnPending = ref(false);
+
+let cdnPending = conputed(() => {
+    return currentService.pending.cdn;
+});
 
 let refreshCdn = async () => {
-    cdnPending.value = true;
+    // cdnPending.value = true;
     await currentService.refreshCDN();
-    currentService.refreshCDN({
-        checkStatus: res => {
-            cdnPending.value = false;
-        }
-    });
+    // currentService.refreshCDN({
+    //     checkStatus: res => {
+    //         cdnPending.value = false;
+    //     }
+    // });
 }
 // call getPage when currentPage changes
 watch(currentPage, (n, o) => {
