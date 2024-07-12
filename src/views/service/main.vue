@@ -69,6 +69,7 @@ let titleList = ['Getting Started', 'Dashboard & Settings', 'Users', 'Client Sec
 let index = 0;
 let prevRouter = ref('');
 let nextRouter = ref('');
+let plan = ref('Trial');
 
 watch(loginState, nv => {
     if (!nv) {
@@ -80,6 +81,7 @@ watch(serviceList, nv => {
     if (nv[serviceId] && currentService?.id !== serviceId) {
         try {
             setService(serviceId);
+            plan.value = currentService?.plan;
         }
         catch (err) {
             router.push('/my-services');
@@ -93,15 +95,17 @@ watch(() => route, nv => {
     currentRouter.value = nv.path.split('/')[3];
     index = routerList.indexOf(currentRouter.value);
 
-    // if(currentService.service.group <= 1) {
-    //     routerList = ['service', 'dashboard', 'users', 'clientsecret', 'records'];
-    //     titleList = ['Getting Started', 'Dashboard & Settings', 'Users', 'Client Secret Key', 'Database'];
-    // }
+    if(plan.value == 'Trial') {
+        routerList = ['service', 'dashboard', 'users', 'clientsecret', 'records'];
+        titleList = ['Getting Started', 'Dashboard & Settings', 'Users', 'Client Secret Key', 'Database'];
+    }
 
     if(index == -1) {
         nextRouter.value = 'dashboard';
+        titleList[0] = 'Dashboard & Settings';
     } else if(index == 1) {
         prevRouter.value = '';
+        titleList[0] = 'Getting Started';
         nextRouter.value = routerList[index+1];
     } else {
         prevRouter.value = routerList[index-1];
@@ -138,6 +142,8 @@ watch(() => route, nv => {
 
         .link {
             flex-grow: 1;
+            flex-shrink: 0;
+            min-width: 320px;
 
             a {
                 display: block;

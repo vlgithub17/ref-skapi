@@ -366,7 +366,7 @@ br
 
                 .row 
                     .key Tags 
-                    input.line.value(v-model="selectedRecord.tags" name='config[tags]')
+                    input.line.value(v-model="selectedRecord.tags" name='config[tags]' placeholder="tag1, tag2, ...")
 
                 .row
                     .key(style="margin-bottom: 6px") Data 
