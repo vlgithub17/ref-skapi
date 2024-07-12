@@ -216,7 +216,7 @@ Modal(:open="openCreateUser" style="width:478px")
         input(hidden name="service" :value="currentService.id")
 
         label User's Email 
-            span(style="color:red") *
+            em(style="color:red; font-size:0.6rem") * Required
             input.big#email(
                 type="email"
                 @input="e => createParams.email = e.target.value"
@@ -229,7 +229,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         label Password 
-            span(style="color:red") *
+            em(style="color:red; font-size:0.6rem") * Required
             input.big#password(
                 @input="e => createParams.password = e.target.value"
                 @keydown="e => moveFocus(e, 'name')"
@@ -390,7 +390,7 @@ Modal(:open="openInviteUser")
         input(hidden name="service" :value="currentService.id")
 
         label User's Email 
-            span(style="color:red") *
+            em(style="color:red; font-size:0.6rem") * Required
             input.big#inviteUserEmail(
                 type="email"
                 @input="e => inviteParams.email = e.target.value"
@@ -402,7 +402,7 @@ Modal(:open="openInviteUser")
         br
 
         label Name 
-            span(style="color:red") *
+            em(style="color:red; font-size:0.6rem") * Required
             input.big#inviteUserName(
                 @input="e => inviteParams.name = e.target.value"
                 @keydown="e => moveFocus(e, 'inviteUserURL')"
