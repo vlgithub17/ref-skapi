@@ -515,6 +515,9 @@ import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
 import { currentService, serviceUsers } from '@/views/service/main';
 import { Countries } from '@/code/countries';
+import { polyfillCountryFlagEmojis } from "country-flag-emoji-polyfill";
+
+polyfillCountryFlagEmojis();
 
 let pager: Pager = null;
 
@@ -974,6 +977,9 @@ let closeModal = () => {
 }
 </script>
 <style scoped lang="less">
+body {
+    font-family: "Twemoji Country Flags", "Radio Canada", sans-serif;
+}
 .updown {
     background-color: #fff;
     background-color: var(--main-color);
