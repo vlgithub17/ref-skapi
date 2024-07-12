@@ -11,6 +11,7 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "country-flag-emoji-polyfill": "^0.1.8",
     "jsoncrawler": "^0.2.1",
     "less": "^4.2.0",
     "mime": "^4.0.4",
