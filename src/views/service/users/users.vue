@@ -57,21 +57,21 @@ p Search and manage your service users.
 
 form#searchForm(@submit.prevent="init()")
     Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}" style="--moreVert-width:100%")
-    .search
-        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" :class="{'nonClickable' : fetching}" @click.stop="showCalendar = !showCalendar;")
+    .search(:class="{'nonClickable' : fetching}")
+        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click="showCalendar = !showCalendar;")
             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" name="date" readonly)
             .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
             Calendar(v-model="searchValue" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
         //- input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue" :disabled="fetching")
-        input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue" name="address" :disabled="fetching")
-        input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchValue" name="gender" :disabled="fetching")
-        input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue" name="name" :disabled="fetching")
-        .clickInput(v-else-if="searchFor === 'locale'" :class="{'nonClickable' : fetching}" @click.stop="showLocale = !showLocale")
-            input.big#searchInput(type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue" name="locale" :disabled="fetching" readonly)
+        input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue" name="address")
+        input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchValue" name="gender")
+        input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue" name="name")
+        .clickInput(v-else-if="searchFor === 'locale'" @click="showLocale = !showLocale")
+            input.big#searchInput(type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue" name="locale" readonly)
             .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale'") arrow_drop_down
             Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
-        input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" name="user_id" :disabled="fetching" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-        input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue" name="email" :disabled="fetching" type="email" minlength="5")
+        input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" name="user_id" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+        input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue" name="email" type="email" minlength="5")
     button.final(type="submit" style='flex-shrink: 0;') Search
 
 br
@@ -216,7 +216,7 @@ Modal(:open="openCreateUser" style="width:478px")
         input(hidden name="service" :value="currentService.id")
 
         label User's Email 
-            span(style="color:red") *
+            em(style="color:red; font-size:0.6rem") * Required
             input.big#email(
                 type="email"
                 @input="e => createParams.email = e.target.value"
@@ -229,7 +229,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         label Password 
-            span(style="color:red") *
+            em(style="color:red; font-size:0.6rem") * Required
             input.big#password(
                 @input="e => createParams.password = e.target.value"
                 @keydown="e => moveFocus(e, 'name')"
@@ -390,7 +390,7 @@ Modal(:open="openInviteUser")
         input(hidden name="service" :value="currentService.id")
 
         label User's Email 
-            span(style="color:red") *
+            em(style="color:red; font-size:0.6rem") * Required
             input.big#inviteUserEmail(
                 type="email"
                 @input="e => inviteParams.email = e.target.value"
@@ -402,7 +402,7 @@ Modal(:open="openInviteUser")
         br
 
         label Name 
-            span(style="color:red") *
+            em(style="color:red; font-size:0.6rem") * Required
             input.big#inviteUserName(
                 @input="e => inviteParams.name = e.target.value"
                 @keydown="e => moveFocus(e, 'inviteUserURL')"
@@ -1003,6 +1003,8 @@ body {
         display: flex;
         flex-grow: 50;
         gap: 8px;
+        flex-shrink: 0;
+        min-width: 290px;
     }
     .clickInput {
         position: relative;
