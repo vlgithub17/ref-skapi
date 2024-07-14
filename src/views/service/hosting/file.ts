@@ -7,7 +7,7 @@ export let currentDirectory = ref('');
 export let uploadGroups: FormData[] = [];
 export let uploadCount = reactive([0, 0]); // fin / total
 export let uploadProgress: any = reactive({});  // { name: fileName, progress: percent(number) }
-export let folders: any = {};
+export let serviceFolders: any = {}; // {serviceid: {dirname: {}}}
 
 export let uploadFiles = async (files: File[], callback?: () => void, contentTypeMapping?:{[fname:string]:string}) => {
     // uploads one by one
@@ -53,7 +53,7 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                 let fPathSplit = fPath.split('/');
                 if (fPathSplit.length === 1) {
                     if (fPathSplit[0] === '') {
-                        let folder = folders['!'].pager;
+                        let folder = serviceFolders[currentService.id]['!'].pager;
                         if (folder.list?.[flName]) {
                             await folder.editItem(fileObj);
                         }
@@ -62,7 +62,7 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                         }
                     }
                     else {
-                        let folder = folders['!'].pager;
+                        let folder = serviceFolders[currentService.id]['!'].pager;
                         if (!folder.list?.['#' + fPathSplit[0]]) {
                             let obj = Object.assign({}, fileObj, { name: '#' + fPathSplit[0], cnt: 0, size: 0, path: currentService.service.subdomain});
                             await folder.insertItems(obj);
@@ -74,8 +74,8 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                             await folder.editItem(obj);
                         }
 
-                        if (folders[fPathSplit[0]]) {
-                            let folder = folders[fPathSplit[0]].pager;
+                        if (serviceFolders[currentService.id][fPathSplit[0]]) {
+                            let folder = serviceFolders[currentService.id][fPathSplit[0]].pager;
                             if (folder.list?.[flName]) {
                                 await folder.editItem(fileObj);
                             }
@@ -89,8 +89,8 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                     // has nested folders
                     let pathIdx = fPathSplit.length;
                     let fp = fPathSplit.slice(0, pathIdx).join('/');
-                    if (folders[fp]) {
-                        let folder = folders[fp].pager;
+                    if (serviceFolders[currentService.id][fp]) {
+                        let folder = serviceFolders[currentService.id][fp].pager;
                         if (folder.list?.[flName]) {
                             await folder.editItem(fileObj);
                         }
@@ -105,8 +105,8 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                             let fldName = '#' + fp.pop();
                             let fpStr = fp.join('/') || '!';
                             fileObj.name = fldName;
-                            if (folders[fpStr]) {
-                                let folder = folders[fpStr].pager;
+                            if (serviceFolders[currentService.id][fpStr]) {
+                                let folder = serviceFolders[currentService.id][fpStr].pager;
                                 if (folder.list?.[fldName]) {
                                     let obj = folder.list?.[fldName];
                                     obj.size = (obj.size || 0) + f.size;
