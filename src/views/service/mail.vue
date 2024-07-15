@@ -106,7 +106,7 @@ br
     a.iconClick.square(:href="'mailto:' + mailEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill mail
         span &nbsp;&nbsp;New {{emailType}}
-    .iconClick.square(@click="()=>{init(true)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         .material-symbols-outlined.fill refresh
         span &nbsp;&nbsp;Refresh
 
@@ -594,13 +594,13 @@ Your activation link is valid for 7 days.
     htmls[key] = html;
 }
 
-let init = async (refreshService?: boolean) => {
-    if (refreshService) {
-        fetching.value = true;
-        await currentService.refresh();
-        service = currentService.service;
-        fetching.value = false;
-    }
+let init = async () => {
+    // if (refreshService) {
+    //     fetching.value = true;
+    //     await currentService.refresh();
+    //     service = currentService.service;
+    //     fetching.value = false;
+    // }
     currentPage.value = 1;
 
     // setup pagers
