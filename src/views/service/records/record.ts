@@ -64,7 +64,11 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?:{[k
             file: File,
             name: string
         }[]
-    } = skapi.util.extractFormData(e);
+    } = skapi.util.extractFormData(e, null, (name:string, value:string)=>{
+        if(name === 'config[index][value]') {
+            return value === '#!TUDCIV*';
+        }
+    });
 
     console.log(e)
     console.log(toUpload)
@@ -85,9 +89,12 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?:{[k
     }
 
     config = toUpload.data.config;
-    if(config?.index && config?.index?.value.indexOf('#!TUDCIV*')) {
-        config.index.value = JSON.parse(toUpload.data.config?.index?.value.replace('#!TUDCIV*',''));
-    }
+    // if(config?.index && config?.index?.value.indexOf('#!TUDCIV*')) {
+    //     try {
+    //     config.index.value = JSON.parse(toUpload.data.config?.index?.value.replace('#!TUDCIV*',''));
+    //     }
+    //     catch(err){}
+    // }
 
     config.service = currentService.id;
     config.owner = currentService.owner;

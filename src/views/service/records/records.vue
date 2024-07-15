@@ -361,8 +361,8 @@ br
                             input.line(v-if="indexType !== 'boolean'" v-model="index_value" name='config[index][value]' :type='indexType' placeholder='index value' :required='indexType !== "checkbox"' style="flex-grow:30; width:unset")
                             
                             select(v-else v-model="index_value" name='config[index][value]' style="flex-grow:30")
-                                option(value='true#!TUDCIV*' selected) True
-                                option(value='false#!TUDCIV*') False
+                                option(value='#!TUDCIV*' selected) True
+                                option(value='#!TUDCIV*)') False
 
                 .row 
                     .key Tags 
@@ -488,18 +488,12 @@ watch(filterOptions.value, nv => {
     tableKey.value++;
 }, { immediate: true });
 watch(indexType, nv => {
-    // if (nv == 'boolean' && typeof selectedRecord.value?.index?.value !== 'boolean') {
-    //     index_value.value = 'true';
-    // } else if (nv == typeof selectedRecord.value?.index?.value) {
-    //     index_value.value = selectedRecord.value?.index?.value;
-    // } else {
-    //     index_value.value = '';
-    // }
-
-    if (nv == 'boolean') {
-        index_value.value = 'true#!TUDCIV*';
+    if (nv == 'boolean' && typeof selectedRecord.value?.index?.value !== 'boolean') {
+        index_value.value = '#!TUDCIV*';
+    } else if (nv == 'boolean'&& typeof selectedRecord.value?.index?.value) {
+        index_value.value = selectedRecord.value?.index?.value ? '#!TUDCIV*' : '#!TUDCIV*)';
     } else {
-        index_value.value = '';
+        index_value.value = selectedRecord.value?.index?.value || '';
     }
 })
 watch(currentPage, (n, o) => {
@@ -777,7 +771,13 @@ watch(() => selectedRecord.value, nv => {
             indexType.value = typeof(nv?.index?.value);
             index_name.value = nv?.index?.name;
             if(typeof nv?.index?.value == 'boolean') {
-                index_value.value = JSON.stringify(nv?.index?.value) + '#!TUDCIV*';
+                // if(nv?.index?.value) {
+                //     index_value.value = '#!TUDCIV*';
+                // } else {
+                //     index_value.value = '#!TUDCIV*)';
+                // }
+                // console.log(typeof nv?.index?.value)
+                index_value.value = nv?.index?.value ? '#!TUDCIV*' : '#!TUDCIV*)';
             } else {
                 index_value.value = nv?.index?.value;
             }
@@ -813,7 +813,8 @@ let upload = async(e: SubmitEvent) => {
     }
     catch(err:any) {
         uploading.value = false;
-        alert(err.message)
+        alert(err.message);
+        throw err;
     }
 }
 

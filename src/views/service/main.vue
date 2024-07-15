@@ -138,9 +138,11 @@ watch(() => route, nv => {
         width: 100%;
         display: flex;
         flex-wrap: wrap;
+        justify-content: space-between;
         gap: 20px;
 
         .link {
+            width: calc(50% - 10px);
             flex-grow: 1;
             flex-shrink: 0;
             min-width: 320px;
