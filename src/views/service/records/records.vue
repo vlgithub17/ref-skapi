@@ -314,8 +314,8 @@ br
 
                 .row.indent 
                     .key Access Group 
-                    template(v-if="selectedRecord?.record_id && selectedRecord_private") {{ selectedRecord?.table?.access_group }}
-                    select.value(v-else v-model="selectedRecord.table.access_group" name='config[table][access_group]')
+                    //- template(v-if="selectedRecord?.record_id && selectedRecord_private") {{ selectedRecord?.table?.access_group }}
+                    select.value(v-model="selectedRecord.table.access_group" :disabled="selectedRecord?.record_id && selectedRecord_private" name='config[table][access_group]')
                         option(value="public") Public
                         option(value="authorized") Authorized
                         option(value="private") Private
@@ -361,8 +361,8 @@ br
                             input.line(v-if="indexType !== 'boolean'" v-model="index_value" name='config[index][value]' :type='indexType' placeholder='index value' :required='indexType !== "checkbox"' style="flex-grow:30; width:unset")
                             
                             select(v-else v-model="index_value" name='config[index][value]' style="flex-grow:30")
-                                option(value='true' selected) True
-                                option(value='false') False
+                                option(value='true#!TUDCIV*' selected) True
+                                option(value='false#!TUDCIV*') False
 
                 .row 
                     .key Tags 
@@ -488,10 +488,16 @@ watch(filterOptions.value, nv => {
     tableKey.value++;
 }, { immediate: true });
 watch(indexType, nv => {
-    if (nv == 'boolean' && typeof selectedRecord.value?.index?.value !== 'boolean') {
-        index_value.value = 'true';
-    } else if (nv == typeof selectedRecord.value?.index?.value) {
-        index_value.value = selectedRecord.value?.index?.value;
+    // if (nv == 'boolean' && typeof selectedRecord.value?.index?.value !== 'boolean') {
+    //     index_value.value = 'true';
+    // } else if (nv == typeof selectedRecord.value?.index?.value) {
+    //     index_value.value = selectedRecord.value?.index?.value;
+    // } else {
+    //     index_value.value = '';
+    // }
+
+    if (nv == 'boolean') {
+        index_value.value = 'true#!TUDCIV*';
     } else {
         index_value.value = '';
     }
@@ -770,7 +776,11 @@ watch(() => selectedRecord.value, nv => {
             indexValue.value = true;
             indexType.value = typeof(nv?.index?.value);
             index_name.value = nv?.index?.name;
-            index_value.value = typeof index_value.value !== 'string' ? JSON.stringify(nv?.index?.value) : nv?.index?.value;
+            if(typeof nv?.index?.value == 'boolean') {
+                index_value.value = JSON.stringify(nv?.index?.value) + '#!TUDCIV*';
+            } else {
+                index_value.value = nv?.index?.value;
+            }
         }
     }
 })
