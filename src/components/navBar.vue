@@ -15,7 +15,9 @@ nav#navBar(ref="navBar")
                     li(v-if="route.name == 'home'" style="margin-left:1rem")
                         router-link(to="/my-services") My Services
                     li(v-else="route.name != 'home'")
-                        a.doc(href="https://docs.skapi.com" target="_blank") Documentation
+                        a.doc(href="https://docs.skapi.com" target="_blank")
+                            .material-symbols-outlined menu_book
+                            | &nbsp;Docs
 
                     li
                         .prof(@click.stop="(e)=>{showDropDown(e)}")
@@ -39,7 +41,9 @@ nav#navBar(ref="navBar")
                     li
                         router-link.ser(to="/login") Login
                     li
-                        router-link.sign(to="/signup") Sign-up
+                        router-link(to="/signup") 
+                            button.final(style='margin: -6px 0 -6px .5rem;') Sign-up
+
 
 #proceeding(v-if="running")
     .inner    
@@ -139,7 +143,8 @@ onMounted(() => {
     padding: 12px 6px 12px 20px;
     display: flex;
     align-items: center;
-    background-color: #262626;
+    // background-color: #262626;
+    background-color: black;
     font-size: 18px;
     color: #fff;
     justify-content: center;
@@ -199,36 +204,6 @@ onMounted(() => {
 
             .ser {
                 padding: 0 1.4rem;
-            }
-
-            .sign {
-                color: #fff;
-                display: block;
-                position: relative;
-                padding: 0 1.4rem;
-                text-decoration: none;
-                font-size: 0.8rem;
-                font-weight: 700;
-
-                &::before {
-                    content: '';
-                    display: inline-block;
-                    position: absolute;
-                    left: 0;
-                    top: -11px;
-                    z-index: -1;
-                    width: 100%;
-                    height: 100%;
-                    padding: 11px 0;
-                    border-radius: 8px;
-                    background: var(--main-color);
-                }
-
-                &:active {
-                    &::before {
-                        box-shadow: 0 0 0 2px #A5AFFF inset;
-                    }
-                }
             }
         }
 

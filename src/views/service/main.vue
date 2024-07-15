@@ -27,12 +27,12 @@
             router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting', 'nonClickable' : currentService.service.group <= 1}")
                 span.material-symbols-outlined.fill.nohover language
                 span.name File Hosting
-    main.right 
+    main.right
         router-view
         br
-        br
-        br
-        hr
+        //- br
+        //- br
+        //- hr
         nav.bottom 
             .link
                 router-link.prev(v-if="currentRouter && titleList[index-1]" :to="`/my-services/${currentService.id}/${prevRouter}`")
@@ -144,7 +144,7 @@ watch(() => route, nv => {
             flex-grow: 1;
             flex-shrink: 0;
             min-width: 320px;
-
+            width: 0; // flex 매직
             a {
                 display: block;
                 border: 1px solid rgba(0, 0, 0, 0.15);

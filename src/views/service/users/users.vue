@@ -1,9 +1,10 @@
 <template lang="pug">
-h3(style="display:inline-block; user-select:none") User Authentication
+
+h2(style="display:inline-block;user-select:none;margin-bottom: 0;vertical-align: sub;") Users
+
 span.updown(@click="showDes = !showDes" style="user-select:none")
     .material-symbols-outlined.fill(v-if="showDes" style="color:#fafaff; padding-bottom:5px") arrow_drop_up
     .material-symbols-outlined.fill(v-else style="color:#fafaff; padding-bottom:3px") arrow_drop_down
-
 template(v-if="showDes")
     p.
         The example below shows how to setup a basic sign-up / login form for your website.
@@ -46,10 +47,6 @@ template(v-if="showDes")
     p.
         Once the user have logged in for the first time, they will be listed on your #[b Users] section below.
     p For more details, please refer to the #[a(href="https://docs.skapi.com/authentication/create-account.html" target="_blank") Documentation]
-
-br
-
-h2 Users
 
 hr
 

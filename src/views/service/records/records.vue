@@ -1,5 +1,6 @@
 <template lang="pug">
-h3(style="display:inline-block; user-select:none") Database
+
+h2(style="display:inline-block;user-select:none;margin-bottom: 0;vertical-align: sub;") Database
 span.updown(@click="showDes = !showDes" style="user-select:none")
     .material-symbols-outlined.fill(v-if="showDes" style="color:#fafaff; padding-bottom:5px") arrow_drop_up
     .material-symbols-outlined.fill(v-else style="color:#fafaff; padding-bottom:3px") arrow_drop_down
@@ -29,13 +30,9 @@ template(v-if="showDes")
 
     p For more details, please refer to the #[a(href="https://docs.skapi.com/database/create.html" target="_blank") Documentation]
 
-br
-
-h2 Records
-
 hr
 
-p Search and manage your service records.
+p Search and manage your database records.
 
 //- form#searchForm(@submit.prevent="con()")
 form#searchForm(@submit.prevent="init()")

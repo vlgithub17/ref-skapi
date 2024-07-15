@@ -1,6 +1,6 @@
 <template lang="pug">
 main#serviceList
-    div(style='padding:0 8px;')
+    div(style='padding:1rem 8px;')
         h2 My Services
 
         hr
@@ -11,7 +11,7 @@ main#serviceList
             .material-symbols-outlined.fill warning
             router-link(to="/account-setting") Please verify your email address to create services.
         form(@submit.prevent="createService" style='display: flex;gap: 8px;width: 480px;max-width: 100%;' :class='{disabled: !user?.email_verified}')
-            input.big(placeholder="New service name (Maximum 40 characters)" maxlength="40" required v-model="newServiceName")
+            input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
             button.final(type="submit" style='flex-shrink: 0;') Create
 
         br
