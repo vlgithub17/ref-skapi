@@ -64,7 +64,11 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?:{[k
             file: File,
             name: string
         }[]
-    } = skapi.util.extractFormData(e);
+    } = skapi.util.extractFormData(e, null, (name:string, value:string)=>{
+        if(name === 'config[index][value]') {
+            return value === '#!TUDCIV*';
+        }
+    });
 
     console.log(e)
     console.log(toUpload)
@@ -72,30 +76,26 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?:{[k
     let data = undefined;
     let config:any = {};
     let access_group = toUpload.data.config?.table?.access_group;
-
     let isUpdate = !!toUpload.data.config?.record_id;
 
-    // if (isUpdate && toUpload.data.user_id !== currentService.owner && access_group === 'private') {
-    //     // cannot change access group of private records of other users
-    //     delete toUpload.data.config.table.access_group;
-    // }
-    //else {
-        // string number to actual number
-        // toUpload.data.config.table.access_group = parseInt(toUpload.data.config.table.access_group);
-
-        let indexValue = toUpload.data.config?.index?.value;
-        console.log({indexValue})
-        // if(indexValue && (typeof indexValue == 'number' || typeof(indexValue) == 'boolean')) {
-        //     toUpload.data.config.index.value = JSON.parse(toUpload.data.config.index.value);
-        // }
-
-        // set json string to actual data
+    // set json string to actual data
+    let checkPrivateData = {
+        __is_private__ : null
+    }
+    if (toUpload.data.data && toUpload.data.config?.table?.access_group == 'private' && JSON.stringify(JSON.parse(toUpload.data?.data)) == JSON.stringify(checkPrivateData)) {
+        delete toUpload.data.data;
+    } else {
         data = toUpload.data.data ? JSON.parse(toUpload.data.data) : null;
-    //}
+    }
 
     config = toUpload.data.config;
+    // if(config?.index && config?.index?.value.indexOf('#!TUDCIV*')) {
+    //     try {
+    //     config.index.value = JSON.parse(toUpload.data.config?.index?.value.replace('#!TUDCIV*',''));
+    //     }
+    //     catch(err){}
+    // }
 
-    console.log({config})
     config.service = currentService.id;
     config.owner = currentService.owner;
 
