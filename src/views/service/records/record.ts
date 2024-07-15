@@ -53,6 +53,7 @@ let parseBinEndpoint = async (r: string[]) => {
 // remove_bin 파일 전체를 넣어도 되고 endpoint만 보내도 됨
 export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?:{[key:string]:any}[], progress?: (c: any) => void) => {
     // extract form values based on input names
+
     let toUpload: {
         data: {
             user_id: string;
@@ -74,24 +75,27 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?:{[k
 
     let isUpdate = !!toUpload.data.config?.record_id;
 
-    if (isUpdate && toUpload.data.user_id !== currentService.owner && access_group === 'private') {
-        // cannot change access group of private records of other users
-        delete toUpload.data.config.table.access_group;
-    }
-    else {
+    // if (isUpdate && toUpload.data.user_id !== currentService.owner && access_group === 'private') {
+    //     // cannot change access group of private records of other users
+    //     delete toUpload.data.config.table.access_group;
+    // }
+    //else {
         // string number to actual number
         // toUpload.data.config.table.access_group = parseInt(toUpload.data.config.table.access_group);
 
         let indexValue = toUpload.data.config?.index?.value;
-        if(indexValue && (typeof(indexValue) == 'number' || typeof(indexValue) == 'boolean')) {
-            toUpload.data.config.index.value = JSON.parse(toUpload.data.config.index.value);
-        }
+        console.log({indexValue})
+        // if(indexValue && (typeof indexValue == 'number' || typeof(indexValue) == 'boolean')) {
+        //     toUpload.data.config.index.value = JSON.parse(toUpload.data.config.index.value);
+        // }
 
         // set json string to actual data
         data = toUpload.data.data ? JSON.parse(toUpload.data.data) : null;
-    }
+    //}
 
     config = toUpload.data.config;
+
+    console.log({config})
     config.service = currentService.id;
     config.owner = currentService.owner;
 

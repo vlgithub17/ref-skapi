@@ -488,8 +488,10 @@ watch(filterOptions.value, nv => {
     tableKey.value++;
 }, { immediate: true });
 watch(indexType, nv => {
-    if (nv == 'boolean') {
+    if (nv == 'boolean' && typeof selectedRecord.value?.index?.value !== 'boolean') {
         index_value.value = 'true';
+    } else if (nv == typeof selectedRecord.value?.index?.value) {
+        index_value.value = selectedRecord.value?.index?.value;
     } else {
         index_value.value = '';
     }
@@ -734,8 +736,9 @@ let fileList = ref([]);
 watch(() => selectedRecord.value, nv => {
     if (nv) {
         console.log(nv)
+        console.log(currentService.owner)
         deleteFileList.value = [];
-        nv?.table?.access_group == 'private' ? selectedRecord_private.value = true : selectedRecord_private.value = false;
+        (nv?.table?.access_group == 'private' && (nv?.user_id !== currentService.owner)) ? selectedRecord_private.value = true : selectedRecord_private.value = false;
         selectedRecord_readOnly.value = nv?.readonly || false;
         selectedRecord_subscription.value = nv?.table?.subscription || false;
         selectedRecord_data.value = JSON.stringify(nv?.data, null, 2) || '';
@@ -767,7 +770,7 @@ watch(() => selectedRecord.value, nv => {
             indexValue.value = true;
             indexType.value = typeof(nv?.index?.value);
             index_name.value = nv?.index?.name;
-            index_value.value = JSON.stringify(nv?.index?.value);
+            index_value.value = typeof index_value.value !== 'string' ? JSON.stringify(nv?.index?.value) : nv?.index?.value;
         }
     }
 })
