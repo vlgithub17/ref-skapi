@@ -1,6 +1,6 @@
 <template lang="pug">
 
-h3(style="display:inline-block; user-select:none") Using 3rd party APIs with Client Secret Key
+h2(style="display:inline-block;user-select:none;margin-bottom: 0;vertical-align: sub;") Client Secret Key
 span.updown(@click="showDes = !showDes" style="user-select:none")
     .material-symbols-outlined.fill(v-if="showDes" style="color:#fafaff; padding-bottom:5px") arrow_drop_up
     .material-symbols-outlined.fill(v-else style="color:#fafaff; padding-bottom:3px") arrow_drop_down
@@ -36,10 +36,6 @@ template(v-if="showDes")
         The placeholder: "#[b $CLIENT_SECRET]" will be replaced to the actual client secret key from the backend.
 
     p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
-
-br
-
-h2 Client Secret Key
 
 hr
 
