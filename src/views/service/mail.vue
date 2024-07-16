@@ -104,10 +104,10 @@ br
 
 .tableMenu
     a.iconClick.square(:href="'mailto:' + mailEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill mail
+        .material-symbols-outlined.notranslate.fill mail
         span &nbsp;&nbsp;New {{emailType}}
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill refresh
+        .material-symbols-outlined.notranslate.fill refresh
         span &nbsp;&nbsp;Refresh
 
 Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
@@ -119,12 +119,12 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             th
                 span(@click='toggleSort("subject")')
                     | Subject
-                    span.material-symbols-outlined.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th
                 span(@click='toggleSort("timestamp")')
                     | Date
-                    span.material-symbols-outlined.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
             th(style="width:66px; padding:0")
 
     template(v-slot:body)
@@ -144,13 +144,13 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
                 td.overflow
                     template(v-if='currentService.service?.["template_" + group]?.url === ns.url')
-                        span.material-symbols-outlined.fill verified
+                        span.material-symbols-outlined.notranslate.fill verified
                     template(v-else)
-                        span.material-symbols-outlined.icon.clickable.hide(@click.stop="emailToUse = ns") verified
+                        span.material-symbols-outlined.notranslate.icon.clickable.hide(@click.stop="emailToUse = ns") verified
                 td.overflow {{ converter(ns.subject) }}
                 td.overflow {{ dateFormat(ns.timestamp) }}
                 td.center.buttonWrap(@click.stop)
-                    span.material-symbols-outlined.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
+                    span.material-symbols-outlined.notranslate.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
             tr(v-for="i in (10 - listDisplay.length)")
                 td(colspan="4")
 
@@ -158,12 +158,12 @@ br
 
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
-        .material-symbols-outlined.bold chevron_left
+        .material-symbols-outlined.notranslate.bold chevron_left
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
     .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
-        .material-symbols-outlined.bold chevron_right
+        .material-symbols-outlined.notranslate.bold chevron_right
 
 Modal(:open="!!emailToDelete")
     h4(style='margin:.5em 0 0;') Delete Email

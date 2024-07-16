@@ -8,7 +8,7 @@ main#serviceList
         p Create a new service to get started.
 
         .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
-            .material-symbols-outlined.fill warning
+            .material-symbols-outlined.notranslate.fill warning
             router-link(to="/account-setting") Please verify your email address to create services.
         form(@submit.prevent="createService" style='display: flex;gap: 8px;width: 480px;max-width: 100%;' :class='{disabled: !user?.email_verified}')
             input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")

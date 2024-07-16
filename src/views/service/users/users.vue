@@ -3,8 +3,8 @@
 h2(style="display:inline-block;user-select:none;margin-bottom: 0;vertical-align: sub;") Users
 
 span.updown(@click="showDes = !showDes" style="user-select:none")
-    .material-symbols-outlined.fill(v-if="showDes" style="color:#fafaff; padding-bottom:5px") arrow_drop_up
-    .material-symbols-outlined.fill(v-else style="color:#fafaff; padding-bottom:3px") arrow_drop_down
+    .material-symbols-outlined.notranslate.fill(v-if="showDes" style="color:#fafaff; padding-bottom:5px") arrow_drop_up
+    .material-symbols-outlined.notranslate.fill(v-else style="color:#fafaff; padding-bottom:3px") arrow_drop_down
 template(v-if="showDes")
     p.
         The example below shows how to setup a basic sign-up / login form for your website.
@@ -57,7 +57,7 @@ form#searchForm(@submit.prevent="init()")
     .search(:class="{'nonClickable' : fetching}")
         .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click="showCalendar = !showCalendar;")
             input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" name="date" readonly)
-            .material-symbols-outlined.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
+            .material-symbols-outlined.notranslate.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
             Calendar(v-model="searchValue" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
         //- input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue" :disabled="fetching")
         input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue" name="address")
@@ -65,7 +65,7 @@ form#searchForm(@submit.prevent="init()")
         input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue" name="name")
         .clickInput(v-else-if="searchFor === 'locale'" @click="showLocale = !showLocale")
             input.big#searchInput(type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue" name="locale" readonly)
-            .material-symbols-outlined.fill.icon(v-if="searchFor === 'locale'") arrow_drop_down
+            .material-symbols-outlined.notranslate.fill.icon(v-if="searchFor === 'locale'") arrow_drop_down
             Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
         input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" name="user_id" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
         input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue" name="email" type="email" minlength="5")
@@ -75,7 +75,7 @@ br
 
 .tableMenu
     .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill checklist_rtl
+        .material-symbols-outlined.notranslate.fill checklist_rtl
         span &nbsp;&nbsp;Show Columns
         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal;color:black")
             .inner(style="padding:.5rem 1rem .5rem .5rem")
@@ -94,15 +94,15 @@ br
                 Checkbox(v-model="filterOptions.misc" style="display:flex") Misc
 
     .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill person_add
+        .material-symbols-outlined.notranslate.fill person_add
         span &nbsp;&nbsp;Create User
         
     .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentService.plan == 'Trial'}")
-        .material-symbols-outlined.fill mark_email_unread
+        .material-symbols-outlined.notranslate.fill mark_email_unread
         span &nbsp;&nbsp;Invite User
 
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-            .material-symbols-outlined.fill refresh
+            .material-symbols-outlined.notranslate.fill refresh
             span &nbsp;&nbsp;Refresh
 
 .userPart
@@ -116,7 +116,7 @@ br
         template(v-slot:head)
             tr
                 th.center(style='width:80px;padding:0')
-                    .material-symbols-outlined.fill manage_accounts 
+                    .material-symbols-outlined.notranslate.fill manage_accounts 
                     .resizer
                 th.overflow(v-if="filterOptions.email" style="width:200px")
                     | Email
@@ -171,11 +171,11 @@ br
             template(v-else) 
                 tr(v-for="(user, index) in listDisplay") 
                     td.center.optionCol.overflow(style="padding:0")
-                        .material-symbols-outlined.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
+                        .material-symbols-outlined.notranslate.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
                         template(v-if="user.approved.includes('suspended')")
-                            .material-symbols-outlined.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
+                            .material-symbols-outlined.notranslate.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
                         template(v-else)
-                            .material-symbols-outlined.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
+                            .material-symbols-outlined.notranslate.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
                     td.overflow(v-if="filterOptions.email") {{ user.email }}
                     td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
                     td.overflow(v-if="filterOptions.name") {{ user.name }}
@@ -196,12 +196,12 @@ br
         
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage === 1 }")
-        .material-symbols-outlined.bold chevron_left
+        .material-symbols-outlined.notranslate.bold chevron_left
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
     .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
-        .material-symbols-outlined.bold chevron_right
+        .material-symbols-outlined.notranslate.bold chevron_right
 
 // create user
 Modal(:open="openCreateUser" style="width:478px")
@@ -354,7 +354,7 @@ Modal(:open="openCreateUser" style="width:478px")
         br
 
         .error(v-if="error")
-            .material-symbols-outlined.mid error
+            .material-symbols-outlined.notranslate.mid error
             span {{ error }}
 
         br
@@ -419,7 +419,7 @@ Modal(:open="openInviteUser")
         br
 
         .error(v-if="error")
-            .material-symbols-outlined.mid error
+            .material-symbols-outlined.notranslate.mid error
             span {{ error }}
 
         br

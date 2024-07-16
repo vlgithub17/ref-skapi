@@ -17,9 +17,9 @@ br
 
                     template(v-if="updatingValue")
                         img.loading(src="@/assets/img/loading.png")
-                    label.material-symbols-outlined.save(v-else) done
+                    label.material-symbols-outlined.notranslate.save(v-else) done
                         input(type="submit" hidden)
-                    span.material-symbols-outlined.cancel(@click="modifyMode = false;") close
+                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode = false;") close
 
             div(v-else style='margin-bottom:12px;')
                 .ellipsis {{ user.email }}&nbsp;
@@ -28,7 +28,7 @@ br
             div(v-if="user.email_verified")
                 Checkbox(v-model="emailSubscribed" :disabled="!user.email_verified || subing_email || emailSubscribed === null") Receive newsletters from Skapi.
             .iconClick(v-else style="color:var(--caution-color);display:inline-flex" @click="proceedVerification = true;")
-                .material-symbols-outlined.fill(style='font-size:24px;') error
+                .material-symbols-outlined.notranslate.fill(style='font-size:24px;') error
                 span &nbsp;Click to verify your email address
 
         br
@@ -42,7 +42,7 @@ br
 
         div(style="text-align:right")
             router-link.iconClick(to='/delete-account' style='color:var(--caution-color);font-size:0.66rem;')
-                .material-symbols-outlined.fill(style='font-size:24px;') cancel
+                .material-symbols-outlined.notranslate.fill(style='font-size:24px;') cancel
                 span &nbsp;Delete Account
 
 Modal(:open="proceedVerification")

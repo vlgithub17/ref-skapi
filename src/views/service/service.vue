@@ -87,21 +87,21 @@ br
 
 section.infoBox
     .error(v-if='!user?.email_verified')
-        .material-symbols-outlined.fill warning
+        .material-symbols-outlined.notranslate.fill warning
         router-link(to="/account-setting") Please verify your email address to modify settings.
 
     .error(v-else-if='currentService.service.active == 0')
-        .material-symbols-outlined.fill warning
+        .material-symbols-outlined.notranslate.fill warning
         span This service is currently disabled.
 
     .error(v-else-if='currentService.service.active < 0')
-        .material-symbols-outlined.fill warning
+        .material-symbols-outlined.notranslate.fill warning
         span This service is currently suspended.
 
     .infoTitle(v-else style="margin-right: 1rem;")
         | Settings&nbsp;
         a.question(href='https://docs.skapi.com/security/security-settings.html' target="_blank")
-            .material-symbols-outlined.empty help 
+            .material-symbols-outlined.notranslate.empty help 
             span Help
 
     hr
@@ -115,9 +115,9 @@ section.infoBox
 
                     template(v-if="updatingValue.name")
                         img.loading(src="@/assets/img/loading.png")
-                    label.material-symbols-outlined.save(v-else) done
+                    label.material-symbols-outlined.notranslate.save(v-else) done
                         input(type="submit" hidden)
-                    span.material-symbols-outlined.cancel(@click="modifyMode.name = false;") close
+                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.name = false;") close
 
             div(v-else)
                 .smallValue {{ currentService.service.name }}&nbsp;
@@ -131,9 +131,9 @@ section.infoBox
 
                     template(v-if="updatingValue.cors")
                         img.loading(src="@/assets/img/loading.png")
-                    label.material-symbols-outlined.save(v-else) done
+                    label.material-symbols-outlined.notranslate.save(v-else) done
                         input(type="submit" hidden)
-                    span.material-symbols-outlined.cancel(@click="modifyMode.cors = false;") close
+                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.cors = false;") close
 
             div(v-else)
                 .smallValue {{ currentService.service.cors || '*' }}&nbsp;
@@ -147,9 +147,9 @@ section.infoBox
 
                     template(v-if="updatingValue.api_key")
                         img.loading(src="@/assets/img/loading.png")
-                    label.material-symbols-outlined.save(v-else) done
+                    label.material-symbols-outlined.notranslate.save(v-else) done
                         input(type="submit" hidden)
-                    span.material-symbols-outlined.cancel(@click="modifyMode.api_key = false;") close
+                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.api_key = false;") close
 
             div(v-else)
                 .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 2) + '*'.repeat(currentService.service.api_key.length - 2) + '...' : 'No Secret Key' }}&nbsp;
@@ -170,7 +170,7 @@ br
 template(v-if="currentService.plan == 'Trial' || currentService.service.plan == 'Canceled'")
     div(style="text-align:right")
         router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
-            .material-symbols-outlined.fill(style='font-size:24px;') cancel
+            .material-symbols-outlined.notranslate.fill(style='font-size:24px;') cancel
             span &nbsp;Delete Service
 
 br

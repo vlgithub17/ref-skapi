@@ -79,7 +79,7 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
 
     div(v-if="serviceList[serviceId]?.service.plan !== 'Canceled' && serviceList[serviceId]?.service.plan !== 'Trial'" style="text-align:right")
         span.iconClick(@click='()=>openCancelplan=true' style='color:var(--caution-color);font-size:0.66rem;')
-            .material-symbols-outlined.fill(style='font-size:24px;') cancel
+            .material-symbols-outlined.notranslate.fill(style='font-size:24px;') cancel
             span &nbsp;Cancel Subscription
 
 div(v-else style="text-align:center")

@@ -40,10 +40,10 @@ p.
 
 .tableMenu
     a.iconClick.square(:href="'mailto:' + newsletterEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill mail
+        .material-symbols-outlined.notranslate.fill mail
         span &nbsp;&nbsp;Send {{mailType}}
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill refresh
+        .material-symbols-outlined.notranslate.fill refresh
         span &nbsp;&nbsp;Refresh
 
 
@@ -53,27 +53,27 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             th(style='width: 250px;')
                 span(@click='toggleSort("subject")')
                     | Subject
-                    span.material-symbols-outlined.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("timestamp")')
                     | Sent
-                    span.material-symbols-outlined.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("read")')
                     | Reads
-                    span.material-symbols-outlined.fill(v-if='searchFor === "read"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "read"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("complaint")')
                     | Complaint
-                    span.material-symbols-outlined.fill(v-if='searchFor === "complaint"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "complaint"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("bounced")')
                     | Bounced
-                    span.material-symbols-outlined.fill(v-if='searchFor === "bounced"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "bounced"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
             th.center(style="width:60px; padding:0")
 
     template(v-slot:body)
@@ -97,7 +97,7 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
                 td.overflow {{ ns.complaint }}
                 td.overflow {{ ns.bounced }}
                 td.center.buttonWrap(@click.stop)
-                    .material-symbols-outlined.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
+                    .material-symbols-outlined.notranslate.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
             tr(v-for="i in (10 - listDisplay.length)")
                 td(colspan="6")
 
@@ -105,12 +105,12 @@ br
 
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
-        .material-symbols-outlined.bold chevron_left
+        .material-symbols-outlined.notranslate.bold chevron_left
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
     .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
-        .material-symbols-outlined.bold chevron_right
+        .material-symbols-outlined.notranslate.bold chevron_right
 
 br
 

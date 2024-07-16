@@ -10,7 +10,7 @@ br
 
         .bottomLineTitle Email Verification
     template(v-else)
-        .material-symbols-outlined.fill(style="font-size:50px;color:rgba(90, 216, 88, 1);") check_circle
+        .material-symbols-outlined.notranslate.fill(style="font-size:50px;color:rgba(90, 216, 88, 1);") check_circle
         .bottomLineTitle Success
 
     template(v-if="step === 1")
@@ -37,7 +37,7 @@ br
             br
 
             .error(v-if="error") 
-                .material-symbols-outlined.mid error
+                .material-symbols-outlined.notranslate.mid error
                 span {{ error }}
 
             br
