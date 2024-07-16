@@ -63,7 +63,7 @@ main
     br
 
     .dynamo-section(style='align-items: flex-start;')
-        .intact.statements
+        .intact
             .icoHead
                 .material-symbols-outlined.yellow construction
                 h2 Build Anything
@@ -87,7 +87,7 @@ main
                 Saving #[span.wordset data center] energy, helping the environment, and most importantly, reducing your development time and costs.
                 #[br]
                 #[br]
-                Plus, Skapi is designed to protect you from expensive developer mistakes.
+                Plus, Skapi is designed to protect you from developer mistakes that can cost millions.
             
             br
             
@@ -228,7 +228,7 @@ import { user } from "@/code/user";
 
 <style lang="less" scoped>
 main {
-    background: linear-gradient(32deg, rgb(0, 0, 255), rgba(255, 0, 0, 0) 80%),
+    background: linear-gradient(32deg, #293fe6, rgba(255, 0, 0, 0) 80%),
         linear-gradient(229deg, #293fe6, rgba(0, 255, 0, 0) 80%),
         linear-gradient(151deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
 }
@@ -293,11 +293,6 @@ p {
     .underline {
         text-decoration: underline;
     }
-    .statements {
-        & > p {
-            // font-size: 1.2em;
-        }
-    }
     header {
         color: white;
         width: 800px;
@@ -318,7 +313,7 @@ p {
     h3,
     h4 {
         color: white;
-        text-shadow: 1px 1px 3px #000;
+        text-shadow: 1px 1px 2px #000;
     }
 
     p {

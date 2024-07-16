@@ -1,5 +1,4 @@
 <template lang="pug">
-div.dummy(:style='{height:navHeight+"px"}')
 nav#navBar(ref="navBar")
     .wrap
         .left
@@ -55,10 +54,11 @@ nav#navBar(ref="navBar")
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { onMounted, ref } from 'vue';
+import { onMounted, onBeforeUnmount, ref } from 'vue';
 import { skapi } from '@/code/admin';
 import { loginState, user, updateUser, customer } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
+import { setAutoHide, removeListener } from './navBar-autohide.ts';
 
 const router = useRouter();
 const route = useRoute();
@@ -103,9 +103,12 @@ let logout = () => {
     })
 }
 
-let navHeight = ref(0);
 onMounted(() => {
-    navHeight.value = parseFloat(window.getComputedStyle(navBar.value).height);
+    setAutoHide(navBar.value, 3);
+})
+
+onBeforeUnmount(() => {
+    removeListener();
 })
 </script>
 
@@ -135,9 +138,9 @@ onMounted(() => {
 }
 
 #navBar {
-    position: fixed;
+    position: var(--nav-position, fixed);
     left: 0;
-    top: 0;
+    top: var(--nav-top, 0);
     z-index: 99999;
     width: 100%;
     padding: 12px 6px 12px 20px;
