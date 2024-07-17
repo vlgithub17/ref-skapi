@@ -643,7 +643,7 @@ let getPage = async (refresh?: boolean) => {
 
         console.log(callParams.value)
 
-        let fetchedData = await skapi.getRecords(Object.assign({service: currentService.id}, callParams.value), { fetchMore: !refresh }).catch((err) => {alert(err);fetching.value = false;});
+        let fetchedData = await skapi.getRecords(Object.assign({service: currentService.id}, callParams.value), { fetchMore: !refresh }).catch((err) => {alert(err);fetching.value = false;throw err;});
         fetchedData.list = fetchedData.list.map(r=>{
             bins[r.record_id] = r?.bin || {};
             delete r.bin;

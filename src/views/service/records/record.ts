@@ -70,6 +70,7 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?:{[k
         }
     });
 
+    console.log('uploading')
     console.log(e)
     console.log(toUpload)
 

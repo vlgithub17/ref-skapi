@@ -37,8 +37,9 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                 }
 
                 uploadCount[0]++;
-                let flName = (f.webkitRelativePath || f.name).split('/').pop();
-                let fPath = currentDir + (f.webkitRelativePath || f.name).replace(flName, '');
+                let fPathArr = (f.webkitRelativePath || f.name).split('/'); // [folder-filename, filename]
+                let flName = fPathArr.pop();
+                let fPath = currentDir + fPathArr.join('/');
                 if (fPath.slice(-1) === '/') {
                     fPath = fPath.slice(0, -1);
                 }
@@ -51,6 +52,7 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                 }
 
                 let fPathSplit = fPath.split('/');
+                console.log(fPathSplit);
                 if (fPathSplit.length === 1) {
                     if (fPathSplit[0] === '') {
                         let folder = serviceFolders[currentService.id]['!'].pager;

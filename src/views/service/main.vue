@@ -95,7 +95,7 @@ watch(serviceList, nv => {
 watch(() => route, nv => {
     currentRouter.value = nv.path.split('/')[3];
     index = routerList.indexOf(currentRouter.value);
-    console.log(plan.value)
+    plan.value = currentService?.plan;
 
     if(plan.value == 'Trial') {
         routerList = ['service', 'dashboard', 'users', 'clientsecret', 'records'];
