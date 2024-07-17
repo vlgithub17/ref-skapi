@@ -169,7 +169,7 @@ section.infoBox
     template(v-if="currentService.plan == 'Trial' || currentService.service.plan == 'Canceled'")
         hr
         div(style="text-align:right")
-            router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
+            router-link.iconClick.square(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
                 .material-symbols-outlined.notranslate.fill(style='font-size:24px;') delete
                 span &nbsp;Delete Service
 

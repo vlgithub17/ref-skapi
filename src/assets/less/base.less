@@ -135,7 +135,9 @@ input {
         padding: 0;
 
         &:focus {
-            border-bottom: 2px solid var(--main-color) !important;
+            border-color: var(--main-color);
+            // border-bottom: 2px solid var(--main-color) !important; // 이거 쓰면 input이 커짐
+            box-shadow: 0 1px 0 0 var(--main-color);
         }
     }
 

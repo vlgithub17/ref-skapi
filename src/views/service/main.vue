@@ -30,8 +30,8 @@
                     span.name File Hosting
     main.right
         router-view
-        //- br
-        //- br
+        br
+        br
         //- hr
         nav.bottom 
             .link

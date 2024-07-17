@@ -39,7 +39,7 @@ br
         hr
 
         div(style="text-align:right")
-            router-link.iconClick(to='/delete-account' style='color:var(--caution-color);font-size:0.66rem;')
+            router-link.iconClick.square(to='/delete-account' style='color:var(--caution-color);font-size:0.66rem;')
                 .material-symbols-outlined.notranslate.fill(style='font-size:24px;') cancel
                 span &nbsp;Delete Account
 br

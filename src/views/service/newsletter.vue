@@ -112,8 +112,6 @@ br
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.notranslate.bold chevron_right
 
-br
-
 Modal(:open="emailToDelete")
     h4(style='margin:.5em 0 0;') Delete Email
 

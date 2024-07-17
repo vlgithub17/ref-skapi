@@ -210,9 +210,6 @@ Modal(:open="!!emailToUse")
             button.noLine(@click="emailToUse = null") Cancel
             button.final(@click="useEmail(emailToUse)") Confirm
 
-br
-br
-
 </template>
 
 <script setup lang="ts">
