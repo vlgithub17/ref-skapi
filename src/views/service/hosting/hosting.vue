@@ -294,12 +294,12 @@ import Checkbox from '@/components/checkbox.vue';
 import { serviceFolders, uploadFiles, onDrop, currentDirectory, uploadCount, uploadProgress } from '@/views/service/hosting/file';
 
 let folders = {};
-if(serviceFolders?.[currentService.id]) {
-    folders = serviceFolders[currentService.id];
-}
-else {
-    serviceFolders[currentService.id] = folders;
-}
+// if(serviceFolders?.[currentService.id]) {
+//     folders = serviceFolders[currentService.id];
+// }
+// else {
+//     serviceFolders[currentService.id] = folders;
+// }
 
 let email_is_unverified_or_service_is_disabled = computed(()=>!user?.email_verified || currentService.service.active <= 0);
 
@@ -490,6 +490,14 @@ let hostUrl = computed(() => {
     else {
         subd = sd + '.' + domain;
     }
+    
+    if(serviceFolders?.[sd]) {
+        folders = serviceFolders[sd];
+    }
+    else {
+        serviceFolders[sd] = folders;
+    }
+
     return subd
 });
 
@@ -592,7 +600,6 @@ if(currentService.dirInfo.path) {
 }
 
 watch(()=>currentService.dirInfo.path, (n, o) => {
-    console.log({pn:n})
     if(n) {
         getFileList('conditional').then(() => {
             fetching.value = false;

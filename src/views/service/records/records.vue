@@ -544,9 +544,9 @@ watch(() => searchFormValue.index.for, (n) => {
     conditionDisabled.value = false;
     searchFormValue.index.type = 'text';
     searchFormValue.index.condition = '=';
+    searchFormValue.index.name = '';
     switch (n) {
         case '$user_id':
-            searchFormValue.index.name = n;
             searchFormValue.index.type = 'text';
             searchFormValue.index.condition = '=';
             conditionDisabled.value = true;
@@ -554,12 +554,10 @@ watch(() => searchFormValue.index.for, (n) => {
         case 'name':
             break;
         case '$referenced_count':
-            searchFormValue.index.name = n;
             searchFormValue.index.type = 'number';
             break;
         default:
             // updated, uploaded
-            searchFormValue.index.name = n;
             searchFormValue.index.type = 'datetime-local';
     }
 })
@@ -645,7 +643,7 @@ let getPage = async (refresh?: boolean) => {
 
         console.log(callParams.value)
 
-        let fetchedData = await skapi.getRecords(Object.assign({service: currentService.id}, callParams.value), { fetchMore: !refresh });
+        let fetchedData = await skapi.getRecords(Object.assign({service: currentService.id}, callParams.value), { fetchMore: !refresh }).catch((err) => {alert(err);fetching.value = false;throw err;});
         fetchedData.list = fetchedData.list.map(r=>{
             bins[r.record_id] = r?.bin || {};
             delete r.bin;

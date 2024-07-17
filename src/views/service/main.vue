@@ -96,32 +96,25 @@ watch(
     { immediate: true }
 );
 
-watch(
-    serviceList,
-    (nv) => {
-        if (nv[serviceId] && currentService?.id !== serviceId) {
-            try {
-                setService(serviceId);
-                plan.value = currentService?.plan;
-            } catch (err) {
-                router.push("/my-services");
-            }
-        } else if (
-            nv[serviceId] &&
-            currentService?.id === serviceId &&
-            !serviceMainLoaded.value
-        ) {
-            serviceMainLoaded.value = true;
+watch(serviceList, nv => {
+    if (nv[serviceId] && currentService?.id !== serviceId) {
+        try {
+            setService(serviceId);
+            plan.value = currentService?.plan;
+            console.log(currentService)
         }
-    },
-    { immediate: true }
-);
+        catch (err) {
+            router.push('/my-services');
+        }
+    } else if (nv[serviceId] && currentService?.id === serviceId && !serviceMainLoaded.value) {
+        serviceMainLoaded.value = true;
+    }
+}, { immediate: true });
 
-watch(
-    () => route,
-    (nv) => {
-        currentRouter.value = nv.path.split("/")[3];
-        index = routerList.indexOf(currentRouter.value);
+watch(() => route, nv => {
+    currentRouter.value = nv.path.split('/')[3];
+    index = routerList.indexOf(currentRouter.value);
+    plan.value = currentService?.plan;
 
         if (plan.value == "Trial") {
             routerList = ["service", "dashboard", "users", "clientsecret", "records"];
