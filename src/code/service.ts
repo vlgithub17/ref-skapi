@@ -245,7 +245,7 @@ export default class Service {
     _orgPlan = '';
     _subsPromise;
     newsletterSender: Promise<string>[] = [];
-    reserved_key:string = randomString(16);
+    reserved_key: string = randomString(16);
     constructor(id: string, service: ServiceObj, endpoints: string[]) {
         this.id = id;
         this.admin_private_endpoint = endpoints[0];
@@ -460,6 +460,11 @@ export default class Service {
         client_secret?: { [key: string]: string };
         auth_client_secret?: string[]; // client_secret key to be auth required
     }): Promise<ServiceObj> {
+        let old = {
+            prevent_signup: this.service.prevent_signup || false,
+            client_secret: this.service.client_secret || {},
+            auth_client_secret: this.service.auth_client_secret || []
+        }
         let toUpload = {
             prevent_signup: this.service.prevent_signup || false,
             client_secret: this.service.client_secret || {},
@@ -467,10 +472,14 @@ export default class Service {
         }
 
         Object.assign(toUpload, opt);
-
-        let updated = await skapi.util.request(this.admin_private_endpoint + 'service-opt', { service: this.id, owner: this.owner, opt }, { auth: true });
-        Object.assign(this.service, updated);
-        return updated;
+        Object.assign(this.service, toUpload);
+        try {
+            let updated = await skapi.util.request(this.admin_private_endpoint + 'service-opt', { service: this.id, owner: this.owner, opt }, { auth: true });
+            return updated;
+        } catch (err: any) {
+            Object.assign(this.service, old);
+            throw err;
+        }
     }
 
     async getStorageInfo(): Promise<{
@@ -692,7 +701,7 @@ export default class Service {
         path: ''
     });
 
-    async getSubdomainInfo(immediate:boolean=false, time:number = 1000): Promise<{
+    async getSubdomainInfo(immediate: boolean = false, time: number = 1000): Promise<{
         srvc: string;
         subd: string;
         ownr: string;
@@ -703,21 +712,21 @@ export default class Service {
             this.pending.subdomain = 'fetching';
         }
 
-        if(this.getSubdomainInfoTimer) {
+        if (this.getSubdomainInfoTimer) {
             return null;
         }
 
-        let exec = async (time=1000)=>{
+        let exec = async (time = 1000) => {
             let info = await skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service: this.id, owner: this.owner }, { auth: true });
-            console.log({subInfo: info});
+            console.log({ subInfo: info });
 
-            if(typeof info === 'string' || !info || typeof info === 'object' && Object.keys(info).length === 0) {
+            if (typeof info === 'string' || !info || typeof info === 'object' && Object.keys(info).length === 0) {
                 // subdomain removed
                 clearTimeout(this.getSubdomainInfoTimer);
                 this.getSubdomainInfoTimer = null;
                 this.pending.subdomain = false;
                 this.service.subdomain = null;
-                
+
                 Object.assign(this.subdInfo, {
                     srvc: '',
                     subd: '',
@@ -729,10 +738,10 @@ export default class Service {
                 return this.subdInfo;
             }
 
-            if(info.invid) {
+            if (info.invid) {
                 this.checkCDNStatus(true);
             }
-            
+
             let pendingStat = info.stat.includes('change:') ? 'transit' : info.stat.includes('remove') ? 'removing' : info.stat === 'active' || info.stat === 'tracked' ? false : info.stat;
             this.pending.subdomain = pendingStat;
             if (pendingStat) {
@@ -743,7 +752,7 @@ export default class Service {
             else {
                 clearTimeout(this.getSubdomainInfoTimer);
                 this.getSubdomainInfoTimer = null;
-    
+
                 this.pending.subdomain = false;
                 this.service.subdomain = info.subd;
                 if (!info?.["404"]) {
@@ -754,7 +763,7 @@ export default class Service {
             }
         }
 
-        if(immediate) {
+        if (immediate) {
             exec(time);
         }
         else {
@@ -789,7 +798,7 @@ export default class Service {
         let resp = await skapi.util.request(this.admin_private_endpoint + 'register-subdomain', { service: this.id, owner: this.owner, subdomain }, {
             auth: true,
             method: 'post'
-        }).catch(err=>{
+        }).catch(err => {
             this.pending.subdomain = false;
             throw err;
         });
@@ -832,7 +841,7 @@ export default class Service {
                         return;
                     }
                     this.cdnPendTimer = callbackInterval();
-                }).catch(err=>{
+                }).catch(err => {
                     this.pending.cdn = false;
                     clearTimeout(this.cdnPendTimer);
                     this.cdnPendTimer = null;
@@ -1060,8 +1069,8 @@ export default class Service {
             method: 'post',
             auth: true
         });
-        console.log({dirInfo})
-        if(dirInfo) {
+        console.log({ dirInfo })
+        if (dirInfo) {
             Object.assign(this.dirInfo, dirInfo);
         }
         return dirInfo;
@@ -1096,7 +1105,7 @@ export default class Service {
             method: 'post',
             auth: true
         });
-        console.log({dirList});
+        console.log({ dirList });
         return dirList;
     }
 
@@ -1147,7 +1156,7 @@ export default class Service {
     }
 
     async refresh() {
-        let service = await skapi.util.request(this.admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: this.id, bypass_cached_service:true }, { auth: true });
+        let service = await skapi.util.request(this.admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: this.id, bypass_cached_service: true }, { auth: true });
         for (let region in service) {
             if (service[region][0]) {
                 this.service = reactive(service[region][0]);
@@ -1181,7 +1190,7 @@ export default class Service {
         let record_private_endpoint = endpoints[1].record_private; // https://.../
 
         if (typeof id === 'string') {
-            let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: id, bypass_cached_service:true }, { auth: true });
+            let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: id, bypass_cached_service: true }, { auth: true });
             for (let region in service) {
                 if (service[region][0]) {
                     let serviceClass = new Service(id, service[region][0], [admin_private_endpoint, record_private_endpoint, admin_public_endpoint]);

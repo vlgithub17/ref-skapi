@@ -987,7 +987,7 @@ let deleteFile = (item, index) => {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-radius: 8px;
+        border-radius: 6px;
         border-style: hidden;
         cursor: pointer;
         user-select: none;
@@ -1012,10 +1012,10 @@ let deleteFile = (item, index) => {
             }
             
             &:first-child {
-                border-radius: 8px 0 0 8px;
+                border-radius: 6px 0 0 8px;
 
                 &::after {
-                    border-radius: 8px 0 0 8px;
+                    border-radius: 6px 0 0 8px;
                 }
             }
             &:nth-child(2) {

@@ -5,15 +5,15 @@ br
 
 main#create
     router-link(to="/my-services")
-        img(src="@/assets/img/logo/logo.png" style="width: 193px;")
+        img(src="@/assets/img/logo/logo.png" style="height: 2rem;")
 
     .bottomLineTitle Create a New Service
 
     p
         | Choose a plan for your service "
-        span(style='font-weight:normal') {{newServiceName}}
+        span(style='font-weight:500') {{newServiceName}}
         | "
-
+    
     section.planWrap(:class="{'disabled' : promiseRunning}")
         .infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
             .mode Trial Mode
@@ -62,14 +62,16 @@ main#create
                 li Subdomain hosting
                 li Unlimited use with pay-as-you-go when exceeding the limit
 
+    br
 
     p(style='font-size: 16px;display: flex;justify-content: center;') Selected Plan:&nbsp; #[b(style='color:var(--main-color)') {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
     .inputWrap(@submit.prevent="createService")
         div(v-if="promiseRunning" style="width:108px;display:flex;align-items:center")
             img.loading(src="@/assets/img/loading.png")
         template(v-else)
-            button.final(type="submit" @click='createService') Create
+            button.final(type="submit" @click='createService') Create {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}
 
+br
 br
 br
 </template>
@@ -189,7 +191,7 @@ input {
         flex-grow: 1;
         user-select: none;
         cursor: pointer;
-
+        box-shadow: 0 0 0 4px rgba(0,0,0,0.1) inset;
         &:hover {
             li {
                 &::before {
@@ -200,7 +202,7 @@ input {
 
         &.checked {
             background-color: rgba(41, 63, 230, 0.02);
-            box-shadow: 0 0 0 4px #A5AFFF inset !important;
+            box-shadow: 0 0 0 4px var(--main-color) inset !important;
 
             li {
                 &::before {

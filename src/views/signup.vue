@@ -9,9 +9,11 @@ br
 
     .bottomLineTitle Sign Up
 
-    br
-
     form(@submit.prevent="signup")
+        p Enter Email and Password to create an account.
+
+        br
+        
         label
             | Email
             input.big(type="email" 
@@ -71,8 +73,9 @@ br
                     | Have an account?&nbsp;
                     RouterLink(:to="{name: 'login'}") Login
         
-        br
-        br
+br
+br
+br
 </template>
 
 <script setup lang="ts">

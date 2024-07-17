@@ -918,7 +918,7 @@ thead {
     width: 100%;
     padding: 10px 20px;
     margin: 8px;
-    border-radius: 8px;
+    border-radius: 6px;
     transform: translate(-50%, 300px);
     transition: all .15s;
     background-color: var(--main-color);

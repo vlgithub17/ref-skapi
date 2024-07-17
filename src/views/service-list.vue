@@ -1,10 +1,12 @@
 <template lang="pug">
 main#serviceList
-    div(style='padding:1rem 8px;')
+    section.infoBox
         h2 My Services
 
         hr
         
+        br
+
         p Create a new service to get started.
 
         .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
@@ -13,36 +15,37 @@ main#serviceList
         form(@submit.prevent="createService" style='display: flex;gap: 8px;width: 480px;max-width: 100%;' :class='{disabled: !user?.email_verified}')
             input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
             button.final(type="submit" style='flex-shrink: 0;') Create
-
+        
         br
-
+        
     .tableWrap(style="margin-top:.5rem")
-        Table
+        Table(resizable)
             template(v-slot:head)
                 tr
                     th.th.overflow(style="width:166px;")
                         | Service Name
                         .resizer
-                    th.th.center.overflow(style="width:150px;")
+                    th.th.overflow(style="width:150px;")
                         | Plan
                         .resizer
-                    th.th.center.overflow(style="width:120px;")
+                    th.th.overflow(style="width:120px;")
                         | State
                         .resizer
-                    th.th.center.overflow(style="width:144px;")
+                    th.th.overflow(style="width:144px;")
                         | Users
                         .resizer
-                    th.th.center.overflow(style="width:144px;")
+                    th.th.overflow(style="width:144px;")
                         | Database
                         .resizer
-                    th.th.center.overflow(style="width:144px;")
+                    th.th.overflow(style="width:144px;")
                         | File Storage
                         .resizer
-                    th.th.center.overflow(style="width:144px;")
-                        | Email
+                    th.th.overflow(style="width:144px;")
+                        | File Hosting
                         .resizer
-                    th.th.center.overflow(style="width:144px;")
-                        | Host Storage
+                    th.th.overflow(style="width:144px;")
+                        | Email
+
             template(v-slot:body)
                 tr(v-if="callServiceList")
                     td(colspan="8").
@@ -54,40 +57,41 @@ main#serviceList
                 template(v-else v-for="id in serviceIdList")
                     tr.serviceRow(v-if="serviceList[id]" @click="() => goServiceDashboard(serviceList[id])" @mousedown="(e) => e.currentTarget.classList.add('active')" @mouseleave="(e) => e.currentTarget.classList.remove('active')")
                         td.overflow {{ serviceList[id].service.name }}
-                        td.center(style="white-space:nowrap")
+                        td.overflow(style="white-space:nowrap")
                             // plans
                             .state(v-if="serviceList[id].service.subs_id && !serviceList[id].subscription")
                                 img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")
-                            .state(v-else :style="{fontWeight: serviceList[id].service.plan === 'Canceled' ? 'normal' : null, color: serviceList[id].service.plan === 'Canceled' ? 'var(--caution-color)' : null}") {{ serviceList[id].service.plan || serviceList[id].plan }}
-                        td.center
+                            span(v-else :style="{fontWeight: serviceList[id].service.plan === 'Canceled' ? 'normal' : null, color: serviceList[id].service.plan === 'Canceled' ? 'var(--caution-color)' : null}") {{ serviceList[id].service.plan || serviceList[id].plan }}
+                        td.overflow
                             // active state
                             .state(v-if="serviceList[id].service.active > 0" style="color:var(--text-green);font-weight:normal;") Running
                             .state(v-else-if="serviceList[id].service.active == 0") Disabled
                             .state(v-else style='color:var(--caution-color);font-weight:normal') Suspended
-                        td.center
+                        td.overflow
                             // users
                             .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
                             .percent(v-else :class="getClass(serviceList[id], 'users')") {{ calculateUserPercentage(serviceList[id].service.users, serviceList[id].plan, true) }}
 
-                        td.center
+                        td.overflow
                             // database
                             .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
                             .percent(v-else :class="getClass(serviceList[id], 'database')") {{ calculateDatabasePercentage(serviceList[id].storageInfo.database, serviceList[id].plan) + '%' }}
 
-                        td.center
+                        td.overflow
                             // cloud storage
                             .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
                             .percent(v-else :class="getClass(serviceList[id], 'cloud')") {{ calculateCloudPercentage(serviceList[id].storageInfo.cloud, serviceList[id].plan) + '%' }}
 
-                        td.center
+                        td.overflow
+                            // host storage
+                            .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
+                            .percent(v-else :class="getClass(serviceList[id], 'host')") {{ serviceList[id].plan === 'Trial' ? 'N/A' : calculateHostPercentage(serviceList[id].storageInfo.host, serviceList[id].plan) + '%' }}
+
+                        td.overflow
                             // email storage
                             .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
                             .percent(v-else :class="getClass(serviceList[id], 'email')") {{ serviceList[id].plan === 'Trial' ? 'N/A' : calculateEmailPercentage(serviceList[id].storageInfo.email, serviceList[id].plan) + '%' }}
 
-                        td.center
-                            // host storage
-                            .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
-                            .percent(v-else :class="getClass(serviceList[id], 'host')") {{ serviceList[id].plan === 'Trial' ? 'N/A' : calculateHostPercentage(serviceList[id].storageInfo.host, serviceList[id].plan) + '%' }}
 </template>
 
 <script setup lang="ts">
@@ -250,8 +254,8 @@ let getClass = (serviceClass: Service, what: string) => {
 
 <style lang="less" scoped>
 #serviceList {
-    max-width: 1400px;
-    margin: 0 auto;
+    max-width: 1200px;
+    margin: 8px auto 0;
 }
 
 // table style below

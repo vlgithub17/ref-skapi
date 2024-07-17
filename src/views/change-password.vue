@@ -121,7 +121,7 @@ br
         .ball(v-for="num in 2" :class="{'active': step === num}")
 br
 br
-
+br
 </template>
 
 <script setup lang="ts">

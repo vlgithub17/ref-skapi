@@ -168,6 +168,8 @@ let delCliKey = async () => {
     await currentService.setServiceOption({
         client_secret: secKeys,
         auth_client_secret: authKeys,
+    }).catch(err => {
+        window.alert(err.message || err);
     });
 
     deleteClientKey.value = false;
@@ -245,6 +247,8 @@ let saveKey = async (key) => {
     await currentService.setServiceOption({
         client_secret: secKeys,
         auth_client_secret: authKeys,
+    }).catch(err => {
+        window.alert(err.message || err);
     });
 
     // loading end
