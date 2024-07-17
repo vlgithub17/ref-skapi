@@ -82,6 +82,7 @@ watch(serviceList, nv => {
         try {
             setService(serviceId);
             plan.value = currentService?.plan;
+            console.log(currentService)
         }
         catch (err) {
             router.push('/my-services');
@@ -94,6 +95,7 @@ watch(serviceList, nv => {
 watch(() => route, nv => {
     currentRouter.value = nv.path.split('/')[3];
     index = routerList.indexOf(currentRouter.value);
+    console.log(plan.value)
 
     if(plan.value == 'Trial') {
         routerList = ['service', 'dashboard', 'users', 'clientsecret', 'records'];
