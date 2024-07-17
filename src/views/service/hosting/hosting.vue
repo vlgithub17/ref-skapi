@@ -45,9 +45,9 @@ template(v-else)
                             input#modifySubdomain.big(ref="focus_subdomain" :disabled="updatingValue.subdomain || null" type="text"  pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="6" maxlength="32" placeholder="your-subdomain" required :value='inputSubdomain' @input="(e) => {e.target.setCustomValidity(''); inputSubdomain = e.target.value;}")
                         template(v-if="updatingValue.subdomain")
                             img.loading(src="@/assets/img/loading.png")
-                        label.material-symbols-outlined.save(v-else) done
+                        label.material-symbols-outlined.notranslate.save(v-else) done
                             input(type="submit" hidden)
-                        span.material-symbols-outlined.cancel(@click="modifyMode.subdomain = false;") close
+                        span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.subdomain = false;") close
 
                 div(v-else)
                     .smallValue
@@ -65,9 +65,9 @@ template(v-else)
                         template(v-if="updatingValue.page404")
                             pre(style='margin:0;font-size: .8rem;font-weight:normal' v-if='progress404 < 100') {{ progress404 }}%
                             pre(style='margin:0;font-size: .8rem;font-weight:normal' v-else) Updating...
-                        label.material-symbols-outlined.save.fill(v-else :class="{'nonClickable' : !selected404File}") done
+                        label.material-symbols-outlined.notranslate.save.fill(v-else :class="{'nonClickable' : !selected404File}") done
                             input(type="submit" hidden)
-                        span.material-symbols-outlined.cancel(v-if='!updatingValue.page404' @click="modifyMode.page404 = false;selected404File=null;") close
+                        span.material-symbols-outlined.notranslate.cancel(v-if='!updatingValue.page404' @click="modifyMode.page404 = false;selected404File=null;") close
 
                 div(v-else)
                     .smallValue.editValue
@@ -76,7 +76,7 @@ template(v-else)
                         span.editHandle(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true" style="color:var(--caution-color)") [REMOVE]
         div(style="text-align:right")
             .iconClick(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
-                .material-symbols-outlined.fill(style='font-size:24px;') cancel
+                .material-symbols-outlined.notranslate.fill(style='font-size:24px;') cancel
                 span &nbsp;Remove Hosting
     br
 
@@ -84,20 +84,20 @@ template(v-else)
 
         .iconClick.square(@click='uploadFileInp.click()' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
             input(type="file" hidden multiple @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFileInp")
-            .material-symbols-outlined.fill upload_file
+            .material-symbols-outlined.notranslate.fill upload_file
             span &nbsp;&nbsp;Upload Files
 
         .iconClick.square(@click='uploadFolderInp.click()' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
             input(type="file" hidden multiple directory webkitdirectory @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFolderInp")
-            .material-symbols-outlined.fill drive_folder_upload
+            .material-symbols-outlined.notranslate.fill drive_folder_upload
             span &nbsp;&nbsp;Upload Folder
 
         .iconClick.square(:class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching || noSelection}" @click='deleteSelected=true')
-            .material-symbols-outlined.fill delete
+            .material-symbols-outlined.notranslate.fill delete
             span &nbsp;&nbsp;Delete Selected
 
         .iconClick.square(@click='openRefreshCdn=true' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
-            .material-symbols-outlined.fill(:class='{loading:currentService.pending.cdn}') refresh
+            .material-symbols-outlined.notranslate.fill(:class='{loading:currentService.pending.cdn}') refresh
             span &nbsp;&nbsp;Refresh CDN
 
     .hostingPart
@@ -128,18 +128,18 @@ template(v-else)
                     th(style='width:320px;')
                         span(@click='toggleSort("name")')
                             | Filename
-                            .material-symbols-outlined.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            .material-symbols-outlined.notranslate.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                         .resizer
 
                     th(style='width:160px;')
                         span(@click='toggleSort("size")')
                             | Size
-                            span.material-symbols-outlined.fill(v-if='sortBy === "size"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            span.material-symbols-outlined.notranslate.fill(v-if='sortBy === "size"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                         .resizer
                     th(style='width:220px;')
                         span(@click='toggleSort("upl")')
                             | Uploaded
-                            span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            span.material-symbols-outlined.notranslate.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
 
             template(v-slot:body)
                 template(v-if="fetching || isPending")
@@ -150,7 +150,7 @@ template(v-else)
                     .progress( :style="{ width: uploadProgress.progress + '%', height: '3px', background: 'var(--main-color)', position: 'absolute'}")
                     tr.uploadState(style="position:relative")
                         td
-                            .material-symbols-outlined.center.moving upload
+                            .material-symbols-outlined.notranslate.center.moving upload
                         td(colspan="3")
                             | Uploading: /{{ uploadProgress.name }}&nbsp;
                             b ({{ uploadCount[0] }} / {{ uploadCount[1] }})
@@ -158,13 +158,13 @@ template(v-else)
                 template(v-else-if="!listDisplay || listDisplay.length === 0")
                     tr
                         td
-                            .material-symbols-outlined.fill upload
+                            .material-symbols-outlined.notranslate.fill upload
                         td(colspan="3") Drag and drop files here
 
                 template(v-else)
                     tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
                         td
-                            .material-symbols-outlined.fill folder_open
+                            .material-symbols-outlined.notranslate.fill folder_open
 
                         td(colspan="3")
                             | {{hostUrl}}/{{ currentDirectory ? currentDirectory + '/' : '' }}
@@ -174,7 +174,7 @@ template(v-else)
                         Checkbox(@click.stop v-model='checked[ns.name]')
 
                     td.overflow(v-if='ns.name[0] == "#"')
-                        span.material-symbols-outlined.fill(style='vertical-align: sub;') folder
+                        span.material-symbols-outlined.notranslate.fill(style='vertical-align: sub;') folder
                         | &nbsp;{{ ns.name.slice(1) }}
                     td.overflow(v-else) {{ ns.name }}
                     td.overflow {{ getFileSize(ns.size) }}
@@ -187,17 +187,17 @@ template(v-else)
 
     .tableMenu(style='display:block;text-align:center;')
         .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
-            .material-symbols-outlined.bold chevron_left
+            .material-symbols-outlined.notranslate.bold chevron_left
             span Previous&nbsp;&nbsp;
         | &nbsp;&nbsp;
         .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || currentPage >= maxPage || !listDisplay.length }")
             span &nbsp;&nbsp;Next
-            .material-symbols-outlined.bold chevron_right
+            .material-symbols-outlined.notranslate.bold chevron_right
 
     br
 
     .dragPopup(:class="{'show' : dragHere}")
-        .material-symbols-outlined(style='font-size:64px;') cloud_upload
+        .material-symbols-outlined.notranslate(style='font-size:64px;') cloud_upload
         p Drop your files to upload
 
     Modal(:open="deleteSelected")
@@ -294,12 +294,12 @@ import Checkbox from '@/components/checkbox.vue';
 import { serviceFolders, uploadFiles, onDrop, currentDirectory, uploadCount, uploadProgress } from '@/views/service/hosting/file';
 
 let folders = {};
-if(serviceFolders?.[currentService.id]) {
-    folders = serviceFolders[currentService.id];
-}
-else {
-    serviceFolders[currentService.id] = folders;
-}
+// if(serviceFolders?.[currentService.id]) {
+//     folders = serviceFolders[currentService.id];
+// }
+// else {
+//     serviceFolders[currentService.id] = folders;
+// }
 
 let email_is_unverified_or_service_is_disabled = computed(()=>!user?.email_verified || currentService.service.active <= 0);
 
@@ -490,6 +490,14 @@ let hostUrl = computed(() => {
     else {
         subd = sd + '.' + domain;
     }
+    
+    if(serviceFolders?.[sd]) {
+        folders = serviceFolders[sd];
+    }
+    else {
+        serviceFolders[sd] = folders;
+    }
+
     return subd
 });
 
@@ -592,7 +600,6 @@ if(currentService.dirInfo.path) {
 }
 
 watch(()=>currentService.dirInfo.path, (n, o) => {
-    console.log({pn:n})
     if(n) {
         getFileList('conditional').then(() => {
             fetching.value = false;

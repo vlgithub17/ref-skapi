@@ -32,9 +32,9 @@ br
             required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
-                    .material-symbols-outlined.fill visibility
+                    .material-symbols-outlined.notranslate.fill visibility
                 template(v-else)
-                    .material-symbols-outlined.fill visibility_off
+                    .material-symbols-outlined.notranslate.fill visibility_off
 
         label.passwordInput
             | Confirm password
@@ -46,9 +46,9 @@ br
             required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
-                    .material-symbols-outlined.fill visibility
+                    .material-symbols-outlined.notranslate.fill visibility
                 template(v-else)
-                    .material-symbols-outlined.fill visibility_off
+                    .material-symbols-outlined.notranslate.fill visibility_off
 
         .actions 
             Checkbox(v-model="form.subscribe" style='font-weight:unset;') I agree to receive newsletters from Skapi.
@@ -56,7 +56,7 @@ br
         br
 
         .error(v-if="error")
-            .material-symbols-outlined.fill error
+            .material-symbols-outlined.notranslate.fill error
             span {{ error }}
         
         br

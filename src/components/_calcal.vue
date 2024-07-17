@@ -7,8 +7,8 @@
             select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
                 option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
             .goback
-                .material-symbols-outlined.prev(@click="prevTime") arrow_back_ios
-                .material-symbols-outlined.next(@click="nextTime") arrow_forward_ios
+                .material-symbols-outlined.notranslate.prev(@click="prevTime") arrow_back_ios
+                .material-symbols-outlined.notranslate.next(@click="nextTime") arrow_forward_ios
         .timeCont 
             .days 
                 .day Mo

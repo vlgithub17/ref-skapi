@@ -4,28 +4,28 @@
         br
         nav.left
             router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
-                span.material-symbols-outlined.fill.nohover home
+                span.material-symbols-outlined.notranslate.fill.nohover home
                 span.name Getting Started
             router-link.router(:to="`/my-services/${currentService.id}/dashboard`" :class="{'active': route.name == 'dashboard'}")
-                span.material-symbols-outlined.fill.nohover dashboard
+                span.material-symbols-outlined.notranslate.fill.nohover dashboard
                 span.name Dashboard & Settings
             router-link.router(:to="`/my-services/${currentService.id}/users`" :class="{'active': route.name == 'users'}")
-                span.material-symbols-outlined.fill.nohover supervisor_account
+                span.material-symbols-outlined.notranslate.fill.nohover supervisor_account
                 span.name Users
             router-link.router(:to="`/my-services/${currentService.id}/clientsecret`" :class="{'active': route.name == 'clientsecret'}")
-                span.material-symbols-outlined.fill.nohover key
+                span.material-symbols-outlined.notranslate.fill.nohover key
                 span.name Client Secret Key
             router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
-                span.material-symbols-outlined.fill.nohover database
+                span.material-symbols-outlined.notranslate.fill.nohover database
                 span.name Database
             router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail', 'nonClickable' : currentService.service.group <= 1}")
-                span.material-symbols-outlined.fill.nohover email
+                span.material-symbols-outlined.notranslate.fill.nohover email
                 span.name Automated Email
             router-link.router(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter', 'nonClickable' : currentService.service.group <= 1}")
-                span.material-symbols-outlined.fill.nohover stacked_email
+                span.material-symbols-outlined.notranslate.fill.nohover stacked_email
                 span.name Bulk Email
             router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting', 'nonClickable' : currentService.service.group <= 1}")
-                span.material-symbols-outlined.fill.nohover language
+                span.material-symbols-outlined.notranslate.fill.nohover language
                 span.name File Hosting
     main.right
         router-view

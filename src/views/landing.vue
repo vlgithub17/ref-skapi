@@ -19,7 +19,7 @@ main
 
             p(style='text-align:right;')
                 a(href='https://docs.skapi.com/introduction/getting-started.html' target='_blank' style='color:yellow')
-                    .material-symbols-outlined menu_book
+                    .material-symbols-outlined.notranslate menu_book
                     | &nbsp;Read Docs
             
             br
@@ -63,9 +63,9 @@ main
     br
 
     .dynamo-section(style='align-items: flex-start;')
-        .intact.statements
+        .intact
             .icoHead
-                .material-symbols-outlined.yellow construction
+                .material-symbols-outlined.notranslate.yellow construction
                 h2 Build Anything
             p.
                 Skapi is a JavaScript library designed for #[span.wordset client-side] HTML. 
@@ -80,14 +80,14 @@ main
             br
 
             .icoHead
-                .material-symbols-outlined.yellow.fill eco
+                .material-symbols-outlined.notranslate.yellow.fill eco
                 h2 Save Time, Cost, #[span.wordset and Energy]
             p.
                 We’ve designed Skapi’s backend infrastructure to be lightweight, while our #[span.wordset client-side] library is built to take on more responsibility.
                 Saving #[span.wordset data center] energy, helping the environment, and most importantly, reducing your development time and costs.
                 #[br]
                 #[br]
-                Plus, Skapi is designed to protect you from expensive developer mistakes.
+                Plus, Skapi is designed to protect you from developer mistakes that can cost millions.
             
             br
             
@@ -98,7 +98,7 @@ main
                 span.wordset to get started
             a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")    
                 button.final(style='background-color:white;color:black;width:170px')
-                    .material-symbols-outlined menu_book
+                    .material-symbols-outlined.notranslate menu_book
                     | &nbsp;Read Docs
 
             br
@@ -126,7 +126,7 @@ main
 
             ul(style='padding-left: 1.5em;')
                 .li
-                    .material-symbols-outlined encrypted
+                    .material-symbols-outlined.notranslate encrypted
                     h3 Secure User Authentication
                     p.
                         Not just log-in or sign-up, but also #[span.wordset data security,] #[span.wordset password recovery,] #[span.wordset email confirmation,] and more. 
@@ -134,7 +134,7 @@ main
                         Experience how effortless it is to implement all these features with Skapi.
                         
                 .li
-                    .material-symbols-outlined database
+                    .material-symbols-outlined.notranslate database
                     h3 User-Centric Database
                     p.
                         Worried about scalability, database schema, or costly errors?
@@ -144,7 +144,7 @@ main
                         Read and write data freely, with no worries.
                 
                 .li
-                    .material-symbols-outlined router
+                    .material-symbols-outlined.notranslate router
                     h3 Realtime, WebSocket
                     p.
                         Real-time chat, live updates, notifications—
@@ -152,7 +152,7 @@ main
                         everything is just one method call away. We’ve done the hard work so you can focus on your business.
 
                 .li
-                    .material-symbols-outlined webhook
+                    .material-symbols-outlined.notranslate webhook
                     h3 3rd Party API Integration
                     p.
                         Building an app with third-party APIs?
@@ -160,7 +160,7 @@ main
                         Skapi hosts your API keys for FREE, so you don’t need a server to manage them.
 
                 .li
-                    .material-symbols-outlined cloud_upload
+                    .material-symbols-outlined.notranslate cloud_upload
                     h3 CDN & File Storage
                     p.
                         Hosting files, images, or videos? Skapi has got you covered
@@ -168,7 +168,7 @@ main
                         with secure and reliable file storage, served through a global CDN by default.
 
                 .li
-                    .material-symbols-outlined outgoing_mail
+                    .material-symbols-outlined.notranslate outgoing_mail
                     h3 Email System
                     p.
                         Need to send newsletters? Skip the hassle of setting up an SMTP server. 
@@ -176,7 +176,7 @@ main
                         Skapi provides a simple and reliable email system with no extra configuration needed.
 
                 .li
-                    .material-symbols-outlined public
+                    .material-symbols-outlined.notranslate public
                     h3 Static Website Hosting
                     p.
                         With Skapi, you can build complex web applications using just static HTML.
@@ -228,7 +228,7 @@ import { user } from "@/code/user";
 
 <style lang="less" scoped>
 main {
-    background: linear-gradient(32deg, rgb(0, 0, 255), rgba(255, 0, 0, 0) 80%),
+    background: linear-gradient(32deg, #293fe6, rgba(255, 0, 0, 0) 80%),
         linear-gradient(229deg, #293fe6, rgba(0, 255, 0, 0) 80%),
         linear-gradient(151deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
 }
@@ -293,11 +293,6 @@ p {
     .underline {
         text-decoration: underline;
     }
-    .statements {
-        & > p {
-            // font-size: 1.2em;
-        }
-    }
     header {
         color: white;
         width: 800px;
@@ -318,7 +313,7 @@ p {
     h3,
     h4 {
         color: white;
-        text-shadow: 1px 1px 3px #000;
+        text-shadow: 1px 1px 2px #000;
     }
 
     p {

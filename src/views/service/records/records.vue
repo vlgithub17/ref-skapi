@@ -2,8 +2,8 @@
 
 h2(style="display:inline-block;user-select:none;margin-bottom: 0;vertical-align: sub;") Database
 span.updown(@click="showDes = !showDes" style="user-select:none")
-    .material-symbols-outlined.fill(v-if="showDes" style="color:#fafaff; padding-bottom:5px") arrow_drop_up
-    .material-symbols-outlined.fill(v-else style="color:#fafaff; padding-bottom:3px") arrow_drop_down
+    .material-symbols-outlined.notranslate.fill(v-if="showDes" style="color:#fafaff; padding-bottom:5px") arrow_drop_up
+    .material-symbols-outlined.notranslate.fill(v-else style="color:#fafaff; padding-bottom:3px") arrow_drop_down
 
 template(v-if="showDes")
     p(style='margin-bottom: 0').
@@ -41,14 +41,14 @@ form#searchForm(@submit.prevent="init()")
         input(type='hidden' name='owner' :value='currentService.owner')
 
         .groupWrap
-            .material-symbols-outlined.fill.group(:class="{active : searchFormValue.table.access_group == 'public'}" title="public" @click.stop="searchFormValue.table.access_group = 'public'") language
-            .material-symbols-outlined.fill.group(:class="{active : searchFormValue.table.access_group == 'authorized'}" title="authorized" @click.stop="searchFormValue.table.access_group = 'authorized'") person
-            .material-symbols-outlined.fill.group(:class="{active : searchFormValue.table.access_group == 'private'}" title="private" @click.stop="searchFormValue.table.access_group = 'private'") vpn_key
+            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'public'}" title="public" @click.stop="searchFormValue.table.access_group = 'public'") language
+            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'authorized'}" title="authorized" @click.stop="searchFormValue.table.access_group = 'authorized'") person
+            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'private'}" title="private" @click.stop="searchFormValue.table.access_group = 'private'") vpn_key
         .search
             input.big(@input="e => {searchFormValue.table.name = e.target.value}" :placeholder="searchFormValue.table.access_group + ' table.name'" :required="showAdvanced === true && (searchFormValue.table.subscription || searchFormValue.reference || searchFormValue.tag || searchFormValue.index.name !== 'none')" style="padding-right: 40px;")
             button.icon(v-if="!showAdvanced" type="submit" style="border:0;padding:0")
-                .material-symbols-outlined.fill search
-            //- .material-symbols-outlined.fill.icon(@click.stop="showAdvanced = !showAdvanced; searchFormValue.index.for = 'none'") manage_search
+                .material-symbols-outlined.notranslate.fill search
+            //- .material-symbols-outlined.notranslate.fill.icon(@click.stop="showAdvanced = !showAdvanced; searchFormValue.index.for = 'none'") manage_search
         button.btn(type="button" @click.stop="showAdvanced = !showAdvanced;" :class="{final: showAdvanced, unFinished: !showAdvanced}") Advanced
         //- button.final(type="submit" style='flex-shrink: 0;') Search
 
@@ -117,7 +117,7 @@ br
 
 .tableMenu
     .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill checklist_rtl
+        .material-symbols-outlined.notranslate.fill checklist_rtl
         span &nbsp;&nbsp;Show Columns
         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal; color:black")
             .inner(style="padding:.5rem 1rem .5rem .5rem")
@@ -139,15 +139,15 @@ br
                 Checkbox(v-model="filterOptions.data" style="display:flex") Data
 
     .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; fileList=[]; }" :class="{'nonClickable' : showDetail || uploading || fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill add_circle
+        .material-symbols-outlined.notranslate.fill add_circle
         span &nbsp;&nbsp;Create Record
 
     .iconClick.square(@click="openDeleteRecords=true" :class="{'nonClickable': noSelection || fetching || !user?.email_verified || currentService.service.active <= 0}" )
-        .material-symbols-outlined.fill delete
+        .material-symbols-outlined.notranslate.fill delete
         span &nbsp;&nbsp;Delete Selected
 
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill refresh
+        .material-symbols-outlined.notranslate.fill refresh
         span &nbsp;&nbsp;Refresh
 
 .recordPart 
@@ -224,9 +224,9 @@ br
                     td.center
                         Checkbox(@click.stop v-model='checked[rc?.record_id]')
                     td.overflow(v-if="filterOptions.table") 
-                        span.material-symbols-outlined.fill(v-if="rc.table.access_group == 'private'") vpn_key
-                        span.material-symbols-outlined.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
-                        span.material-symbols-outlined.fill(v-if="rc.table.access_group == 0 || rc.table.access_group == 'public'") language
+                        span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group == 'private'") vpn_key
+                        span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
+                        span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group == 0 || rc.table.access_group == 'public'") language
                         span(style="margin-left: 8px") {{ rc?.table?.name }}
                     td(v-if="filterOptions.record_id")
                         .click.overflow(@click.stop="copyID") {{ rc.record_id }}
@@ -249,14 +249,14 @@ br
                     td.overflow(v-if="filterOptions.updated") {{ rc.updated }}
                     td.overflow(v-if="filterOptions.uploaded") {{ rc.uploaded }}
                     td.center.overflow(v-if="filterOptions.readonly")
-                        .material-symbols-outlined.fill(v-if="rc.readonly") check_circle
+                        .material-symbols-outlined.notranslate.fill(v-if="rc.readonly") check_circle
                         template(v-else) -
                     td.overflow(v-if="filterOptions.ip") {{ rc.ip }}
                     td.center.overflow(v-if="filterOptions.files") {{ bins[rc.record_id].length }}
                     td.center.overflow(v-if="filterOptions.reference_limit") {{ (rc.reference.reference_limit == null) ? 'infinite' : rc.reference.reference_limit }}
                     td.center.overflow(v-if="filterOptions.referenced") {{ rc.reference.referenced_count }}
                     td.center.overflow(v-if="filterOptions.allow_multiple_reference")
-                        .material-symbols-outlined.fill(v-if="rc.reference.allow_multiple_reference") check_circle
+                        .material-symbols-outlined.notranslate.fill(v-if="rc.reference.allow_multiple_reference") check_circle
                     td.overflow(v-if="filterOptions.data") {{ rc.data }}
                 tr(v-for="i in (15 - listDisplay.length)")
                     td(:colspan="colspan")
@@ -264,7 +264,7 @@ br
     form.detailRecord(:class="{show: showDetail}" @submit.prevent="upload")
         template(v-if="selectedRecord")
             .header
-                .material-symbols-outlined(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[]; indexValue=false;" :class="{nonClickable: fetching}") arrow_back
+                .material-symbols-outlined.notranslate(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[]; indexValue=false;" :class="{nonClickable: fetching}") arrow_back
                 .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
                 template(v-if="uploading")
                     img.loading(src="@/assets/img/loading.png")
@@ -374,7 +374,7 @@ br
                     .value.fileWrap(style="width:100%;")
                         template(v-if="fileList")
                             .file(v-for="(value, index) in fileList")
-                                .material-symbols-outlined.fill(@click="deleteFile(value, index)") do_not_disturb_on
+                                .material-symbols-outlined.notranslate.fill(@click="deleteFile(value, index)") do_not_disturb_on
                                 template(v-if="value.key && value.filename && !value.add")
                                     input.line.key(v-model="value.key" disabled)
                                     input.line.value(v-model="value.filename" disabled)
@@ -386,17 +386,17 @@ br
                                             input(@click.stop type="file" @change="e=>{ value.filename = e.target.files[0].name }" required hidden :name='value.key')
 
                     .add(@click="addFile")
-                        .material-symbols-outlined.fill add_circle
+                        .material-symbols-outlined.notranslate.fill add_circle
                         span Add File
 
 .tableMenu(v-if="!showDetail" style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage === 1 }")
-        .material-symbols-outlined.bold chevron_left
+        .material-symbols-outlined.notranslate.bold chevron_left
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
     .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
-        .material-symbols-outlined.bold chevron_right
+        .material-symbols-outlined.notranslate.bold chevron_right
 
 // delete records
 Modal(:open="openDeleteRecords")

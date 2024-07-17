@@ -2,8 +2,8 @@
 
 h2(style="display:inline-block;user-select:none;margin-bottom: 0;vertical-align: sub;") Client Secret Key
 span.updown(@click="showDes = !showDes" style="user-select:none")
-    .material-symbols-outlined.fill(v-if="showDes" style="color:#fafaff; padding-bottom:5px") arrow_drop_up
-    .material-symbols-outlined.fill(v-else style="color:#fafaff; padding-bottom:3px") arrow_drop_down
+    .material-symbols-outlined.notranslate.fill(v-if="showDes" style="color:#fafaff; padding-bottom:5px") arrow_drop_up
+    .material-symbols-outlined.notranslate.fill(v-else style="color:#fafaff; padding-bottom:3px") arrow_drop_down
 
 template(v-if="showDes")
     p(style='margin-bottom: 0').
@@ -40,7 +40,7 @@ template(v-if="showDes")
 hr
 
 .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
-    .material-symbols-outlined.fill warning
+    .material-symbols-outlined.notranslate.fill warning
     router-link(to="/account-setting") Please verify your email address to register client secret keys.
     br
     br
@@ -48,7 +48,7 @@ template(v-else)
     p Register your client secret keys by clicking '#[b Add Key]' below.
 
     .iconClick(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}")
-        .material-symbols-outlined.fill add_circle
+        .material-symbols-outlined.notranslate.fill add_circle
         span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Add Key
 
     br
@@ -59,7 +59,7 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
         template(v-slot:head)
             tr
                 th.center(style="width:48px; padding:0")
-                    .material-symbols-outlined lock
+                    .material-symbols-outlined.notranslate lock
                     .resizer
                 th(style="width:26%")
                     | Name
@@ -84,18 +84,18 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                         template(v-if="updating")
                             img.loading(src="@/assets/img/loading.png")
                         template(v-else)
-                            label.material-symbols-outlined.clickable.save(@click="saveKey(key)" style="color:var(--main-color)") done
+                            label.material-symbols-outlined.notranslate.clickable.save(@click="saveKey(key)" style="color:var(--main-color)") done
                                 input(type="submit" hidden)
-                            .material-symbols-outlined.clickable.cancel(@click="cancelKey(key, index)") close
+                            .material-symbols-outlined.notranslate.clickable.cancel(@click="cancelKey(key, index)") close
                 template(v-else)  
                     td.center 
-                        .material-symbols-outlined.bold(v-if="key.secure") check
+                        .material-symbols-outlined.notranslate.bold(v-if="key.secure") check
                     td.overflow {{ key.name }}
                     td.overflow {{ key.key ? key.key.slice(0,2) + '*'.repeat(key.key.length - 2) : '' }}
                     td.center.buttonWrap
                         template(v-if="!editMode && !addMode")
-                            .material-symbols-outlined.fill.clickable.icon.hide(@click="editKey(key)") edit
-                            .material-symbols-outlined.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
+                            .material-symbols-outlined.notranslate.fill.clickable.icon.hide(@click="editKey(key)") edit
+                            .material-symbols-outlined.notranslate.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
 
 br
 

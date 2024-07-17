@@ -5,10 +5,10 @@
             input#here(type="date" hidden)
             input.big#year(type="text" :value="currentYear" @change.stop="(e) => updateCalendar(e, 'year')" @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}")
             .month
-                .material-symbols-outlined.prev(@click="reRender('prev')") arrow_back_ios
+                .material-symbols-outlined.notranslate.prev(@click="reRender('prev')") arrow_back_ios
                 select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
                     option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
-                .material-symbols-outlined.next(@click="reRender('next')") arrow_forward_ios
+                .material-symbols-outlined.notranslate.next(@click="reRender('next')") arrow_forward_ios
         .timeCont 
             .days 
                 .day Mo
@@ -23,11 +23,11 @@
     .timeSettingWrap
         .input(@mouseover="startDate ? showIcon.start = true : showIcon.start = false" @mouseleave="showIcon.start = false")
             input#start(type="text" placeholder="Start" readonly v-model="startDate" :class="{'active' : activeDate}" @click="activeDate = true")
-            .material-symbols-outlined.fill.delete(:class="{'show' : showIcon.start}" @click="deleteDate") cancel
+            .material-symbols-outlined.notranslate.fill.delete(:class="{'show' : showIcon.start}" @click="deleteDate") cancel
         span ~
         .input(@mouseover="endDate ? showIcon.end = true : showIcon.end = false" @mouseleave="showIcon.end = false") 
             input#end(type="text" placeholder="End" readonly v-model="endDate" :class="{'active' : !activeDate}" @click="activeDate = false")
-            .material-symbols-outlined.fill.delete(:class="{'show' : showIcon.end}" @click="deleteDate") cancel
+            .material-symbols-outlined.notranslate.fill.delete(:class="{'show' : showIcon.end}" @click="deleteDate") cancel
 </template>
 
 <script setup>

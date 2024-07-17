@@ -3,7 +3,7 @@
     div(style="text-align:right")
         .copy(v-if='cpy_btn' @click="copy")
             span.copyMsg Copy code
-            .material-symbols-outlined.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
+            .material-symbols-outlined.notranslate.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
     .code
         slot
 

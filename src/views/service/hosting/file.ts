@@ -11,6 +11,13 @@ export let serviceFolders: any = {}; // {serviceid: {dirname: {}}}
 
 export let uploadFiles = async (files: File[], callback?: () => void, contentTypeMapping?:{[fname:string]:string}) => {
     // uploads one by one
+    let sd = currentService.service.subdomain;
+    if(!sd) {
+        throw new Error('No subdomain found');
+    }
+    if (sd && sd[0] === '*' || sd[0] === '+') {
+        throw new Error('Cannot upload files to pending subdomain');
+    }
 
     uploadCount[1] += files.length;
     let currentDir = currentDirectory.value ? currentDirectory.value + '/' : '';
