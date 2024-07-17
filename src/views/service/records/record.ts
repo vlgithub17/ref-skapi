@@ -19,10 +19,10 @@ let parseBinEndpoint = async (r: string[]) => {
             access_group = access_group == 0 ? 'public' : access_group == 1 ? 'authorized' : access_group;
 
             let url_endpoint = url;
-            if (access_group !== 'public') {
-                let resolved_endpoint = (await skapi.getFile.bind(this)(url, { dataType: 'endpoint', expires: access_group === 'private' && currentService.owner !== path[0] ? 3600 : 0 }) as string);
-                url_endpoint = resolved_endpoint;
-            }
+            // if (access_group !== 'public') {
+            //     let resolved_endpoint = (await skapi.getFile(url, { dataType: 'endpoint', expires: access_group === 'private' && currentService.owner !== path[0] ? 3600 : 0 }) as string);
+            //     url_endpoint = resolved_endpoint;
+            // }
 
             let obj = {
                 access_group,
@@ -36,7 +36,7 @@ let parseBinEndpoint = async (r: string[]) => {
                         dataType: dataType || 'download',
                         progress
                     };
-                    return skapi.getFile.bind(this)(url, config);
+                    return skapi.getFile(url, config);
                 }
             };
             if (binObj[pathKey]) {
