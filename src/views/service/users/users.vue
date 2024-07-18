@@ -72,7 +72,7 @@ section.infoBox
     p Search and manage your service users.
 
     form#searchForm(@submit.prevent="init()")
-        Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}" style="min-width:162px;")
+        Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}" style="min-width:162px;flex-grow:1")
         .search(:class="{'nonClickable' : fetching}")
             .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click="showCalendar = !showCalendar;")
                 input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" name="date" readonly)
