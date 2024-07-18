@@ -96,6 +96,7 @@ const router = useRouter();
 const route = useRoute();
 
 let openOffer = ref(false);
+let promiseRunning = ref(false);
 
 let serviceId = route.path.split("/")[2];
 let currentRouter = ref("");
