@@ -56,10 +56,6 @@ template(v-else)
             br
             br
 
-        //- .infoValue
-        //-     .smallTitle Created
-        //-     .smallValue {{ currentService.dirInfo?.upl ? new Date(currentService.dirInfo.upl).toLocaleString() : '...' }}
-
         .infoValue
             .smallTitle Storage in-use
             .smallValue {{ currentService.dirInfo?.size ? getFileSize(currentService.dirInfo?.size || 0) : '...' }}
@@ -102,6 +98,7 @@ template(v-else)
                         span(:class='{nonClickable:isPending}') {{ sdInfo?.['404'] || '-' }}
                         span.editHandle(:class='{nonClickable:isPending}' @click="open404FileInp") {{ sdInfo?.['404'] ? '[CHANGE]' : '[UPLOAD]'}}
                         span.editHandle(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true" style="color:var(--caution-color)") [REMOVE]
+
         div(style="text-align:right")
             .iconClick.square(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
                 .material-symbols-outlined.notranslate.fill(style='font-size:24px;') delete
@@ -319,13 +316,7 @@ import { user } from '@/code/user';
 import Checkbox from '@/components/checkbox.vue';
 import { serviceFolders, uploadFiles, onDrop, currentDirectory, uploadCount, uploadProgress } from '@/views/service/hosting/file';
 
-let folders = {};
-// if(serviceFolders?.[currentService.id]) {
-//     folders = serviceFolders[currentService.id];
-// }
-// else {
-//     serviceFolders[currentService.id] = folders;
-// }
+let folders = {}; // cache folders
 
 let email_is_unverified_or_service_is_disabled = computed(()=>!user?.email_verified || currentService.service.active <= 0);
 
@@ -336,15 +327,11 @@ let dragHere = ref(false);
 // fileinputs
 let uploadFileInp = ref();
 let uploadFolderInp = ref();
-//
-
 let domain = import.meta.env.VITE_DOMAIN;
 
 let registerSubdomainRunning = ref(false);
 let modalPromise = ref(false);
 
-// let dirInfo = computed(()=>currentService.dirInfo);
-// console.log({initDir:dirInfo.value});
 // register input
 let subdomain = ref('');
 let registerSubdomain = async () => {
@@ -424,8 +411,6 @@ let change404 = async (e: any) => {
             path: up.completed[0].name,
         });
 
-        // await currentService.getSubdomainInfo();
-
         currentService.subdInfo['404'] = up.completed[0].name;
 
         modifyMode.page404 = false;
@@ -447,7 +432,7 @@ let remove404 = async () => {
             path: null,
         });
 
-        delete sdInfo['404'];
+        delete currentService.subdInfo['404'];
         openRemove404.value = false;
         selected404File = null;
     }
@@ -495,19 +480,16 @@ let changeSubdomain = async () => {
         await currentService.registerSubdomain({
             subdomain: inputSubdomain
         });
-
+    } catch (err: any) {
+        alert(err?.message || err.toString());
+        throw err;
+    } finally {
         modifyMode.subdomain = false;
         updatingValue.subdomain = false;
-
-    } catch (err: any) {
-        updatingValue.subdomain = false;
-        alert(err);
-        console.log(err)
-        console.log(err.code)
     }
 }
 
-let hostUrl = computed(() => {
+let retriveCachedFolders = ()=>{
     let sd = currentService.service.subdomain;
     let subd = '';
     if (sd && sd[0] === '*' || sd[0] === '+') {
@@ -517,7 +499,7 @@ let hostUrl = computed(() => {
         subd = sd + '.' + domain;
     }
     
-    if(serviceFolders?.[sd]) {
+    if(serviceFolders?.[sd] && Object.keys(serviceFolders[sd]).length) {
         folders = serviceFolders[sd];
     }
     else {
@@ -525,7 +507,11 @@ let hostUrl = computed(() => {
     }
 
     return subd
-});
+}
+
+let hostUrl = computed(retriveCachedFolders);
+
+retriveCachedFolders();
 
 let listDisplay = ref([]);
 let sortBy = ref('name');
@@ -664,11 +650,6 @@ let setNewDir = (ns: any) => {
     return ns.name.slice(1);
 }
 
-// let eof = computed(() => {
-//     let currDir = currentDirectory.value || '!';
-//     return endOfList[currDir]
-// });
-
 watch(currentDirectory, () => {
     getFileList();
 });
@@ -680,7 +661,7 @@ async function getFileList(refresh = false) {
     fetching.value = true;
 
     let currDir = currentDirectory.value || '!';
-    let hasPage = folders?.[currDir];
+    let hasPage = folders?.[currDir]?.pager;
     console.log({hasPage, refresh});
 
     let pager = null;
@@ -691,9 +672,7 @@ async function getFileList(refresh = false) {
     }
 
     if (!hasPage || refresh && refresh !== 'conditional') {
-        maxPage.value = 0;
-        currentPage.value = 1;
-        endOfList[currDir] = false;
+        console.log('im i not here?')
         folders[currDir] = {
             pager: await Pager.init({
                 id: 'name',
@@ -702,6 +681,9 @@ async function getFileList(refresh = false) {
                 resultsPerPage,
             })
         }
+        maxPage.value = 0;
+        currentPage.value = 1;
+        endOfList[currDir] = false;
     }
 
     console.log({

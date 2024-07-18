@@ -145,15 +145,21 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
         &>*{
-            margin: 0;
+            margin: 4px 0;
+            flex-shrink: 0;
         }
         h2 {
             font-size: 1em;
         }
         .moreInfo {
+            display: flex;
             cursor: pointer;
-            font-size: 0.66rem;
+            font-size: 0.8rem;
+            &>* {
+                vertical-align: middle;
+            }
             .fill {
                 display: none;
             }
@@ -167,7 +173,7 @@
             }
         }
         font-size: 1.5em;
-        margin: .83em 0;
+        margin: calc(.83em - 4px) 0;
     }
     .infoTitle {
         display: inline-block;

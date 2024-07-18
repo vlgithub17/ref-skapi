@@ -1,9 +1,9 @@
 <template lang="pug">
 section.infoBox
     .titleHead
-        h2(style='white-space: nowrap;') Auto Email&nbsp;
-        
-        Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:192px;' :class='{disabled: fetching}')
+        h2(style='white-space: nowrap;') Automated Email&nbsp;
+        Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:192px;')
+
     hr
     .error(v-if='!user?.email_verified')
         .material-symbols-outlined.notranslate.fill warning
@@ -95,20 +95,19 @@ section.infoBox
         For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
 
 section.infoBox
-    .infoTitle {{emailType}} Preview
+    .titleHead
+        h5(style='white-space: nowrap;') {{emailType}}
+        div(style='display: flex;align-items: center;font-size: 0.8rem;')
+            span Preview&nbsp;&nbsp;
+            Toggle(:active='parseOpt' @click="parseOpt=!parseOpt")
 
     hr
 
     .state
-        .smallTitle Subject
-        .ellipsis {{ converter(subjects[group], !parseOpt[group]) }}
-    .state
-        .smallTitle Content
-        small.editHandle(:style='{color: !parseOpt[group] ? "black" : null}' @click='parseOpt[group] = false') [Preview]
-        span &nbsp;|&nbsp;
-        small.editHandle(:style='{color: parseOpt[group] ? "black" : null}' @click='parseOpt[group] = true') [Original]
+        .smallTitle(style='vertical-align: middle;') Subject
+        .smallValue.ellipsis {{ converter(subjects[group], parseOpt) }}
 
-    .email(style='pointer-events: none;')
+    .email(style='pointer-events: none;margin: -.5em;')
         div(v-if='htmls[group] === null') ...
         iframe(v-else :srcdoc='currentTemp' style='width: 100%; height: 300px; border: none;')
 
@@ -225,18 +224,18 @@ Modal(:open="!!emailToUse")
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, watch } from 'vue';
-import type { ComputedRef, Ref } from 'vue';
-import { currentService } from './main';
-import { user } from '@/code/user';
-import Code from '@/components/code.vue';
-import { dateFormat } from '@/code/admin';
-import Table from '@/components/table.vue';
-import Modal from '@/components/modal.vue';
-import Pager from '@/code/pager';
-import { skapi } from '@/code/admin';
-import Select from '@/components/select.vue';
-
+import { reactive, ref, computed, watch } from "vue";
+import type { ComputedRef, Ref } from "vue";
+import { currentService } from "./main";
+import { user } from "@/code/user";
+import Code from "@/components/code.vue";
+import { dateFormat } from "@/code/admin";
+import Table from "@/components/table.vue";
+import Modal from "@/components/modal.vue";
+import Pager from "@/code/pager";
+import { skapi } from "@/code/admin";
+import Select from "@/components/select.vue";
+import Toggle from "@/components/toggle.vue";
 type Newsletter = {
     bounced: number;
     compliant: number;
@@ -245,33 +244,35 @@ type Newsletter = {
     subject: string;
     timestamp: number;
     url: string;
-}
+};
 
-let emailType: Ref<'Signup Confirmation' | 'Welcome Email' | 'Verification Email' | 'Invitation Email'> = ref('Signup Confirmation');
+let emailType: Ref<
+    "Signup Confirmation" | "Welcome Email" | "Verification Email" | "Invitation Email"
+> = ref("Signup Confirmation");
 let emailTypeSelect = [
     {
-        value: 'Signup Confirmation',
-        option: 'Signup Confirmation'
+        value: "Signup Confirmation",
+        option: "Signup Confirmation",
     },
     {
-        value: 'Welcome Email',
-        option: 'Welcome Email'
+        value: "Welcome Email",
+        option: "Welcome Email",
     },
     {
-        value: 'Verification Email',
-        option: 'Verification Email'
+        value: "Verification Email",
+        option: "Verification Email",
     },
     {
-        value: 'Invitation Email',
-        option: 'Invitation Email'
-    }
-]
+        value: "Invitation Email",
+        option: "Invitation Email",
+    },
+];
 ///////////////////////////////////////////////////////////////////////////////// template history[start]
 let pager: Pager = null;
 
 // default form input values
 
-let searchFor: Ref<"timestamp" | "subject"> = ref('timestamp');
+let searchFor: Ref<"timestamp" | "subject"> = ref("timestamp");
 let ascending: Ref<boolean> = ref(false);
 let emailToDelete: Ref<Newsletter> = ref(null);
 
@@ -289,14 +290,17 @@ let listDisplay: Ref<Newsletter[]> = ref(null);
 
 // call getPage when currentPage changes
 watch(currentPage, (n, o) => {
-    if (n !== o && n > 0 && (n <= maxPage.value || n > maxPage.value && !endOfList.value)) {
+    if (
+        n !== o &&
+        n > 0 &&
+        (n <= maxPage.value || (n > maxPage.value && !endOfList.value))
+    ) {
         // if new value is different from old value
         // if new value is within maxPage
         // if new value is greater than maxPage but not end of list
 
         getPage();
-    }
-    else {
+    } else {
         currentPage.value = o; // revert back to old value
     }
 });
@@ -305,15 +309,13 @@ watch(currentPage, (n, o) => {
 watch(searchFor, (n) => {
     if (!fetching.value) {
         let prev = ascending.value;
-        if (n === 'subject') {
+        if (n === "subject") {
             ascending.value = true;
         }
         if (prev !== ascending.value) {
-
             if (endOfList.value) {
                 resetIndex();
-            }
-            else {
+            } else {
                 init();
             }
         }
@@ -324,8 +326,7 @@ watch(ascending, () => {
     if (!fetching.value) {
         if (endOfList.value) {
             resetIndex();
-        }
-        else {
+        } else {
             init();
         }
     }
@@ -335,48 +336,52 @@ watch(emailType, () => {
     if (!fetching.value) {
         init();
     }
-})
+});
 
-let mailEndpoint = ref('');
+let mailEndpoint = ref("");
 
-let group: ComputedRef<'confirmation' | 'welcome' | 'verification' | 'invitation'> = computed(() => {
-    let grp: 'confirmation' | 'welcome' | 'verification' | 'invitation' = 'confirmation';
+let group: ComputedRef<
+    "confirmation" | "welcome" | "verification" | "invitation"
+> = computed(() => {
+    let grp: "confirmation" | "welcome" | "verification" | "invitation" = "confirmation";
     switch (emailType.value) {
-        case 'Signup Confirmation':
-            grp = 'confirmation';
+        case "Signup Confirmation":
+            grp = "confirmation";
             break;
 
-        case 'Welcome Email':
-            grp = 'welcome';
+        case "Welcome Email":
+            grp = "welcome";
             break;
-        case 'Verification Email':
-            grp = 'verification';
+        case "Verification Email":
+            grp = "verification";
             break;
-        case 'Invitation Email':
-            grp = 'invitation';
+        case "Invitation Email":
+            grp = "invitation";
             break;
     }
 
-    mailEndpoint.value = (currentService.service.email_triggers.template_setters as any)[grp];
+    mailEndpoint.value = (currentService.service.email_triggers.template_setters as any)[
+        grp
+    ];
     return grp;
 });
 
-watch(group, n => {
+watch(group, (n) => {
     getHtml(n);
-})
+});
 
 // computed fetch params
 let callParams = computed(() => {
     let defaultValues = {
         timestamp: {
             value: 0,
-            condition: '>=',
+            condition: ">=",
         },
         subject: {
-            value: ' ',
-            condition: '>',
+            value: " ",
+            condition: ">",
         },
-    }
+    };
     return {
         params: {
             service: currentService.service.service,
@@ -388,8 +393,8 @@ let callParams = computed(() => {
         },
         options: {
             ascending: ascending.value,
-        }
-    }
+        },
+    };
 });
 
 let getPage = async (refresh?: boolean) => {
@@ -402,19 +407,20 @@ let getPage = async (refresh?: boolean) => {
         endOfList.value = false;
     }
 
-    if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
+    if ((!refresh && maxPage.value >= currentPage.value) || endOfList.value) {
         // if is not refresh and has page data
         listDisplay.value = pager.getPage(currentPage.value).list as Newsletter[];
         return;
-    }
-
-    else if (!endOfList.value || refresh) {
+    } else if (!endOfList.value || refresh) {
         // if page data needs to be fetched
         fetching.value = true;
 
         // fetch from server
-        let fetchedData = await currentService.getMailTemplates(callParams.value.params, Object.assign({ fetchMore: !refresh }, callParams.value.options));
-        
+        let fetchedData = await currentService.getMailTemplates(
+            callParams.value.params,
+            Object.assign({ fetchMore: !refresh }, callParams.value.options)
+        );
+
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
 
@@ -433,23 +439,23 @@ let getPage = async (refresh?: boolean) => {
         listDisplay.value = disp.list as Newsletter[];
         fetching.value = false;
     }
-}
+};
 
 let resetIndex = async () => {
     currentPage.value = 1;
     await pager.resetIndex({
         sortBy: searchFor.value,
-        order: ascending.value ? 'asc' : 'desc',
+        order: ascending.value ? "asc" : "desc",
     });
 
     getPage();
-}
+};
 
 // ux related functions
 
 let openNewsletter = (url: string) => {
-    window.open(url, '_blank');
-}
+    window.open(url, "_blank");
+};
 
 let toggleSort = (search: any) => {
     if (fetching.value) {
@@ -458,11 +464,10 @@ let toggleSort = (search: any) => {
 
     if (searchFor.value === search) {
         ascending.value = !ascending.value;
-    }
-    else {
+    } else {
         searchFor.value = search;
     }
-}
+};
 
 let deleteEmail = (ns: Newsletter) => {
     if (!ns) {
@@ -471,24 +476,28 @@ let deleteEmail = (ns: Newsletter) => {
 
     let params = {
         message_id: ns.message_id,
-        group: group.value
-    }
+        group: group.value,
+    };
 
     deleteMailLoad.value = true;
-    currentService.deleteTemplate(params).then(async () => {
-        emailToDelete.value = null;
+    currentService
+        .deleteTemplate(params)
+        .then(async () => {
+            emailToDelete.value = null;
 
-        if ((currentService.service as any)?.["template_" + group]?.url === ns.url) {
-            delete (currentService.service as any)?.["template_" + group];
-        }
+            if ((currentService.service as any)?.["template_" + group]?.url === ns.url) {
+                delete (currentService.service as any)?.["template_" + group];
+            }
 
-        await pager.deleteItem(params.message_id);
-        getHtml(group.value);
-        getPage();
-    }).catch(err => window.alert(err)).finally(() => {
-        deleteMailLoad.value = false;
-    });
-}
+            await pager.deleteItem(params.message_id);
+            getHtml(group.value);
+            getPage();
+        })
+        .catch((err) => window.alert(err))
+        .finally(() => {
+            deleteMailLoad.value = false;
+        });
+};
 
 let useMailLoad = ref(false);
 let emailToUse = ref(null);
@@ -500,71 +509,78 @@ let useEmail = (ns: Newsletter) => {
 
     let params = {
         message_id: ns.message_id,
-        group: group.value
-    }
+        group: group.value,
+    };
 
     useMailLoad.value = true;
-    currentService.setTemplate(params).then(async () => {
-        if (!(currentService.service as any)["template_" + group.value])
-            (currentService.service as any)["template_" + group.value] = reactive({
-                url: ns.url,
-                subject: ns.subject
-            })
-        else {
-            (currentService.service as any)["template_" + group.value].url = ns.url;
-            (currentService.service as any)["template_" + group.value].subject = ns.subject;
-        }
+    currentService
+        .setTemplate(params)
+        .then(async () => {
+            if (!(currentService.service as any)["template_" + group.value])
+                (currentService.service as any)["template_" + group.value] = reactive({
+                    url: ns.url,
+                    subject: ns.subject,
+                });
+            else {
+                (currentService.service as any)["template_" + group.value].url = ns.url;
+                (currentService.service as any)["template_" + group.value].subject =
+                    ns.subject;
+            }
 
-        getHtml(group.value);
+            getHtml(group.value);
 
-        emailToUse.value = null;
-    }).catch(err => window.alert(err)).finally(() => {
-        useMailLoad.value = false;
-    });
-}
+            emailToUse.value = null;
+        })
+        .catch((err) => window.alert(err))
+        .finally(() => {
+            useMailLoad.value = false;
+        });
+};
 ///////////////////////////////////////////////////////////////////////////////// template history[end]
 
 let service = currentService.service;
 let email_templates = currentService.service.email_triggers.template_setters;
-let parseOpt: any = reactive({});
+let parseOpt: any = ref(true);
 
 let currentTemp = computed(() => {
-    return converter(htmls[group.value], parseOpt[group.value], true);
-})
+    return converter(htmls[group.value], parseOpt.value, true);
+});
 
 let converter = (html: string, parsed: boolean, inv: boolean) => {
     // if (!parsed) {
     //     html = html.replaceAll('style="font-weight: bold"', 'style="font-weight: bold; pointer-events: none;"');
     //     return html;
     // }
-    if(!parsed) {
+    if (!parsed) {
         return html;
     }
-    html = html.replaceAll('${code}', '123456');
-    html = html.replaceAll('${email}', user.email);
-    html = html.replaceAll('${name}', user.name || user.email);
-    html = html.replaceAll('${service_name}', service.name);
-    html = html.replaceAll('${link}', inv ? '/invitation_confirmed_template' : '/signup_confirmed_template');
-    html = html.replaceAll('${password}', 'abc123&&');
-    return html
-}
+    html = html.replaceAll("${code}", "123456");
+    html = html.replaceAll("${email}", user.email);
+    html = html.replaceAll("${name}", user.name || user.email);
+    html = html.replaceAll("${service_name}", service.name);
+    html = html.replaceAll("${password}", "abc123&&");
+    html = html.replaceAll("${link}", "https://path.to/link");
+    return html;
+};
 
 let subjects = computed(() => {
     let s = currentService.service;
     return {
-        confirmation: s?.template_confirmation?.subject || '[${service_name}] Signup Confirmation',
+        confirmation:
+            s?.template_confirmation?.subject || "[${service_name}] Signup Confirmation",
         welcome: s?.template_welcome?.subject || "Thank you for joining ${service_name}",
-        verification: s?.template_verification?.subject || '[${service_name}] Verification code',
-        invitation: s?.template_invitation?.subject || '[${service_name}] Invitation'
-    }
-})
+        verification:
+            s?.template_verification?.subject || "[${service_name}] Verification code",
+        invitation: s?.template_invitation?.subject || "[${service_name}] Invitation",
+    };
+});
 
 let htmls: { [key: string]: string } = reactive({
     confirmation: null,
     welcome: null,
     verification: null,
-    invitation: null
-})
+    invitation: null,
+});
 
 let getHtml = async (key: string) => {
     if (!key) {
@@ -577,7 +593,8 @@ let getHtml = async (key: string) => {
 <span style="font-weight: bold">Hello \${name}</span>
 Thank you for joining \${service_name}
 Your login email is: <span style="font-weight: bold">\${email}</span></pre>`,
-        verification: '<pre>Your verification code is <span style="font-weight: bold">${code}</span></pre>',
+        verification:
+            '<pre>Your verification code is <span style="font-weight: bold">${code}</span></pre>',
         confirmation: `<pre>
 Please activate your account by clicking this <a href="\${link}" style="font-weight: bold">LINK</a>
 Your activation link is valid for 7 days.
@@ -592,10 +609,10 @@ Your login e-mail is: <b>\${email}</b>
 Your account password is: <b>\${password}</b>
 
 Your activation link is valid for 7 days.
-</pre>`
-    }
+</pre>`,
+    };
 
-    let url = (service as any)?.['template_' + group.value]?.url;
+    let url = (service as any)?.["template_" + group.value]?.url;
     if (!url) {
         htmls[key] = defaults[key];
         return;
@@ -604,7 +621,7 @@ Your activation link is valid for 7 days.
     let res = await fetch(url);
     let html = await res.text();
     htmls[key] = html;
-}
+};
 
 let init = async () => {
     // if (refreshService) {
@@ -617,15 +634,15 @@ let init = async () => {
 
     // setup pagers
     pager = await Pager.init({
-        id: 'message_id',
+        id: "message_id",
         resultsPerPage: 10,
         sortBy: searchFor.value,
-        order: ascending.value ? 'asc' : 'desc',
+        order: ascending.value ? "asc" : "desc",
     });
 
     getPage(true);
     getHtml(group.value);
-}
+};
 
 init();
 </script>
@@ -636,22 +653,22 @@ init();
     display: flex;
     justify-content: center;
 
-    &>div {
+    & > div {
         width: 100%;
     }
 }
 
 .plch {
-    font-weight: normal
+    font-weight: normal;
 }
 
 ul {
-    margin-top: .5rem;
+    margin-top: 0.5rem;
 }
 
 li {
     margin-bottom: 8px;
-    font-size: .8rem;
+    font-size: 0.8rem;
 }
 
 // table style below
@@ -659,7 +676,6 @@ li {
 tbody {
     tr.nsrow {
         @media (pointer: fine) {
-
             // only for mouse pointer devices
             &:not(.active):hover {
                 background-color: rgba(41, 63, 230, 0.05);
@@ -668,7 +684,7 @@ tbody {
         }
 
         &.active {
-            background-color: rgba(41, 63, 230, 0.10);
+            background-color: rgba(41, 63, 230, 0.1);
         }
 
         &:hover {
@@ -685,9 +701,8 @@ tbody {
 
 thead {
     th {
-        &>span {
+        & > span {
             @media (pointer: fine) {
-
                 // only for mouse pointer devices
                 &:hover {
                     cursor: pointer;
@@ -703,7 +718,7 @@ thead {
     flex-wrap: wrap;
     justify-content: space-between;
 
-    &>* {
+    & > * {
         margin-bottom: 8px;
     }
 }

@@ -13,6 +13,8 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
         | Update your subscription plan for service "
         span(style='font-weight:500') {{ serviceList[serviceId].service.name }}
         | "
+        
+    p When upgrade/downgrading your subscription plan, the remaining days will be prorated and the amount will be adjusted accordingly on your next payment.
 
     section
         .planWrap

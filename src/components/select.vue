@@ -34,7 +34,9 @@ let showDropDown = (e) => {
         width: 100%;
         border: 0;
         // padding: 0 1rem;
-        padding: 0 .5rem 0 1rem;
+        // padding: 0 .5rem 0 1rem;
+        padding: 0 0.2rem 0 0.77rem;
+        
         border-radius: 6px;
         outline: 1px solid; // input 과 크기 맞추기 위함
         display: flex;
@@ -43,7 +45,8 @@ let showDropDown = (e) => {
         color: #000;
         background-color: #fff;
         // border: 1px solid rgba(0,0,0,0.5);
-        font-weight: 300;
+        // font-weight: 300;
+        font-weight: 400;
     }
     .more:hover {
         @media (pointer: fine) {

@@ -961,9 +961,9 @@ let deleteFile = (item, index) => {
         align-items: center;
         gap: 8px;
     }
-    .customSelect {
-        flex-grow: 1;
-    }
+    // .customSelect {
+    //     flex-grow: 1;
+    // }
     .search {
         position: relative;
         flex-grow: 50;
