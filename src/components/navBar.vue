@@ -3,11 +3,11 @@ nav#navBar(ref="navBar")
     .wrap
         .left
             router-link.logo(to="/my-services" v-if="route.name != 'home' && loginState && route.path !== '/my-services'")
-                .material-symbols-outlined.notranslate.nohover.back(style="font-size:32px") arrow_back_ios
+                .material-symbols-outlined.notranslate.nohover.back(style="font-size:1.5em") arrow_back_ios
                 span.name My Services
             router-link.logo(to="/" v-else)
                 img.symbol.mobile(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;")
-                img.symbol.desktop(src="@/assets/img/logo/logo-white.svg" style="image-orientation: none;height:30px")
+                img.symbol.desktop(src="@/assets/img/logo/logo-white.svg" style="image-orientation: none;height:24px")
         .right
             ul
                 template(v-if="loginState")
@@ -26,16 +26,16 @@ nav#navBar(ref="navBar")
                                     .account {{ user.email }}
                                     ul.menu
                                         li(@click="openBillingPage")
-                                            .material-symbols-outlined.notranslate.fill credit_card
+                                            .material-symbols-outlined.notranslate credit_card
                                             span Billing
                                         li(@click="navigateToPage")
-                                            .material-symbols-outlined.notranslate.fill settings
+                                            .material-symbols-outlined.notranslate settings
                                             span Account Settings
                                         li(@click="logout")
-                                            .material-symbols-outlined.notranslate.fill logout
+                                            .material-symbols-outlined.notranslate logout
                                             span Logout
-                                    .policy
-                                        router-link(to="/pp.html" target="_blank") Terms of service • Privacy policy
+                                    //- .policy
+                                    //-     router-link(to="/pp.html" target="_blank") Terms of service • Privacy policy
                 template(v-else)
                     li
                         router-link.ser(to="/login") Login
@@ -272,19 +272,19 @@ img.symbol.mobile {
                 }
             }
 
-            .policy {
-                border-top: 1px solid rgba(0, 0, 0, 0.15);
-                font-size: 14px;
-                font-weight: bold;
-                text-align: center;
-                padding: 12px 30px;
-                white-space: nowrap;
+            // .policy {
+            //     border-top: 1px solid rgba(0, 0, 0, 0.15);
+            //     font-size: 14px;
+            //     font-weight: bold;
+            //     text-align: center;
+            //     padding: 12px 30px;
+            //     white-space: nowrap;
 
-                a {
-                    color: var(--black-4);
-                    font-weight: 300;
-                }
-            }
+            //     a {
+            //         color: var(--black-4);
+            //         font-weight: 300;
+            //     }
+            // }
         }
 
         a:not(.policy a) {

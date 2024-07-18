@@ -10,7 +10,7 @@ br
         hr
 
         .infoValue(style='margin-bottom:0;')
-            .smallTitle Email
+            .smallTitle Email:
             template(v-if="modifyMode")
                 form.editValue(@submit.prevent="changeEmail" style='margin-bottom:12px;')
                     input.big(type="email" ref='emailInp' spellcheck="false" :value="inputEmail" @input="(e) => {e.target.setCustomValidity('');inputEmail = e.target.value;}" placeholder="your@email.com" required)
@@ -25,26 +25,26 @@ br
                 .ellipsis {{ user.email }}&nbsp;
                 span.editHandle(@click="editEmail") [CHANGE]
 
-            div(v-if="user.email_verified")
-                Checkbox(v-model="emailSubscribed" :disabled="!user.email_verified || subing_email || emailSubscribed === null") Receive newsletters from Skapi.
-            .iconClick(v-else style="color:var(--caution-color);display:inline-flex" @click="proceedVerification = true;")
-                .material-symbols-outlined.notranslate.fill(style='font-size:24px;') error
-                span &nbsp;Click to verify your email address
+        .infoValue
+            .smallTitle Password:
+            div
+                .ellipsis ******...&nbsp;
+                router-link.editHandle(to='/change-password') [CHANGE]
 
-        br
-
-        .state(style='margin-bottom:2rem;')
-            .smallTitle Password 
-            .ellipsis ******...&nbsp;
-            router-link.editHandle(to='/change-password') [CHANGE]
-
+        div(v-if="user.email_verified")
+            Checkbox(v-model="emailSubscribed" :disabled="!user.email_verified || subing_email || emailSubscribed === null") Receive newsletters from Skapi.
+        .iconClick(v-else style="color:var(--caution-color);display:inline-flex" @click="proceedVerification = true;")
+            .material-symbols-outlined.notranslate.fill(style='font-size:24px;') error
+            span &nbsp;Click to verify your email address
         hr
 
         div(style="text-align:right")
-            router-link.iconClick(to='/delete-account' style='color:var(--caution-color);font-size:0.66rem;')
+            router-link.iconClick.square(to='/delete-account' style='color:var(--caution-color);font-size:0.66rem;')
                 .material-symbols-outlined.notranslate.fill(style='font-size:24px;') cancel
                 span &nbsp;Delete Account
-
+br
+br
+br
 Modal(:open="proceedVerification")
     h4(style='margin:.5em 0 0;') Email Verification
     hr
@@ -139,7 +139,7 @@ watch(emailSubscribed, async (n, o) => {
 <style scoped lang="less">
 #accountSetting {
     position: relative;
-    padding: 8px;
+    padding: 8px 0;
 }
 
 .infoBox {

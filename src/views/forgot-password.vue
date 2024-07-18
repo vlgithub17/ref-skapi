@@ -134,6 +134,7 @@ br
         .ball(v-for="num in 3" :class="{'active': step === num}")
 br
 br
+br
 
 </template>
 

@@ -5,6 +5,7 @@ let topOffset = 0;
 let offsetProp = 'pageYOffset';
 let autoHide: any;
 let host: HTMLElement;
+const body = document.body;
 
 let prep = () => {
     if (autoHide === undefined) {
@@ -71,7 +72,7 @@ let calcNavbarPosition = () => {
 
         scrollOffset = scrollOffsetCond; // update scroll offset
         topOffset = topOffsetRes;
-        host.style.setProperty('--nav-top', `${topOffsetRes}px`); // apply css variable
+        body.style.setProperty('--nav-top', `${topOffsetRes}px`); // apply css variable
     });
 };
 
@@ -87,9 +88,9 @@ export let removeListener = () => {
 }
 
 let load = () => {
-    console.log(host);
     navCss = window.getComputedStyle(host);
-    host.style.setProperty('--nav-position', 'sticky'); // apply css variable
+    // get body element
+    body.style.setProperty('--nav-position', 'sticky'); // apply css variable
 
     if (autoHide) {
         let seekScrollableParent = (el:HTMLElement) => {

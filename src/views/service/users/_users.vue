@@ -480,12 +480,12 @@ let handledateClick = (startDate, endDate) => {
     .selectBar {
         width: 200px;
         background: rgba(0, 0, 0, 0.05);
-        border-radius: 8px;
+        border-radius: 6px;
     }
     .searchBar {
         position: relative;
         background: rgba(0, 0, 0, 0.05);
-        border-radius: 8px;
+        border-radius: 6px;
         flex-grow: 1;
 
         input {

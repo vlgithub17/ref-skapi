@@ -12,15 +12,17 @@ br
     p Once your account is deleted, you will not be able to recover it.
 
     p Please note:
-    ul
+    ul(style='padding-left: 1em;')
         li All your data will be deleted permanently.
 
         li All your subscription plans will be cancelled.
 
-        li All your services will be removed immediately.
+        li All your services will be removed.
 
-        li The remaining balance cannot be refunded.
+        li The remaining subscription cannot be refunded.
 
+    br
+    
     p Are you sure you want to delete your account?
 
     Checkbox(v-model="iUnderstand" :disabled="promiseRunning")
@@ -38,9 +40,9 @@ br
             | &nbsp;&nbsp;
             button.final.warning(:class="{disabled: !iUnderstand}" @click='processDelete') Delete
 
-    br
-    br
-    
+br
+br
+br
 </template>
 
 <script setup lang="ts">

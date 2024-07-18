@@ -75,8 +75,8 @@ template(v-else)
                         span.editHandle(:class='{nonClickable:isPending}' @click="open404FileInp") {{ sdInfo?.['404'] ? '[CHANGE]' : '[UPLOAD]'}}
                         span.editHandle(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true" style="color:var(--caution-color)") [REMOVE]
         div(style="text-align:right")
-            .iconClick(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
-                .material-symbols-outlined.notranslate.fill(style='font-size:24px;') cancel
+            .iconClick.square(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
+                .material-symbols-outlined.notranslate.fill(style='font-size:24px;') delete
                 span &nbsp;Remove Hosting
     br
 
@@ -193,8 +193,6 @@ template(v-else)
         .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || currentPage >= maxPage || !listDisplay.length }")
             span &nbsp;&nbsp;Next
             .material-symbols-outlined.notranslate.bold chevron_right
-
-    br
 
     .dragPopup(:class="{'show' : dragHere}")
         .material-symbols-outlined.notranslate(style='font-size:64px;') cloud_upload
@@ -925,7 +923,7 @@ thead {
     width: 100%;
     padding: 10px 20px;
     margin: 8px;
-    border-radius: 8px;
+    border-radius: 6px;
     transform: translate(-50%, 300px);
     transition: all .15s;
     background-color: var(--main-color);

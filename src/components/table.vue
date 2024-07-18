@@ -208,8 +208,10 @@ let setResize = async () => {
                 right: -6px;
                 transform: translateY(-50%);
                 width: 12px; // enough width for user to grab
-                border-left: 5px solid transparent;
-                border-right: 5px solid transparent;
+                // border-left: 5px solid transparent;
+                // border-right: 5px solid transparent;
+                border-left: 4px solid transparent;
+                border-right: 12px solid transparent;
 
                 &::before {
                     content: '';

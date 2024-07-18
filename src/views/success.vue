@@ -15,6 +15,9 @@ br
     
     div(style="display:block;text-align:center")
         button.final(@click="router.push('/login')") Login
+br
+br
+br
 </template>
 
 <script setup lang="ts">

@@ -22,6 +22,10 @@ br
     .resend(style="margin-top:8px")
         | Have you completed the email authentication?&nbsp;
         router-link(to='/login') Login
+
+br
+br
+br
 </template>
 
 <script setup lang="ts">
