@@ -128,15 +128,15 @@ template(v-else)
     .hostingPart
         #loading
             template(v-if="fetching")
-                img.loading(src="@/assets/img/loading.png")
+                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
                 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fetching ...
 
             template(v-else-if='!subdomainReady')
-                img.loading(src="@/assets/img/loading.png")
+                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
                 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Subdomain change in process ...
             
             template(v-else-if='currentService.pending.cdn')
-                img.loading(src="@/assets/img/loading.png")
+                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
                 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDN Refresh in process... 
 
         Table(
@@ -399,7 +399,7 @@ let change404 = async (e: any) => {
         // get current 13 digit timestamp
         let pager = folders['!'].pager;
 
-        await pager.insertItems([{
+        await pager.editItem([{
             name: up.completed[0].name,
             size: up.completed[0].size,
             upl: Date.now(),
@@ -492,12 +492,12 @@ let changeSubdomain = async () => {
 let retriveCachedFolders = ()=>{
     let sd = currentService.service.subdomain;
     if(!sd) {
-        return null;
+        return '';
     }
-    console.log({sd, currentService})
+
     let subd = '';
     if (sd && sd[0] === '*' || sd[0] === '+') {
-        subd = sd.slice(1) + '.skapi.com';
+        subd = sd.slice(1) + '.' + domain;
     }
     else {
         subd = sd + '.' + domain;
@@ -628,7 +628,6 @@ watch(()=>currentService.dirInfo.path, (n, o) => {
 
 watch(subdomainReady,
     (n, o) => {
-        console.log({n})
         if(n) {
             fetching.value = true;
             if(n !== 'no-subdomain') {
@@ -816,6 +815,14 @@ watch(ascending, () => {
 </script>
 
 <style lang="less" scoped>
+tbody {
+    tr:first-child {
+        background-color: rgba(0, 0, 255, 0.02);
+    }
+    tr {
+        cursor: default;
+    }
+}
 form.register {
     display: flex;
     flex-wrap: wrap;

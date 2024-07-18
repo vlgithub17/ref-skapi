@@ -69,7 +69,10 @@ section.infoBox
         .material-symbols-outlined.notranslate.fill warning
         span This service is currently suspended.
 
-    p Search and manage your service users.
+    p.
+        Search and manage your service users.
+        #[br]
+        #[b User must have at least one successful login to be listed here.]
 
     form#searchForm(@submit.prevent="init()")
         Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}" style="min-width:162px;flex-grow:1")
@@ -127,7 +130,7 @@ br
 .userPart
     template(v-if="fetching")
         #loading.
-            Loading Records ... &nbsp;
+            Loading ... &nbsp;
             #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
 
     Table(:key="tableKey" :class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
