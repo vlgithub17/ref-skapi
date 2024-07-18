@@ -4,6 +4,18 @@
 
     hr
 
+    .error(v-if='!user?.email_verified')
+        .material-symbols-outlined.notranslate.fill warning
+        router-link(to="/account-setting") Please verify your email address to modify settings.
+        
+    .error(v-else-if='currentService.service.active == 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently disabled.
+
+    .error(v-else-if='currentService.service.active < 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently suspended.
+
     p.
         File hosting service let you host files and static websites.
         #[br]
@@ -27,6 +39,22 @@ template(v-else)
         .infoTitle File Hosting&nbsp;&nbsp;
 
         hr
+
+        .error(v-if='!user?.email_verified')
+            .material-symbols-outlined.notranslate.fill warning
+                router-link(to="/account-setting") Please verify your email address to modify settings.
+            br
+            br  
+        .error(v-else-if='currentService.service.active == 0')
+            .material-symbols-outlined.notranslate.fill warning
+            span This service is currently disabled.
+            br
+            br
+        .error(v-else-if='currentService.service.active < 0')
+            .material-symbols-outlined.notranslate.fill warning
+            span This service is currently suspended.
+            br
+            br
 
         //- .infoValue
         //-     .smallTitle Created
