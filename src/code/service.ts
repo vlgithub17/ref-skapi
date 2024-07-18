@@ -1194,6 +1194,7 @@ export default class Service {
             for (let region in service) {
                 if (service[region][0]) {
                     let serviceClass = new Service(id, service[region][0], [admin_private_endpoint, record_private_endpoint, admin_public_endpoint]);
+                    await serviceClass._subsPromise;
                     return serviceClass;
                 }
             }
