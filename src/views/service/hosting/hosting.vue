@@ -491,6 +491,10 @@ let changeSubdomain = async () => {
 
 let retriveCachedFolders = ()=>{
     let sd = currentService.service.subdomain;
+    if(!sd) {
+        return null;
+    }
+    console.log({sd, currentService})
     let subd = '';
     if (sd && sd[0] === '*' || sd[0] === '+') {
         subd = sd.slice(1) + '.skapi.com';
