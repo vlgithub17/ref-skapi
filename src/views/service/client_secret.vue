@@ -4,7 +4,7 @@ section.infoBox
         h2 Client Secret Key
             
         span.moreInfo(@click="showDes = !showDes")
-            | More Info&nbsp;
+            span More Info&nbsp;
             template(v-if="showDes")
                 .material-symbols-outlined.notranslate.fill expand_circle_up 
                 .material-symbols-outlined.notranslate.noFill expand_circle_up

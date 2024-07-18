@@ -4,7 +4,7 @@ section.infoBox
         h2 Database
             
         span.moreInfo(@click="showDes = !showDes")
-            | More Info&nbsp;
+            span More Info&nbsp;
             template(v-if="showDes")
                 .material-symbols-outlined.notranslate.fill expand_circle_up 
                 .material-symbols-outlined.notranslate.noFill expand_circle_up
@@ -201,25 +201,22 @@ form#searchForm(@submit.prevent="setCallParams")
 br
 
 .tableMenu
-    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
         .material-symbols-outlined.notranslate.fill checklist_rtl
         span &nbsp;&nbsp;Show Columns
         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal; color:black")
-            .inner(style="padding:.5rem 1rem .5rem .5rem")
+            .inner
                 Checkbox(v-model="filterOptions.table" style="display:flex;") Table
-                
                 Checkbox(v-model="filterOptions.record_id" style="display:flex") Record ID
                 Checkbox(v-model="filterOptions.user_id" style="display:flex") User ID 
                 Checkbox(v-model="filterOptions.subscription" style="display:flex") Subscription
                 Checkbox(v-model="filterOptions.reference" style="display:flex") Reference
                 Checkbox(v-model="filterOptions.index" style="display:flex") Index/Value
                 Checkbox(v-model="filterOptions.tag" style="display:flex") Tag
-                
                 Checkbox(v-model="filterOptions.files" style="display:flex") Files
                 Checkbox(v-model="filterOptions.data" style="display:flex") Data
                 Checkbox(v-model="filterOptions.updated" style="display:flex") Updated
                 Checkbox(v-model="filterOptions.uploaded" style="display:flex") Uploaded
-                
                 Checkbox(v-model="filterOptions.readonly" style="display:flex") Read Only 
                 Checkbox(v-model="filterOptions.reference_limit" style="display:flex") Reference Limit
                 Checkbox(v-model="filterOptions.referenced" style="display:flex") Referenced
@@ -551,6 +548,7 @@ import { uploadRecord } from "@/views/service/records/record";
 let searchIndex = ref("null");
 let searchIndexType = ref("string");
 let searchIndexCondition = ref("=");
+
 // table columns
 let filterOptions = ref({
     table: true,
@@ -591,12 +589,15 @@ let colspan =
     Object.values(filterOptions.value).filter((value) => value === true).length + 1;
 
 watch(
-    filterOptions.value,
+    filterOptions,
     (nv) => {
         colspan = Object.values(filterOptions.value).filter((value) => value).length + 1;
         tableKey.value++;
     },
-    { immediate: true }
+    {
+        immediate: true,
+        deep: true,
+    }
 );
 
 watch(currentPage, (n, o) => {
@@ -616,7 +617,7 @@ watch(showDetail, (nv) => {
         let scrollTarget = document.querySelector(".detailRecord .content");
         scrollTarget.scrollTop = 0;
     }
-})
+});
 
 let pager: Pager = null;
 let listDisplay = ref(null);
@@ -628,7 +629,7 @@ let bins: {
 let searchFormValue = reactive({
     table: {
         access_group: "public",
-    }
+    },
 });
 
 let callParams = {};
@@ -638,18 +639,19 @@ let setCallParams = (e) => {
         data: {
             user_id: string;
             config: any;
-        },
+        };
         files: {
-            file: File,
-            name: string
-        }[]
-    } = skapi.util.extractFormData(e, {ignoreEmpty: true});
+            file: File;
+            name: string;
+        }[];
+    } = skapi.util.extractFormData(e, { ignoreEmpty: true });
 
-    if(!toFetch.data?.table?.name) {
+    if (!toFetch.data?.table?.name) {
         callParams = {};
-    }
-    else {
-        Object.assign(toFetch.data.table, {access_group: searchFormValue.table.access_group});
+    } else {
+        Object.assign(toFetch.data.table, {
+            access_group: searchFormValue.table.access_group,
+        });
         callParams = toFetch.data;
     }
 
@@ -666,13 +668,10 @@ let getPage = async (refresh?: boolean) => {
     }
 
     if ((!refresh && maxPage.value >= currentPage.value) || endOfList.value) {
-        console.log('ma here?')
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
-        console.log(disp.list);
         listDisplay.value = disp.list;
         return;
-
     } else if (!endOfList.value || refresh) {
         fetching.value = true;
 
@@ -691,8 +690,6 @@ let getPage = async (refresh?: boolean) => {
             return r;
         });
 
-        console.log({ fetchedData });
-
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
 
@@ -704,7 +701,6 @@ let getPage = async (refresh?: boolean) => {
 
         // get page from pager
         let disp = pager.getPage(currentPage.value);
-        console.log(disp);
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
 
@@ -735,7 +731,12 @@ let init = async () => {
         id: "record_id",
         resultsPerPage: 10,
         sortBy: callParams?.index?.name || "record_id",
-        order: callParams?.index?.name && (callParams?.index?.condition || "").includes("<") ? "desc" : callParams?.table?.name ? "asc" : "desc",
+        order:
+            callParams?.index?.name && (callParams?.index?.condition || "").includes("<")
+                ? "desc"
+                : callParams?.table?.name
+                ? "asc"
+                : "desc",
     });
 
     getPage(true);
@@ -763,8 +764,11 @@ let createRecordTemplate = {
 };
 let selectedRecord = ref(createRecordTemplate);
 let selectedRecord_private = computed(() => {
-    return selectedRecord.value?.table?.access_group == "private" && selectedRecord.value?.user_id !== user.user_id;
-})
+    return (
+        selectedRecord.value?.table?.access_group == "private" &&
+        selectedRecord.value?.user_id !== user.user_id
+    );
+});
 let selectedRecord_readOnly = ref(false);
 let selectedRecord_subscription = ref(false);
 let selectedRecord_data = ref({});
@@ -925,7 +929,7 @@ let checkall = () => {
             delete checked.value[k];
         }
     }
-    if(listDisplay.value) {
+    if (listDisplay.value) {
         for (let i in listDisplay.value) {
             checked.value[listDisplay.value[i].record_id] = checkedall.value;
         }
@@ -1035,6 +1039,15 @@ textarea::placeholder {
     cursor: pointer;
     box-shadow: rgba(41, 63, 230, 0.24) 0px 1px 8px;
 }
+.moreVert {
+    .inner {
+        padding-top: 0.25rem;
+        & > * {
+            padding: 0.25rem 0.5rem;
+        }
+        padding-bottom: 0.25rem;
+    }
+}
 #searchForm {
     // max-width: 700px;
     margin: 0 auto;
@@ -1045,9 +1058,9 @@ textarea::placeholder {
         align-items: center;
         gap: 8px;
     }
-    .customSelect {
-        flex-grow: 1;
-    }
+    // .customSelect {
+    //     flex-grow: 1;
+    // }
     .search {
         position: relative;
         flex-grow: 50;

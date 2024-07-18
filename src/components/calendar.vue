@@ -3,7 +3,7 @@
     .timeWrap
         .timeNav 
             input#here(type="date" hidden)
-            input.big#year(type="text" :value="currentYear" @change.stop="(e) => updateCalendar(e, 'year')" @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}")
+            input.big#year(type="text" :value="currentYear" @change.stop="(e) => updateCalendar(e, 'year')" @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}" style='cursor: text;')
             .month
                 .material-symbols-outlined.notranslate.prev(@click="reRender('prev')") arrow_back_ios
                 select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
@@ -354,6 +354,7 @@ let createdDate = (e, date) => {
 
             .month {
                 display: flex;
+                align-items: center;
                 background-color: unset;
                 border: 0;
                 cursor: pointer;

@@ -22,7 +22,7 @@
                 div(v-if='currentService.service.group <= 1' @click='()=>openOffer=true')
                     .router.deact(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
                         span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
-                        span.name Auto Email
+                        span.name Automated Email
                     .router.deact(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter'}")
                         span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'newsletter'}") stacked_email
                         span.name Bulk Email
@@ -32,7 +32,7 @@
                 template(v-else)
                     router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
                         span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
-                        span.name Auto Email
+                        span.name Automated Email
                     router-link.router(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter'}")
                         span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'newsletter'}") stacked_email
                         span.name Bulk Email
@@ -116,7 +116,7 @@ let titleList = [
     "Users",
     "Client Secret Key",
     "Database",
-    "Auto Email",
+    "Automated Email",
     "Bulk Email",
     "File Hosting",
 ];

@@ -2,7 +2,7 @@
 section.infoBox
     .titleHead
         h2 Bulk Email
-        Select(v-model="group" :selectOptions="[{option: 'Newsletter', value: 0}, {option: 'Service Mail', value: 1}]" style='display:inline-block;vertical-align:middle;width:136px' :class='{disabled: fetching}')
+        Select(v-model="group" :selectOptions="[{option: 'Newsletter', value: 0}, {option: 'Service Mail', value: 1}]" style='display:inline-block;vertical-align:middle;width:136px')
 
     hr
     

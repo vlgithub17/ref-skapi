@@ -13,6 +13,8 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
         | Update your subscription plan for service "
         span(style='font-weight:500') {{ serviceList[serviceId].service.name }}
         | "
+        
+    p When upgrade/downgrading your subscription plan, the remaining days will be prorated and the amount will be adjusted accordingly on your next payment.
 
     section
         .planWrap
@@ -183,6 +185,7 @@ let cancelSubs = async () => {
 };
 
 let upgrade = () => {
+    console.log('yoyo')
     if (!subscrOpt.value) {
         return;
     }
@@ -254,18 +257,15 @@ let updateSubscription = async (ticket_id) => {
     let product = JSON.parse(import.meta.env.VITE_PRODUCT);
     let dataObj = {};
 
-    if (serviceList[serviceId]?.subscription?.cancel_at_period_end) {
-        dataObj = {
-            "items[0][id]": SUBSCRIPTION_ITEM_ID,
-            "items[0][price]": product[ticket_id],
-            cancel_at_period_end: false,
-        };
-    } else {
-        dataObj = {
-            "items[0][id]": SUBSCRIPTION_ITEM_ID,
-            "items[0][price]": product[ticket_id],
-            proration_behavior: "create_prorations",
-        };
+    // if (serviceList[serviceId]?.subscription?.cancel_at_period_end) {
+    dataObj = {
+        "items[0][id]": SUBSCRIPTION_ITEM_ID,
+        "items[0][price]": product[ticket_id],
+        cancel_at_period_end: false,
+    };
+    
+    if(!serviceList[serviceId]?.subscription?.canceled_at) {
+        dataObj.proration_behavior = 'create_prorations';
     }
 
     let response = await skapi.clientSecretRequest({

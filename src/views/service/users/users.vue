@@ -4,7 +4,7 @@ section.infoBox
         h2 Users
             
         span.moreInfo(@click="showDes = !showDes")
-            | More Info&nbsp;
+            span More Info&nbsp;
             template(v-if="showDes")
                 .material-symbols-outlined.notranslate.fill expand_circle_up 
                 .material-symbols-outlined.notranslate.noFill expand_circle_up
@@ -93,11 +93,11 @@ section.infoBox
 br
 
 .tableMenu
-    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
         .material-symbols-outlined.notranslate.fill checklist_rtl
         span &nbsp;&nbsp;Show Columns
         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal;color:black")
-            .inner(style="padding:.5rem 1rem .5rem .5rem")
+            .inner
                 Checkbox(v-model="filterOptions.userID" style="display:flex;") User ID
                 Checkbox(v-model="filterOptions.name" style="display:flex") Name
                 Checkbox(v-model="filterOptions.email" style="display:flex") Email
@@ -1002,6 +1002,15 @@ body {
 //     cursor: pointer;
 //     box-shadow: rgba(41, 63, 230, 0.24) 0px 1px 8px;
 // }
+.moreVert {
+    .inner {
+        padding-top: .25rem;
+        &>*{
+            padding: .25rem .5rem;
+        }
+        padding-bottom: .25rem;
+    }
+}
 #searchForm {
     display: flex;
     flex-wrap: wrap;
@@ -1010,9 +1019,9 @@ body {
     width: 700px;
     max-width: 100%;
 
-    .customSelect {
-        flex-grow: 1;
-    }
+    // .customSelect {
+    //     flex-grow: 1;
+    // }
     .search {
         position:relative;
         display: flex;
