@@ -38,14 +38,25 @@ section.infoBox
         p For more details, please refer to the #[a(href="https://docs.skapi.com/database/create.html" target="_blank") Documentation]
 
     hr
+    .error(v-if='!user?.email_verified')
+        .material-symbols-outlined.notranslate.fill warning
+        router-link(to="/account-setting") Please verify your email address to modify settings.
+        
+    .error(v-else-if='currentService.service.active == 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently disabled.
 
-    p Search and manage your database records.
+    .error(v-else-if='currentService.service.active < 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently suspended.
+
+    p(style='margin-bottom:0') Search and manage your database records.
 
 
 form#searchForm(@submit.prevent="setCallParams")
     .inner(style='padding: 1.2rem;')
-        input(type='hidden' name='service' :value='currentService.id')
-        input(type='hidden' name='owner' :value='currentService.owner')
+        input(hidden name='service' :value='currentService.id')
+        input(hidden name='owner' :value='currentService.owner')
         
         .groupWrap(style='margin-bottom:.5rem;')
             .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'public'}" title="public" @click.stop="searchFormValue.table.access_group = 'public'") language
@@ -183,6 +194,8 @@ form#searchForm(@submit.prevent="setCallParams")
 
             div(style='text-align:right')
                 button.btn.final.wideOnMobile(type="submit") Search
+                br
+                br
                 br
 
 br
@@ -406,7 +419,7 @@ br
 
                 .row.indent 
                     .key Name 
-                    input.line.value(v-model='index_name' name='config[index][name]' placeholder='Alphanumeric, periods only.')
+                    input.line.value(v-model='index_name' name='config[index][name]' placeholder='Alphanumeric, periods only.' :required="!!index_value && indexType !== 'boolean' || null")
 
                 .row.indent
                     .key Value
@@ -799,7 +812,7 @@ let upload = async (e: SubmitEvent) => {
             upl = await uploadRecord(e, true, remove_bin);
             bins[upl.record_id] = upl?.bin || {}; // move bin data to bins
             delete upl.bin;
-            await pager.editItems(upl);
+            await pager.editItem(upl);
         } else {
             upl = await uploadRecord(e, false);
             bins[upl.record_id] = upl?.bin || {};
@@ -1034,7 +1047,9 @@ textarea::placeholder {
 
         .icon {
             &:hover {
-                color: var(--main-color) !important;
+                @media (pointer: fine) {
+                    color: var(--main-color) !important;
+                }
             }
             position: absolute;
             top: 50%;

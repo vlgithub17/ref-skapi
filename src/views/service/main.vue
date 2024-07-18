@@ -63,7 +63,7 @@
 
         div(style='font-size:.8rem;')
             p.
-                You can access more features like Automated Email, Bulk Email,
+                You can access more features like Automated Email
                 #[br]
                 and File Hosting by upgrading your service.
                 

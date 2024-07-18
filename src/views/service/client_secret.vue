@@ -47,11 +47,20 @@ section.infoBox
 
     hr
 
-    .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
+    .error(v-if='!user?.email_verified')
         .material-symbols-outlined.notranslate.fill warning
-        router-link(to="/account-setting") Please verify your email address to register client secret keys.
+        router-link(to="/account-setting") Please verify your email address to modify settings.
 
-    p(v-else) Register your client secret keys by clicking '#[b Register Client Secret Key]' below.
+    .error(v-else-if='currentService.service.active == 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently disabled.
+
+    .error(v-else-if='currentService.service.active < 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently suspended.
+
+    p(style='margin-bottom:0') Register your client secret keys by clicking '#[b Register Client Secret Key]' below.
+
 br
 
 .iconClick.square(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}" style='margin-bottom:8px;')

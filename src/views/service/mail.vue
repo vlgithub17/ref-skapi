@@ -5,7 +5,17 @@ section.infoBox
         
         Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:192px;' :class='{disabled: fetching}')
     hr
+    .error(v-if='!user?.email_verified')
+        .material-symbols-outlined.notranslate.fill warning
+        router-link(to="/account-setting") Please verify your email address to modify settings.
+        
+    .error(v-else-if='currentService.service.active == 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently disabled.
 
+    .error(v-else-if='currentService.service.active < 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently suspended.
 
     template(v-if='emailType === "Signup Confirmation"')
         p.
