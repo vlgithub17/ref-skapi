@@ -1,7 +1,7 @@
 <template lang="pug">
 section.infoBox
     .titleHead
-        h2 Automated Email&nbsp;
+        h2(style='white-space: nowrap;') Auto Email&nbsp;
         
         Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:192px;' :class='{disabled: fetching}')
     hr
