@@ -311,7 +311,7 @@ export default class Service {
         this._orgPlan = this.planCode[this.service.group];
         let currTime = new Date().getTime();
         this.service.suspended = this.subscription?.cancel_at && currTime >= this.subscription?.cancel_at * 1000;
-
+        
         if (this.subscription?.canceled_at && currTime >= this.subscription.canceled_at * 1000) {
             this.service.plan = 'Canceled';
         }

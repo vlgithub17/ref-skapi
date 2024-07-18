@@ -96,18 +96,18 @@ section.infoBox
 
 
     hr(style='margin-top: 1.5rem;')
-            
-    .infoValue(:class="{'nonClickable' : !user?.email_verified || currentService.service.plan == 'Canceled'}" style='display: flex;align-items: center;margin-bottom:0;min-height: 0;')
+
+    .infoValue(:class="{'nonClickable' : !user?.email_verified && currentService.service.suspended}" style='display: flex;align-items: center;margin-bottom:0;min-height: 0;')
         .smallTitle Disable/Enable
         Toggle(
             style='display:inline-flex;align-items:center;'
-            :disabled="!user?.email_verified || currentService.service.plan == 'Canceled' || updatingValue.enableDisable"
+            :disabled="!user?.email_verified || currentService.service.suspended || updatingValue.enableDisable"
             :active="currentService.service.active >= 1"
             @click="enableDisable"
         )
 
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
-        .infoValue(:class="{'nonClickable' : !user?.email_verified || currentService.service.plan == 'Canceled'}" style='display: flex;align-items: center;min-height: 0;')
+        .infoValue(style='display: flex;align-items: center;min-height: 0;')
             .smallTitle Allow Signup
             Toggle(
                 style='display:inline-flex;align-items:center;'

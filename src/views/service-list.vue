@@ -66,7 +66,8 @@ main#serviceList
                             // active state
                             .state(v-if="serviceList[id].service.active > 0" style="color:var(--text-green);font-weight:normal;") Running
                             .state(v-else-if="serviceList[id].service.active == 0") Disabled
-                            .state(v-else style='color:var(--caution-color);font-weight:normal') Suspended
+                            .state(v-else-if="serviceList[id].service.suspended" style='color:var(--caution-color);font-weight:normal') Suspended
+                            .state(v-else) -
                         td.overflow
                             // users
                             .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited

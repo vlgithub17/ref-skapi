@@ -19,6 +19,8 @@ br
 
         li All your services will be removed.
 
+        li All your subdomains will be removed immediately.
+
         li The remaining subscription cannot be refunded.
 
     br
@@ -59,11 +61,13 @@ let promiseRunning = ref(false);
 
 let processDelete = async () => {
     promiseRunning.value = true;
+    
     try {
         let disables = [];
         let cancelSubs = [];
         for (let k in serviceList) {
             disables.push(serviceList[k].disableService());
+            disables.push(serviceList[k].registerSubdomain())
         }
         await Promise.all(disables);
 
