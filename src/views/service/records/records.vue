@@ -591,7 +591,7 @@ let colspan =
     Object.values(filterOptions.value).filter((value) => value === true).length + 1;
 
 watch(
-    filterOptions,
+    filterOptions.value,
     (nv) => {
         colspan = Object.values(filterOptions.value).filter((value) => value).length + 1;
         tableKey.value++;
@@ -610,6 +610,13 @@ watch(currentPage, (n, o) => {
         currentPage.value = o;
     }
 });
+
+watch(showDetail, (nv) => {
+    if (nv) {
+        let scrollTarget = document.querySelector(".detailRecord .content");
+        scrollTarget.scrollTop = 0;
+    }
+})
 
 let pager: Pager = null;
 let listDisplay = ref(null);
