@@ -52,7 +52,7 @@ let copy = (e) => {
     .code {
         background: var(--black-8);
         margin-top: 8px;
-        border-radius: 8px;
+        border-radius: 6px;
         box-shadow: 2px 2px 3px 0px rgba(0, 0, 0, 0.15);
         color: #FFF;
         overflow-x: auto;

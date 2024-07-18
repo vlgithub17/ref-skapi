@@ -22,9 +22,6 @@ main
                     .material-symbols-outlined.notranslate menu_book
                     | &nbsp;Read Docs
             
-            br
-            br
-
         section.intact
             .explain.one
                 .image
@@ -73,7 +70,7 @@ main
                 Painstakingly developed to be simple yet powerful, enabling you to build any type of #[span.wordset web application.]
                 #[br]
                 #[br]
-                Whether it's a real-time chat, #[span.wordset e-commerce,] blog, your next SaaS, or a cool new AI product,
+                Whether it's a real-time chat, #[span.wordset e-commerce,] your next SaaS, or a cool new AI product,
                 #[span.wordset you can now create] it all directly from your client-side HTML without needing any backend engineering.
             
             br
@@ -91,33 +88,31 @@ main
             
             br
             
-            h4
-                | Check out our&nbsp;
-                a(href='https://docs.skapi.com/introduction/getting-started.html' target='_blank' style='color:yellow') Documentation
-                | &nbsp;
-                span.wordset to get started
-            a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")    
-                button.final(style='background-color:white;color:black;width:170px')
-                    .material-symbols-outlined.notranslate menu_book
-                    | &nbsp;Read Docs
-
-            br
-            br
-
             div(v-if='user.user_id')
                 h4
-                    | ...or go to&nbsp;
+                    | Go to&nbsp;
                     router-link(to='my-services' style='color:yellow') My Services
-                    | &nbsp;and start building!
+                    | &nbsp;#[span.wordset and start] building!
                 router-link(to="my-services")
                     button.final(style='background-color:white;color:black;width:170px') My Services
             div(v-else)
-                h4
-                    | ...or&nbsp;
+                h2
                     router-link(to='signup' style='color:yellow') Sign-up
-                    | &nbsp;today for FREE and start building!
+                    | &nbsp;today for FREE #[span.wordset and start] building!
                 router-link(to="signup")
                     button.final(style='background-color:white;color:black;width:170px') Sign-Up
+            br
+
+            h4
+                | Check out our&nbsp;
+                a(href='https://docs.skapi.com' target='_blank' style='color:yellow') Documentation
+                | &nbsp;
+                span.wordset to get started
+            a(href="https://docs.skapi.com" target="_blank")    
+                button.final(style='background-color:white;color:black;width:170px')
+                    .material-symbols-outlined.notranslate menu_book
+                    | &nbsp;Read Docs
+            
             br
             br
 
@@ -183,7 +178,7 @@ main
                         #[br]
                         Our easy file hosting system lets you host your HTML files effortlessly.
                         #[br]
-                        In fact, this entire website is built and hosted with Skapi.
+                        In fact, this entire website is built and hosted with Skapi as well.
 
     .dynamo-section
         
@@ -191,7 +186,6 @@ main
             img.symbol(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;width:5em;")
             h2 Start Skapi
             p
-                | You are already signed in.&nbsp;
                 span.wordset
                     | Go to&nbsp;
                     router-link(to='my-services' style='color:yellow') My Services
@@ -214,11 +208,6 @@ main
     br
     br
 
-footer
-    img(src="@/assets/img/logo/logo-white.svg" style="height:1rem;")
-    router-link(to="public/pp.html" target="_blank") Terms of service • Privacy policy
-    span BROADWAYINC PTE. LTD. Singapore.
-    
 </template>
 
 <script setup lang="ts">
@@ -247,7 +236,7 @@ main {
         padding-left: 1.77em;
         margin: 0;
     }
-    margin-bottom:1.5rem;
+    margin-bottom: 1.5rem;
 }
 .li {
     position: relative;
@@ -266,21 +255,9 @@ main {
         margin-bottom: 2em;
     }
 }
-footer {
-    background-color: black;
 
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    & > * {
-        font-size: 0.8rem;
-        color: #fff;
-        margin: 1rem 8px;
-    }
-}
-h2,h3 {
+h2,
+h3 {
     margin-bottom: 1rem;
 }
 p {
@@ -353,7 +330,6 @@ section {
     position: relative;
     gap: 1rem;
 }
-
 
 @media (max-width: 600px) {
     .explain {

@@ -475,7 +475,7 @@ let createdDate = (e, date) => {
 <style lang="less" scoped>
 #calendar {
     width: 340px;
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid rgba(0, 0, 0, 0.15);
     background: #FAFAFA;
     box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);

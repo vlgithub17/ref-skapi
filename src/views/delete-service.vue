@@ -12,7 +12,7 @@ br
     p Once you delete your service you will not be able to recover it.
 
     p Please note:
-    ul
+    ul(style='padding-left: 1em;')
         li Your website will be disconnected from the service.
 
         li All your service users and data will be deleted permanently.
@@ -20,6 +20,8 @@ br
         li All your hosted files will be deleted immediately.
 
         li You will lose your subdomain registration.
+
+    br
 
     p Are you sure you want to delete your service "#[b {{currentService.service.name}}]"?
 
@@ -38,8 +40,9 @@ br
             | &nbsp;&nbsp;
             button.final.warning(type="submit" :class="{disabled: !iUnderstand}" @click='deleteService()') Delete
 
-    br
-    br
+br
+br
+br
     
 </template>
 

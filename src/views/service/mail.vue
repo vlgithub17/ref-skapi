@@ -1,102 +1,104 @@
 <template lang="pug">
-h2(style='margin-bottom: 0')
-    | Automated Email:&nbsp;
-    Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;' :class='{disabled: fetching}')
+section.infoBox
+    .titleHead
+        h2(style='white-space: nowrap;') Auto Email&nbsp;
+        
+        Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:192px;' :class='{disabled: fetching}')
+    hr
 
-hr
 
-template(v-if='emailType === "Signup Confirmation"')
+    template(v-if='emailType === "Signup Confirmation"')
+        p.
+            Signup confirmation email is sent when the signup requires email verification #[span.wordset or when the user tries to recover their disabled account.]
+            #[span.wordset The email contains a link to activate the account.&nbsp;]
+
+            #[br]
+
+            See #[a.wordset(href='https://docs.skapi.com/authentication/signup-confirmation.html' target="_blank") Signup Confirmation]
+            ,
+            #[a.wordset(href='https://docs.skapi.com/user-account/disable-recover-account.html' target="_blank") Disable / Recover Account]
+
+        small Required Placeholder
+        ul
+            li #[b ${link}] - Activation link url. You can append this to the href attribute of the anchor tag.
+
+        small Optional Placeholder
+        ul
+            li #[b ${email}] - User email
+            li #[b ${name}] - User name, normaled to users email if not provided
+            li #[b ${service_name}] - Service name
+
+    template(v-if='emailType === "Welcome Email"')
+        p.
+            Welcome Email is sent when the user successfully logs in after the signup confirmation.
+            #[span.wordset If the signup did not require any signup confirmation, Welcome Email will not be sent]
+
+        small Optional Placeholder
+        ul
+            li #[b ${email}] - User email
+            li #[b ${name}] - User name, normaled to users email if not provided
+            li #[b ${service_name}] - Service name
+
+    template(v-if='emailType === "Verification Email"')
+        p.
+            Verification Email is sent when the user requests to verify their email address or tries to reset their #[span.wordset forgotten password.]
+            #[br]
+            See #[a(href='https://docs.skapi.com/user-account/email-verification.html' target="_blank") Verification Email]
+            ,
+            #[a.wordset(href='https://docs.skapi.com/authentication/forgot-password.html' target="_blank") Forgot Password]
+
+        small Required Placeholder:
+        ul
+            li #[b ${code}] - Verification code.
+
+        small Optional Placeholder:
+        ul
+            li #[b ${email}] - User email
+            li #[b ${name}] - User name, normaled to users email if not provided
+            li #[b ${service_name}] - Service name
+
+    template(v-if='emailType === "Invitation Email"')
+        p.
+            Invitation Email is sent when the user is invited to join the service.
+            #[span.wordset You can invite new users] to your service from the #[router-link(to='users') Users] page.
+            #[span.wordset User can login] with provided email and password after they accept the invitation by clicking on the link provided in the email.
+
+        small Required Placeholder:
+        ul
+            li #[b ${link}] - Invitation accept link url. You can append this to the href attribute of the anchor tag.
+            li #[b ${email}] - User's login email
+            li #[b ${password}] - User's login password
+
+        small Optional Placeholder:
+        ul
+            li #[b ${name}] - User name, normaled to users email if not provided
+            li #[b ${service_name}] - Service name
+
+    p(style='margin-bottom: 0').
+        You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates[group]') email address] provided below:
+    Code
+        pre {{ email_templates[group] }}
+
     p.
-        Signup confirmation email is sent when the signup requires email verification #[span.wordset or when the user tries to recover their disabled account.]
-        #[span.wordset The email contains a link to activate the account.&nbsp;]
-
+        * The senders email address should exactly match your current profile email address: #[b.wordset {{ user.email }}]
         #[br]
-
-        See #[a.wordset(href='https://docs.skapi.com/authentication/signup-confirmation.html' target="_blank") Signup Confirmation]
-        ,
-        #[a.wordset(href='https://docs.skapi.com/user-account/disable-recover-account.html' target="_blank") Disable / Recover Account]
-
-    small Required Placeholder
-    ul
-        li #[b ${link}] - Activation link url. You can append this to the href attribute of the anchor tag.
-
-    small Optional Placeholder
-    ul
-        li #[b ${email}] - User email
-        li #[b ${name}] - User name, normaled to users email if not provided
-        li #[b ${service_name}] - Service name
-
-template(v-if='emailType === "Welcome Email"')
-    p.
-        Welcome Email is sent when the user successfully logs in after the signup confirmation.
-        #[span.wordset If the signup did not require any signup confirmation, Welcome Email will not be sent]
-
-    small Optional Placeholder
-    ul
-        li #[b ${email}] - User email
-        li #[b ${name}] - User name, normaled to users email if not provided
-        li #[b ${service_name}] - Service name
-
-template(v-if='emailType === "Verification Email"')
-    p.
-        Verification Email is sent when the user requests to verify their email address or tries to reset their #[span.wordset forgotten password.]
-        #[br]
-        See #[a(href='https://docs.skapi.com/user-account/email-verification.html' target="_blank") Verification Email]
-        ,
-        #[a.wordset(href='https://docs.skapi.com/authentication/forgot-password.html' target="_blank") Forgot Password]
-
-    small Required Placeholder:
-    ul
-        li #[b ${code}] - Verification code.
-
-    small Optional Placeholder:
-    ul
-        li #[b ${email}] - User email
-        li #[b ${name}] - User name, normaled to users email if not provided
-        li #[b ${service_name}] - Service name
-
-template(v-if='emailType === "Invitation Email"')
-    p.
-        Invitation Email is sent when the user is invited to join the service.
-        #[span.wordset You can invite new users] to your service from the #[router-link(to='users') Users] page.
-        #[span.wordset User can login] with provided email and password after they accept the invitation by clicking on the link provided in the email.
-
-    small Required Placeholder:
-    ul
-        li #[b ${link}] - Invitation accept link url. You can append this to the href attribute of the anchor tag.
-        li #[b ${email}] - User's login email
-        li #[b ${password}] - User's login password
-
-    small Optional Placeholder:
-    ul
-        li #[b ${name}] - User name, normaled to users email if not provided
-        li #[b ${service_name}] - Service name
-
-p(style='margin-bottom: 0').
-    You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates[group]') email address] provided below:
-Code
-    pre {{ email_templates[group] }}
-
-p.
-    * The senders email address should exactly match your current profile email address: #[b.wordset {{ user.email }}]
-    #[br]
-    For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
+        For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
 
 section.infoBox
-    .infoTitle {{emailType}}
+    .infoTitle {{emailType}} Preview
 
     hr
 
     .state
         .smallTitle Subject
-        .ellipsis {{ converter(subjects[group], parseOpt[group]) }}
+        .ellipsis {{ converter(subjects[group], !parseOpt[group]) }}
     .state
         .smallTitle Content
-        small.editHandle(:style='{color: parseOpt[group] ? "black" : null}' @click='parseOpt[group] = true') [Preview]
+        small.editHandle(:style='{color: !parseOpt[group] ? "black" : null}' @click='parseOpt[group] = false') [Preview]
         span &nbsp;|&nbsp;
-        small.editHandle(:style='{color: !parseOpt[group] ? "black" : null}' @click='parseOpt[group] = false') [Original]
+        small.editHandle(:style='{color: parseOpt[group] ? "black" : null}' @click='parseOpt[group] = true') [Original]
 
-    .email
+    .email(style='pointer-events: none;')
         div(v-if='htmls[group] === null') ...
         iframe(v-else :srcdoc='currentTemp' style='width: 100%; height: 300px; border: none;')
 
@@ -107,7 +109,7 @@ br
         .material-symbols-outlined.notranslate.fill mail
         span &nbsp;&nbsp;New {{emailType}}
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill refresh
+        .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
         span &nbsp;&nbsp;Refresh
 
 Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
@@ -209,9 +211,6 @@ Modal(:open="!!emailToUse")
         template(v-else)
             button.noLine(@click="emailToUse = null") Cancel
             button.final(@click="useEmail(emailToUse)") Confirm
-
-br
-br
 
 </template>
 
@@ -524,8 +523,11 @@ let currentTemp = computed(() => {
 })
 
 let converter = (html: string, parsed: boolean, inv: boolean) => {
-    if (!parsed) {
-        html = html.replaceAll('style="font-weight: bold"', 'style="font-weight: bold; pointer-events: none;"');
+    // if (!parsed) {
+    //     html = html.replaceAll('style="font-weight: bold"', 'style="font-weight: bold; pointer-events: none;"');
+    //     return html;
+    // }
+    if(!parsed) {
         return html;
     }
     html = html.replaceAll('${code}', '123456');

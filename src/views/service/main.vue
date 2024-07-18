@@ -1,37 +1,48 @@
 <template lang="pug">
 #serviceMain(v-if="serviceMainLoaded")
-    Sticky(fix-width)
-        br
-        nav.left
-            router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
-                span.material-symbols-outlined.notranslate.fill.nohover home
-                span.name Getting Started
-            router-link.router(:to="`/my-services/${currentService.id}/dashboard`" :class="{'active': route.name == 'dashboard'}")
-                span.material-symbols-outlined.notranslate.fill.nohover dashboard
-                span.name Dashboard & Settings
-            router-link.router(:to="`/my-services/${currentService.id}/users`" :class="{'active': route.name == 'users'}")
-                span.material-symbols-outlined.notranslate.fill.nohover supervisor_account
-                span.name Users
-            router-link.router(:to="`/my-services/${currentService.id}/clientsecret`" :class="{'active': route.name == 'clientsecret'}")
-                span.material-symbols-outlined.notranslate.fill.nohover key
-                span.name Client Secret Key
-            router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
-                span.material-symbols-outlined.notranslate.fill.nohover database
-                span.name Database
-            router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail', 'nonClickable' : currentService.service.group <= 1}")
-                span.material-symbols-outlined.notranslate.fill.nohover email
-                span.name Automated Email
-            router-link.router(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter', 'nonClickable' : currentService.service.group <= 1}")
-                span.material-symbols-outlined.notranslate.fill.nohover stacked_email
-                span.name Bulk Email
-            router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting', 'nonClickable' : currentService.service.group <= 1}")
-                span.material-symbols-outlined.notranslate.fill.nohover language
-                span.name File Hosting
+    #leftNav(style='position:relative')
+        div(style='position: sticky; top: calc(56px + var(--nav-top, 0));')
+            br
+            nav.left
+                router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
+                    span.material-symbols-outlined.notranslate.nohover(:class="{'fill': route.name == 'service'}") home
+                    span.name Getting Started
+                router-link.router(:to="`/my-services/${currentService.id}/dashboard`" :class="{'active': route.name == 'dashboard'}")
+                    span.material-symbols-outlined.notranslate.nohover(:class="{'fill': route.name == 'dashboard'}") settings
+                    span.name Service Settings
+                router-link.router(:to="`/my-services/${currentService.id}/users`" :class="{'active': route.name == 'users'}")
+                    span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'users'}") supervisor_account
+                    span.name Users
+                router-link.router(:to="`/my-services/${currentService.id}/clientsecret`" :class="{'active': route.name == 'clientsecret'}")
+                    span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'clientsecret'}") key
+                    span.name Client Secret Key
+                router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
+                    span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'records'}") database
+                    span.name Database
+                div(v-if='currentService.service.group <= 1' @click='()=>openOffer=true')
+                    .router.deact(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
+                        span.name Auto Email
+                    .router.deact(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'newsletter'}") stacked_email
+                        span.name Bulk Email
+                    .router.deact(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'hosting'}") language
+                        span.name File Hosting
+                template(v-else)
+                    router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
+                        span.name Auto Email
+                    router-link.router(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'newsletter'}") stacked_email
+                        span.name Bulk Email
+                    router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'hosting'}") language
+                        span.name File Hosting
     main.right
         router-view
         br
-        //- br
-        //- br
+        br
         //- hr
         nav.bottom 
             .link
@@ -42,40 +53,87 @@
                 router-link.next(v-if="currentRouter !== 'hosting' && titleList[index+1]" :to="`/my-services/${currentService.id}/${nextRouter}`")
                     .desc Next Page
                     .title {{ titleList[index+1] }}
-        br
-        br
 
     
+    // delete records
+    Modal(:open="openOffer")
+        h4(style='margin:.5em 0 0;') Upgrade
+
+        hr
+
+        div(style='font-size:.8rem;')
+            p.
+                You can access more features like Automated Email, Bulk Email,
+                #[br]
+                and File Hosting by upgrading your service.
+                
+            p Would you like you check out our service plans?
+
+
+        br
+
+        div(style="display: flex; align-items: center; justify-content: space-between;")
+            div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
+                img.loading(src="@/assets/img/loading.png")
+            template(v-else)
+                button.noLine(type="button" @click="openOffer=false;") No
+                router-link(:to='`/subscription/${currentService.id}`')
+                    button.final(type="button" @click="deleteRecords") Yes
 div(v-else style='text-align: center;margin-top: 100px;')
     img.loading(src="@/assets/img/loading.png")
+
+
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
-import { ref, watch } from 'vue';
-import { loginState } from '@/code/user';
-import { serviceList } from '@/views/service-list';
-import { currentService, setService, serviceMainLoaded } from '@/views/service/main';
-import Sticky from '@/components/sticky.vue';
-
+import { useRoute, useRouter } from "vue-router";
+import { ref, watch } from "vue";
+import { loginState } from "@/code/user";
+import { serviceList } from "@/views/service-list";
+import { currentService, setService, serviceMainLoaded } from "@/views/service/main";
+import Modal from "@/components/modal.vue";
 const router = useRouter();
 const route = useRoute();
 
-let serviceId = route.path.split('/')[2];
-let currentRouter = ref('');
-let routerList = ['service', 'dashboard', 'users', 'clientsecret', 'records', 'mail', 'newsletter', 'hosting'];
-let titleList = ['Getting Started', 'Dashboard & Settings', 'Users', 'Client Secret Key', 'Database', 'Automated Email', 'Bulk Email', 'File Hosting'];
+let openOffer = ref(false);
+
+let serviceId = route.path.split("/")[2];
+let currentRouter = ref("");
+let routerList = [
+    "service",
+    "dashboard",
+    "users",
+    "clientsecret",
+    "records",
+    "mail",
+    "newsletter",
+    "hosting",
+];
+let titleList = [
+    "Getting Started",
+    "Service Settings",
+    "Users",
+    "Client Secret Key",
+    "Database",
+    "Auto Email",
+    "Bulk Email",
+    "File Hosting",
+];
 
 let index = 0;
-let prevRouter = ref('');
-let nextRouter = ref('');
-let plan = ref('Trial');
+let prevRouter = ref("");
+let nextRouter = ref("");
+let plan = ref("Trial");
 
-watch(loginState, nv => {
-    if (!nv) {
-        router.push('/login');
-    }
-}, { immediate: true });
+watch(
+    loginState,
+    (nv) => {
+        if (!nv) {
+            router.push("/login");
+        }
+    },
+    { immediate: true }
+);
 
 watch(serviceList, nv => {
     if (nv[serviceId] && currentService?.id !== serviceId) {
@@ -97,43 +155,55 @@ watch(() => route, nv => {
     index = routerList.indexOf(currentRouter.value);
     plan.value = currentService?.plan;
 
-    if(plan.value == 'Trial') {
-        routerList = ['service', 'dashboard', 'users', 'clientsecret', 'records'];
-        titleList = ['Getting Started', 'Dashboard & Settings', 'Users', 'Client Secret Key', 'Database'];
-    }
+        if (plan.value == "Trial") {
+            routerList = ["service", "dashboard", "users", "clientsecret", "records"];
+            titleList = [
+                "Getting Started",
+                "Dashboard & Settings",
+                "Users",
+                "Client Secret Key",
+                "Database",
+            ];
+        }
 
-    if(index == -1) {
-        nextRouter.value = 'dashboard';
-        titleList[0] = 'Dashboard & Settings';
-    } else if(index == 1) {
-        prevRouter.value = '';
-        titleList[0] = 'Getting Started';
-        nextRouter.value = routerList[index+1];
-    } else {
-        prevRouter.value = routerList[index-1];
-        nextRouter.value = routerList[index+1];
-    }
-}, { immediate: true, deep: true});
-
+        if (index == -1) {
+            nextRouter.value = "dashboard";
+            titleList[0] = "Dashboard & Settings";
+        } else if (index == 1) {
+            prevRouter.value = "";
+            titleList[0] = "Getting Started";
+            nextRouter.value = routerList[index + 1];
+        } else {
+            prevRouter.value = routerList[index - 1];
+            nextRouter.value = routerList[index + 1];
+        }
+    },
+    { immediate: true, deep: true }
+);
 </script>
 
 <style lang="less" scoped>
+.deact {
+    background-color: transparent !important;
+    cursor: pointer;
+    color: rgba(0,0,0,0.5) !important;
+}
 #serviceMain {
     position: relative;
-    max-width: 1600px;
+    max-width: 1400px;
     display: flex;
     flex-wrap: nowrap;
     margin: 0 auto;
-
-    .left {
-        margin-right: 1rem;
+    gap: 1em;
+    nav.left {
+        margin-right: 8px;
         margin-left: 8px;
     }
 
     .right {
         width: 50%;
         flex-grow: 1;
-        padding: 8px;
+        padding: 8px 0;
     }
 
     .bottom {
@@ -142,7 +212,7 @@ watch(() => route, nv => {
         flex-wrap: wrap;
         // justify-content: space-between;
         gap: 20px;
-
+        padding: 20px 8px 40px;
         .link {
             // width: calc(50% - 10px);
             flex-grow: 1;
@@ -152,10 +222,10 @@ watch(() => route, nv => {
             a {
                 display: block;
                 border: 1px solid rgba(0, 0, 0, 0.15);
-                border-radius: 8px;
+                border-radius: 6px;
                 padding: 11px 16px 13px;
                 text-decoration: none;
-                transition: all .25s;
+                transition: all 0.25s;
 
                 &:hover {
                     border: 1px solid rgba(41, 63, 230, 0.6);
@@ -164,32 +234,37 @@ watch(() => route, nv => {
                     text-align: right;
                 }
                 .desc {
-                    color: rgba(0,0,0,0.4);
+                    color: rgba(0, 0, 0, 0.4);
                     font-size: 0.8rem;
                 }
                 .title {
                     color: var(--main-color);
                 }
             }
-        }   
+        }
     }
 }
 
 .router {
     display: block;
     padding: 12px;
-    border-radius: 6px;
+    // border-radius: 6px;
     text-decoration: none;
     color: var(--main-color);
     white-space: nowrap;
 
     &.active {
-        background: #293FE60D;
-        box-shadow: -1px -1px 0px 0px rgba(0, 0, 0, 0.1) inset;
+        background: #293fe60d;
+        box-shadow: 0 0 0 1px var(--main-color) inset;
 
         .name {
             font-weight: 700;
         }
+    }
+
+    &:hover {
+        background: #293fe60d;
+        // box-shadow: -1px -1px 0px 0px rgba(0, 0, 0, 0.1) inset;
     }
 
     span {
@@ -203,11 +278,11 @@ watch(() => route, nv => {
     .name {
         font-weight: 500;
         margin-left: 13px;
-        padding-right: 1em;
+        padding-right: 0.25em;
     }
 }
 
-@media (max-width:1023px) {
+@media (max-width: 1023px) {
     .router {
         .name {
             display: none;
@@ -215,9 +290,9 @@ watch(() => route, nv => {
     }
 }
 
-@media (max-width:767px) {
+@media (max-width: 767px) {
     #serviceMain {
-        .left {
+        #leftNav {
             display: none;
         }
     }

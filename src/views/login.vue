@@ -56,6 +56,11 @@ br
                 .signup
                     span No account?&nbsp;
                     router-link(to="/signup") Sign up
+    
+    br
+    br
+    br
+    
 </template>
 
 <script setup lang="ts">
