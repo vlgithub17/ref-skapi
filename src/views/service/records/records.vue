@@ -235,7 +235,7 @@ br
         template(v-slot:head)
             tr
                 th(style='width:60px;')
-                    Checkbox(@click.stop v-model='checkedall' @change='checkall' :class='{nonClickable: !listDisplay || !listDisplay.length}' style="display:inline-block")
+                    Checkbox(@click.stop v-model='checkedall' @change='checkall' :class='{nonClickable: !listDisplay || !listDisplay?.length}' style="display:inline-block")
                     .resizer
                 th.overflow(v-if="filterOptions.table" style='width:160px;')
                     | Table
@@ -288,7 +288,7 @@ br
             template(v-if="fetching")
                 tr(v-for="i in 10")
                     td(:colspan="colspan")
-            template(v-else-if="!listDisplay || listDisplay.length === 0")
+            template(v-else-if="!listDisplay || listDisplay?.length === 0")
                 tr
                     td#noUsers(:colspan="colspan") No Records
                 tr(v-for="i in 9")
@@ -333,7 +333,7 @@ br
                     td.overflow(v-if="filterOptions.allow_multiple_reference")
                         .material-symbols-outlined.notranslate.fill(v-if="rc.reference.allow_multiple_reference") check_circle
                     td.overflow(v-if="filterOptions.ip") {{ rc.ip }}
-                tr(v-for="i in (10 - listDisplay.length)")
+                tr(v-for="i in (10 - listDisplay?.length)")
                     td(:colspan="colspan")
 
     form.detailRecord(:class="{show: showDetail}" @submit.prevent="upload")
@@ -342,7 +342,7 @@ br
                 .material-symbols-outlined.notranslate(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[];" :class="{nonClickable: fetching}") arrow_back
                 .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
                 template(v-if="uploading")
-                    img.loading(src="@/assets/img/loading.png")
+                    img.loading(style='margin: 12px;' src="@/assets/img/loading.png")
                 template(v-else)
                     button.noLine.iconClick.square(type="submit" style='padding:0 14px') SAVE
             .content(:class="{nonClickable: uploading}")
@@ -603,7 +603,7 @@ let listDisplay = ref(null);
 
 let bins: {
     [record_id: string]: { [key: string]: any };
-} = {};
+} = reactive({});
 
 let searchFormValue = reactive({
     table: {
@@ -646,8 +646,13 @@ let getPage = async (refresh?: boolean) => {
     }
 
     if ((!refresh && maxPage.value >= currentPage.value) || endOfList.value) {
-        listDisplay.value = pager.getPage(currentPage.value).list;
+        console.log('ma here?')
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        console.log(disp.list);
+        listDisplay.value = disp.list;
         return;
+
     } else if (!endOfList.value || refresh) {
         fetching.value = true;
 
@@ -710,7 +715,7 @@ let init = async () => {
         id: "record_id",
         resultsPerPage: 10,
         sortBy: callParams?.index?.name || "record_id",
-        order: callParams?.index?.name && (callParams?.index?.condition || "").includes("<") ? "desc" : "asc",
+        order: callParams?.index?.name && (callParams?.index?.condition || "").includes("<") ? "desc" : callParams?.table?.name ? "asc" : "desc",
     });
 
     getPage(true);
@@ -789,19 +794,25 @@ let upload = async (e: SubmitEvent) => {
     }
 
     try {
+        let upl = null;
         if (selectedRecord.value?.record_id) {
-            await uploadRecord(e, true, remove_bin);
+            upl = await uploadRecord(e, true, remove_bin);
+            bins[upl.record_id] = upl?.bin || {}; // move bin data to bins
+            delete upl.bin;
+            await pager.editItems(upl);
         } else {
-            await uploadRecord(e, false);
+            upl = await uploadRecord(e, false);
+            bins[upl.record_id] = upl?.bin || {};
+            delete upl.bin;
+            await pager.insertItems(upl);
         }
-
         uploading.value = false;
         showDetail.value = false;
         index_name.value = "";
         index_value.value = "";
         selectedRecord.value = createRecordTemplate;
         fileList.value = [];
-        getPage(true);
+        getPage();
     } catch (err: any) {
         uploading.value = false;
         alert(err.message);
@@ -894,8 +905,10 @@ let checkall = () => {
             delete checked.value[k];
         }
     }
-    for (let i in listDisplay.value) {
-        checked.value[listDisplay.value[i].record_id] = checkedall.value;
+    if(listDisplay.value) {
+        for (let i in listDisplay.value) {
+            checked.value[listDisplay.value[i].record_id] = checkedall.value;
+        }
     }
 };
 let noSelection = computed(() => {

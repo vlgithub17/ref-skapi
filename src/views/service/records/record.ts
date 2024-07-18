@@ -2,6 +2,7 @@ import { skapi } from "@/code/admin"
 import { currentService } from "../main";
 import { ref, computed } from "vue";
 import jsonCrawler from 'jsoncrawler'; // https://github.com/broadwayinc/jsoncrawler 참고
+import { compileScript } from "vue/compiler-sfc";
 let parseBinEndpoint = async (r: string[]) => {
     let binObj: any = {};
     if (Array.isArray(r)) {
@@ -27,13 +28,13 @@ let parseBinEndpoint = async (r: string[]) => {
                 path,
                 size: skapi.util.fromBase62(size),
                 uploaded: skapi.util.fromBase62(uploaded),
-                getFile: (dataType: 'base64' | 'endpoint' | 'blob' | 'download', progress: (c: any) => void) => {
-                    let config = {
-                        dataType: dataType || 'download',
-                        progress
-                    };
-                    return skapi.getFile(url, config);
-                }
+                // getFile: (dataType: 'base64' | 'endpoint' | 'blob' | 'download', progress: (c: any) => void) => {
+                //     let config = {
+                //         dataType: dataType || 'download',
+                //         progress
+                //     };
+                //     return skapi.getFile(url, config);
+                // }
             };
             if (binObj[pathKey]) {
                 binObj[pathKey].push(obj);
@@ -130,7 +131,7 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { 
         }
 
         let { bin_endpoints } = await skapi.uploadFiles(bin_formData, uploadFileParams);
-
+        console.log({bin_endpoints})
         let bin = await parseBinEndpoint(bin_endpoints);
 
         if (!rec.bin) {
@@ -140,6 +141,6 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { 
             Object.assign(rec.bin, bin)
         }
     }
-
+    console.log({rec})
     return rec;
 }

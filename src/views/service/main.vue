@@ -19,15 +19,26 @@
                 router-link.router(:to="`/my-services/${currentService.id}/records`" :class="{'active': route.name == 'records'}")
                     span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'records'}") database
                     span.name Database
-                router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail', 'nonClickable' : currentService.service.group <= 1}")
-                    span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
-                    span.name Automated Email
-                router-link.router(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter', 'nonClickable' : currentService.service.group <= 1}")
-                    span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'newsletter'}") stacked_email
-                    span.name Bulk Email
-                router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting', 'nonClickable' : currentService.service.group <= 1}")
-                    span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'hosting'}") language
-                    span.name File Hosting
+                div(v-if='currentService.service.group <= 1' @click='()=>openOffer=true')
+                    .router.deact(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
+                        span.name Automated Email
+                    .router.deact(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'newsletter'}") stacked_email
+                        span.name Bulk Email
+                    .router.deact(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'hosting'}") language
+                        span.name File Hosting
+                template(v-else)
+                    router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
+                        span.name Automated Email
+                    router-link.router(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'newsletter'}") stacked_email
+                        span.name Bulk Email
+                    router-link.router(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting'}")
+                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'hosting'}") language
+                        span.name File Hosting
     main.right
         router-view
         br
@@ -44,8 +55,34 @@
                     .title {{ titleList[index+1] }}
 
     
+    // delete records
+    Modal(:open="openOffer")
+        h4(style='margin:.5em 0 0;') Upgrade
+
+        hr
+
+        div(style='font-size:.8rem;')
+            p.
+                You can access more features like Automated Email, Bulk Email,
+                #[br]
+                and File Hosting by upgrading your service.
+                
+            p Would you like you check out our service plans?
+
+
+        br
+
+        div(style="display: flex; align-items: center; justify-content: space-between;")
+            div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
+                img.loading(src="@/assets/img/loading.png")
+            template(v-else)
+                button.noLine(type="button" @click="openOffer=false;") No
+                router-link(:to='`/subscription/${currentService.id}`')
+                    button.final(type="button" @click="deleteRecords") Yes
 div(v-else style='text-align: center;margin-top: 100px;')
     img.loading(src="@/assets/img/loading.png")
+
+
 </template>
 
 <script setup lang="ts">
@@ -54,9 +91,11 @@ import { ref, watch } from "vue";
 import { loginState } from "@/code/user";
 import { serviceList } from "@/views/service-list";
 import { currentService, setService, serviceMainLoaded } from "@/views/service/main";
-
+import Modal from "@/components/modal.vue";
 const router = useRouter();
 const route = useRoute();
+
+let openOffer = ref(false);
 
 let serviceId = route.path.split("/")[2];
 let currentRouter = ref("");
@@ -144,6 +183,11 @@ watch(() => route, nv => {
 </script>
 
 <style lang="less" scoped>
+.deact {
+    background-color: transparent !important;
+    cursor: pointer;
+    color: rgba(0,0,0,0.5) !important;
+}
 #serviceMain {
     position: relative;
     max-width: 1400px;

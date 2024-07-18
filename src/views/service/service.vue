@@ -41,7 +41,7 @@ section.infoBox
         .smallTitle Subscription
         .smallValue(:style='{fontWeight:currentService.service.plan == "Canceled" ? "normal" : null, color:currentService.service.plan == "Canceled" ? "var(--caution-color)" : null}')
             span {{ currentService.service.plan || currentService.plan }}&nbsp;
-            router-link.editHandle(:to='`/subscription/${currentService.id}`' @click="editCors") [CHANGE]
+            router-link.editHandle(:to='`/subscription/${currentService.id}`') [CHANGE]
 
     .state 
         .smallTitle {{currentService.service.plan == "Canceled" ? '-' : 'Renewal Date'}}
