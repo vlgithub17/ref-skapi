@@ -111,11 +111,11 @@ let routerList = [
 ];
 let titleList = [
     "Getting Started",
-    "Dashboard & Settings",
+    "Service Settings",
     "Users",
     "Client Secret Key",
     "Database",
-    "Automated Email",
+    "Auto Email",
     "Bulk Email",
     "File Hosting",
 ];
