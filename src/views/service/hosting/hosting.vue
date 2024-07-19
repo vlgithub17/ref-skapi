@@ -399,11 +399,11 @@ let change404 = async (e: any) => {
         // get current 13 digit timestamp
         let pager = folders['!'].pager;
 
-        await pager.editItem([{
+        await pager.editItem({
             name: up.completed[0].name,
             size: up.completed[0].size,
             upl: Date.now(),
-        }]);
+        });
 
         getFileList();
 
