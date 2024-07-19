@@ -8,10 +8,10 @@ let newDate = date.toLocaleString();
 
 data = data.replace(/(VITE_DATE\s*=\s*")[^"]*(")/, `$1${newDate}$2`);
 
-console.log(data);
+// console.log(data);
 
 fs.writeFileSync('.env.production', data);
-console.log('File written successfully!');
+// console.log('File written successfully!');
 
 const https = require('https');
 
@@ -32,7 +32,7 @@ https.get(url, (response) => {
                 console.error('파일을 쓰는 중 오류가 발생했습니다:', err);
                 return;
             }
-            console.log('파일이 성공적으로 덮어쓰기 되었습니다.');
+            // console.log('파일이 성공적으로 덮어쓰기 되었습니다.');
         });
     });
 }).on('error', (error) => {

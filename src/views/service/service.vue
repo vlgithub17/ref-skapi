@@ -256,7 +256,7 @@ let changeName = () => {
         }).then(() => {
             updatingValue.name = false;
             currentService.service.name = inputName;
-            console.log(currentService)
+            // console.log(currentService)
             modifyMode.name = false;
         }).catch(err => {
             updatingValue.name = false;

@@ -89,7 +89,7 @@ export default class Pager {
                 if (event.data) {
                     this.map = event.data;
                 }
-                console.log(this.list, this.id, item);
+                // console.log(this.list, this.id, item);
                 if(this.list?.[item[this.id]]) {
                     Object.assign(this.list[item[this.id]], item);
                 }

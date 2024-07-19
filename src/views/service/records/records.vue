@@ -491,7 +491,7 @@ br
                                         label.filename(v-else) {{ value?.filename || "Choose a file"}}
                                             input(@click.stop type="file" @change="e=>{ value.filename = e.target.files[0].name }" required hidden :name='value.key')
                     
-                    .add(@click="addFile" style='margin-top: 1em;')
+                    .add(:class="{disabled: selectedRecord_private}" @click="addFile" style='margin-top: 1em;')
                         .material-symbols-outlined.notranslate.fill add_circle
                         span &nbsp;Add File
 
@@ -696,7 +696,7 @@ let getPage = async (refresh?: boolean) => {
         // insert data in pager
         if (fetchedData.list.length > 0) {
             await pager.insertItems(fetchedData.list);
-            console.log(pager);
+            // console.log(pager);
         }
 
         // get page from pager

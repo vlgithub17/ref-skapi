@@ -185,7 +185,7 @@ let cancelSubs = async () => {
 };
 
 let upgrade = () => {
-    console.log('yoyo')
+    // console.log('yoyo')
     if (!subscrOpt.value) {
         return;
     }

@@ -778,7 +778,7 @@ let getPage = async (refresh?: boolean) => {
             callParams.value.condition = '<=';
         }
 
-        console.log(callParams.value)
+        // console.log(callParams.value)
 
         let fetchedData = await skapi.getUsers(callParams.value, { fetchMore: !refresh, ascending: !searchValue.value ? false : true }).catch((err) => {
             fetching.value = false;
@@ -872,7 +872,7 @@ let createUser = () => {
         createParams = Object.assign({gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value}, createParams)
     }
 
-    console.log({createParams})
+    // console.log({createParams})
 
     currentService.admin_signup(Object.assign({service: currentService.id}, createParams)).then(async(res) => {
         res.email = res.email_admin;

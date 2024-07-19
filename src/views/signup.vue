@@ -120,11 +120,11 @@ let signup = (e) => {
     }
 
     skapi.signup(params, options).then(res => {
-        console.log(res);
+        // console.log(res);
         router.push({ path: '/confirmation', query: { email: form.value.email } })
     }).catch(err => {
-        console.log(err)
-        console.log(err.code)
+        // console.log(err)
+        // console.log(err.code)
         promiseRunning.value = false;
 
         switch (err.code) {

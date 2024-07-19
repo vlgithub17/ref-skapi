@@ -718,7 +718,7 @@ export default class Service {
 
         let exec = async (time = 1000) => {
             let info = await skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service: this.id, owner: this.owner }, { auth: true });
-            console.log({ subInfo: info });
+            // console.log({ subInfo: info });
 
             if (typeof info === 'string' || !info || typeof info === 'object' && Object.keys(info).length === 0) {
                 // subdomain removed
@@ -1069,7 +1069,7 @@ export default class Service {
             method: 'post',
             auth: true
         });
-        console.log({ dirInfo })
+        // console.log({ dirInfo })
         if (dirInfo) {
             Object.assign(this.dirInfo, dirInfo);
         }
@@ -1105,7 +1105,7 @@ export default class Service {
             method: 'post',
             auth: true
         });
-        console.log({ dirList });
+        // console.log({ dirList });
         return dirList;
     }
 
