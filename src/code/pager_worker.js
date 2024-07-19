@@ -95,11 +95,9 @@ self.addEventListener('message', (event) => {
 
         if (previousIndexValue !== updatedIndexValue) {
             event.data.map = deleteItem(event);
-            postMessage(insertItems(event));
         }
-        else {
-            postMessage(null); // no map updates
-        }
+        
+        postMessage(insertItems(event));
     }
 
     else if (method === 'delete') {

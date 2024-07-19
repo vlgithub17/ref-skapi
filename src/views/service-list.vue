@@ -49,7 +49,7 @@ main#serviceList
             template(v-slot:body)
                 tr(v-if="callServiceList")
                     td(colspan="8").
-                        Loading services ... &nbsp;
+                        Loading ... &nbsp;
                         #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
                 tr(v-else-if="!Object.keys(serviceIdList).length")
                     td(colspan="8") You have no services yet.
