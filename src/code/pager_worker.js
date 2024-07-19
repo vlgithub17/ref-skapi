@@ -90,13 +90,16 @@ self.addEventListener('message', (event) => {
 
     else if (method === 'edit') {
         let { items, list, id, sortBy } = event.data;
-        const previousIndexValue = getIndexValue(list[items[0][id]], sortBy);
-        const updatedIndexValue = getIndexValue(items[0], sortBy);
+        try {
+            const previousIndexValue = getIndexValue(list[items[0][id]], sortBy);
+            const updatedIndexValue = getIndexValue(items[0], sortBy);
 
-        if (previousIndexValue !== updatedIndexValue) {
-            event.data.map = deleteItem(event);
+            if (previousIndexValue !== updatedIndexValue) {
+                event.data.map = deleteItem(event);
+            }
+        } catch (err) {
+            // no index
         }
-        
         postMessage(insertItems(event));
     }
 
