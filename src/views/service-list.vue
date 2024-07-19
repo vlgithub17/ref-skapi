@@ -93,6 +93,8 @@ main#serviceList
                             .percent.purple(v-if="serviceList[id].plan == 'Unlimited'") Unlimited
                             .percent(v-else :class="getClass(serviceList[id], 'email')") {{ serviceList[id].plan === 'Trial' ? 'N/A' : calculateEmailPercentage(serviceList[id].storageInfo.email, serviceList[id].plan) + '%' }}
 
+    br
+    br
 </template>
 
 <script setup lang="ts">
