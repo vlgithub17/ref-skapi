@@ -121,7 +121,7 @@ template(v-else)
             .material-symbols-outlined.notranslate.fill delete
             span &nbsp;&nbsp;Delete Selected
 
-        .iconClick.square(@click='openRefreshCdn=true' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
+        // .iconClick.square(@click='openRefreshCdn=true' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
             .material-symbols-outlined.notranslate.fill(:class='{loading:currentService.pending.cdn}') refresh
             span &nbsp;&nbsp;Refresh CDN
 
@@ -282,7 +282,7 @@ template(v-else)
                 button.noLine.warning(@click="openRemove404 = false") Cancel
                 button.final.warning(@click="remove404") Remove
 
-    Modal(:open="openRefreshCdn")
+    // Modal(:open="openRefreshCdn")
         h4(style='margin:.5em 0 0;') Refresh CDN
 
         hr
