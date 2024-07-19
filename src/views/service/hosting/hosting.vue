@@ -604,7 +604,7 @@ let numberOfSelected = computed(() => {
 
 let subdomainReady = computed(() => {
     let sd = currentService.service.subdomain;
-    console.log({sd})
+    // console.log({sd})
     if(!sd) {
         return 'no-subdomain';
     }
@@ -632,7 +632,7 @@ watch(subdomainReady,
             fetching.value = true;
             if(n !== 'no-subdomain') {
                 if(!currentService.dirInfo.path) {
-                    console.log('getdirinfo')
+                    // console.log('getdirinfo')
                     currentService.getDirInfo();
                 }
             }
@@ -665,7 +665,7 @@ async function getFileList(refresh = false) {
 
     let currDir = currentDirectory.value || '!';
     let hasPage = folders?.[currDir]?.pager;
-    console.log({hasPage, refresh});
+    // console.log({hasPage, refresh});
 
     let pager = null;
 
@@ -675,7 +675,7 @@ async function getFileList(refresh = false) {
     }
 
     if (!hasPage || refresh && refresh !== 'conditional') {
-        console.log('im i not here?')
+        // console.log('im i not here?')
         folders[currDir] = {
             pager: await Pager.init({
                 id: 'name',
@@ -689,21 +689,21 @@ async function getFileList(refresh = false) {
         endOfList[currDir] = false;
     }
 
-    console.log({
-        currentPage: currentPage.value,
-        maxPage: maxPage.value,
-    })
+    // console.log({
+    //     currentPage: currentPage.value,
+    //     maxPage: maxPage.value,
+    // })
 
     pager = folders[currDir].pager;
     if (refresh && refresh !== 'conditional' || !endOfList[currDir] && currentPage.value > maxPage.value) {
-        console.log('fetch')
+        // console.log('fetch')
         try {
             let l = await currentService.listHostDirectory({ dir: currentDirectory.value }, !(refresh || maxPage.value == 0));
-            console.log({l})
+            // console.log({l})
             if (l.list.length > 0) {
                 await pager.insertItems(l.list);
                 let fl = pager.getPage(currentPage.value);
-                console.log({fl})
+                // console.log({fl})
                 listDisplay.value = fl.list;
                 maxPage.value = fl.maxPage;
                 endOfList[currDir] = l.endOfList;

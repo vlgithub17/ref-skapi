@@ -106,7 +106,7 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { 
         delete obj[p.key];
     }
 
-    console.log({ config });
+    // console.log({ config });
 
     // upload json data first
     let rec;
@@ -131,7 +131,7 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { 
         }
 
         let { bin_endpoints } = await skapi.uploadFiles(bin_formData, uploadFileParams);
-        console.log({bin_endpoints})
+        // console.log({bin_endpoints})
         let bin = await parseBinEndpoint(bin_endpoints);
 
         if (!rec.bin) {
@@ -141,6 +141,6 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { 
             Object.assign(rec.bin, bin)
         }
     }
-    console.log({rec})
+    // console.log({rec})
     return rec;
 }

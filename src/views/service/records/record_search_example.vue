@@ -143,7 +143,7 @@ async function extractForm(e) {
     let form = skapi.util.extractFormData(e);
     let params = form.data;
 
-    console.log(form)
+    // console.log(form)
 
     if (params?.index?.condition === 'range') {
         delete params.index.condition;
@@ -159,12 +159,12 @@ async function extractForm(e) {
         delete obj[p.key];
     }
 
-    console.log(params);
+    // console.log(params);
 
     try {
         let records = await skapi.getRecords(params, fetchOption);
         fetchOption.fetchMore = true;
-        console.log(records); // 가져온 데이터
+        // console.log(records); // 가져온 데이터
     } catch (err) {
         alert(err.message);
     }

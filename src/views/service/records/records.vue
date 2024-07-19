@@ -696,7 +696,7 @@ let getPage = async (refresh?: boolean) => {
         // insert data in pager
         if (fetchedData.list.length > 0) {
             await pager.insertItems(fetchedData.list);
-            console.log(pager);
+            // console.log(pager);
         }
 
         // get page from pager

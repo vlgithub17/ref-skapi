@@ -59,7 +59,7 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                 }
 
                 let fPathSplit = fPath.split('/');
-                console.log(fPathSplit);
+                // console.log(fPathSplit);
                 if (fPathSplit.length === 1) {
                     if (fPathSplit[0] === '') {
                         let folder = serviceFolders[currentService.service.subdomain]['!'].pager;
