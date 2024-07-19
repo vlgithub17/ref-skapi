@@ -78,7 +78,7 @@ main
         .intact
             .icoHead
                 .material-symbols-outlined.notranslate.yellow construction
-                h2 Build Anything, Fast
+                h2 Build Anything Fast
             p.
                 Skapi is a JavaScript library designed for #[span.wordset client-side] HTML. 
                 #[br]
