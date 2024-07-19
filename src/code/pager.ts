@@ -81,14 +81,21 @@ export default class Pager {
         }
     ): Promise<"Edit Saved"> {
         let { withinRange = false } = options || {};
-
+        if(Array.isArray(item)) {
+            throw new Error('item should be an object');
+        }
         return new Promise((res) => {
             this.worker.onmessage = (event: any) => {
                 if (event.data) {
                     this.map = event.data;
                 }
-
-                Object.assign(this.list[item[this.id]], item);
+                console.log(this.list, this.id, item);
+                if(this.list?.[item[this.id]]) {
+                    Object.assign(this.list[item[this.id]], item);
+                }
+                else {
+                    this.list[item[this.id]] = item;
+                }
                 res("Edit Saved");
             };
             this.worker.postMessage({
