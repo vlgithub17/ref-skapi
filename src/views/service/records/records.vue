@@ -238,7 +238,7 @@ br
 .recordPart 
     template(v-if="fetching")
         #loading.
-            Loading Records ... &nbsp;
+            Loading ... &nbsp;
             #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
             
     Table(:key="tableKey" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}" resizable)
