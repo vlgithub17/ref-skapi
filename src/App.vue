@@ -4,7 +4,7 @@ div(style='min-height: calc(100vh - 1px - var(--footer-height, 0));' :style='{"-
 
 footer#footer
     img(src="@/assets/img/logo/logo-white.svg" style="height:.88rem;")
-    router-link(to="public/pp.html" target="_blank") Terms of service • Privacy policy
+    router-link(to="/pp.html" target="_blank") Terms of service • Privacy policy
     span.hideOnMobile BROADWAYINC PTE. LTD. Singapore.
     
 </template>
