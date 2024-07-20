@@ -18,6 +18,9 @@ main
                 pre npm i skapi-js@latest
 
             p(style='text-align:right;')
+                
+                small Current Version: 1.0.112
+                br
                 a(href='https://docs.skapi.com/introduction/getting-started.html' target='_blank' style='color:yellow')
                     .material-symbols-outlined.notranslate menu_book
                     | &nbsp;Read Docs
