@@ -32,3 +32,4 @@ playground.js
 package-lock.json
 .env.development
 .env.production
+deploy.py

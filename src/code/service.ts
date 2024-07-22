@@ -1049,6 +1049,7 @@ export default class Service {
             service: this.id,
             owner: this.owner,
             endpoints: params.paths,
+            reserved_key: this.reserved_key,
             storage: 'host'
         }, { auth: true, method: 'post' });
     }
