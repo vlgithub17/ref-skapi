@@ -19,11 +19,10 @@ section.infoBox
 
     template(v-if='emailType === "Signup Confirmation"')
         p.
-            Signup confirmation email is sent when the signup requires email verification #[span.wordset or when the user tries to recover their disabled account.]
-            #[span.wordset The email contains a link to activate the account.&nbsp;]
+            Signup confirmation email is sent when the signup requires email verification or when the user tries to recover their disabled account.
+            The email contains a link to activate the account.
 
-            #[br]
-
+        p.
             See #[a.wordset(href='https://docs.skapi.com/authentication/signup-confirmation.html' target="_blank") Signup Confirmation]
             ,
             #[a.wordset(href='https://docs.skapi.com/user-account/disable-recover-account.html' target="_blank") Disable / Recover Account]
@@ -52,7 +51,7 @@ section.infoBox
     template(v-if='emailType === "Verification Email"')
         p.
             Verification Email is sent when the user requests to verify their email address or tries to reset their #[span.wordset forgotten password.]
-            #[br]
+        p.
             See #[a(href='https://docs.skapi.com/user-account/email-verification.html' target="_blank") Verification Email]
             ,
             #[a.wordset(href='https://docs.skapi.com/authentication/forgot-password.html' target="_blank") Forgot Password]
