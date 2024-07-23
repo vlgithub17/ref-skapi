@@ -181,7 +181,7 @@ let availablePlans = computed(() => {
 let cancelSubs = async () => {
     promiseRunning.value = true;
     await serviceList[serviceId].cancelSubscription();
-    location.href = "/my-services/" + serviceList[serviceId].id;
+    location.href = "/my-services/" + serviceList[serviceId].id + "/dashboard/";
 };
 
 let upgrade = () => {
@@ -224,7 +224,7 @@ let createSubscription = async (ticket_id, service_info) => {
             cancel_url: currentUrl.origin + "/subscription/" + service_info.id,
             "line_items[0][quantity]": 1,
             "line_items[0][price]": product[ticket_id],
-            success_url: currentUrl.origin + "/my-services/" + service_info.id,
+            success_url: currentUrl.origin + "/my-services/" + service_info.id + "/dashboard/",
             "tax_id_collection[enabled]": true,
         },
     });
@@ -285,7 +285,7 @@ let updateSubscription = async (ticket_id) => {
         return;
     }
 
-    location.href = "/my-services/" + serviceList[serviceId].id;
+    location.href = "/my-services/" + serviceList[serviceId].id + "/dashboard/";
 };
 </script>
 
