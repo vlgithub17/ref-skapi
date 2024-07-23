@@ -615,7 +615,16 @@ watch(currentPage, (n, o) => {
 watch(showDetail, (nv) => {
     if (nv) {
         let scrollTarget = document.querySelector(".detailRecord .content");
+        let detailRecord = document.querySelector(".detailRecord");
+        let targetTop = window.scrollY + detailRecord.getBoundingClientRect().top;
         scrollTarget.scrollTop = 0;
+        window.scrollTo(0, targetTop);
+
+        // nextTick(() => {
+        //     let nav = document.getElementById("navBar");
+
+        //     console.log(nav.getBoundingClientRect().bottom)
+        // })
     }
 });
 
