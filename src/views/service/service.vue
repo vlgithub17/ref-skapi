@@ -1,32 +1,47 @@
 <template lang="pug">
 
 section.infoBox
-    .infoTitle Dashboard
+    h2 Service Settings
 
     hr
-    .state.nobreak
+
+    
+    .error(v-if='!user?.email_verified')
+        .material-symbols-outlined.notranslate.fill warning
+        router-link(to="/account-setting") Please verify your email address to modify settings.
+        br
+        br
+
+    .error(v-else-if='currentService.service.active == 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently disabled.
+        br
+        br
+
+    .error(v-else-if='currentService.service.active < 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently suspended.
+        br
+        br
+
+    //- .state 
+    //-     .smallTitle State
+    //-     .smallValue
+    //-         span(v-if="currentService.service.active == 0" style="color:var(--caution-color);") Disabled
+    //-         span(v-else-if="currentService.service.active <= -1" style="color:var(--caution-color);") Suspended
+    //-         span(v-else-if="currentService.service.active >= 1") Running
+    //-         span(v-else) -
+
+    .state
         .smallTitle Service ID
-        .ellipsis {{ currentService.id }}
+        .smallValue {{ currentService.id }}
 
-    .state.nobreak
-        .smallTitle Owner ID
-        .ellipsis {{ currentService.service.owner }}
-
-    br
-
-    .state 
-        .smallTitle State
-        .smallValue
-            span(v-if="currentService.service.active == 0" style="font-weight:normal;") Disabled
-            span(v-else-if="currentService.service.active <= -1" style="color:var(--caution-color);font-weight:normal") Suspended
-            span(v-else-if="currentService.service.active >= 1" style='color: var(--text-green);font-weight:normal;') Running
-            span(v-else) -
 
     .state
         .smallTitle Subscription
         .smallValue(:style='{fontWeight:currentService.service.plan == "Canceled" ? "normal" : null, color:currentService.service.plan == "Canceled" ? "var(--caution-color)" : null}')
             span {{ currentService.service.plan || currentService.plan }}&nbsp;
-            router-link.editHandle(:to='`/subscription/${currentService.id}`' @click="editCors") [CHANGE]
+            router-link.editHandle(:to='`/subscription/${currentService.id}`') [CHANGE]
 
     .state 
         .smallTitle {{currentService.service.plan == "Canceled" ? '-' : 'Renewal Date'}}
@@ -42,11 +57,6 @@ section.infoBox
         .smallTitle Date Created
         .smallValue {{ currentService.dateCreated }}
 
-    .state 
-        .smallTitle File Hosting
-        .smallValue {{ currentService.service.subdomain ? currentService.service.subdomain + '.skapi.com' : 'None' }}
-
-    br
 
     .state 
         .smallTitle Users 
@@ -69,111 +79,100 @@ section.infoBox
             span(v-else-if="currentService.plan == 'Premium'") 1TB
             span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
-    .state 
-        .smallTitle Email Storage
-        .smallValue {{ getFileSize(currentService.storageInfo.email) }} / 
-            span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 1GB
-            span(v-else-if="currentService.plan == 'Premium'") 10GB
-            span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+    template(v-if="currentService.plan !== 'Trial'")
+        .state 
+            .smallTitle File Hosting
+            .smallValue {{ getFileSize(currentService.storageInfo.host) }} / 
+                span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
+                span(v-else-if="currentService.plan == 'Premium'") 1TB
+                span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
-    .state 
-        .smallTitle File Hosting
-        .smallValue {{ getFileSize(currentService.storageInfo.host) }} / 
-            span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
-            span(v-else-if="currentService.plan == 'Premium'") 1TB
-            span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+        .state 
+            .smallTitle Email Storage
+            .smallValue {{ getFileSize(currentService.storageInfo.email) }} / 
+                span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 1GB
+                span(v-else-if="currentService.plan == 'Premium'") 10GB
+                span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
 
-br
 
-section.infoBox
-    .error(v-if='!user?.email_verified')
-        .material-symbols-outlined.fill warning
-        router-link(to="/account-setting") Please verify your email address to modify settings.
+    hr(style='margin-top: 1.5rem;')
 
-    .error(v-else-if='currentService.service.active == 0')
-        .material-symbols-outlined.fill warning
-        span This service is currently disabled.
-
-    .error(v-else-if='currentService.service.active < 0')
-        .material-symbols-outlined.fill warning
-        span This service is currently suspended.
-
-    .infoTitle(v-else style="margin-right: 1rem;")
-        | Settings&nbsp;
-        a.question(href='https://docs.skapi.com/security/security-settings.html' target="_blank")
-            .material-symbols-outlined.empty help 
-            span Help
-
-    hr
+    .infoValue(:class="{'nonClickable' : !user?.email_verified && currentService.service.suspended}" style='display: flex;align-items: center;margin-bottom:0;min-height: 0;')
+        .smallTitle Disable/Enable
+        Toggle(
+            style='display:inline-flex;align-items:center;'
+            :disabled="!user?.email_verified || currentService.service.suspended || updatingValue.enableDisable"
+            :active="currentService.service.active >= 1"
+            @click="enableDisable"
+        )
 
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+        .infoValue(style='display: flex;align-items: center;min-height: 0;')
+            .smallTitle Allow Signup
+            Toggle(
+                style='display:inline-flex;align-items:center;'
+                :active='!currentService.service.prevent_signup'
+                :disabled='updatingValue.prevent_signup'
+                @click="changeCreateUserMode(!currentService.service.prevent_signup)"
+            )
+        
         .infoValue
-            .smallTitle Service Name
+            .smallTitle Service Name:
             template(v-if="modifyMode.name")
                 form.editValue(@submit.prevent="changeName")
                     input.big(type="text" ref="focus_name" placeholder="Maximum 40 characters" maxlength="40" :value='inputName' @input="(e) => inputName = e.target.value" :disabled="updatingValue.name" required)
 
                     template(v-if="updatingValue.name")
                         img.loading(src="@/assets/img/loading.png")
-                    label.material-symbols-outlined.save(v-else) done
+                    label.material-symbols-outlined.notranslate.save(v-else) done
                         input(type="submit" hidden)
-                    span.material-symbols-outlined.cancel(@click="modifyMode.name = false;") close
+                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.name = false;") close
 
             div(v-else)
-                .smallValue {{ currentService.service.name }}&nbsp;
-                span.editHandle(@click="editName") [EDIT]
+                .smallValue
+                    | {{ currentService.service.name }}
+                    span.editHandle(@click="editName") [EDIT]
+
 
         .infoValue
-            .smallTitle CORS
+            .smallTitle CORS:
             template(v-if="modifyMode.cors")
                 form.editValue(@submit.prevent="changeCors")
                     input#modifyCors.big(ref="focus_cors" :disabled="updatingValue.cors || null" type="text" placeholder='https://your.domain.com, http://second.domain.net, ...' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
 
                     template(v-if="updatingValue.cors")
                         img.loading(src="@/assets/img/loading.png")
-                    label.material-symbols-outlined.save(v-else) done
+                    label.material-symbols-outlined.notranslate.save(v-else) done
                         input(type="submit" hidden)
-                    span.material-symbols-outlined.cancel(@click="modifyMode.cors = false;") close
+                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.cors = false;") close
 
             div(v-else)
-                .smallValue {{ currentService.service.cors || '*' }}&nbsp;
-                span.editHandle(@click="editCors") [EDIT]
+                .smallValue {{ currentService.service.cors || '*' }}
+                    span.editHandle(@click="editCors") [EDIT]
 
         .infoValue
-            .smallTitle Secret Key
+            .smallTitle Secret Key:
             template(v-if="modifyMode.api_key")
                 form.editValue(@submit.prevent="changeApiKey")
                     input.big(ref="focus_key" :disabled="updatingValue.api_key || null" type="text" minlength="4" maxlength="256" placeholder='Maximum 256 characters, At least 4 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
 
                     template(v-if="updatingValue.api_key")
                         img.loading(src="@/assets/img/loading.png")
-                    label.material-symbols-outlined.save(v-else) done
+                    label.material-symbols-outlined.notranslate.save(v-else) done
                         input(type="submit" hidden)
-                    span.material-symbols-outlined.cancel(@click="modifyMode.api_key = false;") close
+                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.api_key = false;") close
 
             div(v-else)
                 .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 2) + '*'.repeat(currentService.service.api_key.length - 2) + '...' : 'No Secret Key' }}&nbsp;
                 span.editHandle(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
+    
+    template(v-if="currentService.plan == 'Trial' || currentService.service.plan == 'Canceled'")
+        hr
+        div(style="text-align:right")
+            router-link.iconClick.square(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
+                .material-symbols-outlined.notranslate.fill(style='font-size:24px;') delete
+                span &nbsp;Delete Service
 
-        .infoValue(style='display:flex;align-items:center;min-height:44px;')
-            .smallTitle User Signup
-            select(@change="(e) => changeCreateUserMode(e.target.value)" :value="currentService.service.prevent_signup ? 'admin' : 'anyone'" :disabled='updatingValue.prevent_signup')
-                option(value="admin") Only admin allowed
-                option(value="anyone") Anyone allowed
-
-    .infoValue(:class="{'nonClickable' : !user?.email_verified || currentService.service.plan == 'Canceled'}" style='display: flex;align-items: center;min-height:44px;')
-        .smallTitle Disable/Enable
-        Toggle(style='display:inline-flex;' :disabled="!user?.email_verified || currentService.service.plan == 'Canceled'" :active="currentService.service.active >= 1"  @click="currentService.service.active >= 1 ? currentService.disableService() : currentService.enableService()")
-
-br
-
-template(v-if="currentService.plan == 'Trial' || currentService.service.plan == 'Canceled'")
-    div(style="text-align:right")
-        router-link.iconClick(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
-            .material-symbols-outlined.fill(style='font-size:24px;') cancel
-            span &nbsp;Delete Service
-
-br
 </template>
 
 <script setup lang="ts">
@@ -197,7 +196,8 @@ let updatingValue = reactive({
     name: false,
     cors: false,
     api_key: false,
-    prevent_signup: false
+    prevent_signup: false,
+    enableDisable: false
 });
 let focus_name = ref();
 let focus_cors = ref();
@@ -256,7 +256,7 @@ let changeName = () => {
         }).then(() => {
             updatingValue.name = false;
             currentService.service.name = inputName;
-            console.log(currentService)
+            // console.log(currentService)
             modifyMode.name = false;
         }).catch(err => {
             updatingValue.name = false;
@@ -342,15 +342,31 @@ let getUserUnit = (user: number) => {
 }
 
 // change prevent_signup
-let changeCreateUserMode = (value: string) => {
+let changeCreateUserMode = async (onlyAdmin: string) => {
     updatingValue.prevent_signup = true;
-    let boolean = value == 'admin';
     currentService.setServiceOption({
-        prevent_signup: boolean,
-    }).then(() => {
+        prevent_signup: onlyAdmin,
+    }).catch(err=>{
+        alert(err.message);
+    }).finally(() => {
         updatingValue.prevent_signup = false;
-        currentService.service.prevent_signup = boolean;
-    })
+    });
+}
+let enableDisable = async ()=>{
+    updatingValue.enableDisable = true;
+    try {
+        if(currentService.service.active >= 1)
+            await currentService.disableService()
+        else
+            await currentService.enableService()
+    }
+    catch (error) {
+        window.alert(error.message)
+        throw error;
+    }
+    finally {
+        updatingValue.enableDisable = false;
+    }
 }
 </script>
 

@@ -2,7 +2,9 @@
 #localeSelector(:class="{'show' : props.showLocale}" @click.stop)
     .wrap
         .country(v-for="(c, key) in Countries" @click="handleCountryClick(key)" :class="{'selected' : selectedFlag == key}") 
-            span.flag {{ c.flag }}
+            //- span.flag(v-html="showFlagImg(c.flag_unicode)")
+            //- span.flag {{ c.flag }}
+            img.flag(:src="'https://flagcdn.com/' + c.code.toLowerCase() + '.svg'" style="width:16px; object-fit:contain")
             .name {{ key }} - {{ c.name }}
 </template>
 <script setup>
@@ -19,6 +21,13 @@ onMounted(() => {
 onBeforeUnmount(() => {
     document.removeEventListener('mouseup', closeLocale);
 })
+
+let showFlagImg = (code) => {
+    let codePoints = code.split(' ');
+    let htmlEntities = codePoints.map(code => code.replace('U+', '&#x') + ';');
+
+    return htmlEntities.join('');
+}
 
 let handleCountryClick = (key) => {
     selectedFlag.value = key;
@@ -39,8 +48,7 @@ let closeLocale = (e) => {
     width: 340px;
     height: 276px;
     overflow: hidden;
-    padding: 20px;
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid rgba(0, 0, 0, 0.15);
     background: #FAFAFA;
     box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);
@@ -58,7 +66,7 @@ let closeLocale = (e) => {
 .country {
     display: flex;
     gap: 16px;
-    margin-bottom: 4px;
+    margin: 5px;
     padding: 6px 10px;
     border-radius: 4px;
     font-size: 16px;

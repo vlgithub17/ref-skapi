@@ -3,7 +3,7 @@
     div(style="text-align:right")
         .copy(v-if='cpy_btn' @click="copy")
             span.copyMsg Copy code
-            .material-symbols-outlined.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
+            .material-symbols-outlined.notranslate.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
     .code
         slot
 
@@ -52,7 +52,7 @@ let copy = (e) => {
     .code {
         background: var(--black-8);
         margin-top: 8px;
-        border-radius: 8px;
+        border-radius: 6px;
         box-shadow: 2px 2px 3px 0px rgba(0, 0, 0, 0.15);
         color: #FFF;
         overflow-x: auto;

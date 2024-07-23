@@ -20,19 +20,24 @@ br
             span.click(@click="resend") Re-send
 br
 br
+br
 
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { skapi } from '@/code/admin';
 import { ref } from 'vue';
 
+const router = useRouter();
 const route = useRoute();
+
 let email = route.params.email;
 
 skapi.recoverAccount('/login').catch(err => {
     window.alert(err.message);
+    // redirect user to login page
+    router.push('/login');
 });
 
 let resending = ref(false);

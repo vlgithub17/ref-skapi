@@ -24,9 +24,9 @@ br
             name="password" placeholder="Enter password" required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
-                    .material-symbols-outlined.fill visibility
+                    .material-symbols-outlined.notranslate.fill visibility
                 template(v-else)
-                    .material-symbols-outlined.fill visibility_off
+                    .material-symbols-outlined.notranslate.fill visibility_off
 
         .actions
             Checkbox(style='font-weight:unset;' @change="(e)=>{setLocalStorage(e)}" :disabled='promiseRunning' v-model='remVal') Remember Me
@@ -35,7 +35,7 @@ br
         br
 
         .error(v-if="error")
-            .material-symbols-outlined.fill error
+            .material-symbols-outlined.notranslate.fill error
             div(v-if="enableAccount")
                 | {{ error }}
                 br
@@ -56,6 +56,11 @@ br
                 .signup
                     span No account?&nbsp;
                     router-link(to="/signup") Sign up
+    
+    br
+    br
+    br
+    
 </template>
 
 <script setup lang="ts">

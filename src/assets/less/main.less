@@ -9,7 +9,7 @@
         flex-grow: 1;
         display: block;
         border: 1px solid var(--vp-c-divider);
-        border-radius: 8px;
+        border-radius: 6px;
         padding: 11px 16px 13px;
         // width: 100%;
         // height: 100%;
@@ -37,7 +37,7 @@
 .sentenceButton {
     display: inline-block;
     padding: 6px 28px 8px;
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid #D9D9D9;
     color: var(--main-color);
     cursor: pointer;
@@ -120,7 +120,7 @@
     input {
         width: 100%;
         height: 44px;
-        border-radius: 8px;
+        border-radius: 6px;
         background-color: rgba(0, 0, 0, 0.05);
         border: 0;
         color: rgba(0, 0, 0, 0.8);
@@ -242,27 +242,36 @@
     cursor: default;
 
     .inner {
+        width: 100%;
         // padding: 1rem; // 자식 요소에 padding을 주면 부모 요소의 크기가 커짐
-        padding-right: 1.2rem;
-        // border-radius: 8px;
-        border-radius: 16px; // 더 굵은 radius로 차별화
+        // border-radius: 16px; // 더 굵은 radius로 차별화
         border: 1px solid rgba(0, 0, 0, 0.15);
-        background: #FAFAFA;
+        // background: #FAFAFA;
         box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);
+
+        border-radius: 8px; // radius 전반적으로 덜 둥글게 조정...
+        // border: 1px solid rgba(0, 0, 0, .5);
+        background-color: white;
 
         .more {
             // width: 100px;
             margin-bottom: 0.8rem;
+            padding: 0 1rem;
             text-align: left;
             cursor: pointer;
             white-space: nowrap;
             // color: rgba(0, 0, 0, 0.6);
             font-size: 0.8rem;
-            font-weight: 300;
+            // font-weight: 300;
             cursor: pointer !important;
+
+            &:first-child {
+                padding-top: 0.8rem;
+            }
 
             &:last-child {
                 margin-bottom: 0;
+                padding-bottom: 0.8rem;
             }
 
             &:not(.customCheckBox):hover {
@@ -430,7 +439,7 @@
     position: relative;
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
+    border-radius: 6px;
 
     &.line {
         border: 1px solid rgba(0, 0, 0, .15);

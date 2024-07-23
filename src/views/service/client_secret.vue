@@ -1,30 +1,79 @@
 <template lang="pug">
+section.infoBox
+    .titleHead
+        h2 Client Secret Key
+            
+        span.moreInfo(@click="showDes = !showDes")
+            span More Info&nbsp;
+            template(v-if="showDes")
+                .material-symbols-outlined.notranslate.fill expand_circle_up 
+                .material-symbols-outlined.notranslate.noFill expand_circle_up
+            template(v-else) 
+                .material-symbols-outlined.notranslate.fill expand_circle_down
+                .material-symbols-outlined.notranslate.noFill expand_circle_down
 
-h2 Client Secret Key
+    template(v-if="showDes")
+        p(style='margin-bottom: 0').
+            When using a 3rd party API that requires a client secret key in your website,
+            register them in Skapi and make secure requests to your APIs #[span.wordset without exposing] your #[span.wordset client secret key.]
 
-hr
+        Code
+            pre.
+                skapi.#[span(style="color:#44E9FF") clientSecretRequest]({
+                    clientSecretName: #[span(style="color:#FFED91") "myapi"],
+                    url: #[span(style="color:#FFED91") "https://api.openai.com/v1/images/generations"],
+                    method: #[span(style="color:#FFED91") "POST"],
+                    headers: {
+                        #[span(style="color:#FFED91") "Content-Type"]: #[span(style="color:#FFED91") "application/json"],
+                        Authorization: #[span(style="color:#FFED91") "Bearer $CLIENT_SECRET"]
+                    },
+                    data: {
+                        model: #[span(style="color:#FFED91") "dall-e-3"],
+                        "prompt": #[span(style="color:#FFED91") "A cute baby sea otter"],
+                        n: #[span(style="color:#FFED91") 1],
+                        size: #[span(style="color:#FFED91") "1024x1024"]
+                    }
+                }).#[span(style="color:#44E9FF") then]( result => console.#[span(style="color:#44E9FF") log](result) );
 
-.error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
-    .material-symbols-outlined.fill warning
-    router-link(to="/account-setting") Please verify your email address to register client secret keys.
-    br
-    br
-template(v-else)
-    p Register your client secret keys by clicking '#[b Add Key]' below.
+        p.
+            The example above shows how you can request #[b OpenAI]'s #[b DALL·E 3] in your project.
+        p.
+            It is using the client secret key stored under the name: "#[b myapi]".
+            #[br]
+            The placeholder: "#[b $CLIENT_SECRET]" will be replaced to the actual client secret key from the backend.
+        
+        
+        p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
 
-    .iconClick(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}")
-        .material-symbols-outlined.fill add_circle
-        span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Add Key
+    hr
 
-    br
-    br
+    .error(v-if='!user?.email_verified')
+        .material-symbols-outlined.notranslate.fill warning
+        router-link(to="/account-setting") Please verify your email address to modify settings.
+
+    .error(v-else-if='currentService.service.active == 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently disabled.
+
+    .error(v-else-if='currentService.service.active < 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently suspended.
+
+    p(style='margin-bottom:0') Register your client secret keys by clicking '#[b Register Client Secret Key]' below.
+
+br
+
+.iconClick.square(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}" style='margin-bottom:8px;')
+    .material-symbols-outlined.notranslate.fill add_circle
+    span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Register Client Secret Key
+
 
 form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
     Table
         template(v-slot:head)
             tr
                 th.center(style="width:48px; padding:0")
-                    .material-symbols-outlined lock
+                    .material-symbols-outlined.notranslate lock
                     .resizer
                 th(style="width:26%")
                     | Name
@@ -49,57 +98,18 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                         template(v-if="updating")
                             img.loading(src="@/assets/img/loading.png")
                         template(v-else)
-                            label.material-symbols-outlined.clickable.save(@click="saveKey(key)" style="color:var(--main-color)") done
+                            label.material-symbols-outlined.notranslate.clickable.save(@click="saveKey(key)" style="color:var(--main-color)") done
                                 input(type="submit" hidden)
-                            .material-symbols-outlined.clickable.cancel(@click="cancelKey(key, index)") close
+                            .material-symbols-outlined.notranslate.clickable.cancel(@click="cancelKey(key, index)") close
                 template(v-else)  
                     td.center 
-                        .material-symbols-outlined.bold(v-if="key.secure") check
+                        .material-symbols-outlined.notranslate.bold(v-if="key.secure") check
                     td.overflow {{ key.name }}
                     td.overflow {{ key.key ? key.key.slice(0,2) + '*'.repeat(key.key.length - 2) : '' }}
                     td.center.buttonWrap
                         template(v-if="!editMode && !addMode")
-                            .material-symbols-outlined.fill.clickable.icon.hide(@click="editKey(key)") edit
-                            .material-symbols-outlined.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
-
-br
-
-h3 Using 3rd party APIs with Client Secret Key
-
-hr
-
-p(style='margin-bottom: 0').
-    When using a 3rd party API that requires a client secret key in your website,
-    register them in Skapi and make secure requests to your APIs #[span.wordset without exposing] your #[span.wordset client secret key.]
-
-Code
-    pre.
-        skapi.#[span(style="color:#44E9FF") clientSecretRequest]({
-            clientSecretName: #[span(style="color:#FFED91") "myapi"],
-            url: #[span(style="color:#FFED91") "https://api.openai.com/v1/images/generations"],
-            method: #[span(style="color:#FFED91") "POST"],
-            headers: {
-                #[span(style="color:#FFED91") "Content-Type"]: #[span(style="color:#FFED91") "application/json"],
-                Authorization: #[span(style="color:#FFED91") "Bearer $CLIENT_SECRET"]
-            },
-            data: {
-                model: #[span(style="color:#FFED91") "dall-e-3"],
-                "prompt": #[span(style="color:#FFED91") "A cute baby sea otter"],
-                n: #[span(style="color:#FFED91") 1],
-                size: #[span(style="color:#FFED91") "1024x1024"]
-            }
-        }).#[span(style="color:#44E9FF") then]( result => console.#[span(style="color:#44E9FF") log](result) );
-
-p.
-    The example above shows how you can request #[b OpenAI]'s #[b DALL·E 3] in your project.
-p.
-    It is using the client secret key stored under the name: "#[b myapi]".
-    #[br]
-    The placeholder: "#[b $CLIENT_SECRET]" will be replaced to the actual client secret key from the backend.
-
-p For more details, please refer to the #[a(href="https://docs.skapi.com/api-bridge/client-secret-request.html" target="_blank") Documentation]
-
-br
+                            .material-symbols-outlined.notranslate.fill.clickable.icon.hide(@click="editKey(key)") edit
+                            .material-symbols-outlined.notranslate.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
 
 Modal(:open="deleteClientKey")
     h4(style='margin:.5em 0 0;') Delete Client Secret
@@ -130,6 +140,7 @@ import { user } from '@/code/user';
 import { currentService } from '@/views/service/main';
 
 let updating = ref(false);
+let showDes = ref(false);
 let addMode = ref(false);
 let editMode = ref(false);
 let deleteKeyLoad = ref(false);
@@ -169,6 +180,8 @@ let delCliKey = async () => {
     await currentService.setServiceOption({
         client_secret: secKeys,
         auth_client_secret: authKeys,
+    }).catch(err => {
+        window.alert(err.message || err);
     });
 
     deleteClientKey.value = false;
@@ -246,6 +259,8 @@ let saveKey = async (key) => {
     await currentService.setServiceOption({
         client_secret: secKeys,
         auth_client_secret: authKeys,
+    }).catch(err => {
+        window.alert(err.message || err);
     });
 
     // loading end
@@ -261,6 +276,15 @@ let saveKey = async (key) => {
 }
 </script>
 <style scoped lang="less">
+.updown {
+    background-color: #fff;
+    background-color: var(--main-color);
+    border-radius: 50%;
+    margin-left: 8px;
+    cursor: pointer;
+    box-shadow: rgba(41, 63, 230, 0.24) 0px 1px 8px;
+}
+
 input {
     width: 100%;
 }

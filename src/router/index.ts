@@ -8,7 +8,16 @@ import Subscription from '@/views/subscription/subscription.vue'
 import AccountSetting from '@/views/account-setting.vue'
 import MyServices from '@/views/service-list.vue'
 import ServiceMain from '@/views/service/main.vue'
+import NotFound from '@/views/notFound.vue'
 import { skapi } from '@/code/admin'
+import getting_started from '@/views/service/getting_started.vue'
+import service from '@/views/service/service.vue'
+import users from '@/views/service/users/users.vue'
+import records from '@/views/service/records/records.vue'
+import mail from '@/views/service/mail.vue'
+import newsletter from '@/views/service/newsletter.vue'
+import hosting from '@/views/service/hosting/hosting.vue'
+import client_secret from '@/views/service/client_secret.vue'
 
 let checkUser = async (t, f, n)=>{
   let u = await skapi.getProfile();
@@ -138,42 +147,42 @@ const router = createRouter(
             {
               path: '',
               name: 'service',
-              component: () => import('@/views/service/getting_started.vue')
+              component: getting_started
             },
             {
               path: 'dashboard',
               name: 'dashboard',
-              component: () => import('@/views/service/service.vue')
+              component: service
             },
             {
               path: 'users',
               name: 'users',
-              component: () => import('@/views/service/users/users.vue')
+              component: users
             },
             {
               path: 'records',
               name: 'records',
-              component: () => import('@/views/service/records/records.vue')
+              component: records
             },
             {
               path: 'mail',
               name: 'mail',
-              component: () => import('@/views/service/mail.vue')
+              component: mail
             },
             {
               path: 'newsletter',
               name: 'newsletter',
-              component: () => import('@/views/service/newsletter.vue')
+              component: newsletter
             },
             {
               path: 'hosting',
               name: 'hosting',
-              component: () => import('@/views/service/hosting/hosting.vue')
+              component: hosting
             },
             {
               path: 'clientsecret',
               name: 'clientsecret',
-              component: () => import('@/views/service/client_secret.vue')
+              component: client_secret
             },
 
             {
@@ -185,6 +194,15 @@ const router = createRouter(
         },
       ]
     },
+    {
+      path: "/404page",
+      name: "404page",
+      component: NotFound
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      redirect: "/404page"
+    }
   ]
 })
 

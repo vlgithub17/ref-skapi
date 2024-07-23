@@ -1,8 +1,20 @@
 <template lang="pug">
-.infoBox(v-if='!user?.email_verified || !currentService.service.subdomain' style='max-width:600px;margin:3rem auto;')
-    .infoTitle Hosting 
+.infoBox(v-if='!currentService.service.subdomain' style='max-width:600px;margin:3rem auto;' :class='{nonClickable: email_is_unverified_or_service_is_disabled}')
+    .infoTitle File Hosting 
 
     hr
+
+    .error(v-if='!user?.email_verified')
+        .material-symbols-outlined.notranslate.fill warning
+        router-link(to="/account-setting") Please verify your email address to modify settings.
+        
+    .error(v-else-if='currentService.service.active == 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently disabled.
+
+    .error(v-else-if='currentService.service.active < 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently suspended.
 
     p.
         File hosting service let you host files and static websites.
@@ -15,113 +27,123 @@
 
     form.register(@submit.prevent='registerSubdomain')
         .subdomain
-            input.big(v-model='subdomain' pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="6" maxlength="32" :disabled="promiseRunning" placeholder="your-subdomain" required)
-        button.final(style='min-width: 124px;' :disabled='promiseRunning' :class='{nonClickable: promiseRunning}')
-            template(v-if="promiseRunning")
+            input.big(v-model='subdomain' pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="6" maxlength="32" :disabled="registerSubdomainRunning" placeholder="your-subdomain" required)
+        button.final(style='min-width: 124px;' :disabled='registerSubdomainRunning' :class='{nonClickable: registerSubdomainRunning}')
+            template(v-if="registerSubdomainRunning")
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
                 | Register
 
 template(v-else)
-    .infoBox(:class='{nonClickable: !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== "Active"}')
-        .infoTitle
-            | Hosting&nbsp;&nbsp;
-            small(style='font-weight: normal' :style='{color: currentSubdomain.status === "Active" ? "var(--text-green)" : currentSubdomain.status === "Removing" ? "var(--caution-color)" : null } ') ({{ currentSubdomain.status }})
+    .infoBox(:class='{nonClickable: email_is_unverified_or_service_is_disabled || !subdomainReady}')
+        .infoTitle File Hosting&nbsp;&nbsp;
 
         hr
 
-        .infoValue
-            .smallTitle Created
-            .smallValue {{ !fetching ? dirInfo?.upl ? new Date(dirInfo.upl).toLocaleString() : new Date().toLocaleString() : '...' }}
+        .error(v-if='!user?.email_verified')
+            .material-symbols-outlined.notranslate.fill warning
+                router-link(to="/account-setting") Please verify your email address to modify settings.
+            br
+            br  
+        .error(v-else-if='currentService.service.active == 0')
+            .material-symbols-outlined.notranslate.fill warning
+            span This service is currently disabled.
+            br
+            br
+        .error(v-else-if='currentService.service.active < 0')
+            .material-symbols-outlined.notranslate.fill warning
+            span This service is currently suspended.
+            br
+            br
 
         .infoValue
             .smallTitle Storage in-use
-            .smallValue {{ !fetching ? getFileSize(dirInfo?.size || 0) : '...' }}
+            .smallValue {{ currentService.dirInfo?.size ? getFileSize(currentService.dirInfo?.size || 0) : '...' }}
 
         .infoValue
             .smallTitle URL
-            .smallValue(:class='{nonClickable: !user?.email_verified || currentService.service.active <= 0 || cdnPending || fetching}')
+            .smallValue(:class='{nonClickable: isPending}')
                 template(v-if="modifyMode.subdomain")
                     form.register.editValue(@submit.prevent="changeSubdomain")
                         .subdomain
                             input#modifySubdomain.big(ref="focus_subdomain" :disabled="updatingValue.subdomain || null" type="text"  pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="6" maxlength="32" placeholder="your-subdomain" required :value='inputSubdomain' @input="(e) => {e.target.setCustomValidity(''); inputSubdomain = e.target.value;}")
-
                         template(v-if="updatingValue.subdomain")
                             img.loading(src="@/assets/img/loading.png")
-                        label.material-symbols-outlined.save(v-else) done
+                        label.material-symbols-outlined.notranslate.save(v-else) done
                             input(type="submit" hidden)
-                        span.material-symbols-outlined.cancel(@click="modifyMode.subdomain = false;") close
+                        span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.subdomain = false;") close
 
                 div(v-else)
-                    .smallValue {{ currentSubdomain.subdomain }}&nbsp;
-                    span.editHandle(@click="editSubdomain" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
+                    .smallValue
+                        | {{ hostUrl }}&nbsp;
+                        span.editHandle(@click="editSubdomain") [EDIT]
                     .infoValue
 
         .infoValue
             .smallTitle 404 Page
-            .smallValue(:class='{nonClickable: !user?.email_verified || currentService.service.active <= 0 || cdnPending || fetching}')
+            .smallValue(:class='{nonClickable: email_is_unverified_or_service_is_disabled || isPending}')
                 template(v-if="modifyMode.page404")
                     form.register.editValue(@submit.prevent="change404" style='flex-grow: 0')
                         input(ref="focus_404" hidden type="file" name='file' required @change="handle404file" :disabled='updatingValue.page404' accept="text/html")
                         .input.editHandle(style='font-size: .8rem;margin-right: 8px;' @click='focus_404.click()' :class='{nonClickable:updatingValue.page404}') {{ selected404File || sdInfo?.['404'] || 'Click here to select a file' }}
                         template(v-if="updatingValue.page404")
-                            //- img.loading(src="@/assets/img/loading.png")
                             pre(style='margin:0;font-size: .8rem;font-weight:normal' v-if='progress404 < 100') {{ progress404 }}%
                             pre(style='margin:0;font-size: .8rem;font-weight:normal' v-else) Updating...
-                        label.material-symbols-outlined.save.fill(v-else :class="{'nonClickable' : !selected404File}") upload
+                        label.material-symbols-outlined.notranslate.save.fill(v-else :class="{'nonClickable' : !selected404File}") done
                             input(type="submit" hidden)
-                        span.material-symbols-outlined.cancel(v-if='!updatingValue.page404' @click="modifyMode.page404 = false;selected404File=null;") close
+                        span.material-symbols-outlined.notranslate.cancel(v-if='!updatingValue.page404' @click="modifyMode.page404 = false;selected404File=null;") close
 
                 div(v-else)
                     .smallValue.editValue
-                        span(:class='{nonClickable:sdInfo?.["404"] && sdInfo?.["404"] === "..."}') {{ sdInfo?.['404'] || '-' }}
-                        span.editHandle(:class='{nonClickable:sdInfo?.["404"] && sdInfo?.["404"] === "..."}' @click="open404FileInp") {{ sdInfo?.['404'] ? '[EDIT]' : '[UPLOAD]'}}
+                        span(:class='{nonClickable:isPending}') {{ sdInfo?.['404'] || '-' }}
+                        span.editHandle(:class='{nonClickable:isPending}' @click="open404FileInp") {{ sdInfo?.['404'] ? '[CHANGE]' : '[UPLOAD]'}}
                         span.editHandle(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true" style="color:var(--caution-color)") [REMOVE]
-                        //- span.material-symbols-outlined.cancel.fill(v-if='!updatingValue.page404 && sdInfo?.["404"] && sdInfo?.["404"] !== "..."' @click="openRemove404=true") delete
 
         div(style="text-align:right")
-            .iconClick(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
-                .material-symbols-outlined.fill(style='font-size:24px;') cancel
+            .iconClick.square(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
+                .material-symbols-outlined.notranslate.fill(style='font-size:24px;') delete
                 span &nbsp;Remove Hosting
     br
 
-    .tableMenu(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
+    .tableMenu
 
-        .iconClick.square(@click='uploadFileInp.click()' :class="{'nonClickable': fetching || !user?.email_verified || currentService.service.active <= 0 || cdnPending}")
+        .iconClick.square(@click='uploadFileInp.click()' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
             input(type="file" hidden multiple @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFileInp")
-            .material-symbols-outlined.fill upload_file
+            .material-symbols-outlined.notranslate.fill upload_file
             span &nbsp;&nbsp;Upload Files
 
-        .iconClick.square(@click='uploadFolderInp.click()' :class="{'nonClickable': fetching || !user?.email_verified || currentService.service.active <= 0 || cdnPending}")
+        .iconClick.square(@click='uploadFolderInp.click()' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
             input(type="file" hidden multiple directory webkitdirectory @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFolderInp")
-            .material-symbols-outlined.fill drive_folder_upload
+            .material-symbols-outlined.notranslate.fill drive_folder_upload
             span &nbsp;&nbsp;Upload Folder
 
-        .iconClick.square(:class="{'nonClickable': noSelection || fetching || !user?.email_verified || currentService.service.active <= 0 || cdnPending}" @click='deleteSelected=true')
-            .material-symbols-outlined.fill delete
+        .iconClick.square(:class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching || noSelection}" @click='deleteSelected=true')
+            .material-symbols-outlined.notranslate.fill delete
             span &nbsp;&nbsp;Delete Selected
 
-        .iconClick.square(@click='openRefreshCdn=true' :class="{'nonClickable': fetching || !user?.email_verified || currentService.service.active <= 0 || cdnPending}")
-            .material-symbols-outlined.fill refresh
+        // .iconClick.square(@click='openRefreshCdn=true' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
+            .material-symbols-outlined.notranslate.fill(:class='{loading:currentService.pending.cdn}') refresh
             span &nbsp;&nbsp;Refresh CDN
 
-
     .hostingPart
-        template(v-if="cdnPending")
-            #loading.
-                Refreshing CDN ... &nbsp;
-                #[img.loading(src="@/assets/img/loading.png")]
+        #loading
+            template(v-if="fetching")
+                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
+                | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fetching ...
 
-        template(v-if="fetching && !cdnPending")
-            #loading.
-                Loading ... &nbsp;
-                #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
-        
+            template(v-else-if='!subdomainReady')
+                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
+                | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Subdomain change in process ...
+            
+            template(v-else-if='currentService.pending.cdn')
+                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
+                | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDN Refresh in process... 
+
         Table(
-            @dragover.stop.prevent="e=>{if(cdnPending) return; e.dataTransfer.dropEffect = 'copy'; dragHere = true;}"
+            @dragover.stop.prevent="e=>{if(isPending) return; e.dataTransfer.dropEffect = 'copy'; dragHere = true;}"
             @dragleave.stop.prevent="dragHere = false;"
-            @drop.stop.prevent="e => {dragHere = false; if(!cdnPending) onDrop(e, getFileList)}"
-            :class="{'nonClickable' : cdnPending || fetching || !user?.email_verified || currentService.service.active <= 0 || currentSubdomain.status !== 'Active', 'dragHere' : dragHere}"
+            @drop.stop.prevent="e => {dragHere = false; if(!isPending) onDrop(e, getFileList)}"
+            :class="{'nonClickable' : fetching || isPending || email_is_unverified_or_service_is_disabled, 'dragHere' : dragHere}"
             resizable)
             template(v-slot:head)
                 tr
@@ -131,83 +153,74 @@ template(v-else)
                     th(style='width:320px;')
                         span(@click='toggleSort("name")')
                             | Filename
-                            .material-symbols-outlined.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            .material-symbols-outlined.notranslate.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                         .resizer
 
                     th(style='width:160px;')
                         span(@click='toggleSort("size")')
                             | Size
-                            span.material-symbols-outlined.fill(v-if='sortBy === "size"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            span.material-symbols-outlined.notranslate.fill(v-if='sortBy === "size"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                         .resizer
                     th(style='width:220px;')
                         span(@click='toggleSort("upl")')
                             | Uploaded
-                            span.material-symbols-outlined.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            span.material-symbols-outlined.notranslate.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
 
             template(v-slot:body)
-                template(v-if='cdnPending || fetching')
-                    tr(v-for="i in 10")
+                template(v-if="fetching || isPending")
+                    tr
                         td(colspan="4")
 
                 template(v-else-if='uploadProgress.name')
                     .progress( :style="{ width: uploadProgress.progress + '%', height: '3px', background: 'var(--main-color)', position: 'absolute'}")
                     tr.uploadState(style="position:relative")
                         td
-                            .material-symbols-outlined.center.moving upload
+                            .material-symbols-outlined.notranslate.center.moving upload
                         td(colspan="3")
                             | Uploading: /{{ uploadProgress.name }}&nbsp;
                             b ({{ uploadCount[0] }} / {{ uploadCount[1] }})
-                    tr(v-for="i in 9")
-                        td(colspan="4")
 
                 template(v-else-if="!listDisplay || listDisplay.length === 0")
                     tr
-                        td(colspan="4") Drag and drop files here
-
-                    tr(v-for="i in 9")
-                        td(colspan="4")
+                        td
+                            .material-symbols-outlined.notranslate.fill upload
+                        td(colspan="3") Drag and drop files here
 
                 template(v-else)
                     tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
                         td
-                            .material-symbols-outlined.fill(v-if='currentDirectory') arrow_upward
-                            template(v-if="cdnPending")
-                                img.loading(src="@/assets/img/loading.png")
+                            .material-symbols-outlined.notranslate.fill folder_open
+
                         td(colspan="3")
-                            template(v-if='currentDirectory')
-                                .material-symbols-outlined.fill folder_open
-                                | &nbsp;
-                            | / {{ currentDirectory }}
+                            | {{hostUrl}}/{{ currentDirectory ? currentDirectory + '/' : '' }}
+                
+                tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = setNewDir(ns) }')
+                    td
+                        Checkbox(@click.stop v-model='checked[ns.name]')
 
-                    tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = setNewDir(ns) }')
-                        td
-                            Checkbox(@click.stop v-model='checked[ns.name]')
+                    td.overflow(v-if='ns.name[0] == "#"')
+                        span.material-symbols-outlined.notranslate.fill(style='vertical-align: sub;') folder
+                        | &nbsp;{{ ns.name.slice(1) }}
+                    td.overflow(v-else) {{ ns.name }}
+                    td.overflow {{ getFileSize(ns.size) }}
+                    td.overflow {{ new Date(ns.upl).toLocaleString() }}
 
-                        td.overflow(v-if='ns.name[0] == "#"')
-                            span.material-symbols-outlined.fill(style='vertical-align: sub;') folder
-                            | &nbsp;{{ ns.name.slice(1) }}
-                        td.overflow(v-else) {{ ns.name }}
-                        td.overflow {{ getFileSize(ns.size) }}
-                        td.overflow {{ new Date(ns.upl).toLocaleString() }}
-
-                    tr(v-for="i in (10 - listDisplay.length)")
-                        td(colspan="4")
+                tr(v-for="i in (10 - listDisplay.length)")
+                    td(colspan="4")
 
     br
 
     .tableMenu(style='display:block;text-align:center;')
         .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
-            .material-symbols-outlined.bold chevron_left
+            .material-symbols-outlined.notranslate.bold chevron_left
             span Previous&nbsp;&nbsp;
         | &nbsp;&nbsp;
-        .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || eof && currentPage >= maxPage || !listDisplay.length }")
+        .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || currentPage >= maxPage || !listDisplay.length }")
             span &nbsp;&nbsp;Next
-            .material-symbols-outlined.bold chevron_right
-
-    br
+            .material-symbols-outlined.notranslate.bold chevron_right
 
     .dragPopup(:class="{'show' : dragHere}")
-        .material-symbols-outlined(style='font-size:64px;') cloud_upload
+        .material-symbols-outlined.notranslate(style='font-size:64px;') cloud_upload
         p Drop your files to upload
 
     Modal(:open="deleteSelected")
@@ -269,7 +282,7 @@ template(v-else)
                 button.noLine.warning(@click="openRemove404 = false") Cancel
                 button.final.warning(@click="remove404") Remove
 
-    Modal(:open="openRefreshCdn")
+    // Modal(:open="openRefreshCdn")
         h4(style='margin:.5em 0 0;') Refresh CDN
 
         hr
@@ -287,7 +300,7 @@ template(v-else)
                 img.loading(src="@/assets/img/loading.png")
             template(v-else)
                 button.noLine.warning(@click="openRefreshCdn = false") Cancel
-                button.final.warning(@click="()=>{refreshCdn();openRefreshCdn=false;}") Refresh
+                button.final.warning(@click="()=>{currentService.refreshCDN(); openRefreshCdn=false;}") Refresh
 </template>
 
 <script setup lang="ts">
@@ -301,54 +314,40 @@ import Pager from '@/code/pager';
 import { skapi, getFileSize, dateFormat } from '@/code/admin';
 import { user } from '@/code/user';
 import Checkbox from '@/components/checkbox.vue';
-import { folders, uploadFiles, onDrop, currentDirectory, uploadCount, uploadProgress } from '@/views/service/hosting/file';
+import { serviceFolders, uploadFiles, onDrop, currentDirectory, uploadCount, uploadProgress } from '@/views/service/hosting/file';
+
+let folders = {}; // cache folders
+
+let email_is_unverified_or_service_is_disabled = computed(()=>!user?.email_verified || currentService.service.active <= 0);
+
+let isPending = computed(() => currentService.pending.subdomain || currentService.pending.cdn || !subdomainReady.value);
+let sdInfo = computed(() => currentService.subdInfo);
 
 let dragHere = ref(false);
 // fileinputs
 let uploadFileInp = ref();
 let uploadFolderInp = ref();
-//
-
 let domain = import.meta.env.VITE_DOMAIN;
 
-let promiseRunning = ref(false);
+let registerSubdomainRunning = ref(false);
 let modalPromise = ref(false);
-let sdInfo: Ref<{
-    srvc?: string;
-    subd?: string;
-    ownr?: string;
-    stat?: string;
-    "404"?: string;
-}> = ref({
-    "404": '...'
-})
 
-let dirInfo: Ref<{
-    cnt: number;
-    size: number;
-    upl: number;
-}> = ref(null);
-
-// register input
-let subdomain = ref('');
+let subdomain = ref(''); // register input value. not the actual subdomain
 let registerSubdomain = async () => {
-    promiseRunning.value = true;
+    registerSubdomainRunning.value = true;
     try {
         await currentService.registerSubdomain({
             subdomain: subdomain.value, cb: (srvc) => {
-                promiseRunning.value = false;
-                getInfo();
+                registerSubdomainRunning.value = false;
+                // getInfo();
             }
         });
 
     } catch (err: any) {
-        promiseRunning.value = false;
+        registerSubdomainRunning.value = false;
         alert(err.message);
-        console.log(err)
-        console.log(err.code)
     }
 }
-//
 
 // edit/change
 let openRefreshCdn = ref(false);
@@ -364,7 +363,7 @@ let focus_subdomain = ref();
 
 let inputSubdomain = '';
 let editSubdomain = () => {
-    inputSubdomain = currentSubdomain.value.subdomain.split('.').slice(0, -2).join('.');
+    inputSubdomain = hostUrl.value.split('.').slice(0, -2).join('.');
     modifyMode.subdomain = true;
     nextTick(() => {
         focus_subdomain.value.focus();
@@ -396,11 +395,22 @@ let change404 = async (e: any) => {
             }
         })
 
+        // get current 13 digit timestamp
+        let pager = folders['!'].pager;
+
+        await pager.editItem({
+            name: up.completed[0].name,
+            size: up.completed[0].size,
+            upl: Date.now(),
+        });
+
+        getFileList();
+
         await currentService.set404({
             path: up.completed[0].name,
         });
 
-        sdInfo.value = await currentService.getSubdomainInfo();
+        currentService.subdInfo['404'] = up.completed[0].name;
 
         modifyMode.page404 = false;
         updatingValue.page404 = false;
@@ -421,7 +431,7 @@ let remove404 = async () => {
             path: null,
         });
 
-        delete sdInfo.value['404'];
+        delete currentService.subdInfo['404'];
         openRemove404.value = false;
         selected404File = null;
     }
@@ -436,9 +446,8 @@ let remove404 = async () => {
 let removeHosting = ref(false);
 let remove = () => {
     modalPromise.value = true;
-    currentService.registerSubdomain({
-        cb: () => null
-    }).then(() => {
+    currentService.registerSubdomain()
+    .then(() => {
         removeHosting.value = false;
         modalPromise.value = false;
     }).catch(err => {
@@ -448,14 +457,18 @@ let remove = () => {
 }
 
 let changeSubdomain = async () => {
-    // when domains are changed, refreshCDN kicks in
     if (currentService.service.subdomain === inputSubdomain) {
         modifyMode.subdomain = false;
         return;
     }
 
     if (inputSubdomain.charAt(0) == '-' && inputSubdomain.charAt(inputSubdomain.length - 1) == '-') {
-        alert("The text cannot start or end with a hyphen.");
+        alert("Subdomains cannot start or end with a hyphen.");
+        return;
+    }
+
+    if (/--/.test(inputSubdomain)) {
+        alert('Hyphens cannot be used consecutively.');
         return;
     }
 
@@ -463,44 +476,44 @@ let changeSubdomain = async () => {
 
     try {
         await currentService.registerSubdomain({
-            subdomain: inputSubdomain,
-            cb: getInfo
-        });
-
-        modifyMode.subdomain = false;
-        updatingValue.subdomain = false;
-
-        cdnPending.value = true;
-        currentService.refreshCDN({
-            checkStatus: res => {
-                cdnPending.value = false;
-            }
+            subdomain: inputSubdomain
         });
     } catch (err: any) {
+        alert(err?.message || err.toString());
+        throw err;
+    } finally {
+        modifyMode.subdomain = false;
         updatingValue.subdomain = false;
-        alert(err);
-        console.log(err)
-        console.log(err.code)
     }
 }
 
-let currentSubdomain = computed(() => {
+let retriveCachedFolders = ()=>{
     let sd = currentService.service.subdomain;
-    let status = '';
+    if(!sd) {
+        return '';
+    }
+
     let subd = '';
     if (sd && sd[0] === '*' || sd[0] === '+') {
-        subd = sd.slice(1) + '.skapi.com';
-        status = sd[0] === '*' ? 'Removing' : 'Pending';
+        subd = sd.slice(1) + '.' + domain;
     }
     else {
         subd = sd + '.' + domain;
-        status = 'Active';
     }
-    return {
-        subdomain: subd,
-        status: status
-    };
-});
+    
+    if(serviceFolders?.[sd] && Object.keys(serviceFolders[sd]).length) {
+        folders = serviceFolders[sd];
+    }
+    else {
+        serviceFolders[sd] = folders;
+    }
+
+    return subd
+}
+
+let hostUrl = computed(retriveCachedFolders);
+
+retriveCachedFolders();
 
 let listDisplay = ref([]);
 let sortBy = ref('name');
@@ -508,7 +521,7 @@ let ascending = ref(true);
 let currentPage = ref(1);
 let endOfList: any = reactive({});
 let maxPage = ref(0);
-let fetching = ref(false);
+let fetching = ref(true); // init value should be true
 
 // checks
 let checked: any = ref({});
@@ -587,59 +600,43 @@ let numberOfSelected = computed(() => {
     return n;
 });
 
-//
+let subdomainReady = computed(() => {
+    let sd = currentService.service.subdomain;
+    if(!sd) {
+        return 'no-subdomain';
+    }
+    return currentService.subdInfo.stat && currentService.subdInfo.stat === 'active' || currentService.subdInfo.stat === 'tracked';
+});
 
-function getInfo() {
-    let process = () => {
-        currentService.getSubdomainInfo().then(s => {
-            sdInfo.value = s
-            if (s?.invid && s.invid[0] === '@') {
-                cdnPending.value = true;
-                currentService.refreshCDN({
-                    checkStatus: res => {
-                        cdnPending.value = false;
-                        currentService.getDirInfo().then(dir => {
-                            fetching.value = false;
-                            getFileList(true);
-                            dirInfo.value = dir;
-                        });
-                    }
-                })
-            }
-            else {
-                currentService.getDirInfo().then(dir => {
-                    fetching.value = false;
-                    getFileList();
-                    dirInfo.value = dir;
-                });
-            }
-        });
-    }
-
-    let _subd = currentService.service?.subdomain || '';
-    if (_subd) {
-        fetching.value = true;
-        if (_subd[0] === '*' || _subd[0] === '+') {
-            currentService.pendingSubdomain(() => {
-                // + pending
-                // * removing
-                subdomain.value = currentService.service.subdomain;
-                process();
-            });
-        }
-        else if (!sdInfo.value.srvc) {
-            process();
-        }
-        else {
-            fetching.value = false;
-        }
-    }
-    else {
-        fetching.value = false;
-    }
+if(currentService.dirInfo.path) {
+    fetching.value = false;
 }
 
-getInfo();
+watch(()=>currentService.dirInfo.path, (n, o) => {
+    if(n) {
+        getFileList('conditional').then(() => {
+            fetching.value = false;
+        });
+    }
+},
+{
+    immediate: true
+});
+
+watch(subdomainReady,
+    (n, o) => {
+        if(n) {
+            if(n !== 'no-subdomain') {
+                currentDirectory.value = "";
+                fetching.value = true;
+                currentService.getDirInfo();
+            }
+        }
+    },
+    {
+        immediate: true
+    }
+);
 
 let setNewDir = (ns: any) => {
     let path = ns.path;
@@ -651,12 +648,7 @@ let setNewDir = (ns: any) => {
     return ns.name.slice(1);
 }
 
-let eof = computed(() => {
-    let currDir = currentDirectory.value || '!';
-    return endOfList[currDir]
-});
-
-watch(currentDirectory, () => {
+watch(currentDirectory, (n) => {
     getFileList();
 });
 
@@ -664,16 +656,19 @@ async function getFileList(refresh = false) {
     if (!refresh && fetching.value) return;
 
     let resultsPerPage = 10;
-    let currDir = currentDirectory.value || '!';
-
     fetching.value = true;
 
-    let hasPage = folders?.[currDir];
+    let currDir = currentDirectory.value || '!';
+    let hasPage = folders?.[currDir]?.pager;
 
-    if (!hasPage || refresh) {
-        maxPage.value = 0;
-        currentPage.value = 1;
-        endOfList[currDir] = false;
+    let pager = null;
+
+    if(hasPage) {
+        pager = folders[currDir].pager;
+        maxPage.value = Math.ceil(pager.map.length / pager.resultsPerPage);
+    }
+
+    if (!hasPage || refresh && refresh !== 'conditional') {
         folders[currDir] = {
             pager: await Pager.init({
                 id: 'name',
@@ -682,13 +677,15 @@ async function getFileList(refresh = false) {
                 resultsPerPage,
             })
         }
+        maxPage.value = 0;
+        currentPage.value = 1;
+        endOfList[currDir] = false;
     }
 
-    let pager = folders[currDir].pager;
-
-    if (refresh || !endOfList[currDir] && currentPage.value > maxPage.value) {
+    pager = folders[currDir].pager;
+    if (refresh && refresh !== 'conditional' || !endOfList[currDir] && currentPage.value > maxPage.value) {
         try {
-            let l = await currentService.listHostDirectory({ dir: currentDirectory.value }, !(refresh || maxPage.value == 0))
+            let l = await currentService.listHostDirectory({ dir: currentDirectory.value }, !(refresh || maxPage.value == 0));
             if (l.list.length > 0) {
                 await pager.insertItems(l.list);
                 let fl = pager.getPage(currentPage.value);
@@ -700,7 +697,6 @@ async function getFileList(refresh = false) {
                 listDisplay.value = [];
                 endOfList[currDir] = true;
             }
-            maxPage.value = 1;
         } catch (err: any) {
             alert(err.message);
         } finally {
@@ -711,6 +707,7 @@ async function getFileList(refresh = false) {
         let fl = pager.getPage(currentPage.value);
         listDisplay.value = fl.list;
         maxPage.value = fl.maxPage;
+        fetching.value = false;
     }
 
     let chk: any = {};
@@ -719,17 +716,16 @@ async function getFileList(refresh = false) {
     }
 
     checked.value = chk;
-    fetching.value = false;
 }
 
 function openFile(ns: any) {
     let path = ns.path;
     let url;
     if (path.split('/').length > 1) {
-        url = `https://${currentSubdomain.value.subdomain}/${path.split('/').slice(1).join('/')}/${ns.name}`;
+        url = `https://${hostUrl.value}/${path.split('/').slice(1).join('/')}/${ns.name}`;
     }
     else {
-        url = `https://${currentSubdomain.value.subdomain}/${ns.name}`;
+        url = `https://${hostUrl.value}/${ns.name}`;
     }
 
     window.open(url, '_blank');
@@ -762,20 +758,10 @@ let toggleSort = (search: any) => {
         sortBy.value = search;
     }
 }
-let cdnPending = ref(false);
 
-let refreshCdn = async () => {
-    cdnPending.value = true;
-    await currentService.refreshCDN();
-    currentService.refreshCDN({
-        checkStatus: res => {
-            cdnPending.value = false;
-        }
-    });
-}
 // call getPage when currentPage changes
 watch(currentPage, (n, o) => {
-    if (n !== o && n > 0 && (n <= maxPage.value || n > maxPage.value && !endOfList.value)) {
+    if (n !== o && n > 0 && (n <= maxPage.value || n > maxPage.value && !endOfList[currentDirectory.value || '!'])) {
         // if new value is different from old value
         // if new value is within maxPage
         // if new value is greater than maxPage but not end of list
@@ -814,6 +800,14 @@ watch(ascending, () => {
 </script>
 
 <style lang="less" scoped>
+tbody {
+    tr:first-child {
+        background-color: rgba(0, 0, 255, 0.02);
+    }
+    tr {
+        cursor: default;
+    }
+}
 form.register {
     display: flex;
     flex-wrap: wrap;
@@ -829,7 +823,7 @@ form.register {
             content: ".skapi.com";
             position: absolute;
             right: 10px;
-            top: 12px;
+            line-height: 44px;
             color: #999;
             font-size: 0.8rem;
             font-weight: 400;
@@ -849,7 +843,6 @@ form.register {
         flex-shrink: 0;
     }
 }
-
 
 // table style below
 
@@ -936,7 +929,7 @@ thead {
     width: 100%;
     padding: 10px 20px;
     margin: 8px;
-    border-radius: 8px;
+    border-radius: 6px;
     transform: translate(-50%, 300px);
     transition: all .15s;
     background-color: var(--main-color);

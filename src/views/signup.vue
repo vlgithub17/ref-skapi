@@ -9,9 +9,11 @@ br
 
     .bottomLineTitle Sign Up
 
-    br
-
     form(@submit.prevent="signup")
+        p Enter Email and Password to create an account.
+
+        br
+        
         label
             | Email
             input.big(type="email" 
@@ -32,9 +34,9 @@ br
             required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
-                    .material-symbols-outlined.fill visibility
+                    .material-symbols-outlined.notranslate.fill visibility
                 template(v-else)
-                    .material-symbols-outlined.fill visibility_off
+                    .material-symbols-outlined.notranslate.fill visibility_off
 
         label.passwordInput
             | Confirm password
@@ -46,9 +48,9 @@ br
             required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
-                    .material-symbols-outlined.fill visibility
+                    .material-symbols-outlined.notranslate.fill visibility
                 template(v-else)
-                    .material-symbols-outlined.fill visibility_off
+                    .material-symbols-outlined.notranslate.fill visibility_off
 
         .actions 
             Checkbox(v-model="form.subscribe" style='font-weight:unset;') I agree to receive newsletters from Skapi.
@@ -56,7 +58,7 @@ br
         br
 
         .error(v-if="error")
-            .material-symbols-outlined.fill error
+            .material-symbols-outlined.notranslate.fill error
             span {{ error }}
         
         br
@@ -71,8 +73,9 @@ br
                     | Have an account?&nbsp;
                     RouterLink(:to="{name: 'login'}") Login
         
-        br
-        br
+br
+br
+br
 </template>
 
 <script setup lang="ts">
@@ -117,11 +120,11 @@ let signup = (e) => {
     }
 
     skapi.signup(params, options).then(res => {
-        console.log(res);
+        // console.log(res);
         router.push({ path: '/confirmation', query: { email: form.value.email } })
     }).catch(err => {
-        console.log(err)
-        console.log(err.code)
+        // console.log(err)
+        // console.log(err.code)
         promiseRunning.value = false;
 
         switch (err.code) {

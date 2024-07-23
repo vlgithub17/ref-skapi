@@ -10,7 +10,7 @@ br
 
         .bottomLineTitle Change Password
     template(v-else)
-        .material-symbols-outlined.fill(style="font-size:50px;color:rgba(90, 216, 88, 1);") check_circle
+        .material-symbols-outlined.notranslate.fill(style="font-size:50px;color:rgba(90, 216, 88, 1);") check_circle
         .bottomLineTitle Success
 
     template(v-if="step === 1")
@@ -35,14 +35,14 @@ br
                     name="password")
                 .passwordIcon(@click="showPassword = !showPassword")
                     template(v-if="showPassword")
-                        .material-symbols-outlined.fill visibility
+                        .material-symbols-outlined.notranslate.fill visibility
                     template(v-else)
-                        .material-symbols-outlined.fill visibility_off
+                        .material-symbols-outlined.notranslate.fill visibility_off
 
             br
 
             .error(v-if="error")
-                .material-symbols-outlined.fill error
+                .material-symbols-outlined.notranslate.fill error
                 span {{ error }}
 
             br
@@ -71,9 +71,9 @@ br
                     required)
                 .passwordIcon(@click="showNewPassword = !showNewPassword")
                     template(v-if="showNewPassword")
-                        .material-symbols-outlined.fill visibility
+                        .material-symbols-outlined.notranslate.fill visibility
                     template(v-else)
-                        .material-symbols-outlined.fill visibility_off
+                        .material-symbols-outlined.notranslate.fill visibility_off
 
             label.passwordInput
                 | Confirm new password
@@ -89,14 +89,14 @@ br
                     required)
                 .passwordIcon(@click="showConfirmPassword = !showConfirmPassword")
                     template(v-if="showConfirmPassword")
-                        .material-symbols-outlined.fill visibility
+                        .material-symbols-outlined.notranslate.fill visibility
                     template(v-else)
-                        .material-symbols-outlined.fill visibility_off
+                        .material-symbols-outlined.notranslate.fill visibility_off
 
             br
 
             .error(v-if="error")
-                .material-symbols-outlined.fill error
+                .material-symbols-outlined.notranslate.fill error
                 span {{ error }}
 
             br
@@ -121,7 +121,7 @@ br
         .ball(v-for="num in 2" :class="{'active': step === num}")
 br
 br
-
+br
 </template>
 
 <script setup lang="ts">

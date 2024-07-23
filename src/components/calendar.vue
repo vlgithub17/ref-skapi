@@ -3,12 +3,12 @@
     .timeWrap
         .timeNav 
             input#here(type="date" hidden)
-            input.big#year(type="text" :value="currentYear" @change.stop="(e) => updateCalendar(e, 'year')" @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}")
+            input.big#year(type="text" :value="currentYear" @change.stop="(e) => updateCalendar(e, 'year')" @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}" style='cursor: text;')
             .month
-                .material-symbols-outlined.prev(@click="reRender('prev')") arrow_back_ios
+                .material-symbols-outlined.notranslate.prev(@click="reRender('prev')") arrow_back_ios
                 select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
                     option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
-                .material-symbols-outlined.next(@click="reRender('next')") arrow_forward_ios
+                .material-symbols-outlined.notranslate.next(@click="reRender('next')") arrow_forward_ios
         .timeCont 
             .days 
                 .day Mo
@@ -23,11 +23,11 @@
     .timeSettingWrap
         .input(@mouseover="startDate ? showIcon.start = true : showIcon.start = false" @mouseleave="showIcon.start = false")
             input#start(type="text" placeholder="Start" readonly v-model="startDate" :class="{'active' : activeDate}" @click="activeDate = true")
-            .material-symbols-outlined.fill.delete(:class="{'show' : showIcon.start}" @click="deleteDate") cancel
+            .material-symbols-outlined.notranslate.fill.delete(:class="{'show' : showIcon.start}" @click="deleteDate") cancel
         span ~
         .input(@mouseover="endDate ? showIcon.end = true : showIcon.end = false" @mouseleave="showIcon.end = false") 
             input#end(type="text" placeholder="End" readonly v-model="endDate" :class="{'active' : !activeDate}" @click="activeDate = false")
-            .material-symbols-outlined.fill.delete(:class="{'show' : showIcon.end}" @click="deleteDate") cancel
+            .material-symbols-outlined.notranslate.fill.delete(:class="{'show' : showIcon.end}" @click="deleteDate") cancel
 </template>
 
 <script setup>
@@ -319,7 +319,7 @@ let createdDate = (e, date) => {
 <style lang="less" scoped>
 #calendar {
     width: 340px;
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid rgba(0, 0, 0, 0.15);
     background: #FAFAFA;
     box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);
@@ -354,6 +354,7 @@ let createdDate = (e, date) => {
 
             .month {
                 display: flex;
+                align-items: center;
                 background-color: unset;
                 border: 0;
                 cursor: pointer;
@@ -502,7 +503,7 @@ let createdDate = (e, date) => {
             background-color: white;
             width: 100%;
             padding: 12px 10px;
-            border-radius: 8px;
+            border-radius: 6px;
             outline: 1px solid rgba(0, 0, 0, 0.5);
             cursor: pointer;
 

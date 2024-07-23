@@ -5,18 +5,16 @@ br
 
 main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
     router-link(:to="'/my-services/' + serviceId ")
-        img(src="@/assets/img/logo/logo.png" style="width:193px;")
+        img(src="@/assets/img/logo/logo.png" style="height:2em;")
 
-    br
-    br
+    .bottomLineTitle Subscription Plan
 
-    section
-        .bottomLineTitle Subscription Plan
-
-        p
-            | Update your subscription plan for service&nbsp;
-            span(style='font-weight:normal') "{{ serviceList[serviceId].service.name }}"
-    br
+    p
+        | Update your subscription plan for service "
+        span(style='font-weight:500') {{ serviceList[serviceId].service.name }}
+        | "
+        
+    p When upgrade/downgrading your subscription plan, the remaining days will be prorated and the amount will be adjusted accordingly on your next payment.
 
     section
         .planWrap
@@ -79,7 +77,7 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
 
     div(v-if="serviceList[serviceId]?.service.plan !== 'Canceled' && serviceList[serviceId]?.service.plan !== 'Trial'" style="text-align:right")
         span.iconClick(@click='()=>openCancelplan=true' style='color:var(--caution-color);font-size:0.66rem;')
-            .material-symbols-outlined.fill(style='font-size:24px;') cancel
+            .material-symbols-outlined.notranslate.fill(style='font-size:24px;') cancel
             span &nbsp;Cancel Subscription
 
 div(v-else style="text-align:center")
@@ -128,20 +126,20 @@ br
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { serviceList } from '@/views/service-list'
-import Modal from '@/components/modal.vue';
-import { user, customer } from '@/code/user';
-import { skapi } from '@/code/admin';
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { serviceList } from "@/views/service-list";
+import Modal from "@/components/modal.vue";
+import { user, customer } from "@/code/user";
+import { skapi } from "@/code/admin";
 
 const router = useRouter();
 const route = useRoute();
 
-let serviceId = route.path.split('/')[2];
+let serviceId = route.path.split("/")[2];
 let subscrOpt = ref(false);
 let promiseRunning = ref(false);
-let changeMode = ''
+let changeMode = "";
 let openCancelplan = ref(false);
 
 let availablePlans = computed(() => {
@@ -156,21 +154,25 @@ let availablePlans = computed(() => {
     // 3: 'Premium',
     // 50: 'Unlimited',
     // 51: 'Free Standard'
-    if (serviceList[serviceId]?.subscription?.status === 'canceled') {
-        return ['Subscribe', 'Subscribe'];
+    if (serviceList[serviceId]?.subscription?.status === "canceled") {
+        return ["Subscribe", "Subscribe"];
+    } else if (serviceList[serviceId]?.service.plan == "Canceled") {
+        return ["Resume", "Resume"];
     }
-    else if (serviceList[serviceId]?.service.plan == 'Canceled') {
-        return ['Resume', 'Resume'];
+    if (serviceList[serviceId]?.service.plan == "Trial") {
+        return ["Subscribe", "Subscribe"];
     }
-    if (serviceList[serviceId]?.service.plan == 'Trial') {
-        return ['Subscribe', 'Subscribe'];
+    if (serviceList[serviceId]?.service.plan == "Standard") {
+        return [false, "Upgrade"];
     }
-    if (serviceList[serviceId]?.service.plan == 'Standard') {
-        return [false, 'Upgrade'];
-    }
-    if (serviceList[serviceId]?.service.plan == 'Premium') {
-        let notAvail = serviceList[serviceId].service.users > 10000 || serviceList[serviceId].storageInfo.email > 1073741824 || serviceList[serviceId].storageInfo.host > 53687091200 || serviceList[serviceId].storageInfo.cloud > 53687091200 || serviceList[serviceId].storageInfo.database > 4294967296
-        return [notAvail ? null : 'Downgrade', false];
+    if (serviceList[serviceId]?.service.plan == "Premium") {
+        let notAvail =
+            serviceList[serviceId].service.users > 10000 ||
+            serviceList[serviceId].storageInfo.email > 1073741824 ||
+            serviceList[serviceId].storageInfo.host > 53687091200 ||
+            serviceList[serviceId].storageInfo.cloud > 53687091200 ||
+            serviceList[serviceId].storageInfo.database > 4294967296;
+        return [notAvail ? null : "Downgrade", false];
     }
 
     return [null, null];
@@ -179,19 +181,20 @@ let availablePlans = computed(() => {
 let cancelSubs = async () => {
     promiseRunning.value = true;
     await serviceList[serviceId].cancelSubscription();
-    location.href = '/my-services/' + serviceList[serviceId].id;
-}
+    location.href = "/my-services/" + serviceList[serviceId].id;
+};
 
 let upgrade = () => {
+    // console.log('yoyo')
     if (!subscrOpt.value) {
         return;
     }
-    if (subscrOpt.value === 'Subscribe') {
+    if (subscrOpt.value === "Subscribe") {
         return createSubscription(changeMode, serviceList[serviceId]);
     }
 
     updateSubscription(changeMode);
-}
+};
 
 let createSubscription = async (ticket_id, service_info) => {
     let resolvedCustomer = await customer;
@@ -201,51 +204,51 @@ let createSubscription = async (ticket_id, service_info) => {
     promiseRunning.value = true;
 
     let response = await skapi.clientSecretRequest({
-        clientSecretName: 'stripe_test',
-        url: 'https://api.stripe.com/v1/checkout/sessions',
-        method: 'POST',
+        clientSecretName: "stripe_test",
+        url: "https://api.stripe.com/v1/checkout/sessions",
+        method: "POST",
         headers: {
-            Authorization: 'Bearer $CLIENT_SECRET',
-            'Content-Type': 'application/x-www-form-urlencoded'
+            Authorization: "Bearer $CLIENT_SECRET",
+            "Content-Type": "application/x-www-form-urlencoded",
         },
         data: {
             client_reference_id: user.user_id,
             customer: customer_id,
-            'customer_update[name]': 'auto',
-            'customer_update[address]': 'auto',
-            'subscription_data[metadata][service]': service_info.id,
-            'subscription_data[metadata][owner]': user.user_id,
-            'mode': 'subscription',
-            'subscription_data[description]': 'Subscription plan for service ID: "' + service_info.id + '"',
-            cancel_url: currentUrl.origin + '/subscription/' + service_info.id,
+            "customer_update[name]": "auto",
+            "customer_update[address]": "auto",
+            "subscription_data[metadata][service]": service_info.id,
+            "subscription_data[metadata][owner]": user.user_id,
+            mode: "subscription",
+            "subscription_data[description]":
+                'Subscription plan for service ID: "' + service_info.id + '"',
+            cancel_url: currentUrl.origin + "/subscription/" + service_info.id,
             "line_items[0][quantity]": 1,
-            'line_items[0][price]': product[ticket_id],
-            "success_url": currentUrl.origin + '/my-services/' + service_info.id,
-            'tax_id_collection[enabled]': true,
-        }
+            "line_items[0][price]": product[ticket_id],
+            success_url: currentUrl.origin + "/my-services/" + service_info.id,
+            "tax_id_collection[enabled]": true,
+        },
     });
 
     if (response.error) {
         promiseRunning.value = false;
         alert(response.error.message);
-    }
-    else {
+    } else {
         location.href = response.url;
     }
-}
+};
 
 let updateSubscription = async (ticket_id) => {
     await customer;
-    let subs_id = serviceList[serviceId].service.subs_id.split('#');
+    let subs_id = serviceList[serviceId].service.subs_id.split("#");
     promiseRunning.value = true;
 
     if (!serviceList[serviceId].service.subs_id) {
-        alert('Service does not have a subscription');
+        alert("Service does not have a subscription");
         return;
     }
 
     if (subs_id.length < 2) {
-        alert('Service does not have a subscription');
+        alert("Service does not have a subscription");
         return;
     }
 
@@ -254,30 +257,26 @@ let updateSubscription = async (ticket_id) => {
     let product = JSON.parse(import.meta.env.VITE_PRODUCT);
     let dataObj = {};
 
-    if (serviceList[serviceId]?.subscription?.cancel_at_period_end) {
-        dataObj = {
-            'items[0][id]': SUBSCRIPTION_ITEM_ID,
-            'items[0][price]': product[ticket_id],
-            'cancel_at_period_end': false
-        }
-    }
-    else {
-        dataObj = {
-            'items[0][id]': SUBSCRIPTION_ITEM_ID,
-            'items[0][price]': product[ticket_id],
-            proration_behavior: 'create_prorations'
-        }
+    // if (serviceList[serviceId]?.subscription?.cancel_at_period_end) {
+    dataObj = {
+        "items[0][id]": SUBSCRIPTION_ITEM_ID,
+        "items[0][price]": product[ticket_id],
+        cancel_at_period_end: false,
+    };
+    
+    if(!serviceList[serviceId]?.subscription?.canceled_at) {
+        dataObj.proration_behavior = 'create_prorations';
     }
 
     let response = await skapi.clientSecretRequest({
-        clientSecretName: 'stripe_test',
+        clientSecretName: "stripe_test",
         url: `https://api.stripe.com/v1/subscriptions/${SUBSCRIPTION_ID}`,
-        method: 'POST',
+        method: "POST",
         headers: {
-            Authorization: 'Bearer $CLIENT_SECRET',
-            'Content-Type': 'application/x-www-form-urlencoded'
+            Authorization: "Bearer $CLIENT_SECRET",
+            "Content-Type": "application/x-www-form-urlencoded",
         },
-        data: dataObj
+        data: dataObj,
     });
 
     if (response.error) {
@@ -286,8 +285,8 @@ let updateSubscription = async (ticket_id) => {
         return;
     }
 
-    location.href = '/my-services/' + serviceList[serviceId].id;
-}
+    location.href = "/my-services/" + serviceList[serviceId].id;
+};
 </script>
 
 <style scoped lang="less">
@@ -318,6 +317,7 @@ let updateSubscription = async (ticket_id) => {
     .infoBox {
         width: 280px;
         flex-grow: 1;
+        box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1) inset;
     }
 
     .price {
@@ -329,7 +329,7 @@ let updateSubscription = async (ticket_id) => {
 
         &::before {
             position: absolute;
-            content: '/mo';
+            content: "/mo";
             right: -2rem;
             top: 50%;
             transform: translateY(-50%);
@@ -347,17 +347,17 @@ let updateSubscription = async (ticket_id) => {
 
         li {
             position: relative;
-            color: rgba(0, 0, 0, 0.60);
+            color: rgba(0, 0, 0, 0.6);
             font-size: 0.8rem;
             font-weight: 400;
             padding-left: 24px;
 
             &::before {
                 position: absolute;
-                content: '';
+                content: "";
                 left: 0;
                 top: 6px;
-                background: url('@/assets/img/icon/check.svg') no-repeat;
+                background: url("@/assets/img/icon/check.svg") no-repeat;
                 background-size: cover;
                 width: 16px;
                 height: 16px;
@@ -366,7 +366,7 @@ let updateSubscription = async (ticket_id) => {
 
             &.warning {
                 &::before {
-                    background: url('@/assets/img/icon/warning.svg') no-repeat;
+                    background: url("@/assets/img/icon/warning.svg") no-repeat;
                     background-size: cover;
                     width: 20px;
                     height: 20px;

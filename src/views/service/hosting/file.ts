@@ -7,10 +7,17 @@ export let currentDirectory = ref('');
 export let uploadGroups: FormData[] = [];
 export let uploadCount = reactive([0, 0]); // fin / total
 export let uploadProgress: any = reactive({});  // { name: fileName, progress: percent(number) }
-export let folders: any = {};
+export let serviceFolders: any = {}; // {serviceid: {dirname: {}}}
 
 export let uploadFiles = async (files: File[], callback?: () => void, contentTypeMapping?:{[fname:string]:string}) => {
     // uploads one by one
+    let sd = currentService.service.subdomain;
+    if(!sd) {
+        throw new Error('No subdomain found');
+    }
+    if (sd && sd[0] === '*' || sd[0] === '+') {
+        throw new Error('Cannot upload files to pending subdomain');
+    }
 
     uploadCount[1] += files.length;
     let currentDir = currentDirectory.value ? currentDirectory.value + '/' : '';
@@ -37,8 +44,9 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                 }
 
                 uploadCount[0]++;
-                let flName = (f.webkitRelativePath || f.name).split('/').pop();
-                let fPath = currentDir + (f.webkitRelativePath || f.name).replace(flName, '');
+                let fPathArr = (f.webkitRelativePath || f.name).split('/'); // [folder-filename, filename]
+                let flName = fPathArr.pop();
+                let fPath = currentDir + fPathArr.join('/');
                 if (fPath.slice(-1) === '/') {
                     fPath = fPath.slice(0, -1);
                 }
@@ -51,9 +59,10 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                 }
 
                 let fPathSplit = fPath.split('/');
+                // console.log(fPathSplit);
                 if (fPathSplit.length === 1) {
                     if (fPathSplit[0] === '') {
-                        let folder = folders['!'].pager;
+                        let folder = serviceFolders[currentService.service.subdomain]['!'].pager;
                         if (folder.list?.[flName]) {
                             await folder.editItem(fileObj);
                         }
@@ -62,7 +71,7 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                         }
                     }
                     else {
-                        let folder = folders['!'].pager;
+                        let folder = serviceFolders[currentService.service.subdomain]['!'].pager;
                         if (!folder.list?.['#' + fPathSplit[0]]) {
                             let obj = Object.assign({}, fileObj, { name: '#' + fPathSplit[0], cnt: 0, size: 0, path: currentService.service.subdomain});
                             await folder.insertItems(obj);
@@ -74,8 +83,8 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                             await folder.editItem(obj);
                         }
 
-                        if (folders[fPathSplit[0]]) {
-                            let folder = folders[fPathSplit[0]].pager;
+                        if (serviceFolders[currentService.service.subdomain][fPathSplit[0]]) {
+                            let folder = serviceFolders[currentService.service.subdomain][fPathSplit[0]].pager;
                             if (folder.list?.[flName]) {
                                 await folder.editItem(fileObj);
                             }
@@ -89,8 +98,8 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                     // has nested folders
                     let pathIdx = fPathSplit.length;
                     let fp = fPathSplit.slice(0, pathIdx).join('/');
-                    if (folders[fp]) {
-                        let folder = folders[fp].pager;
+                    if (serviceFolders[currentService.service.subdomain][fp]) {
+                        let folder = serviceFolders[currentService.service.subdomain][fp].pager;
                         if (folder.list?.[flName]) {
                             await folder.editItem(fileObj);
                         }
@@ -105,8 +114,8 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                             let fldName = '#' + fp.pop();
                             let fpStr = fp.join('/') || '!';
                             fileObj.name = fldName;
-                            if (folders[fpStr]) {
-                                let folder = folders[fpStr].pager;
+                            if (serviceFolders[currentService.service.subdomain][fpStr]) {
+                                let folder = serviceFolders[currentService.service.subdomain][fpStr].pager;
                                 if (folder.list?.[fldName]) {
                                     let obj = folder.list?.[fldName];
                                     obj.size = (obj.size || 0) + f.size;

@@ -1,4 +1,5 @@
 import { reactive, ref } from 'vue';
+import type { Ref } from 'vue';
 import { skapi } from './admin';
 import { Countries } from './countries';
 
@@ -201,6 +202,15 @@ type SubscriptionObj = {
     trial_start: number | null;
 };
 
+function randomString(length: number) {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
 
 export default class Service {
     id: string;
@@ -235,6 +245,7 @@ export default class Service {
     _orgPlan = '';
     _subsPromise;
     newsletterSender: Promise<string>[] = [];
+    reserved_key: string = randomString(16);
     constructor(id: string, service: ServiceObj, endpoints: string[]) {
         this.id = id;
         this.admin_private_endpoint = endpoints[0];
@@ -245,6 +256,11 @@ export default class Service {
         this.plan = this.planCode[service.group];
         service.plan = this.plan;
         this.service = reactive(service);
+
+        if (this.service?.subdomain) {
+            this.getSubdomainInfo(true);
+        }
+
         this._subsPromise = this.getSubscription();
         this.getStorageInfo();
         if (service.group > 1) {
@@ -295,7 +311,7 @@ export default class Service {
         this._orgPlan = this.planCode[this.service.group];
         let currTime = new Date().getTime();
         this.service.suspended = this.subscription?.cancel_at && currTime >= this.subscription?.cancel_at * 1000;
-
+        
         if (this.subscription?.canceled_at && currTime >= this.subscription.canceled_at * 1000) {
             this.service.plan = 'Canceled';
         }
@@ -444,6 +460,11 @@ export default class Service {
         client_secret?: { [key: string]: string };
         auth_client_secret?: string[]; // client_secret key to be auth required
     }): Promise<ServiceObj> {
+        let old = {
+            prevent_signup: this.service.prevent_signup || false,
+            client_secret: this.service.client_secret || {},
+            auth_client_secret: this.service.auth_client_secret || []
+        }
         let toUpload = {
             prevent_signup: this.service.prevent_signup || false,
             client_secret: this.service.client_secret || {},
@@ -451,10 +472,14 @@ export default class Service {
         }
 
         Object.assign(toUpload, opt);
-
-        let updated = await skapi.util.request(this.admin_private_endpoint + 'service-opt', { service: this.id, owner: this.owner, opt }, { auth: true });
-        Object.assign(this.service, updated);
-        return updated;
+        Object.assign(this.service, toUpload);
+        try {
+            let updated = await skapi.util.request(this.admin_private_endpoint + 'service-opt', { service: this.id, owner: this.owner, opt }, { auth: true });
+            return updated;
+        } catch (err: any) {
+            Object.assign(this.service, old);
+            throw err;
+        }
     }
 
     async getStorageInfo(): Promise<{
@@ -467,10 +492,12 @@ export default class Service {
 
         if (this.service.subdomain) {
             let subdomain = this.service.subdomain;
-            if (this.service?.subdomain[0] === '*' || this.service?.subdomain[0] === '+') {
+            let pendingSubdomain = subdomain[0] === '+' || subdomain[0] === '*';
+            if (pendingSubdomain) {
                 subdomain = subdomain.slice(1);
             }
 
+            // get host storage info
             wait.push(
                 skapi.util.request(this.admin_private_endpoint + 'host-directory', { service: this.id, owner: this.owner, info: true, dir: subdomain }, { auth: true })
                     .then((r: any) => { this.storageInfo.host = r?.size || 0; }));
@@ -582,83 +609,6 @@ export default class Service {
         return this.service;
     }
 
-    getSubdomainInfo(): Promise<{
-        srvc: string;
-        subd: string;
-        ownr: string;
-        stat: 'remove' | 'change:(subdomain to be changed to)' | 'active' | string;
-        ["404"]?: string;
-    }> {
-        return skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service: this.id, owner: this.owner }, { auth: true });
-    }
-
-    pendingSubdomain(cb: (service: ServiceObj) => void, time = 1000) {
-        if (this.service?.subdomain && (this.service.subdomain?.[0] === '+' || this.service.subdomain?.[0] === '*')) {
-            this.refresh().then(() => {
-                if (!this.service?.subdomain || this.service?.subdomain && this.service.subdomain[0] !== '+' && this.service.subdomain[0] !== '*') {
-                    return cb(this.service);
-                }
-                else {
-                    time *= 1.2;
-                    setTimeout(() => this.pendingSubdomain(cb, time), time);
-                }
-            });
-        }
-        else {
-            return cb(this.service);
-        }
-    }
-
-    async registerSubdomain(
-        params: {
-            subdomain?: string,
-            cb?: (service: ServiceObj) => void; // callback runs when the subdomain process is complete
-        }
-    ): Promise<ServiceObj> {
-        let invalid = [
-            'baksa',
-            'desktop',
-            'mobile',
-            'skapi',
-            'broadwayinc',
-            'broadway',
-            'documentation'
-        ];
-
-        let { subdomain = '' } = params;
-        if (subdomain && (subdomain.length < 4 || invalid.includes(subdomain))) {
-            throw 'The subdomain has been taken.';
-        }
-
-        if (this.service?.subdomain === subdomain) {
-            return this.service;
-        }
-
-        if (this.service?.subdomain) {
-            if (subdomain && this.service?.subdomain[0] === '*') {
-                throw 'Previous subdomain is in removal process.';
-            }
-            else if (subdomain && this.service?.subdomain[0] === '+') {
-                throw `Previous subdomain is in transit to "${this.service.subdomain.slice(1)}".`;
-            }
-        }
-
-        let resp = await skapi.util.request(this.admin_private_endpoint + 'register-subdomain', { service: this.id, owner: this.owner, subdomain }, {
-            auth: true,
-            method: 'post'
-        });
-
-        if (typeof resp !== 'string') {
-            Object.assign(this.service, resp);
-        }
-
-        if (typeof params.cb === 'function') {
-            this.pendingSubdomain(params.cb);
-        }
-
-        return this.service;
-    }
-
     async getMailTemplates(
         params?: {
             searchFor: 'message_id' | 'timestamp' | 'read' | 'complaint' | 'subject';
@@ -721,68 +671,229 @@ export default class Service {
         }
     }
 
-    async refreshCDN(
-        params?: {
-            // when true, returns the status of the cdn refresh without running the cdn refresh
-            // if callback are given, calls for cdn refresh, then callbacks the cdn refresh status in 3 seconds interval
-            checkStatus: boolean | ((status: 'IN_QUEUE' | 'COMPLETE' | 'IN_PROCESS') => void);
+    pending: {
+        subdomain: false | 'removing' | 'transit' | 'fetching' | string;
+        cdn: boolean; // true when cdn refresh is in process
+    } = reactive({
+        subdomain: false,
+        cdn: false
+    });
+
+    subdInfo = reactive({
+        srvc: '',
+        subd: '',
+        ownr: '',
+        stat: '',
+        ["404"]: '...'
+    });
+
+    getSubdomainInfoTimer: any = null;
+
+    dirInfo: Ref<{
+        cnt: number;
+        size: number;
+        upl: number;
+        path: string;
+    }> = reactive({
+        cnt: 0,
+        size: 0,
+        upl: 0,
+        path: ''
+    });
+
+    async getSubdomainInfo(immediate: boolean = false, time: number = 1000): Promise<{
+        srvc: string;
+        subd: string;
+        ownr: string;
+        stat: 'remove' | 'change:(subdomain to be changed to)' | 'active' | string;
+        ["404"]?: string;
+    } | null> {
+        if (!this.pending.subdomain) {
+            this.pending.subdomain = 'fetching';
         }
-    ): Promise<
+
+        if (this.getSubdomainInfoTimer) {
+            return null;
+        }
+
+        let exec = async (time = 1000) => {
+            let info = await skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service: this.id, owner: this.owner }, { auth: true });
+            // console.log({ subInfo: info });
+
+            if (typeof info === 'string' || !info || typeof info === 'object' && Object.keys(info).length === 0) {
+                // subdomain removed
+                clearTimeout(this.getSubdomainInfoTimer);
+                this.getSubdomainInfoTimer = null;
+                this.pending.subdomain = false;
+                this.service.subdomain = null;
+
+                Object.assign(this.subdInfo, {
+                    srvc: '',
+                    subd: '',
+                    ownr: '',
+                    stat: '',
+                    ["404"]: ''
+                });
+
+                return this.subdInfo;
+            }
+
+            if (info.invid) {
+                this.checkCDNStatus(true);
+            }
+
+            let pendingStat = info.stat.includes('change:') ? 'transit' : info.stat.includes('remove') ? 'removing' : info.stat === 'active' || info.stat === 'tracked' ? false : info.stat;
+            this.pending.subdomain = pendingStat;
+            if (pendingStat) {
+                time *= 1.2;
+                this.subdInfo.stat = info.stat;
+                this.getSubdomainInfoTimer = setTimeout(() => exec(time), time);
+            }
+            else {
+                clearTimeout(this.getSubdomainInfoTimer);
+                this.getSubdomainInfoTimer = null;
+
+                this.pending.subdomain = false;
+                this.service.subdomain = info.subd;
+                if (!info?.["404"]) {
+                    delete this.subdInfo['404']
+                }
+                Object.assign(this.subdInfo, info);
+                return info;
+            }
+        }
+
+        if (immediate) {
+            exec(time);
+        }
+        else {
+            this.getSubdomainInfoTimer = setTimeout(() => exec(time), time);
+            return null;
+        }
+    }
+
+    async registerSubdomain(
+        params: {
+            subdomain?: string;
+        }
+    ): Promise<ServiceObj> {
+        let { subdomain = '' } = params || {};
+        this.reserved_key = randomString(16);
+
+        if (this.service?.subdomain === subdomain) {
+            return this.service;
+        }
+
+        if (this.service?.subdomain) {
+            if (subdomain && this.service?.subdomain[0] === '*') {
+                throw 'Previous subdomain is in removal process.';
+            }
+            else if (subdomain && this.service?.subdomain[0] === '+') {
+                throw `Previous subdomain is in transit to "${this.service.subdomain.slice(1)}".`;
+            }
+        }
+
+        this.pending.subdomain = subdomain ? 'pending' : 'removing';
+        this.subdInfo.stat = subdomain ? 'pending' : 'removing';
+        let resp = await skapi.util.request(this.admin_private_endpoint + 'register-subdomain', { service: this.id, owner: this.owner, subdomain }, {
+            auth: true,
+            method: 'post'
+        }).catch(err => {
+            this.pending.subdomain = false;
+            throw err;
+        });
+
+        if (typeof resp !== 'string') {
+            this.service.subdomain = resp.subdomain;
+            this.subdInfo.stat = 'pending';
+        }
+
+        this.getSubdomainInfo();
+        return this.service;
+    }
+
+    async fetchCDNStatus() {
+        return await skapi.util.request(this.admin_private_endpoint + 'refresh-cdn', {
+            service: this.id,
+            owner: this.owner,
+            exec: 'status'
+        }, {
+            auth: true,
+            method: 'post'
+        })
+    }
+
+    cdnPendTimer: any = null;
+    checkCDNStatus(immediate?: boolean) {
+        if (this.cdnPendTimer) {
+            return;
+        }
+
+        this.pending.cdn = true;
+        let callbackInterval = (immediate = false) => {
+            let time = immediate ? 1 : 30000;
+            setTimeout(() => {
+                this.fetchCDNStatus().then(res => {
+                    if (res === 'COMPLETE') {
+                        this.pending.cdn = false;
+                        clearTimeout(this.cdnPendTimer);
+                        this.cdnPendTimer = null;
+                        return;
+                    }
+                    this.cdnPendTimer = callbackInterval();
+                }).catch(err => {
+                    this.pending.cdn = false;
+                    clearTimeout(this.cdnPendTimer);
+                    this.cdnPendTimer = null;
+                    return;
+                });
+            }, time);
+        };
+
+        this.cdnPendTimer = callbackInterval(immediate);
+    }
+
+    async refreshCDN(): Promise<
         'IS_QUEUED' | // new cdn refresh is queued
         'IN_QUEUE' | // the previous cdn refresh is still in queue
-        'COMPLETE' | // only when checkStatus is true and the previous cdn refresh is complete
         'IN_PROCESS' // the cdn refresh is in process
     > {
-        let { checkStatus = false } = params || {};
+        if (this.pending.cdn) {
+            return 'IN_PROCESS';
+        }
 
         if (!this.service.subdomain || this.service.subdomain[0] === '*') {
-            throw 'subdomain does not exists.';
+            throw 'Subdomain does not exists.';
         }
 
         try {
-            let res = await skapi.util.request(this.admin_private_endpoint + 'refresh-cdn', {
+            this.pending.cdn = true;
+            await skapi.util.request(this.admin_private_endpoint + 'refresh-cdn', {
                 service: this.id,
                 owner: this.owner,
-                exec: checkStatus ? 'status' : 'refresh'
+                exec: 'refresh'
             }, {
                 auth: true,
                 method: 'post'
             });
 
-            if (checkStatus === true) {
-                return res;
-            }
-
-            if (!checkStatus) {
-                return 'IS_QUEUED';
-            }
-
-            return res;
+            this.checkCDNStatus();
+            return 'IS_QUEUED';
         }
         catch (err: any) {
-            if (err.message === 'previous cdn refresh is still in queue.') {
+            if (err.message === 'Previous cdn refresh is still in queue.') {
                 return 'IN_QUEUE';
             }
-            if (err.message === 'previous cdn refresh is in process.') {
+            if (err.message === 'Previous cdn refresh is in process.') {
                 return 'IN_PROCESS';
             }
             else {
+                this.pending.cdn = false;
+                if (this.cdnPendTimer) {
+                    clearTimeout(this.cdnPendTimer);
+                    this.cdnPendTimer = null;
+                }
                 throw err;
-            }
-        }
-        finally {
-            if (typeof checkStatus === 'function') {
-                let callbackInterval = (cb: Function, time = 30000) => {
-                    setTimeout(() => {
-                        this.refreshCDN({ checkStatus: true }).then(res => {
-                            if (res === 'COMPLETE') {
-                                return cb(res);
-                            }
-                            callbackInterval(cb, time);
-                        });
-                    }, time);
-                };
-                callbackInterval(checkStatus);
             }
         }
     }
@@ -798,7 +909,7 @@ export default class Service {
     async uploadHostFiles(
         fileList: FormData | HTMLFormElement | SubmitEvent,
         params: {
-            contentTypeMapping?: {[fileName:string]: string},
+            contentTypeMapping?: { [fileName: string]: string },
             prefix?: string,
             progress?: (p:
                 {
@@ -824,7 +935,7 @@ export default class Service {
             fileList = new FormData(fileList);
         }
 
-        let reserved_key = this.id;
+        let reserved_key = this.reserved_key;
 
         let getSignedParams: Record<string, any> = {
             reserved_key,
@@ -880,9 +991,9 @@ export default class Service {
             if (!(f instanceof File)) {
                 continue;
             }
-            
+
             let fn = (f.webkitRelativePath || f.name).split('/');
-            let fns = fn[fn.length-1];
+            let fns = fn[fn.length - 1];
             let ct = params?.contentTypeMapping?.[fns] || null;
 
             let signedParams = Object.assign({
@@ -938,18 +1049,19 @@ export default class Service {
             service: this.id,
             owner: this.owner,
             endpoints: params.paths,
+            reserved_key: this.reserved_key,
             storage: 'host'
         }, { auth: true, method: 'post' });
     }
 
-    getDirInfo(): Promise<{
+    async getDirInfo(): Promise<{
         name: string; // !
         path: string; // subdomain
         size: number;
         upl: number;
         cnt: number;
     }> {
-        return skapi.util.request(this.admin_private_endpoint + 'host-directory', Object.assign({ service: this.id, owner: this.owner }, { dir: '', info: true }), {
+        let dirInfo = await skapi.util.request(this.admin_private_endpoint + 'host-directory', Object.assign({ service: this.id, owner: this.owner }, { dir: '', info: true }), {
             fetchOptions: {
                 limit: 1,
                 fetchMore: false,
@@ -958,9 +1070,14 @@ export default class Service {
             method: 'post',
             auth: true
         });
+        // console.log({ dirInfo })
+        if (dirInfo) {
+            Object.assign(this.dirInfo, dirInfo);
+        }
+        return dirInfo;
     }
 
-    listHostDirectory(
+    async listHostDirectory(
         params: {
             dir: string; // unix style dir with subdomain. ex) subdomain/folder/subfolder
         },
@@ -980,7 +1097,7 @@ export default class Service {
             _subd = _subd.slice(1);
         }
 
-        return skapi.util.request(this.admin_private_endpoint + 'host-directory', Object.assign({ service: this.id, owner: this.owner }, params), {
+        let dirList = await skapi.util.request(this.admin_private_endpoint + 'host-directory', Object.assign({ service: this.id, owner: this.owner }, params), {
             fetchOptions: {
                 limit: 100,
                 fetchMore: !!fetchMore,
@@ -989,6 +1106,8 @@ export default class Service {
             method: 'post',
             auth: true
         });
+        // console.log({ dirList });
+        return dirList;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1038,13 +1157,28 @@ export default class Service {
     }
 
     async refresh() {
-        let service = await skapi.util.request(this.admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: this.id }, { auth: true });
+        let service = await skapi.util.request(this.admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: this.id, bypass_cached_service: true }, { auth: true });
         for (let region in service) {
             if (service[region][0]) {
                 this.service = reactive(service[region][0]);
                 break;
             }
         }
+
+        let pendingStat = this.service.subdomain[0] === '+' ? 'transit' : this.service.subdomain[0] === '*' ? 'removing' : false;
+        this.pending.subdomain = pendingStat;
+
+        if (this.service?.subdomain) {
+            this.getSubdomainInfo(true);
+        }
+
+        this._subsPromise = this.getSubscription();
+        this.getStorageInfo();
+        if (service.group > 1) {
+            this.requestNewsletterSender({ group_numb: 0 });
+            this.requestNewsletterSender({ group_numb: 1 });
+        }
+
         return this.service;
     }
 
@@ -1057,10 +1191,11 @@ export default class Service {
         let record_private_endpoint = endpoints[1].record_private; // https://.../
 
         if (typeof id === 'string') {
-            let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: id }, { auth: true });
+            let service = await skapi.util.request(admin_private_endpoint + 'get-services', { service: skapi.service, owner: skapi.owner, service_id: id, bypass_cached_service: true }, { auth: true });
             for (let region in service) {
                 if (service[region][0]) {
                     let serviceClass = new Service(id, service[region][0], [admin_private_endpoint, record_private_endpoint, admin_public_endpoint]);
+                    await serviceClass._subsPromise;
                     return serviceClass;
                 }
             }

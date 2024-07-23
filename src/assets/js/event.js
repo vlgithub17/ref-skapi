@@ -35,7 +35,7 @@ let hideMoreVert = (e) => {
     for (let i = 0; i < getMoreVert.length; i++) {
         if(getMoreVert[i].style.display == 'block' && !getMoreVert[i].contains(e.target)) {
             // console.log('hideMoreVert');
-            console.log(getMoreVert[i].contains(e.target))
+            // console.log(getMoreVert[i].contains(e.target))
             getMoreVert[i].style.display = 'none';
         }
     }

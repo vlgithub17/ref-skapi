@@ -1,49 +1,63 @@
 <template lang="pug">
-h2(style='margin-bottom: 0')
-    | Bulk Email:&nbsp;
-    Select(v-model="group" :selectOptions="[{option: 'Newsletter', value: 0}, {option: 'Service Mail', value: 1}]" style='display:inline-block;vertical-align:middle;' :class='{disabled: fetching}')
+section.infoBox
+    .titleHead
+        h2 Bulk Email
+        Select(v-model="group" :selectOptions="[{option: 'Newsletter', value: 0}, {option: 'Service Mail', value: 1}]" style='display:inline-block;vertical-align:middle;width:136px')
 
-hr
+    hr
+    
+    .error(v-if='!user?.email_verified')
+        .material-symbols-outlined.notranslate.fill warning
+        router-link(to="/account-setting") Please verify your email address to modify settings.
+        
+    .error(v-else-if='currentService.service.active == 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently disabled.
 
-p(style='margin-bottom: 0').
-    You can collect your {{mailType.toLowerCase()}} subscribers by using the following code:
+    .error(v-else-if='currentService.service.active < 0')
+        .material-symbols-outlined.notranslate.fill warning
+        span This service is currently suspended.
 
-Code(v-if='group === 0')
-    pre.
-        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
-            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") placeholder]=#[span(style="color:#FFED91") "E-Mail address"]#[span(style="color:#999") &gt;]
-            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") {{group ? '"authorized"' : '"public"'}}]#[span(style="color:#999") &gt;]
-            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
-        #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
-Code(v-if='group === 1')
-    pre.
-        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
-            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") {{group ? '"authorized"' : '"public"'}}]#[span(style="color:#999") &gt;]
-            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
-        #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
+    p(style='margin-bottom: 0').
+        You can collect your {{mailType.toLowerCase()}} subscribers by using the following code:
 
-p(v-if='group === 1') * User must be logged in to subscribe to Service Mail, and the user must have their email verified.
+    Code(v-if='group === 0')
+        pre.
+            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
+                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") placeholder]=#[span(style="color:#FFED91") "E-Mail address"]#[span(style="color:#999") &gt;]
+                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") {{group ? '"authorized"' : '"public"'}}]#[span(style="color:#999") &gt;]
+                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
+            #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
+    Code(v-if='group === 1')
+        pre.
+            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
+                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") {{group ? '"authorized"' : '"public"'}}]#[span(style="color:#999") &gt;]
+                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
+            #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
+
+    p(v-if='group === 1') * User must be logged in to subscribe to Service Mail, and the user must have their email verified.
+
+    br
+
+    p(style='margin-bottom: 0') Once the users have subscribed to your {{mailType.toLowerCase()}}, they will be able to receive your emails sent to the address #[span.wordset provided below:]
+
+    Code
+        pre {{ newsletterEndpoint || '...' }}
+
+    br
+
+    p * The senders email address should exactly match your current profile email address: #[b.wordset {{ user.email }}]
+        
+    p For more information, please refer to the #[a(href="https://docs.skapi.com/email/newsletters.html" target="_blank") documentation]
 
 br
-
-p(style='margin-bottom: 0') Once the users have subscribed to your {{mailType.toLowerCase()}}, they will be able to receive your emails sent to the address provided below:
-
-Code
-    pre {{ newsletterEndpoint || '...' }}
-
-br
-
-p.
-    * The senders email address should exactly match your current profile email address: #[b.wordset {{ user.email }}]
-    #[br]
-    For more information, please refer to the #[a(href="https://docs.skapi.com/email/newsletters.html" target="_blank") documentation]
 
 .tableMenu
     a.iconClick.square(:href="'mailto:' + newsletterEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill mail
+        .material-symbols-outlined.notranslate.fill mail
         span &nbsp;&nbsp;Send {{mailType}}
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.fill refresh
+        .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
         span &nbsp;&nbsp;Refresh
 
 
@@ -53,27 +67,27 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             th(style='width: 250px;')
                 span(@click='toggleSort("subject")')
                     | Subject
-                    span.material-symbols-outlined.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("timestamp")')
                     | Sent
-                    span.material-symbols-outlined.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("read")')
                     | Reads
-                    span.material-symbols-outlined.fill(v-if='searchFor === "read"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "read"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("complaint")')
                     | Complaint
-                    span.material-symbols-outlined.fill(v-if='searchFor === "complaint"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "complaint"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("bounced")')
                     | Bounced
-                    span.material-symbols-outlined.fill(v-if='searchFor === "bounced"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "bounced"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
             th.center(style="width:60px; padding:0")
 
     template(v-slot:body)
@@ -97,7 +111,7 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
                 td.overflow {{ ns.complaint }}
                 td.overflow {{ ns.bounced }}
                 td.center.buttonWrap(@click.stop)
-                    .material-symbols-outlined.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
+                    .material-symbols-outlined.notranslate.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
             tr(v-for="i in (10 - listDisplay.length)")
                 td(colspan="6")
 
@@ -105,14 +119,12 @@ br
 
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
-        .material-symbols-outlined.bold chevron_left
+        .material-symbols-outlined.notranslate.bold chevron_left
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
     .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
-        .material-symbols-outlined.bold chevron_right
-
-br
+        .material-symbols-outlined.notranslate.bold chevron_right
 
 Modal(:open="emailToDelete")
     h4(style='margin:.5em 0 0;') Delete Email
