@@ -50,7 +50,7 @@ main#serviceList
                 tr(v-if="callServiceList")
                     td(colspan="8").
                         Loading ... &nbsp;
-                        #[img.load  ing(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+                        #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
                 tr(v-else-if="!Object.keys(serviceIdList).length")
                     td(colspan="8") You have no services yet.
 
