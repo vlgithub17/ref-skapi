@@ -18,9 +18,28 @@ main
                 pre npm i skapi-js@latest
 
             p(style='text-align:right;')
+                
+                small Current Version: 1.0.112
+                br
                 a(href='https://docs.skapi.com/introduction/getting-started.html' target='_blank' style='color:yellow')
                     .material-symbols-outlined.notranslate menu_book
                     | &nbsp;Read Docs
+            
+            br
+
+            div(v-if='user.user_id')
+                h4
+                    | Go to&nbsp;
+                    router-link(to='my-services' style='color:yellow') My Services
+                    | &nbsp;#[span.wordset and start] building!
+                router-link(to="my-services")
+                    button.final(style='background-color:white;color:black;width:170px') My Services
+            div(v-else)
+                h2
+                    router-link(to='signup' style='color:yellow') Sign-up
+                    | &nbsp;today for FREE #[span.wordset and start] building!
+                router-link(to="signup")
+                    button.final(style='background-color:white;color:black;width:170px') Sign-Up
             
         section.intact
             .explain.one
@@ -57,13 +76,12 @@ main
                     p Skapi is compatible with vanilla HTML as well as any frontend framework, #[span.wordset including React,] Vue, Angular, and more.
     
     br
-    br
 
     .dynamo-section(style='align-items: flex-start;')
         .intact
             .icoHead
                 .material-symbols-outlined.notranslate.yellow construction
-                h2 Build Anything
+                h2 Build Anything Fast
             p.
                 Skapi is a JavaScript library designed for #[span.wordset client-side] HTML. 
                 #[br]
@@ -85,29 +103,14 @@ main
                 #[br]
                 #[br]
                 Plus, Skapi is designed to protect you from developer mistakes that can cost millions.
-            
-            br
-            
-            div(v-if='user.user_id')
-                h4
-                    | Go to&nbsp;
-                    router-link(to='my-services' style='color:yellow') My Services
-                    | &nbsp;#[span.wordset and start] building!
-                router-link(to="my-services")
-                    button.final(style='background-color:white;color:black;width:170px') My Services
-            div(v-else)
-                h2
-                    router-link(to='signup' style='color:yellow') Sign-up
-                    | &nbsp;today for FREE #[span.wordset and start] building!
-                router-link(to="signup")
-                    button.final(style='background-color:white;color:black;width:170px') Sign-Up
+
             br
 
             h4
                 | Check out our&nbsp;
                 a(href='https://docs.skapi.com' target='_blank' style='color:yellow') Documentation
                 | &nbsp;
-                span.wordset to get started
+                span.wordset for more information
             a(href="https://docs.skapi.com" target="_blank")    
                 button.final(style='background-color:white;color:black;width:170px')
                     .material-symbols-outlined.notranslate menu_book

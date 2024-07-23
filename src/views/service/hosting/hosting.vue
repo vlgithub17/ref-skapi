@@ -121,7 +121,7 @@ template(v-else)
             .material-symbols-outlined.notranslate.fill delete
             span &nbsp;&nbsp;Delete Selected
 
-        .iconClick.square(@click='openRefreshCdn=true' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
+        // .iconClick.square(@click='openRefreshCdn=true' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
             .material-symbols-outlined.notranslate.fill(:class='{loading:currentService.pending.cdn}') refresh
             span &nbsp;&nbsp;Refresh CDN
 
@@ -282,7 +282,7 @@ template(v-else)
                 button.noLine.warning(@click="openRemove404 = false") Cancel
                 button.final.warning(@click="remove404") Remove
 
-    Modal(:open="openRefreshCdn")
+    // Modal(:open="openRefreshCdn")
         h4(style='margin:.5em 0 0;') Refresh CDN
 
         hr
@@ -332,8 +332,7 @@ let domain = import.meta.env.VITE_DOMAIN;
 let registerSubdomainRunning = ref(false);
 let modalPromise = ref(false);
 
-// register input
-let subdomain = ref('');
+let subdomain = ref(''); // register input value. not the actual subdomain
 let registerSubdomain = async () => {
     registerSubdomainRunning.value = true;
     try {
@@ -458,14 +457,13 @@ let remove = () => {
 }
 
 let changeSubdomain = async () => {
-    // when domains are changed, refreshCDN kicks in
     if (currentService.service.subdomain === inputSubdomain) {
         modifyMode.subdomain = false;
         return;
     }
 
     if (inputSubdomain.charAt(0) == '-' && inputSubdomain.charAt(inputSubdomain.length - 1) == '-') {
-        alert("The text cannot start or end with a hyphen.");
+        alert("Subdomains cannot start or end with a hyphen.");
         return;
     }
 
@@ -604,7 +602,6 @@ let numberOfSelected = computed(() => {
 
 let subdomainReady = computed(() => {
     let sd = currentService.service.subdomain;
-    // console.log({sd})
     if(!sd) {
         return 'no-subdomain';
     }
@@ -629,12 +626,10 @@ watch(()=>currentService.dirInfo.path, (n, o) => {
 watch(subdomainReady,
     (n, o) => {
         if(n) {
-            fetching.value = true;
             if(n !== 'no-subdomain') {
-                if(!currentService.dirInfo.path) {
-                    // console.log('getdirinfo')
-                    currentService.getDirInfo();
-                }
+                currentDirectory.value = "";
+                fetching.value = true;
+                currentService.getDirInfo();
             }
         }
     },
@@ -653,7 +648,7 @@ let setNewDir = (ns: any) => {
     return ns.name.slice(1);
 }
 
-watch(currentDirectory, () => {
+watch(currentDirectory, (n) => {
     getFileList();
 });
 
@@ -665,7 +660,6 @@ async function getFileList(refresh = false) {
 
     let currDir = currentDirectory.value || '!';
     let hasPage = folders?.[currDir]?.pager;
-    // console.log({hasPage, refresh});
 
     let pager = null;
 
@@ -675,7 +669,6 @@ async function getFileList(refresh = false) {
     }
 
     if (!hasPage || refresh && refresh !== 'conditional') {
-        // console.log('im i not here?')
         folders[currDir] = {
             pager: await Pager.init({
                 id: 'name',
@@ -689,21 +682,13 @@ async function getFileList(refresh = false) {
         endOfList[currDir] = false;
     }
 
-    // console.log({
-    //     currentPage: currentPage.value,
-    //     maxPage: maxPage.value,
-    // })
-
     pager = folders[currDir].pager;
     if (refresh && refresh !== 'conditional' || !endOfList[currDir] && currentPage.value > maxPage.value) {
-        // console.log('fetch')
         try {
             let l = await currentService.listHostDirectory({ dir: currentDirectory.value }, !(refresh || maxPage.value == 0));
-            // console.log({l})
             if (l.list.length > 0) {
                 await pager.insertItems(l.list);
                 let fl = pager.getPage(currentPage.value);
-                // console.log({fl})
                 listDisplay.value = fl.list;
                 maxPage.value = fl.maxPage;
                 endOfList[currDir] = l.endOfList;
