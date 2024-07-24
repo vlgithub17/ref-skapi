@@ -46,9 +46,7 @@ nav#navBar(ref="navBar")
 
 #proceeding(v-if="running")
     .inner    
-        img.loading(src="@/assets/img/loading.png")
-        br
-        br
+        .loader(style="--loader-color:black; --loader-size: 20px")
         h4 Page Loading
 </template>
 
@@ -146,7 +144,7 @@ img.symbol.mobile {
         filter: grayscale(1);
     }
     h4 {
-        color: #fff;
+        // color: #fff;
     }
 }
 
