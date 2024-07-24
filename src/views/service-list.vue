@@ -98,210 +98,234 @@ main#serviceList
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { watch, ref } from 'vue';
-import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
-import { loginState, user } from '@/code/user';
-import type Service from '@/code/service';
-import Table from '@/components/table.vue';
+import { useRouter } from "vue-router";
+import { watch, ref } from "vue";
+import {
+  callServiceList,
+  serviceList,
+  serviceIdList,
+} from "@/views/service-list";
+import { loginState, user } from "@/code/user";
+import type Service from "@/code/service";
+import Table from "@/components/table.vue";
 
 const router = useRouter();
 
-watch(loginState, nv => {
+watch(
+  loginState,
+  (nv) => {
     if (!nv) {
-        router.push('/login');
+      router.push("/login");
     }
-}, { immediate: true });
+  },
+  { immediate: true }
+);
 
 let goServiceDashboard = (service: { [key: string]: any }) => {
-    router.push('/my-services/' + service.id);
-}
+  router.push("/my-services/" + service.id);
+};
 
-let newServiceName = ref('')
-let createService = ()=>{
-    let regex = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g;
-    if (newServiceName.value.match(regex)) {
-        alert('Special characters are not allowed');
+let newServiceName = ref("");
+let createService = () => {
+  let regex = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g;
+  if (newServiceName.value.match(regex)) {
+    alert("Special characters are not allowed");
 
-        return
-    }
-    router.push('/create/' + newServiceName.value);
-}
+    return;
+  }
+  router.push("/create/" + newServiceName.value);
+};
 
-let calculateUserPercentage = (users: number, plan: string, formatStr = false) => {
-    let getUserUnit = (user:number) => {
-        let units = ['k', 'M', 'B', 'T'];
-        let result = '';
+let calculateUserPercentage = (
+  users: number,
+  plan: string,
+  formatStr = false
+) => {
+  let getUserUnit = (user: number) => {
+    let units = ["k", "M", "B", "T"];
+    let result = "";
 
-        for (let i = units.length - 1; i >= 0; i--) {
-            let unitValue = Math.pow(10, (i + 1) * 3);
-            if (user >= unitValue) {
-                if (i === 0) {
-                    result = user.toString();
-                } else {
-                    result = (user / unitValue).toFixed(2) + units[i];
-                }
-                break;
-            }
+    for (let i = units.length - 1; i >= 0; i--) {
+      let unitValue = Math.pow(10, (i + 1) * 3);
+      if (user >= unitValue) {
+        if (i === 0) {
+          result = user.toString();
+        } else {
+          result = (user / unitValue).toFixed(2) + units[i];
         }
-
-        if (result === '') {
-            result = user.toString();
-        }
-
-        return result;
+        break;
+      }
     }
 
-    switch (plan) {
-        case 'Trial':
-        case 'Standard':
-        case 'Free Standard':
-            return formatStr ? `${getUserUnit(users)}/10k` : ((users / 10000) * 100).toFixed(2);
-        case 'Premium':
-            return formatStr ? `${getUserUnit(users)}/100k` : ((users / 100000) * 100).toFixed(2);
-        default:
-            return formatStr ? 'N/A' : 0;
+    if (result === "") {
+      result = user.toString();
     }
-}
+
+    return result;
+  };
+
+  switch (plan) {
+    case "Trial":
+    case "Standard":
+    case "Free Standard":
+      return formatStr
+        ? `${getUserUnit(users)}/10k`
+        : ((users / 10000) * 100).toFixed(2);
+    case "Premium":
+      return formatStr
+        ? `${getUserUnit(users)}/100k`
+        : ((users / 100000) * 100).toFixed(2);
+    default:
+      return formatStr ? "N/A" : 0;
+  }
+};
 
 let calculateEmailPercentage = (email: number, plan: string) => {
-    switch (plan) {
-        case 'Trial':
-            return null;
-        case 'Standard':
-        case 'Free Standard':
-            // 1GB
-            return Math.ceil(email / 1073741824);
-        case 'Premium':
-            // 10 GB
-            return Math.ceil(email / 10737418240);
-        default:
-            return 0;
-    }
-}
-
+  switch (plan) {
+    case "Trial":
+      return null;
+    case "Standard":
+    case "Free Standard":
+      // 1GB
+      return Math.ceil(email / 1073741824);
+    case "Premium":
+      // 10 GB
+      return Math.ceil(email / 10737418240);
+    default:
+      return 0;
+  }
+};
 
 let calculateHostPercentage = (host: number, plan: string) => {
-    switch (plan) {
-        case 'Trial':
-            return null;
-        case 'Standard':
-        case 'Free Standard':
-            return Math.ceil(host / 53687091200);
-        case 'Premium':
-            return Math.ceil(host / 1099511627776);
-        default:
-            return 0;
-    }
-}
+  switch (plan) {
+    case "Trial":
+      return null;
+    case "Standard":
+    case "Free Standard":
+      return Math.ceil(host / 53687091200);
+    case "Premium":
+      return Math.ceil(host / 1099511627776);
+    default:
+      return 0;
+  }
+};
 
 let calculateCloudPercentage = (cloud: number, plan: string) => {
-    switch (plan) {
-        case 'Trial':
-        case 'Standard':
-        case 'Free Standard':
-            return Math.ceil(cloud / 53687091200);
-        case 'Premium':
-            return Math.ceil(cloud / 1099511627776);
-        default:
-            return 0;
-    }
-}
+  switch (plan) {
+    case "Trial":
+    case "Standard":
+    case "Free Standard":
+      return Math.ceil(cloud / 53687091200);
+    case "Premium":
+      return Math.ceil(cloud / 1099511627776);
+    default:
+      return 0;
+  }
+};
 
 let calculateDatabasePercentage = (database: number, plan: string) => {
-    switch (plan) {
-        case 'Trial':
-        case 'Standard':
-        case 'Free Standard':
-            return Math.ceil(database / 4294967296);
-        case 'Premium':
-            return Math.ceil(database / 107374182400);
-        default:
-            return 0;
-    }
-}
+  switch (plan) {
+    case "Trial":
+    case "Standard":
+    case "Free Standard":
+      return Math.ceil(database / 4294967296);
+    case "Premium":
+      return Math.ceil(database / 107374182400);
+    default:
+      return 0;
+  }
+};
 
 let getClass = (serviceClass: Service, what: string) => {
-    let percentage;
+  let percentage;
 
-    if (what == 'users') {
-        percentage = calculateUserPercentage(serviceClass.service.users, serviceClass.plan) as number;
-    }
-    else if (what == 'cloud') {
-        percentage = calculateCloudPercentage(serviceClass.storageInfo.cloud, serviceClass.plan);
-    }
-    else if (what == 'host') {
-        percentage = calculateHostPercentage(serviceClass.storageInfo.host, serviceClass.plan);
-    }
-    else if (what == 'database') {
-        percentage = calculateDatabasePercentage(serviceClass.storageInfo.database, serviceClass.plan);
-    }
-    else if (what == 'email') {
-        percentage = calculateEmailPercentage(serviceClass.storageInfo.email, serviceClass.plan);
-    }
-    if (percentage == null) {
-        return 'grey';
-    }
-    if (percentage >= 0 && percentage < 51) {
-        return 'green';
-    }
-    else if (percentage >= 51 && percentage < 81) {
-        return 'orange';
-    }
-    else if (percentage >= 81 && percentage < 101) {
-        return 'red';
-    }
-    return 'grey';
-}
+  if (what == "users") {
+    percentage = calculateUserPercentage(
+      serviceClass.service.users,
+      serviceClass.plan
+    ) as number;
+  } else if (what == "cloud") {
+    percentage = calculateCloudPercentage(
+      serviceClass.storageInfo.cloud,
+      serviceClass.plan
+    );
+  } else if (what == "host") {
+    percentage = calculateHostPercentage(
+      serviceClass.storageInfo.host,
+      serviceClass.plan
+    );
+  } else if (what == "database") {
+    percentage = calculateDatabasePercentage(
+      serviceClass.storageInfo.database,
+      serviceClass.plan
+    );
+  } else if (what == "email") {
+    percentage = calculateEmailPercentage(
+      serviceClass.storageInfo.email,
+      serviceClass.plan
+    );
+  }
+  if (percentage == null) {
+    return "grey";
+  }
+  if (percentage >= 0 && percentage < 51) {
+    return "green";
+  } else if (percentage >= 51 && percentage < 81) {
+    return "orange";
+  } else if (percentage >= 81 && percentage < 101) {
+    return "red";
+  }
+  return "grey";
+};
 </script>
 
 <style lang="less" scoped>
 #serviceList {
-    max-width: 1200px;
-    margin: 8px auto 0;
+  max-width: 1200px;
+  margin: 8px auto 0;
 }
 
 // table style below
 
 tbody tr.serviceRow {
-    &:not(.active):hover {
-        background-color: rgba(41, 63, 230, 0.05);
-        cursor: pointer;
-    }
+  &:not(.active):hover {
+    background-color: rgba(41, 63, 230, 0.05);
+    cursor: pointer;
+  }
 
-    &.active {
-        background-color: rgba(41, 63, 230, 0.10);
-    }
+  &.active {
+    background-color: rgba(41, 63, 230, 0.1);
+  }
 }
 
 td {
-    .percent {
-        display: inline-block;
-        padding: 3px 12px;
-        border-radius: 4px;
-        box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, 0.15) inset;
-        color: #fff;
-        font-weight: bold;
+  .percent {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 4px;
+    box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, 0.15) inset;
+    color: #fff;
+    font-weight: bold;
 
-        &.green {
-            background-color: #52D687;
-        }
-
-        &.orange {
-            background-color: #FCA642;
-        }
-
-        &.red {
-            background-color: var(--caution-color);
-        }
-
-        &.purple {
-            background-color: #B881FF;
-        }
-
-        &.grey {
-            background-color: #ccc;
-        }
+    &.green {
+      background-color: #52d687;
     }
+
+    &.orange {
+      background-color: #fca642;
+    }
+
+    &.red {
+      background-color: var(--caution-color);
+    }
+
+    &.purple {
+      background-color: #b881ff;
+    }
+
+    &.grey {
+      background-color: #ccc;
+    }
+  }
 }
 </style>
