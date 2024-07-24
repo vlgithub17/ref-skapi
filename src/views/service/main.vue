@@ -1,13 +1,20 @@
 <template lang="pug">
+//- import svg file. maybe embed with vue instead
+object(type="image/svg+xml" data="../../assets/img/material-icon.svg" style="display: none;")
+
 #serviceMain(v-if="serviceMainLoaded")
     #leftNav(style='position:relative')
         div(style='position: sticky; top: calc(56px + var(--nav-top, 0));')
             br
-            nav.left
+            nav.left 
                 router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
-                    span.material-symbols-outlined.notranslate.nohover(:class="{'fill': route.name == 'service'}") home
-                    //- svg
-                    //-     use(xlink:href="#icon-home")
+                    span.material-symbols-outlined.notranslate.nohover(:class="{'fill': route.name == 'service'}") <!--home-->
+                    //- conditionally render svg
+                    svg(v-if="route.name === 'service'" width="30" height="30")
+                      use(xlink:href="../../assets/img/material-icon.svg#icon-home-fill")
+                    svg(v-else width="30" height="30")
+                      use(xlink:href="../../assets/img/material-icon.svg#icon-home")
+
                     span.name Getting Started
                 router-link.router(:to="`/my-services/${currentService.id}/dashboard`" :class="{'active': route.name == 'dashboard'}")
                     span.material-symbols-outlined.notranslate.nohover(:class="{'fill': route.name == 'dashboard'}") settings
@@ -252,6 +259,7 @@ watch(() => route, nv => {
     // border-radius: 6px;
     text-decoration: none;
     color: var(--main-color);
+    fill: var(--main-color); // for svg icon
     white-space: nowrap;
 
     &.active {
