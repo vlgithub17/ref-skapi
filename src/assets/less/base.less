@@ -1,28 +1,34 @@
+/**
+ * File: base.less
+ * 
+ * Description: Defines default styles for html tags
+ */
+
 :root {
-    --main-color: #293fe6;
-    --caution-color: #F04E4E;
-    --black-8: rgba(0, 0, 0, 0.88);
-    --black-6: rgba(0, 0, 0, 0.66);
-    --black-4: rgba(0, 0, 0, 0.44);
-    --black-2: rgba(0, 0, 0, 0.22);
-    --text-green: #00a020;
-    --green: #5ad858;
+  --main-color: #293fe6;
+  --caution-color: #f04e4e;
+  --black-8: rgba(0, 0, 0, 0.88);
+  --black-6: rgba(0, 0, 0, 0.66);
+  --black-4: rgba(0, 0, 0, 0.44);
+  --black-2: rgba(0, 0, 0, 0.22);
+  --text-green: #00a020;
+  --green: #5ad858;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-@media all and (min-width:1200px) {
-    html {
-        font-size: 20px;
-    }
+@media all and (min-width: 1200px) {
+  html {
+    font-size: 20px;
+  }
 }
 
-@media all and (max-width:1199px) {
-    html {
-        font-size: 18px;
-    }
+@media all and (max-width: 1199px) {
+  html {
+    font-size: 18px;
+  }
 }
 
 h1,
@@ -31,235 +37,230 @@ h3,
 h4,
 h5,
 h6 {
-    font-weight: 600;
-    color: var(--black-8);
+  font-weight: 600;
+  color: var(--black-8);
 }
 
 hr {
-    background: rgba(0, 0, 0, 0.15);
-    height: 1px;
-    border: 0;
-    margin: 1rem 0;
-
-    // height: 1px;
-    // background: rgba(0, 0, 0, 0.10);
-    // box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
-    // margin: 28px 0;
+  background: rgba(0, 0, 0, 0.15);
+  height: 1px;
+  border: 0;
+  margin: 1rem 0;
+  // box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
 }
 
 b {
-    font-weight: 600;
-    color: var(--black-8);
+  font-weight: 600;
+  color: var(--black-8);
 }
 
 a {
-    text-decoration: none;
-    font-weight: 500;
-    color: var(--main-color);
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--main-color);
 
-    &:hover {
-        text-decoration: underline;
-    }
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 p {
-    line-height: 1.5;
+  line-height: 1.5;
 }
 
 select {
-    box-sizing: border-box;
-    margin: 0;
-    outline: none;
-    border: 0;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    background-color: rgba(0, 0, 0, 0.05);
-    font-family: inherit;
-    font-weight: normal;
+  box-sizing: border-box;
+  margin: 0;
+  outline: none;
+  border: 0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  font-family: inherit;
+  font-weight: normal;
 
-    &:disabled {
-        opacity: 0.5;
-    }
+  &:disabled {
+    opacity: 0.5;
+  }
 
-    &:not(:disabled) {
-        cursor: pointer;
-    }
+  &:not(:disabled) {
+    cursor: pointer;
+  }
 
-    &:not(:disabled):hover {
-        text-decoration: underline;
-    }
+  &:not(:disabled):hover {
+    text-decoration: underline;
+  }
 }
 
 input {
-    border: 0;
-    padding: 4px;
-    background-color: rgba(0, 0, 0, 0.05);
-    font-size: 0.8rem;
-    font-weight: 400;
+  border: 0;
+  padding: 4px;
+  background-color: rgba(0, 0, 0, 0.05);
+  font-size: 0.8rem;
+  font-weight: 400;
 
-    &::placeholder {
-        color: var(--black-4);
-    }
-    &.big {
-        background-color: white;
-        width: 100%;
-        height: 44px;
-        padding: 12px 10px;
-        border-radius: 6px;
-        outline: 1px solid rgba(0, 0, 0, 0.5);
+  &::placeholder {
+    color: var(--black-4);
+  }
 
-        &:hover {
-            outline: 1px solid var(--main-color);
-        }
+  &.big {
+    background-color: white;
+    width: 100%;
+    height: 44px;
+    padding: 12px 10px;
+    border-radius: 6px;
+    outline: 1px solid rgba(0, 0, 0, 0.5);
 
-        &:focus,
-        &:active {
-            outline: 2px solid var(--main-color) !important;
-        }
-
-        &.disabled {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
+    &:hover {
+      outline: 1px solid var(--main-color);
     }
 
-    &:disabled {
-        opacity: 0.5;
+    &:focus,
+    &:active {
+      outline: 2px solid var(--main-color) !important;
     }
 
-    &.line {
-        outline: none;
-        background-color: unset;
-        border-bottom: 1px solid;
-        height: 1.5rem;
-        padding: 0;
-        border-radius: 0;
-
-        &:focus {
-            border-color: var(--main-color);
-            // border-bottom: 2px solid var(--main-color) !important; // 이거 쓰면 input이 커짐
-            box-shadow: 0 1px 0 0 var(--main-color);
-        }
+    &.disabled {
+      background-color: rgba(0, 0, 0, 0.05);
     }
+  }
 
-    // &[type=search] {padding-right: 15px;}
-    // &::-webkit-search-decoration,
-    // &::-webkit-search-cancel-button,
-    // &::-webkit-search-results-button,
-    // &::-webkit-search-results-decoration{
-    //     display:none;
-    // }
+  &:disabled {
+    opacity: 0.5;
+  }
+
+  &.line {
+    outline: none;
+    background-color: unset;
+    border-bottom: 1px solid;
+    height: 1.5rem;
+    padding: 0;
+    border-radius: 0;
+
+    &:focus {
+      border-color: var(--main-color);
+      // border-bottom: 2px solid var(--main-color) !important; // 이거 쓰면 input이 커짐
+      box-shadow: 0 1px 0 0 var(--main-color);
+    }
+  }
+
+  // &[type=search] {padding-right: 15px;}
+  // &::-webkit-search-decoration,
+  // &::-webkit-search-cancel-button,
+  // &::-webkit-search-results-button,
+  // &::-webkit-search-results-decoration{
+  //     display:none;
+  // }
 }
 
 form {
-    label:not(._checkbox) {
-        display: block;
-        color: var(--black-6);
-        font-size: 16px;
-        font-weight: 700;
+  label:not(._checkbox) {
+    display: block;
+    color: var(--black-6);
+    font-size: 16px;
+    font-weight: 700;
 
-        input {
-            margin-top: 8px;
-        }
+    input {
+      margin-top: 8px;
     }
+  }
 
-    a {
-        font-size: 16px;
-    }
+  a {
+    font-size: 16px;
+  }
 }
 
 button {
-    height: 44px;
-    border-radius: 6px;
-    padding: 0 1.4rem;
-    background-color: unset;
-    color: var(--main-color);
-    font-size: 0.8rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-sizing: border-box;
-    font-family: inherit;
-    user-select: none;
-    outline: none;
-    position: relative;
-    overflow: hidden;
+  height: 44px;
+  border-radius: 6px;
+  padding: 0 1.4rem;
+  background-color: unset;
+  color: var(--main-color);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-sizing: border-box;
+  font-family: inherit;
+  user-select: none;
+  outline: none;
+  position: relative;
+  overflow: hidden;
 
-    &:not(.disabled, .noLine):hover::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.04);
-        display: block;
+  &:not(.disabled, .noLine):hover::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.04);
+    display: block;
+  }
+
+  &.noLine {
+    border: 0;
+
+    &.warning {
+      color: var(--caution-color);
     }
 
-    &.noLine {
-        border: 0;
+    &:first-child {
+      padding-left: 10px;
+      background-color: unset;
+    }
+  }
 
-        &.warning {
-            color: var(--caution-color);
-        }
+  &.unFinished {
+    box-shadow: 1px 1px var(--black-2);
+    border: 2px solid currentColor;
 
-        &:first-child {
-            padding-left: 10px;
-            background-color: unset;
-        }
+    &:active {
+      box-shadow: unset;
+      left: 1px;
+      top: 1px;
     }
 
-    &.unFinished {
-        box-shadow: 1px 1px var(--black-2);
-        border: 2px solid currentColor;
+    &.warning {
+      color: var(--caution-color);
+    }
+  }
 
-        &:active {
-            box-shadow: unset;
-            left: 1px;
-            top: 1px;
-        }
+  &.final {
+    box-shadow: 1px 1px var(--black-2);
+    border: 0;
+    background-color: var(--main-color);
+    color: #fff;
 
-        &.warning {
-            color: var(--caution-color);
-        }
+    &:active {
+      box-shadow: unset;
+      left: 1px;
+      top: 1px;
     }
 
-    &.final {
-        box-shadow: 1px 1px var(--black-2);
-
-        &:active {
-            box-shadow: unset;
-            left: 1px;
-            top: 1px;
-        }
-
-        border: 0;
-        background-color: var(--main-color);
-        color: #fff;
-
-        &.warning {
-            background-color: var(--caution-color);
-        }
+    &.warning {
+      background-color: var(--caution-color);
     }
+  }
 }
 
 body {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: #fafaff;
-    // font-family: "Radio Canada", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    // font-weight: 300;
-    font-weight: 400; // 기본 굵기 400 - 특정 모니터에서 폰트가 너무 얇아 보이는 경우가 있었음
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #fafaff;
+  // font-family: "Radio Canada", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-weight: 400; // 기본 굵기 400 - 특정 모니터에서 폰트가 너무 얇아 보이는 경우가 있었음
 
-    font-optical-sizing: auto;
-    font-style: normal;
-    font-variation-settings:
-        "wdth" 100;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
 
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 // /* IE의 경우 input(type="search") x 버튼 제거 */

@@ -1,480 +1,510 @@
-@import '@/assets/less/base.less';
+/**
+ * File: main.less
+ * 
+ * Description: Defines styles for commonly used html classes
+ */
+
+@import "@/assets/less/base.less";
 
 .routerWrap {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 
-    .routerButton {
-        flex-grow: 1;
-        display: block;
-        border: 1px solid var(--vp-c-divider);
-        border-radius: 6px;
-        padding: 11px 16px 13px;
-        // width: 100%;
-        // height: 100%;
-        transition: border-color .25s;
+  .routerButton {
+    flex-grow: 1;
+    display: block;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 6px;
+    padding: 11px 16px 13px;
+    // width: 100%;
+    // height: 100%;
+    transition: border-color 0.25s;
 
-        &.next {
-            margin-left: auto;
-            text-align: right;
-        }
+    &.next {
+      margin-left: auto;
+      text-align: right;
     }
+  }
 }
 
 .wordset {
-    display: inline-block;
+  display: inline-block;
 }
 
 &.disabled {
-    opacity: 0.5;
-    color: black;
-    user-select: none;
-    cursor: default;
-    pointer-events: none;
+  opacity: 0.5;
+  color: black;
+  user-select: none;
+  cursor: default;
+  pointer-events: none;
 }
 
 .sentenceButton {
-    display: inline-block;
-    padding: 6px 28px 8px;
-    border-radius: 6px;
-    border: 1px solid #D9D9D9;
-    color: var(--main-color);
-    cursor: pointer;
-    white-space: nowrap;
+  display: inline-block;
+  padding: 6px 28px 8px;
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  color: var(--main-color);
+  cursor: pointer;
+  white-space: nowrap;
 
-    &:not(.disabled):hover {
-        color: #6776FF;
-    }
+  &:not(.disabled):hover {
+    color: #6776ff;
+  }
 
-    &:not(.disabled):active {
-        color: #2C3CB6;
-    }
+  &:not(.disabled):active {
+    color: #2c3cb6;
+  }
 
-    &.noBorder {
-        border: 0;
-    }
+  &.noBorder {
+    border: 0;
+  }
 
-    &.withIcon {
-        .material-symbols-outlined:hover {
-            opacity: 1 !important;
-        }
-
-        span {
-            margin-left: 5px;
-        }
-    }
-
-    &.disabled {
-        color: rgba(0, 0, 0, 0.2);
-        user-select: none;
-        cursor: default;
-    }
-
-    * {
-        user-select: none;
-        font-weight: 500;
+  &.withIcon {
+    .material-symbols-outlined:hover {
+      opacity: 1 !important;
     }
 
     span {
-        font-size: 0.8rem;
+      margin-left: 5px;
     }
+  }
+
+  &.disabled {
+    color: rgba(0, 0, 0, 0.2);
+    user-select: none;
+    cursor: default;
+  }
+
+  * {
+    user-select: none;
+    font-weight: 500;
+  }
+
+  span {
+    font-size: 0.8rem;
+  }
 }
 
 .error {
-    display: flex;
-    gap: 4px;
-    color: var(--caution-color) !important;
-    font-size: 14.2px;
-    font-weight: 400;
+  display: flex;
+  gap: 4px;
+  color: var(--caution-color) !important;
+  font-size: 14.2px;
+  font-weight: 400;
 
-    .material-symbols-outlined {
-        margin-top: -4px;
-    }
+  .material-symbols-outlined {
+    margin-top: -4px;
+  }
 
-    * {
-        color: var(--caution-color);
-    }
+  * {
+    color: var(--caution-color);
+  }
 }
 
 // custom
 .customInput {
-    // position: relative;
-    display: inline-block;
-    margin-right: 12px;
-    width: calc(100% - 74px);
-    // min-width: 280px;
+  // position: relative;
+  display: inline-block;
+  margin-right: 12px;
+  width: calc(100% - 74px);
+  // min-width: 280px;
 
-    &::after {
-        position: absolute;
-        content: '.skapi.com';
-        right: 35px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 0.8rem;
-        font-weight: 400;
-        color: rgba(0, 0, 0, 0.4);
-        display: none;
-    }
+  &::after {
+    position: absolute;
+    content: ".skapi.com";
+    right: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.4);
+    display: none;
+  }
 
-    input {
-        width: 100%;
-        height: 44px;
-        border-radius: 6px;
-        background-color: rgba(0, 0, 0, 0.05);
-        border: 0;
-        color: rgba(0, 0, 0, 0.8);
-        font-weight: 500;
-        font-size: 0.8rem;
-        padding: 0 12px;
-        // padding-right: 36px;
-    }
+  input {
+    width: 100%;
+    height: 44px;
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 0;
+    color: rgba(0, 0, 0, 0.8);
+    font-weight: 500;
+    font-size: 0.8rem;
+    padding: 0 12px;
+    // padding-right: 36px;
+  }
 
-    // .cancel {
-    //     position: absolute;
-    //     right: 8px;
-    //     top: 50%;
-    //     transform: translateY(-50%);
-    //     color: rgba(0, 0, 0, 0.60);
-    //     cursor: pointer;
-    // }
+  // .cancel {
+  //     position: absolute;
+  //     right: 8px;
+  //     top: 50%;
+  //     transform: translateY(-50%);
+  //     color: rgba(0, 0, 0, 0.60);
+  //     cursor: pointer;
+  // }
 }
 
 .customCheckBox {
+  margin-bottom: 0;
+
+  input {
+    display: none;
+  }
+
+  label {
+    position: relative;
+    // width: 16px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 0.8rem;
+    font-weight: 400;
     margin-bottom: 0;
 
-    input {
-        display: none;
+    &::before {
+      display: inline-block;
+      position: absolute;
+      content: "";
+      /* left: 0; */
+      /* top: 0; */
+      /* left: 50%; */
+      /* top: 50%; */
+      /* transform: translate(-50%, -50%); */
+      width: 16px;
+      height: 16px;
+      border: 2px solid #5f5f5f;
+      background-color: #eee;
+      border-radius: 4px;
     }
 
-    label {
-        position: relative;
-        // width: 16px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        flex-wrap: nowrap;
-        color: rgba(0, 0, 0, 0.65);
-        font-size: 0.8rem;
-        font-weight: 400;
-        margin-bottom: 0;
-
-        &::before {
-            display: inline-block;
-            position: absolute;
-            content: "";
-            /* left: 0; */
-            /* top: 0; */
-            /* left: 50%; */
-            /* top: 50%; */
-            /* transform: translate(-50%, -50%); */
-            width: 16px;
-            height: 16px;
-            border: 2px solid #5f5f5f;
-            background-color: #eee;
-            border-radius: 4px;
-        }
-
-        span:not(.check) {
-            margin-left: 28px;
-        }
-
-        .check {
-            position: absolute;
-            left: -2px;
-            top: -3px;
-            width: 20px;
-            height: 20px;
-            color: #fff;
-            opacity: 0;
-            cursor: pointer;
-        }
+    span:not(.check) {
+      margin-left: 28px;
     }
 
-    input:checked+label::before {
-        background-color: #5f5f5f;
+    .check {
+      position: absolute;
+      left: -2px;
+      top: -3px;
+      width: 20px;
+      height: 20px;
+      color: #fff;
+      opacity: 0;
+      cursor: pointer;
     }
+  }
 
-    input:checked+label .check {
-        opacity: 1;
-    }
+  input:checked + label::before {
+    background-color: #5f5f5f;
+  }
 
-    span {
-        user-select: none;
-    }
+  input:checked + label .check {
+    opacity: 1;
+  }
+
+  span {
+    user-select: none;
+  }
 }
 
 .customSearchLabel {
-    .delete {
-        position: absolute;
-        right: 17px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 1rem;
-        cursor: pointer;
-    }
+  .delete {
+    position: absolute;
+    right: 17px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1rem;
+    cursor: pointer;
+  }
 }
 
 .clickInput {
-    width: 100%;
+  width: 100%;
 
-    input {
-        cursor: pointer;
-        outline: 1px solid rgba(0, 0, 0, 0.5);
-    
-        &.focus {
-            outline: 2px solid var(--main-color) !important;
-        }
-        &:focus {
-            outline: 1px solid rgba(0, 0, 0, 0.5);
-        }
+  input {
+    cursor: pointer;
+    outline: 1px solid rgba(0, 0, 0, 0.5);
+
+    &.focus {
+      outline: 2px solid var(--main-color) !important;
     }
+    &:focus {
+      outline: 1px solid rgba(0, 0, 0, 0.5);
+    }
+  }
 }
 
 .moreVert {
-    position: absolute;
-    left: var(--moreVert-left);
-    right: var(--moreVert-right);
-    width: var(--moreVert-width);
-    top: 100%;
-    margin-top: 4px;
-    z-index: 99;
-    cursor: default;
+  position: absolute;
+  left: var(--moreVert-left);
+  right: var(--moreVert-right);
+  width: var(--moreVert-width);
+  top: 100%;
+  margin-top: 4px;
+  z-index: 99;
+  cursor: default;
 
-    .inner {
-        width: 100%;
-        // padding: 1rem; // 자식 요소에 padding을 주면 부모 요소의 크기가 커짐
-        // border-radius: 16px; // 더 굵은 radius로 차별화
-        border: 1px solid rgba(0, 0, 0, 0.15);
-        // background: #FAFAFA;
-        box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.10);
+  .inner {
+    width: 100%;
+    // padding: 1rem; // 자식 요소에 padding을 주면 부모 요소의 크기가 커짐
+    // border-radius: 16px; // 더 굵은 radius로 차별화
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    // background: #FAFAFA;
+    box-shadow: 8px 12px 36px 0px rgba(0, 0, 0, 0.1);
 
-        border-radius: 8px; // radius 전반적으로 덜 둥글게 조정...
-        // border: 1px solid rgba(0, 0, 0, .5);
-        background-color: white;
+    border-radius: 8px; // radius 전반적으로 덜 둥글게 조정...
+    // border: 1px solid rgba(0, 0, 0, .5);
+    background-color: white;
 
-        .more {
-            // width: 100px;
-            margin-bottom: 0.8rem;
-            padding: 0 1rem;
-            text-align: left;
-            cursor: pointer;
-            white-space: nowrap;
-            // color: rgba(0, 0, 0, 0.6);
-            font-size: 0.8rem;
-            // font-weight: 300;
-            cursor: pointer !important;
+    .more {
+      // width: 100px;
+      margin-bottom: 0.8rem;
+      padding: 0 1rem;
+      text-align: left;
+      cursor: pointer;
+      white-space: nowrap;
+      // color: rgba(0, 0, 0, 0.6);
+      font-size: 0.8rem;
+      // font-weight: 300;
+      cursor: pointer !important;
 
-            &:first-child {
-                padding-top: 0.8rem;
-            }
+      &:first-child {
+        padding-top: 0.8rem;
+      }
 
-            &:last-child {
-                margin-bottom: 0;
-                padding-bottom: 0.8rem;
-            }
+      &:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0.8rem;
+      }
 
-            &:not(.customCheckBox):hover {
-                .material-symbols-outlined {
-                    &::before {
-                        display: block;
-                    }
-                }
-            }
-
-            .material-symbols-outlined {
-                position: relative;
-
-                &::before {
-                    position: absolute;
-                    content: '';
-                    left: 50%;
-                    top: 50%;
-                    width: 32px;
-                    height: 32px;
-                    transform: translate(-50%, -50%);
-                    background-color: rgba(41, 63, 230, 0.10);
-                    border-radius: 50%;
-                    display: none;
-                }
-            }
-
-            span {
-                font-size: 0.8rem;
-                margin-left: 0.6rem;
-            }
+      &:not(.customCheckBox):hover {
+        .material-symbols-outlined {
+          &::before {
+            display: block;
+          }
         }
+      }
 
-        .filter {
-            width: 135px;
-            margin-bottom: 0.8rem;
+      .material-symbols-outlined {
+        position: relative;
 
-            &:last-child {
-                margin-bottom: 0;
-            }
+        &::before {
+          position: absolute;
+          content: "";
+          left: 50%;
+          top: 50%;
+          width: 32px;
+          height: 32px;
+          transform: translate(-50%, -50%);
+          background-color: rgba(41, 63, 230, 0.1);
+          border-radius: 50%;
+          display: none;
         }
+      }
+
+      span {
+        font-size: 0.8rem;
+        margin-left: 0.6rem;
+      }
     }
+
+    .filter {
+      width: 135px;
+      margin-bottom: 0.8rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
 }
 
 .material-symbols-outlined {
+  vertical-align: middle;
+
+  & + * {
     vertical-align: middle;
+  }
 
-    &+* {
-        vertical-align: middle;
-    }
+  &.fill {
+    font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 20;
+  }
 
-    &.fill {
-        font-variation-settings:
-            'FILL' 1,
-            'wght' 400,
-            'GRAD' 0,
-            'opsz' 20;
-    }
+  &.empty {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 20;
+  }
 
-    &.empty {
-        font-variation-settings:
-            'FILL' 0,
-            'wght' 400,
-            'GRAD' 0,
-            'opsz' 20;
-    }
-
-    &.bold {
-        font-variation-settings:
-            'FILL' 0,
-            'wght' 700,
-            'GRAD' 0,
-            'opsz' 24
-    }
+  &.bold {
+    font-variation-settings: "FILL" 0, "wght" 700, "GRAD" 0, "opsz" 24;
+  }
 }
 
 .icon {
-    cursor: pointer;
+  cursor: pointer;
 
-    &:hover {
-        color: var(--main-color);
-    }
+  &:hover {
+    color: var(--main-color);
+  }
 }
+
 .dangerIcon {
-    cursor: pointer;
+  cursor: pointer;
 
-    &:hover {
-        color: var(--caution-color);
-    }
+  &:hover {
+    color: var(--caution-color);
+  }
 }
+
 .hover {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
 
-    &::before {
-        position: absolute;
-        content: '';
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 100%;
-        background-color: unset;
-        border-radius: 50%;
-    }
+  &::before {
+    position: absolute;
+    content: "";
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background-color: unset;
+    border-radius: 50%;
+  }
 
-    &:hover::before {
-        background-color: rgba(41, 63, 230, 0.1);
-    }
+  &:hover::before {
+    background-color: rgba(41, 63, 230, 0.1);
+  }
 }
 
 .loading {
-    vertical-align: middle;
-    width: 24px;
-    height: 24px;
-    margin: 0 auto;
-    animation: rotate_image 1.5s linear infinite;
-    transform-origin: 50% 50%;
+  vertical-align: middle;
+  width: 24px;
+  height: 24px;
+  margin: 0 auto;
+  animation: rotate_image 1.5s linear infinite;
+  transform-origin: 50% 50%;
 }
 
 @keyframes rotate_image {
-    100% {
-        transform: rotate(360deg);
-    }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .ellipsis {
-    display: inline-block;
-    vertical-align: middle;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .clickable {
-    cursor: pointer !important;
+  cursor: pointer !important;
 }
 
 .nonClickable {
-    cursor: default !important;
-    opacity: 0.6 !important;
-    pointer-events: none !important;
+  cursor: default !important;
+  opacity: 0.6 !important;
+  pointer-events: none !important;
 }
 
 .bottomLineTitle {
-    position: relative;
-    font-size: 28px;
-    font-weight: 700;
-    padding: 28px 0;
+  position: relative;
+  font-size: 28px;
+  font-weight: 700;
+  padding: 28px 0;
 
-    &::after {
-        position: absolute;
-        content: '';
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        height: 1px;
-        background: rgba(0, 0, 0, 0.10);
-        box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
-    }
+  &::after {
+    position: absolute;
+    content: "";
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
+  }
 }
 
 .cardBox {
-    position: relative;
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
+  position: relative;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
 
-    &.line {
-        border: 1px solid rgba(0, 0, 0, .15);
-        filter: unset;
+  &.line {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    filter: unset;
+  }
+
+  .header {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+
+    .title {
+      .material-symbols-outlined {
+        margin-right: 8px;
+      }
+
+      span {
+        font-weight: 500;
+      }
     }
 
-    .header {
-        display: flex;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        padding: 1.5rem;
-        border-bottom: 1px solid rgba(0, 0, 0, .15);
+    a {
+      position: relative;
+      text-decoration: none;
+      color: #000;
 
-        .title {
-            .material-symbols-outlined {
-                margin-right: 8px;
-            }
-
-            span {
-                font-weight: 500;
-            }
-        }
-
-        a {
-            position: relative;
-            text-decoration: none;
-            color: #000;
-
-            &:active::before {
-                background-color: rgba(41, 63, 230, 0.2);
-            }
-        }
+      &:active::before {
+        background-color: rgba(41, 63, 230, 0.2);
+      }
     }
+  }
 
-    .content {
-        padding: 1.5rem;
-    }
+  .content {
+    padding: 1.5rem;
+  }
+}
+
+.loader {
+  /* color: white; */
+  padding: 20px;
+  display: inline-block;
+  /* margin: 0px 0; */
+  position: relative;
+  z-index: 0;
+  animation: spin 2s linear infinite;
+
+  &:before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    padding: 3px;
+    border-radius: 50%;
+    background: conic-gradient(rgba(0, 0, 0, 0) 25%, blue 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
