@@ -73,12 +73,9 @@
         br
 
         div(style="display: flex; align-items: center; justify-content: space-between;")
-            div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-                img.loading(src="@/assets/img/loading.png")
-            template(v-else)
-                button.noLine(type="button" @click="openOffer=false;") No
-                router-link(:to='`/subscription/${currentService.id}`')
-                    button.final(type="button" @click="deleteRecords") Yes
+            button.noLine(type="button" @click="openOffer=false;") No
+            router-link(:to='`/subscription/${currentService.id}`')
+                button.final(type="button" @click="deleteRecords") Yes
 div(v-else style='text-align: center;margin-top: 100px;')
     img.loading(src="@/assets/img/loading.png")
 
@@ -96,7 +93,6 @@ const router = useRouter();
 const route = useRoute();
 
 let openOffer = ref(false);
-let promiseRunning = ref(false);
 
 let serviceId = route.path.split("/")[2];
 let currentRouter = ref("");

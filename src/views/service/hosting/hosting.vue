@@ -433,7 +433,7 @@ let remove404 = async () => {
 
         delete currentService.subdInfo['404'];
         openRemove404.value = false;
-        selected404File = null;
+        selected404File.value = null;
     }
     catch (err: any) {
         alert(err.message);

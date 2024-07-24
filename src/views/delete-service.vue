@@ -21,6 +21,8 @@ br
 
         li You will lose your subdomain registration.
 
+        li The remaining subscription cannot be refunded.
+
     br
 
     p Are you sure you want to delete your service "#[b {{currentService.service.name}}]"?
@@ -68,11 +70,9 @@ let deleteService = async () => {
         window.location = url;
     }
     catch (err) {
+        promiseRunning.value = false;
         alert(err.message);
         return;
-    }
-    finally {
-        promiseRunning.value = false;
     }
 }
 </script>
