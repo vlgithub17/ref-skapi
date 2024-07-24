@@ -6,6 +6,8 @@
             nav.left
                 router-link.router(:to="`/my-services/${currentService.id}`" :class="{'active': route.name == 'service'}")
                     span.material-symbols-outlined.notranslate.nohover(:class="{'fill': route.name == 'service'}") home
+                    //- svg
+                    //-     use(xlink:href="#icon-home")
                     span.name Getting Started
                 router-link.router(:to="`/my-services/${currentService.id}/dashboard`" :class="{'active': route.name == 'dashboard'}")
                     span.material-symbols-outlined.notranslate.nohover(:class="{'fill': route.name == 'dashboard'}") settings
@@ -89,6 +91,8 @@ import { loginState } from "@/code/user";
 import { serviceList } from "@/views/service-list";
 import { currentService, setService, serviceMainLoaded } from "@/views/service/main";
 import Modal from "@/components/modal.vue";
+import MaterialIcon from "@/assets/img/material-icon.svg"
+
 const router = useRouter();
 const route = useRoute();
 
