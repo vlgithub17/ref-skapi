@@ -3,14 +3,22 @@ section.infoBox
     .titleHead
         h2 Users
             
-        span.moreInfo(@click="showDes = !showDes")
+        span.moreInfo(@click="showDes = !showDes" @mouseover="hovering = true" @mouseleave="hovering = false")
             span More Info&nbsp;
             template(v-if="showDes")
-                .material-symbols-outlined.notranslate.fill expand_circle_up 
-                .material-symbols-outlined.notranslate.noFill expand_circle_up
+                //- .material-symbols-outlined.notranslate.fill expand_circle_up 
+                //- .material-symbols-outlined.notranslate.noFill expand_circle_up
+                svg(v-if="hovering" style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up-fill")
+                svg(v-else style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up")
             template(v-else) 
-                .material-symbols-outlined.notranslate.fill expand_circle_down
-                .material-symbols-outlined.notranslate.noFill expand_circle_down
+                //- .material-symbols-outlined.notranslate.fill expand_circle_down
+                //- .material-symbols-outlined.notranslate.noFill expand_circle_down
+                svg(v-if="hovering" style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down-fill")
+                svg(v-else style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down")
 
     template(v-if="showDes")
         p.
@@ -79,7 +87,9 @@ section.infoBox
         .search(:class="{'nonClickable' : fetching}")
             .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click="showCalendar = !showCalendar;")
                 input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" name="date" readonly)
-                .material-symbols-outlined.notranslate.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
+                //- .material-symbols-outlined.notranslate.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
+                svg(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-calendar-today-fill")  
                 Calendar(v-model="searchValue" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
             //- input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue" :disabled="fetching")
             input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue" name="address")
@@ -87,7 +97,9 @@ section.infoBox
             input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue" name="name")
             .clickInput(v-else-if="searchFor === 'locale'" @click="showLocale = !showLocale")
                 input.big#searchInput(type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue" name="locale" readonly)
-                .material-symbols-outlined.notranslate.fill.icon(v-if="searchFor === 'locale'") arrow_drop_down
+                //- .material-symbols-outlined.notranslate.fill.icon(v-if="searchFor === 'locale'") arrow_drop_down
+                svg(v-if="searchFor === 'locale'")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down") 
                 Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
             input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" name="user_id" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
             input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue" name="email" type="email" minlength="5")
@@ -97,7 +109,9 @@ br
 
 .tableMenu
     .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
-        .material-symbols-outlined.notranslate.fill checklist_rtl
+        //- .material-symbols-outlined.notranslate.fill checklist_rtl
+        svg()
+            use(xlink:href="@/assets/img/material-icon.svg#icon-checklist-rtl")  
         span &nbsp;&nbsp;Show Columns
         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal;color:black")
             .inner
@@ -116,15 +130,22 @@ br
                 Checkbox(v-model="filterOptions.misc" style="display:flex") Misc
 
     .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill person_add
+        //- .material-symbols-outlined.notranslate.fill person_add
+        svg()
+            use(xlink:href="@/assets/img/material-icon.svg#icon-person-add-fill") 
         span &nbsp;&nbsp;Create User
         
     .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentService.plan == 'Trial'}")
-        .material-symbols-outlined.notranslate.fill mark_email_unread
+        //- .material-symbols-outlined.notranslate.fill mark_email_unread
+        svg()
+            use(xlink:href="@/assets/img/material-icon.svg#icon-mark-email-unread-fill")
+        
         span &nbsp;&nbsp;Invite User
 
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        svg()
+            use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
         span &nbsp;&nbsp;Refresh
 
 .userPart
@@ -138,7 +159,9 @@ br
         template(v-slot:head)
             tr
                 th.center(style='width:80px;padding:0')
-                    .material-symbols-outlined.notranslate.fill manage_accounts 
+                    //- .material-symbols-outlined.notranslate.fill manage_accounts
+                    svg(style="fill: black;")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-manage-accounts-fill")
                     .resizer
                 th.overflow(v-if="filterOptions.email" style="width:200px")
                     | Email
@@ -549,6 +572,7 @@ let endOfList = ref(false);
 let showCalendar = ref(false);
 let showLocale = ref(false);
 let showDes = ref(false);
+let hovering = ref(false);
 
 let filterOptions = ref({
     email: true,
@@ -1014,6 +1038,11 @@ body {
         padding-bottom: .25rem;
     }
 }
+svg {
+    fill: var(--main-color);
+    width: 22px;
+    height: 22px;
+}
 #searchForm {
     display: flex;
     flex-wrap: wrap;
@@ -1039,6 +1068,7 @@ body {
     .big {
         padding-right: 40px;
     }
+    svg,
     .icon {
         position: absolute;
         top: 50%;
@@ -1046,6 +1076,10 @@ body {
         transform: translateY(-50%);
         cursor: pointer;
         user-select: none;
+        fill: black;
+    }
+    svg:hover {
+      fill: var(--main-color);
     }
     .final {
         flex-grow: 1;
