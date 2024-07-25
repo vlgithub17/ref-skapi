@@ -3,14 +3,22 @@ section.infoBox
     .titleHead
         h2 Client Secret Key
             
-        span.moreInfo(@click="showDes = !showDes")
+        span.moreInfo(@click="showDes = !showDes" @mouseover="hovering = true" @mouseleave="hovering = false")
             span More Info&nbsp;
             template(v-if="showDes")
-                .material-symbols-outlined.notranslate.fill expand_circle_up 
-                .material-symbols-outlined.notranslate.noFill expand_circle_up
+                //- .material-symbols-outlined.notranslate.fill expand_circle_up 
+                //- .material-symbols-outlined.notranslate.noFill expand_circle_up
+                svg(v-if="hovering" style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up-fill")
+                svg(v-else style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up")
             template(v-else) 
-                .material-symbols-outlined.notranslate.fill expand_circle_down
-                .material-symbols-outlined.notranslate.noFill expand_circle_down
+                //- .material-symbols-outlined.notranslate.fill expand_circle_down
+                //- .material-symbols-outlined.notranslate.noFill expand_circle_down
+                svg(v-if="hovering" style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down-fill")
+                svg(v-else style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down")
 
     template(v-if="showDes")
         p(style='margin-bottom: 0').
@@ -48,15 +56,21 @@ section.infoBox
     hr
 
     .error(v-if='!user?.email_verified')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         router-link(to="/account-setting") Please verify your email address to modify settings.
 
     .error(v-else-if='currentService.service.active == 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently disabled.
 
     .error(v-else-if='currentService.service.active < 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently suspended.
 
     p(style='margin-bottom:0') Register your client secret keys by clicking '#[b Register Client Secret Key]' below.
@@ -145,6 +159,7 @@ let addMode = ref(false);
 let editMode = ref(false);
 let deleteKeyLoad = ref(false);
 let deleteClientKey = ref(false);
+let hovering = ref(false);
 let deleteIndex = '';
 let client_key = ref([
     // {

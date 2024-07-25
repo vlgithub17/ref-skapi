@@ -65,7 +65,7 @@
                         span.name Bulk Email
 
                     .router.deact(:to="`/my-services/${currentService.id}/hosting`" :class="{'active': route.name == 'hosting'}")
-                        span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'hosting'}") language
+                        //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'hosting'}") language
                         svg(v-if="route.name === 'hosting'")
                             use(xlink:href="@/assets/img/material-icon.svg#icon-language")
                         svg(v-else)
@@ -309,6 +309,7 @@ watch(() => route, nv => {
     text-decoration: none;
     color: var(--main-color);
     white-space: nowrap;
+    fill: var(--main-color); // for svg icon
 
     &.active {
         background: #293fe60d;
@@ -335,7 +336,6 @@ watch(() => route, nv => {
     svg {
         height: 32px;
         width: 32px;
-        fill: var(--main-color); // for svg icon
     }
 
     .name {
