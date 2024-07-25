@@ -3,7 +3,9 @@ nav#navBar(ref="navBar")
     .wrap
         .left
             router-link.logo(to="/my-services" v-if="route.name != 'home' && loginState && route.path !== '/my-services'")
-                .material-symbols-outlined.notranslate.nohover.back(style="font-size:1.5em") arrow_back_ios
+                //- .material-symbols-outlined.notranslate.nohover.back(style="font-size:1.5em") arrow_back_ios
+                svg(width="1.5em" height="1.5em")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back-ios")
                 span.name My Services
             router-link.logo(to="/" v-else)
                 img.symbol.mobile(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;")
@@ -15,24 +17,34 @@ nav#navBar(ref="navBar")
                         router-link(to="/my-services") My Services
                     li(v-else="route.name != 'home'")
                         a.doc(href="https://docs.skapi.com" target="_blank")
-                            .material-symbols-outlined.notranslate menu_book
+                            //- .material-symbols-outlined.notranslate menu_book
+                            svg(width="24" height="24")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
                             | &nbsp;Docs
 
                     li
                         .prof(@click.stop="(e)=>{showDropDown(e)}")
-                            .material-symbols-outlined.notranslate.notranslate.fill(style="margin: 0 .5rem 0 1rem;font-size:32px;") account_circle
+                            //- .material-symbols-outlined.notranslate.notranslate.fill(style="margin: 0 .5rem 0 1rem;font-size:32px;") account_circle
+                            svg(width="32" height="32" style="margin: 0 .5rem 0 1rem;")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-account-circle-fill")
                             .moreVert.profile(ref="moreVert" @click.stop style="--moreVert-right:0;display:none")
                                 .inner(style="padding:0")
                                     .account {{ user.email }}
                                     ul.menu
                                         li(@click="openBillingPage")
-                                            .material-symbols-outlined.notranslate credit_card
+                                            //- .material-symbols-outlined.notranslate credit_card
+                                            svg
+                                                use(xlink:href="@/assets/img/material-icon.svg#icon-credit-card")
                                             span Billing
                                         li(@click="navigateToPage")
-                                            .material-symbols-outlined.notranslate settings
+                                            //- .material-symbols-outlined.notranslate settings
+                                            svg
+                                                use(xlink:href="@/assets/img/material-icon.svg#icon-settings")
                                             span Account Settings
                                         li(@click="logout")
-                                            .material-symbols-outlined.notranslate logout
+                                            //- .material-symbols-outlined.notranslate logout
+                                            svg
+                                                use(xlink:href="@/assets/img/material-icon.svg#icon-logout")
                                             span Logout
                                     //- .policy
                                     //-     router-link(to="/pp.html" target="_blank") Terms of service • Privacy policy
@@ -162,6 +174,7 @@ img.symbol.mobile {
     // background-color: #262626;
     background-color: black;
     font-size: 18px;
+    fill: #fff; // for svg
     color: #fff;
     justify-content: center;
 
@@ -230,6 +243,10 @@ img.symbol.mobile {
                     border-radius: 50%;
                 }
             }
+            .prof > svg:hover {
+              box-shadow: inset 0px 0px 0 4px rgba(255, 255, 255, 0.5);
+              border-radius: 50%;
+            }
         }
 
         .profile {
@@ -268,6 +285,13 @@ img.symbol.mobile {
                 .material-symbols-outlined {
                     font-size: 24px;
                     color: var(--main-color);
+                    margin-right: 8px;
+                }
+
+                svg {
+                    height: 24px;
+                    width: 24px;
+                    fill: var(--main-color);
                     margin-right: 8px;
                 }
             }

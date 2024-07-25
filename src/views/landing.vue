@@ -24,7 +24,7 @@ main
                 a(href='https://docs.skapi.com/introduction/getting-started.html' target='_blank' style='color:yellow')
                     //- .material-symbols-outlined.notranslate menu_book
                     svg(width="24" height="24" style="fill: yellow; filter: drop-shadow(1px 1px 1px black)")
-                      use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
 
                     | &nbsp;Read Docs
             
@@ -85,7 +85,7 @@ main
             .icoHead
                 //- .material-symbols-outlined.notranslate.yellow construction
                 svg
-                  use(xlink:href="@/assets/img/material-icon.svg#icon-construction")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-construction")
                 h2 Build Anything Fast
             p.
                 Skapi is a JavaScript library designed for #[span.wordset client-side] HTML. 
@@ -102,7 +102,7 @@ main
             .icoHead
                 //- .material-symbols-outlined.notranslate.yellow.fill eco
                 svg
-                  use(xlink:href="@/assets/img/material-icon.svg#icon-eco-fill")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-eco-fill")
                 h2 Save Time, Cost, #[span.wordset and Energy]
             p.
                 We’ve designed Skapi’s backend infrastructure to be lightweight, while our #[span.wordset client-side] library is built to take on more responsibility.
@@ -122,7 +122,7 @@ main
                 button.final(style='background-color:white;color:black;width:170px')
                     //- .material-symbols-outlined.notranslate  menu_book
                     svg(width="24" height="24")
-                      use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
                     | &nbsp;Read Docs
             
             br
@@ -135,7 +135,7 @@ main
                 .li
                     //- .material-symbols-outlined.notranslate encrypted
                     svg
-                      use(xlink:href="@/assets/img/material-icon.svg#icon-encrypted")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-encrypted")
                     h3 Secure User Authentication
                     p.
                         Not just log-in or sign-up, but also #[span.wordset data security,] #[span.wordset password recovery,] #[span.wordset email confirmation,] and more. 
@@ -145,7 +145,7 @@ main
                 .li
                     //- .material-symbols-outlined.notranslate database
                     svg
-                      use(xlink:href="@/assets/img/material-icon.svg#icon-database")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-database")
                     h3 User-Centric Database
                     p.
                         Worried about scalability, database schema, or costly errors?
@@ -157,7 +157,7 @@ main
                 .li
                     //- .material-symbols-outlined.notranslate router
                     svg
-                      use(xlink:href="@/assets/img/material-icon.svg#icon-router")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-router")
                     h3 Realtime, WebSocket
                     p.
                         Real-time chat, live updates, notifications—
@@ -167,7 +167,7 @@ main
                 .li
                     //- .material-symbols-outlined.notranslate webhook
                     svg
-                      use(xlink:href="@/assets/img/material-icon.svg#icon-webhook")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-webhook")
                     h3 3rd Party API Integration
                     p.
                         Building an app with third-party APIs?
@@ -177,7 +177,7 @@ main
                 .li
                     //- .material-symbols-outlined.notranslate cloud_upload
                     svg
-                      use(xlink:href="@/assets/img/material-icon.svg#icon-cloud-upload")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-cloud-upload")
                     h3 CDN & File Storage
                     p.
                         Hosting files, images, or videos? Skapi has got you covered
@@ -187,7 +187,7 @@ main
                 .li
                     //- .material-symbols-outlined.notranslate outgoing_mail
                     svg
-                      use(xlink:href="@/assets/img/material-icon.svg#icon-outgoing-mail")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-outgoing-mail")
                     h3 Email System
                     p.
                         Need to send newsletters? Skip the hassle of setting up an SMTP server. 
@@ -197,7 +197,7 @@ main
                 .li
                     //- .material-symbols-outlined.notranslate public
                     svg
-                      use(xlink:href="@/assets/img/material-icon.svg#icon-public")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-public")
                     h3 Static Website Hosting
                     p.
                         With Skapi, you can build complex web applications using just static HTML.
