@@ -3,6 +3,10 @@ import { currentService } from "../main";
 import { ref, computed } from "vue";
 import jsonCrawler from 'jsoncrawler'; // https://github.com/broadwayinc/jsoncrawler 참고
 import { compileScript } from "vue/compiler-sfc";
+
+export let serviceRecords: any = {};
+export let serviceBins: any = {};
+
 let parseBinEndpoint = async (r: string[]) => {
     let binObj: any = {};
     if (Array.isArray(r)) {
