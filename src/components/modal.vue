@@ -5,21 +5,12 @@ dialog(ref='dialog' @keydown.esc.prevent="emit('close')")
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-let emit = defineEmits(['update:open']);
 let props = defineProps({
     open: Boolean
 });
 const emit = defineEmits(['close']);
 
 let dialog = ref(null);
-
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && dialog.value.open) {
-        event.preventDefault();
-        // dialog.value.close();
-        emit('update:open', false);
-    }
-});
 
 onMounted(() => {
     if (props.open) {
