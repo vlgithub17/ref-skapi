@@ -66,8 +66,8 @@ main#create
 
     p(style='font-size: 16px;display: flex;justify-content: center;') Selected Plan:&nbsp; #[b(style='color:var(--main-color)') {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
     .inputWrap(@submit.prevent="createService")
-        div(v-if="promiseRunning" style="width:108px;display:flex;align-items:center")
-            img.loading(src="@/assets/img/loading.png")
+        div(v-if="promiseRunning" style="text-align:center")
+            .loader(style="--loader-color:blue; --loader-size: 12px")
         template(v-else)
             button.final(type="submit" @click='createService') Create {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}
 

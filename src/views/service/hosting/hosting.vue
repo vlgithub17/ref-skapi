@@ -30,7 +30,7 @@
             input.big(v-model='subdomain' pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="6" maxlength="32" :disabled="registerSubdomainRunning" placeholder="your-subdomain" required)
         button.final(style='min-width: 124px;' :disabled='registerSubdomainRunning' :class='{nonClickable: registerSubdomainRunning}')
             template(v-if="registerSubdomainRunning")
-                img.loading(src="@/assets/img/loading.png")
+                .loader(style="--loader-color:white; --loader-size:12px")
             template(v-else)
                 | Register
 
@@ -68,7 +68,7 @@ template(v-else)
                         .subdomain
                             input#modifySubdomain.big(ref="focus_subdomain" :disabled="updatingValue.subdomain || null" type="text"  pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="6" maxlength="32" placeholder="your-subdomain" required :value='inputSubdomain' @input="(e) => {e.target.setCustomValidity(''); inputSubdomain = e.target.value;}")
                         template(v-if="updatingValue.subdomain")
-                            img.loading(src="@/assets/img/loading.png")
+                            .loader(style="--loader-color:blue; --loader-size:12px")
                         label.material-symbols-outlined.notranslate.save(v-else) done
                             input(type="submit" hidden)
                         span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.subdomain = false;") close
@@ -128,15 +128,15 @@ template(v-else)
     .hostingPart
         #loading
             template(v-if="fetching")
-                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
+                .loader(style="--loader-color:black; --loader-size:12px")
                 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fetching ...
 
             template(v-else-if='!subdomainReady')
-                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
+                .loader(style="--loader-color:black; --loader-size:12px")
                 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Subdomain change in process ...
             
             template(v-else-if='currentService.pending.cdn')
-                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
+                .loader(style="--loader-color:black; --loader-size:12px")
                 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDN Refresh in process... 
 
         Table(
@@ -236,8 +236,8 @@ template(v-else)
             br
 
             div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-                template(v-if='modalPromise')
-                    img.loading(src="@/assets/img/loading.png")
+                div(v-if="modalPromise" style="width:100%; text-align:center")
+                    .loader(style="--loader-color:blue; --loader-size:12px")
                 template(v-else)
                     button.noLine.warning(@click="deleteSelected = false") Cancel
                     button.final.warning(@click="deleteFiles") Delete
@@ -257,8 +257,8 @@ template(v-else)
         br
 
         div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-            template(v-if='modalPromise')
-                img.loading(src="@/assets/img/loading.png")
+            div(v-if="modalPromise" style="width:100%; text-align:center")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine.warning(@click="removeHosting = false") Cancel
                 button.final.warning(@click="remove") Remove
@@ -276,13 +276,13 @@ template(v-else)
         br
 
         div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-            template(v-if='modalPromise')
-                img.loading(src="@/assets/img/loading.png")
+            div(v-if="modalPromise" style="width:100%; text-align:center")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine.warning(@click="openRemove404 = false") Cancel
                 button.final.warning(@click="remove404") Remove
 
-    // Modal(:open="openRefreshCdn")
+    // Modal(:open="openRefreshCdn" @close="openRefreshCdn=false")
         h4(style='margin:.5em 0 0;') Refresh CDN
 
         hr
@@ -296,8 +296,8 @@ template(v-else)
         br
 
         div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-            template(v-if='modalPromise')
-                img.loading(src="@/assets/img/loading.png")
+            div(v-if="modalPromise" style="width:100%; text-align:center")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine.warning(@click="openRefreshCdn = false") Cancel
                 button.final.warning(@click="()=>{currentService.refreshCDN(); openRefreshCdn=false;}") Refresh

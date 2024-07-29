@@ -131,7 +131,7 @@ br
     template(v-if="fetching")
         #loading.
             Loading ... &nbsp;
-            #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+            #[.loader(style="--loader-color:black; --loader-size:12px")]
 
     Table(:key="tableKey" :class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
 
@@ -383,7 +383,7 @@ Modal(:open="openCreateUser" @close="openCreateUser=false" style="width:478px")
 
         div(style="display: flex; align-items: center; justify-content: space-between;")
             div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-                img.loading(src="@/assets/img/loading.png")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine(type="button" @click="closeModal") Cancel 
                 button.final(type="submit") Create User
@@ -448,7 +448,7 @@ Modal(:open="openInviteUser" @close="openInviteUser=false")
 
         div(style="display: flex; align-items: center; justify-content: space-between;")
             div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-                img.loading(src="@/assets/img/loading.png")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine(type="button" @click="closeModal") Cancel 
                 button.final(type="submit") Create User
@@ -469,7 +469,7 @@ Modal(:open="openBlockUser" @close="openBlockUser=false")
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-            img.loading(src="@/assets/img/loading.png")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine(type="button" @click="openBlockUser=false; selectedUser='';") Cancel 
             button.final(type="button" @click="changeUserState('block')") Block
@@ -490,7 +490,7 @@ Modal(:open="openUnblockUser" @close="openUnblockUser=false")
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-            img.loading(src="@/assets/img/loading.png")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine(type="button" @click="openUnblockUser=false; selectedUser='';") Cancel 
             button.final(type="button" @click="changeUserState('unblock')") Unblock  
@@ -511,7 +511,7 @@ Modal(:open="openDeleteUser" @close="openDeleteUser=false")
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-            img.loading(src="@/assets/img/loading.png")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine.warning(type="button" @click="openDeleteUser=false; selectedUser='';") Cancel 
             button.final.warning(type="button" @click="deleteUser") Delete  

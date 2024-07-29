@@ -79,7 +79,7 @@
             router-link(:to='`/subscription/${currentService.id}`')
                 button.final(type="button" @click="deleteRecords") Yes
 div(v-else style='text-align: center;margin-top: 100px;')
-    img.loading(src="@/assets/img/loading.png")
+    .loader(style="--loader-color:blue; --loader-size:12px")
 
 
 </template>

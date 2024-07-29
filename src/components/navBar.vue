@@ -137,15 +137,6 @@ img.symbol.mobile {
     align-items: center;
     justify-content: center;
     text-align: center;
-
-    .loading {
-        width: 2rem;
-        height: 2rem;
-        filter: grayscale(1);
-    }
-    h4 {
-        // color: #fff;
-    }
 }
 
 #navBar {

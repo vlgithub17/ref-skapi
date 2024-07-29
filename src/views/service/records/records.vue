@@ -239,7 +239,7 @@ br
     template(v-if="fetching")
         #loading.
             Loading ... &nbsp;
-            #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+            #[.loader(style="--loader-color:black; --loader-size:12px")]
             
     Table(:key="tableKey" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}" resizable)
         template(v-slot:head)
@@ -352,7 +352,7 @@ br
                 .material-symbols-outlined.notranslate(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[];" :class="{nonClickable: fetching}") arrow_back
                 .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
                 template(v-if="uploading")
-                    img.loading(style='margin: 12px;' src="@/assets/img/loading.png")
+                    .loader(style="--loader-color:blue; --loader-size:12px; margin: 12px;")
                 template(v-else)
                     button.noLine.iconClick.square(type="submit" style='padding:0 14px') SAVE
             .content(:class="{nonClickable: uploading}")
@@ -522,7 +522,7 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-            img.loading(src="@/assets/img/loading.png")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine.warning(type="button" @click="openDeleteRecords=false;") Cancel 
             button.final.warning(type="button" @click="deleteRecords") Delete
