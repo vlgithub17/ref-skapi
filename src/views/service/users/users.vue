@@ -756,13 +756,24 @@ let callParams = computed(() => {
 //     }
 // })
 let getPage = async (refresh?: boolean) => {
-    if (!pager) {
-        return;
-    }
+    // if (!pager) {
+    //     return;
+    // }
     
     if (refresh) {
         endOfList.value = false;
     }
+
+    if(!serviceUsers[currentService.id]) {
+        serviceUsers[currentService.id] = await Pager.init({
+            id: 'user_id',
+            resultsPerPage: 10,
+            sortBy: !searchValue.value ? 'timestamp' : callParams.value.searchFor,
+            order: !searchValue.value ? 'desc' : 'asc',
+        });
+    }
+
+    pager = serviceUsers[currentService.id];
 
     if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
         listDisplay.value = pager.getPage(currentPage.value).list;
@@ -810,14 +821,17 @@ let init = async () => {
     currentPage.value = 1;
 
     // setup pagers
-    pager = await Pager.init({
-        id: 'user_id',
-        resultsPerPage: 10,
-        sortBy: !searchValue.value ? 'timestamp' : callParams.value.searchFor,
-        order: !searchValue.value ? 'desc' : 'asc',
-    });
+    if(serviceUsers[currentService.id] && Object.keys(serviceUsers[currentService.id]).length) {
+        pager = serviceUsers[currentService.id];
 
-    getPage(true);
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        listDisplay.value = disp.list;
+
+    } else {
+        serviceUsers[currentService.id] = pager;
+        getPage(true);
+    }
 }
 
 init();

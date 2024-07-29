@@ -540,10 +540,10 @@ import type { Ref } from "vue";
 import { ref, computed, nextTick, reactive, watch } from "vue";
 import { skapi } from "@/code/admin";
 import { user } from "@/code/user";
-import { currentService } from "@/views/service/main";
+import { currentService, serviceRecords, serviceBins} from "@/views/service/main";
 import { showDropDown } from "@/assets/js/event.js";
 import { convertToObject } from "typescript";
-import { serviceRecords, serviceBins, uploadRecord } from "@/views/service/records/record";
+import { uploadRecord } from "@/views/service/records/record";
 
 let searchIndex = ref("null");
 let searchIndexType = ref("string");
@@ -628,7 +628,7 @@ watch(showDetail, (nv) => {
     }
 });
 
-let pager:Pager = null;
+let pager: Pager = null;
 let listDisplay = ref(null);
 
 let bins: {
