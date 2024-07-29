@@ -507,7 +507,7 @@ br
         .material-symbols-outlined.notranslate.bold chevron_right
 
 // delete records
-Modal(:open="openDeleteRecords")
+Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete Records
 
     hr

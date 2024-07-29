@@ -223,7 +223,7 @@ template(v-else)
         .material-symbols-outlined.notranslate(style='font-size:64px;') cloud_upload
         p Drop your files to upload
 
-    Modal(:open="deleteSelected")
+    Modal(:open="deleteSelected" @close="deleteSelected=false")
         h4(style='margin:.5em 0 0;') Delete Files
 
             hr
@@ -242,7 +242,7 @@ template(v-else)
                     button.noLine.warning(@click="deleteSelected = false") Cancel
                     button.final.warning(@click="deleteFiles") Delete
 
-    Modal(:open="removeHosting")
+    Modal(:open="removeHosting" @close="removeHosting=false")
         h4(style='margin:.5em 0 0;') Remove Hosting
 
         hr
@@ -263,7 +263,7 @@ template(v-else)
                 button.noLine.warning(@click="removeHosting = false") Cancel
                 button.final.warning(@click="remove") Remove
 
-    Modal(:open="openRemove404")
+    Modal(:open="openRemove404" @close="openRemove404=false")
         h4(style='margin:.5em 0 0;') Remove 404
 
         hr

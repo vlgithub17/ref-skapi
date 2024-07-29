@@ -175,7 +175,7 @@ br
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.notranslate.bold chevron_right
 
-Modal(:open="!!emailToDelete")
+Modal(:open="!!emailToDelete" @close="emailToDelete=false")
     h4(style='margin:.5em 0 0;') Delete Email
 
     hr
@@ -198,7 +198,7 @@ Modal(:open="!!emailToDelete")
             button.noLine.warning(@click="emailToDelete = null") Cancel
             button.final.warning(@click="deleteEmail(emailToDelete)") Delete
 
-Modal(:open="!!emailToUse")
+Modal(:open="!!emailToUse" @close="emailToUse=false")
     h4(style='margin:.5em 0 0;') Set Template
 
     hr

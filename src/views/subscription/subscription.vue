@@ -83,7 +83,7 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
 div(v-else style="text-align:center")
     img.loading(src="@/assets/img/loading.png")
 
-Modal(:open="subscrOpt" style='max-width: 640px;')
+Modal(:open="subscrOpt" @close="subscrOpt=false" style='max-width: 640px;')
     h4(style='margin:.5em 0 0;') {{subscrOpt}} Plan
 
     hr
@@ -103,7 +103,7 @@ Modal(:open="subscrOpt" style='max-width: 640px;')
             button.noLine(@click="subscrOpt = false") Cancel
             button.final(@click="upgrade") {{subscrOpt}}
 
-Modal(:open="openCancelplan" style='max-width: 640px;')
+Modal(:open="openCancelplan" @close="openCancelplan=false" style='max-width: 640px;')
     h4(style='margin:.5em 0 0;') Cancel Plan
 
     hr
