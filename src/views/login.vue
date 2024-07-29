@@ -49,8 +49,8 @@ br
         br
 
         .bottom
-            template(v-if="promiseRunning")
-                img.loading(src="@/assets/img/loading.png")
+            div(v-if="promiseRunning" style="width:100%; text-align:center")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.final Login
                 .signup

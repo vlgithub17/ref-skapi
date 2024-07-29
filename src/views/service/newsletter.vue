@@ -95,7 +95,7 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             tr
                 td#loading(colspan="6").
                     Loading {{mailType}} ... &nbsp;
-                    #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+                    #[.loader(style="--loader-color:black; --loader-size:12px")]
             tr(v-for="i in 9")
                 td(colspan="6")
         template(v-else-if="!listDisplay || listDisplay.length === 0")
@@ -126,7 +126,7 @@ br
         span &nbsp;&nbsp;Next
         .material-symbols-outlined.notranslate.bold chevron_right
 
-Modal(:open="emailToDelete")
+Modal(:open="emailToDelete" @close="emailToDelete=false")
     h4(style='margin:.5em 0 0;') Delete Email
 
     hr
@@ -141,8 +141,8 @@ Modal(:open="emailToDelete")
             This action cannot be undone.
     br
     div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='deleteMailLoad')
-            img.loading(src="@/assets/img/loading.png")
+        div(v-if="deleteMailLoad" style="width:100%; text-align:center")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine.warning(@click="emailToDelete = null") Cancel
             button.final.warning(@click="deleteEmail(emailToDelete)") Delete
