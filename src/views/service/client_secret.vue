@@ -111,7 +111,7 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                             .material-symbols-outlined.notranslate.fill.clickable.icon.hide(@click="editKey(key)") edit
                             .material-symbols-outlined.notranslate.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
 
-Modal(:open="deleteClientKey")
+Modal(:open="deleteClientKey" @close="deleteClientKey=false")
     h4(style='margin:.5em 0 0;') Delete Client Secret
     hr
 

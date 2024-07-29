@@ -45,7 +45,7 @@ br
 br
 br
 br
-Modal(:open="proceedVerification")
+Modal(:open="proceedVerification" @close="proceedVerification=false")
     h4(style='margin:.5em 0 0;') Email Verification
     hr
 

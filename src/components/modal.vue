@@ -1,5 +1,5 @@
 <template lang="pug">
-dialog(ref='dialog')
+dialog(ref='dialog' @keydown.esc.prevent="emit('close')")
     slot
 </template>
 
@@ -9,6 +9,7 @@ let emit = defineEmits(['update:open']);
 let props = defineProps({
     open: Boolean
 });
+const emit = defineEmits(['close']);
 
 let dialog = ref(null);
 

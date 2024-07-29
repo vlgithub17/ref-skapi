@@ -226,7 +226,7 @@ br
         .material-symbols-outlined.notranslate.bold chevron_right
 
 // create user
-Modal(:open="openCreateUser" style="width:478px")
+Modal(:open="openCreateUser" @close="openCreateUser=false" style="width:478px")
     h4(style='margin:.5em 0 0;') Create User
 
     hr
@@ -389,7 +389,7 @@ Modal(:open="openCreateUser" style="width:478px")
                 button.final(type="submit") Create User
 
 // invite user
-Modal(:open="openInviteUser")
+Modal(:open="openInviteUser" @close="openInviteUser=false")
     h4(style='margin:.5em 0 0;') Invite User
 
     hr
@@ -454,7 +454,7 @@ Modal(:open="openInviteUser")
                 button.final(type="submit") Create User
 
 // block user
-Modal(:open="openBlockUser")
+Modal(:open="openBlockUser" @close="openBlockUser=false")
     h4(style='margin:.5em 0 0;') Block User
 
     hr
@@ -475,7 +475,7 @@ Modal(:open="openBlockUser")
             button.final(type="button" @click="changeUserState('block')") Block
 
 // unblock user
-Modal(:open="openUnblockUser")
+Modal(:open="openUnblockUser" @close="openUnblockUser=false")
     h4(style='margin:.5em 0 0;') Unblock User
 
     hr
@@ -496,7 +496,7 @@ Modal(:open="openUnblockUser")
             button.final(type="button" @click="changeUserState('unblock')") Unblock  
 
 // delete user
-Modal(:open="openDeleteUser")
+Modal(:open="openDeleteUser" @close="openDeleteUser=false")
     h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete User
 
     hr

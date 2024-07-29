@@ -58,7 +58,7 @@
 
     
     // delete records
-    Modal(:open="openOffer")
+    Modal(:open="openOffer" @close="openOffer=false")
         h4(style='margin:.5em 0 0;') Upgrade
 
         hr
