@@ -540,7 +540,7 @@ import type { Ref } from "vue";
 import { ref, computed, nextTick, reactive, watch } from "vue";
 import { skapi } from "@/code/admin";
 import { user } from "@/code/user";
-import { currentService } from "@/views/service/main";
+import { currentService, serviceRecords, serviceBins} from "@/views/service/main";
 import { showDropDown } from "@/assets/js/event.js";
 import { convertToObject } from "typescript";
 import { uploadRecord } from "@/views/service/records/record";
@@ -668,13 +668,29 @@ let setCallParams = (e) => {
 };
 
 let getPage = async (refresh?: boolean) => {
-    if (!pager) {
-        return;
-    }
+    // if (!pager) {
+    //     return;
+    // }
 
     if (refresh) {
         endOfList.value = false;
     }
+
+    if(!serviceRecords[currentService.id]) {
+        serviceRecords[currentService.id] = await Pager.init({
+            id: "record_id",
+            resultsPerPage: 10,
+            sortBy: callParams?.index?.name || "record_id",
+            order:
+                callParams?.index?.name && (callParams?.index?.condition || "").includes("<")
+                    ? "desc"
+                    : callParams?.table?.name
+                    ? "asc"
+                    : "desc",
+        });
+    }
+
+    pager = serviceRecords[currentService.id];
 
     if ((!refresh && maxPage.value >= currentPage.value) || endOfList.value) {
         let disp = pager.getPage(currentPage.value);
@@ -694,13 +710,17 @@ let getPage = async (refresh?: boolean) => {
                 throw err;
             });
         fetchedData.list = fetchedData.list.map((r) => {
-            bins[r.record_id] = r?.bin || {};
+            serviceBins[currentService.id][r.record_id] = r?.bin || {};
             delete r.bin;
             return r;
         });
 
+        bins = serviceBins[currentService.id];
+        console.log(bins)
+
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
+        console.log(fetchedData)
 
         // insert data in pager
         if (fetchedData.list.length > 0) {
@@ -736,19 +756,19 @@ let init = async () => {
     currentPage.value = 1;
 
     // setup pagers
-    pager = await Pager.init({
-        id: "record_id",
-        resultsPerPage: 10,
-        sortBy: callParams?.index?.name || "record_id",
-        order:
-            callParams?.index?.name && (callParams?.index?.condition || "").includes("<")
-                ? "desc"
-                : callParams?.table?.name
-                ? "asc"
-                : "desc",
-    });
+    if(serviceRecords[currentService.id] && Object.keys(serviceRecords[currentService.id]).length) {
+        pager = serviceRecords[currentService.id];
+        bins = serviceBins[currentService.id];
 
-    getPage(true);
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        listDisplay.value = disp.list;
+
+    } else {
+        serviceRecords[currentService.id] = pager;
+        serviceBins[currentService.id] = bins;
+        getPage(true);
+    }
 };
 
 init();
