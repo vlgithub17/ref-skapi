@@ -94,7 +94,7 @@ section.infoBox
             .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click="showCalendar = !showCalendar;")
                 input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" name="date" readonly)
                 //- .material-symbols-outlined.notranslate.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
-                svg(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')")
+                svg.svgIcon.reactive(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')")
                     use(xlink:href="@/assets/img/material-icon.svg#icon-calendar-today-fill")  
                 Calendar(v-model="searchValue" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
             //- input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue" :disabled="fetching")
@@ -104,7 +104,7 @@ section.infoBox
             .clickInput(v-else-if="searchFor === 'locale'" @click="showLocale = !showLocale")
                 input.big#searchInput(type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue" name="locale" readonly)
                 //- .material-symbols-outlined.notranslate.fill.icon(v-if="searchFor === 'locale'") arrow_drop_down
-                svg(v-if="searchFor === 'locale'")
+                svg.svgIcon.reactive(v-if="searchFor === 'locale'")
                     use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down") 
                 Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
             input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" name="user_id" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
@@ -116,7 +116,7 @@ br
 .tableMenu
     .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
         //- .material-symbols-outlined.notranslate.fill checklist_rtl
-        svg(style="fill: var(--main-color)")
+        svg.svgIcon
             use(xlink:href="@/assets/img/material-icon.svg#icon-checklist-rtl")  
         span &nbsp;&nbsp;Show Columns
         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal;color:black")
@@ -137,20 +137,20 @@ br
 
     .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         //- .material-symbols-outlined.notranslate.fill person_add
-        svg(style="fill: var(--main-color)")
+        svg.svgIcon
             use(xlink:href="@/assets/img/material-icon.svg#icon-person-add-fill") 
         span &nbsp;&nbsp;Create User
         
     .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentService.plan == 'Trial'}")
         //- .material-symbols-outlined.notranslate.fill mark_email_unread
-        svg(style="fill: var(--main-color)")
+        svg.svgIcon
             use(xlink:href="@/assets/img/material-icon.svg#icon-mark-email-unread-fill")
         
         span &nbsp;&nbsp;Invite User
 
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
-        svg(style="fill: var(--main-color)")
+        svg.svgIcon(:class='{loading:fetching}')
             use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
         span &nbsp;&nbsp;Refresh
 
@@ -166,7 +166,7 @@ br
             tr
                 th.center(style='width:80px;padding:0')
                     //- .material-symbols-outlined.notranslate.fill manage_accounts
-                    svg(style="fill: black;")
+                    svg.svgIcon(style="fill: black;")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-manage-accounts-fill")
                     .resizer
                 th.overflow(v-if="filterOptions.email" style="width:200px")
@@ -223,16 +223,16 @@ br
                 tr(v-for="(user, index) in listDisplay") 
                     td.center.optionCol.overflow(style="padding:0")
                         //- .material-symbols-outlined.notranslate.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
-                        svg.icon(@click="openDeleteUser = true; selectedUser = user")
+                        svg.svgIcon.reactive(@click="openDeleteUser = true; selectedUser = user")
                             use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
                         template(v-if="user.approved.includes('suspended')")
                             //- .material-symbols-outlined.notranslate.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
-                            svg.icon(@click="openUnblockUser = true; selectedUser = user")
+                            svg.svgIcon.reactive(@click="openUnblockUser = true; selectedUser = user")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-no-accounts-fill")
                             
                         template(v-else)
                             //- .material-symbols-outlined.notranslate.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
-                            svg.icon(@click="openBlockUser = true; selectedUser = user")
+                            svg.svgIcon.reactive(@click="openBlockUser = true; selectedUser = user")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-account-circle-fill")
                     td.overflow(v-if="filterOptions.email") {{ user.email }}
                     td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
@@ -255,14 +255,14 @@ br
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage === 1 }")
         //- .material-symbols-outlined.notranslate.bold chevron_left
-        svg(style="fill: var(--main-color); width: 26px; height: 26px")
+        svg.svgIcon(style="width: 26px; height: 26px")
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
     .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
         //- .material-symbols-outlined.notranslate.bold chevron_right
-        svg(style="fill: var(--main-color); width: 26px; height: 26px")
+        svg.svgIcon(style="width: 26px; height: 26px")
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
 
 // create user
@@ -1059,14 +1059,14 @@ body {
         padding-bottom: .25rem;
     }
 }
-svg {
-    fill: black;
-    width: 22px;
-    height: 22px;
-}
-svg:hover {
-      fill: var(--main-color);
-    }
+// svg {
+//     fill: black;
+//     width: 22px;
+//     height: 22px;
+// }
+// svg:hover {
+//       fill: var(--main-color);
+// }
 #searchForm {
     display: flex;
     flex-wrap: wrap;

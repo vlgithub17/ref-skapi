@@ -14,7 +14,7 @@ section.infoBox
     .error(v-else-if='currentService.service.active == 0')
         //- .material-symbols-outlined.notranslate.fill warning
         svg
-            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")        
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently disabled.
 
     .error(v-else-if='currentService.service.active < 0')
@@ -120,10 +120,14 @@ br
 
 .tableMenu
     a.iconClick.square(:href="'mailto:' + mailEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill mail
+        //- .material-symbols-outlined.notranslate.fill mail
+        svg.svgIcon
+            use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
         span &nbsp;&nbsp;New {{emailType}}
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        svg.svgIcon(:class='{loading:fetching}')
+            use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
         span &nbsp;&nbsp;Refresh
 
 Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
