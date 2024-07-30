@@ -73,13 +73,21 @@ form#searchForm(@submit.prevent="setCallParams")
         input(hidden name='owner' :value='currentService.owner')
         
         .groupWrap(style='margin-bottom:.5rem;')
-            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'public'}" title="public" @click.stop="searchFormValue.table.access_group = 'public'") language
-            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'authorized'}" title="authorized" @click.stop="searchFormValue.table.access_group = 'authorized'") person
-            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'private'}" title="private" @click.stop="searchFormValue.table.access_group = 'private'") vpn_key
+            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'public'}" title="public" @click.stop="searchFormValue.table.access_group = 'public'") <!--language--> 
+                svg
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-language")
+            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'authorized'}" title="authorized" @click.stop="searchFormValue.table.access_group = 'authorized'") <!--  person -->
+                svg()
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-person-fill")
+            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'private'}" title="private" @click.stop="searchFormValue.table.access_group = 'private'") <!-- vpn_key-->
+                svg()
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-vpn-key-fill")
         .search(style='margin-bottom:.5rem;')
             input.big(name='table[name]' :placeholder="searchFormValue.table.access_group.charAt(0).toUpperCase() + searchFormValue.table.access_group.slice(1) + ' Table.Name'" :required="showAdvanced === true || null" style="padding-right: 40px;")
             button.icon(type="button" :style='{color: !showAdvanced ? "black" : "var(--main-color)"}' style="border:0;padding:0" @click="showAdvanced = !showAdvanced;")
-                .material-symbols-outlined.notranslate.fill tune
+                //- .material-symbols-outlined.notranslate.fill tune
+                svg.svgIcon.reactive()
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-tune")
         button.btn.final(type="submit" v-if='!showAdvanced' style='margin-bottom:.5rem;') Search
 
         // table 검색일때 추가적인 필드
@@ -216,7 +224,9 @@ br
 
 .tableMenu
     .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
-        .material-symbols-outlined.notranslate.fill checklist_rtl
+        //- .material-symbols-outlined.notranslate.fill checklist_rtl
+        svg.svgIcon()
+            use(xlink:href="@/assets/img/material-icon.svg#icon-checklist-rtl")
         span &nbsp;&nbsp;Show Columns
         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal; color:black")
             .inner
@@ -238,15 +248,21 @@ br
                 Checkbox(v-model="filterOptions.ip" style="display:flex") IP
 
     .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; fileList=[]; }" :class="{'nonClickable' : showDetail || uploading || fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill add_circle
+        //- .material-symbols-outlined.notranslate.fill add_circle
+        svg.svgIcon()
+            use(xlink:href="@/assets/img/material-icon.svg#icon-add-circle-fill")
         span &nbsp;&nbsp;Create Record
 
     .iconClick.square(@click="openDeleteRecords=true" :class="{'nonClickable': noSelection || fetching || !user?.email_verified || currentService.service.active <= 0}" )
-        .material-symbols-outlined.notranslate.fill delete
+        //- .material-symbols-outlined.notranslate.fill delete
+        svg.svgIcon()
+            use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
         span &nbsp;&nbsp;Delete Selected
 
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        svg.svgIcon(:class='{loading:fetching}')
+            use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
         span &nbsp;&nbsp;Refresh
 
 .recordPart 
@@ -322,9 +338,18 @@ br
                     td
                         Checkbox(@click.stop v-model='checked[rc?.record_id]' @change='checkIfAny')
                     td.overflow(v-if="filterOptions.table") 
-                        span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group == 'private'") vpn_key
-                        span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
-                        span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group == 0 || rc.table.access_group == 'public'") language
+                        //- span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group == 'private'") vpn_key
+                        span
+                            svg.svgIcon(v-if="rc.table.access_group == 'private'" style="fill:black; margin-bottom: 2px")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-vpn-key-fill")
+                        //- span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
+                        span
+                            svg.svgIcon(v-if="rc.table.access_group == 'authorized'" style="fill:black; margin-bottom: 2px")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-person-fill")
+                        //- span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group == 0 || rc.table.access_group == 'public'") language
+                        span
+                            svg.svgIcon(v-if="rc.table.access_group == 'public'" style="fill:black; margin-bottom: 2px")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-language")
                         span(style="margin-left: 8px") {{ rc?.table?.name }}
                     td(v-if="filterOptions.record_id")
                         .click.overflow(@click.stop="copyID") {{ rc.record_id }}
@@ -350,12 +375,17 @@ br
                     td.overflow(v-if="filterOptions.updated") {{ rc.updated }}
                     td.overflow(v-if="filterOptions.uploaded") {{ rc.uploaded }}
                     td.overflow(v-if="filterOptions.readonly")
-                        .material-symbols-outlined.notranslate.fill(v-if="rc.readonly") check_circle
+                        //- .material-symbols-outlined.notranslate.fill(v-if="rc.readonly") check_circle
+                        svg.svgIcon.black(v-if="rc.readonly")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-check-circle-fill")
+
                         template(v-else) -
                     td.overflow(v-if="filterOptions.reference_limit") {{ (rc.reference.reference_limit == null) ? 'Infinite' : rc.reference.reference_limit }}
                     td.overflow(v-if="filterOptions.referenced") {{ rc.reference.referenced_count }}
                     td.overflow(v-if="filterOptions.allow_multiple_reference")
-                        .material-symbols-outlined.notranslate.fill(v-if="rc.reference.allow_multiple_reference") check_circle
+                        //- .material-symbols-outlined.notranslate.fill(v-if="rc.reference.allow_multiple_reference") check_circle
+                        svg.svgIcon.black(v-if="rc.reference.allow_multiple_reference")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-check-circle-fill")
                     td.overflow(v-if="filterOptions.ip") {{ rc.ip }}
                 tr(v-for="i in (10 - listDisplay?.length)")
                     td(:colspan="colspan")
@@ -363,7 +393,9 @@ br
     form.detailRecord(:class="{show: showDetail}" @submit.prevent="upload")
         template(v-if="selectedRecord")
             .header(style='padding-right:10px;')
-                .material-symbols-outlined.notranslate(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[];" :class="{nonClickable: fetching}") arrow_back
+                //- .material-symbols-outlined.notranslate(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[];" :class="{nonClickable: fetching}") arrow_back
+                svg.svgIcon.black.clickable(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[];" :class="{nonClickable: fetching}")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back")
                 .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
                 template(v-if="uploading")
                     img.loading(style='margin: 12px;' src="@/assets/img/loading.png")
@@ -494,7 +526,13 @@ br
                         template(v-if="fileList")
                             .file(v-for="(value, index) in fileList")
                                 div(style='display: flex;gap:8px;margin-bottom: 8px;')
-                                    .material-symbols-outlined.notranslate.fill.removeFile(@click="deleteFile(value, index)" style='padding-top: 4px;') {{value.key && value.filename && !value.add ? "delete" : "do_not_disturb_on"}}
+                                    //- .material-symbols-outlined.notranslate.fill.removeFile(@click="deleteFile(value, index)" style='padding-top: 4px;') {{value.key && value.filename && !value.add ? "delete" : "do_not_disturb_on"}}
+                                    template(v-if="value.key && value.filename && !value.add")
+                                        svg.svgIcon.black.clickable(@click="deleteFile(value, index)" style='margin-top: 3px; padding-top: 1px;')
+                                            use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
+                                    template(v-else)
+                                        svg.svgIcon.black.clickable(@click="deleteFile(value, index)" style='margin-top: 3px; padding-top: 1px;')
+                                            use(xlink:href="@/assets/img/material-icon.svg#icon-do-not-disturb-on-fill")
                                     div(style='display: flex;flex-wrap: wrap;')
                                         input.line.key(style='width:unset;flex-grow:1;' v-model="value.key" required placeholder="Key name for file" :disabled='value.key && value.filename && !value.add || null')
                                         | &nbsp;&nbsp;
@@ -506,20 +544,25 @@ br
                                             input(@click.stop type="file" @change="e=>{ value.filename = e.target.files[0].name }" required hidden :name='value.key')
                     
                     .add(:class="{disabled: selectedRecord_private}" @click="addFile" style='margin-top: 1em;')
-                        .material-symbols-outlined.notranslate.fill add_circle
+                        //- .material-symbols-outlined.notranslate.fill add_circle
+                        svg.svgIcon
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-add-circle-fill")
                         span &nbsp;Add File
 
 br
 
 .tableMenu(v-if="!showDetail" style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage === 1 }")
-        .material-symbols-outlined.notranslate.bold chevron_left
+        //- .material-symbols-outlined.notranslate.bold chevron_left
+        svg.svgIcon(style="width: 26px; height: 26px")
+            use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
     .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
-        .material-symbols-outlined.notranslate.bold chevron_right
-
+        //- .material-symbols-outlined.notranslate.bold chevron_right
+        svg.svgIcon(style="width: 26px; height: 26px")
+            use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
 // delete records
 Modal(:open="openDeleteRecords")
     h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete Records
@@ -1124,6 +1167,13 @@ textarea::placeholder {
             text-align: center;
             background-color: #fff;
             color: rgba(0, 0, 0, 0.4);
+            fill: rgba(0, 0, 0, 0.4);
+
+            svg {
+                width: 23px;
+                height: 23px;
+                margin-top: -11px;
+            }
 
             &::after {
                 position: absolute;
@@ -1159,6 +1209,7 @@ textarea::placeholder {
             &.active {
                 background-color: rgba(41, 63, 230, 0.05);
                 color: var(--main-color);
+                fill: var(--main-color);
 
                 &::after {
                     border: 1px solid var(--main-color);

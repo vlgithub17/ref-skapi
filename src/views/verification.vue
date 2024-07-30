@@ -10,7 +10,9 @@ br
 
         .bottomLineTitle Email Verification
     template(v-else)
-        .material-symbols-outlined.notranslate.fill(style="font-size:50px;color:rgba(90, 216, 88, 1);") check_circle
+        //- .material-symbols-outlined.notranslate.fill(style="font-size:50px;color:rgba(90, 216, 88, 1);") check_circle
+        svg.svgIcon(style="fill: rgba(90, 216, 88, 1); height: 50px; width: 50px")
+            use(xlink:href="@/assets/img/material-icon.svg#icon-check-circle-fill")
         .bottomLineTitle Success
 
     template(v-if="step === 1")
@@ -37,7 +39,9 @@ br
             br
 
             .error(v-if="error") 
-                .material-symbols-outlined.notranslate.mid error
+                //- .material-symbols-outlined.notranslate.mid error
+                svg
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-error-fill")
                 span {{ error }}
 
             br

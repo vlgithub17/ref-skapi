@@ -77,7 +77,9 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
 
     div(v-if="serviceList[serviceId]?.service.plan !== 'Canceled' && serviceList[serviceId]?.service.plan !== 'Trial'" style="text-align:right")
         span.iconClick(@click='()=>openCancelplan=true' style='color:var(--caution-color);font-size:0.66rem;')
-            .material-symbols-outlined.notranslate.fill(style='font-size:24px;') cancel
+            //- .material-symbols-outlined.notranslate.fill(style='font-size:24px;') cancel
+            svg.svgIcon(style="fill:var(--caution-color);")
+                use(xlink:href="@/assets/img/material-icon.svg#icon-cancel-fill")
             span &nbsp;Cancel Subscription
 
 div(v-else style="text-align:center")

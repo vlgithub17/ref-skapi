@@ -60,10 +60,14 @@ br
 
 .tableMenu
     a.iconClick.square(:href="'mailto:' + newsletterEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill mail
+        //- .material-symbols-outlined.notranslate.fill mail
+        svg.svgIcon
+            use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
         span &nbsp;&nbsp;Send {{mailType}}
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        svg.svgIcon(:class='{loading:fetching}')
+            use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
         span &nbsp;&nbsp;Refresh
 
 
@@ -73,27 +77,47 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             th(style='width: 250px;')
                 span(@click='toggleSort("subject")')
                     | Subject
-                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    svg.svgIcon(v-if='searchFor === "subject" && ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                    svg.svgIcon(v-if='searchFor === "subject" && !ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("timestamp")')
                     | Sent
-                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    svg.svgIcon(v-if='searchFor === "timestamp" && ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                    svg.svgIcon(v-if='searchFor === "timestamp" && !ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("read")')
                     | Reads
-                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "read"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "read"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    svg.svgIcon(v-if='searchFor === "read" && ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                    svg.svgIcon(v-if='searchFor === "read" && !ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("complaint")')
                     | Complaint
-                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "complaint"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "complaint"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    svg.svgIcon(v-if='searchFor === "complaint" && ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                    svg.svgIcon(v-if='searchFor === "complaint" && !ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
                 .resizer
             th(style='width: 120px;')
                 span(@click='toggleSort("bounced")')
                     | Bounced
-                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "bounced"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "bounced"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    svg.svgIcon(v-if='searchFor === "bounced" && ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                    svg.svgIcon(v-if='searchFor === "bounced" && !ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
             th.center(style="width:60px; padding:0")
 
     template(v-slot:body)
@@ -117,7 +141,10 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
                 td.overflow {{ ns.complaint }}
                 td.overflow {{ ns.bounced }}
                 td.center.buttonWrap(@click.stop)
-                    .material-symbols-outlined.notranslate.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
+                    //- .material-symbols-outlined.notranslate.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
+                    svg.svgIcon.reactiveDanger.clickable.hide(@click.stop="emailToDelete = ns")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
+                    
             tr(v-for="i in (10 - listDisplay.length)")
                 td(colspan="6")
 
@@ -125,12 +152,16 @@ br
 
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
-        .material-symbols-outlined.notranslate.bold chevron_left
+        //- .material-symbols-outlined.notranslate.bold chevron_left
+        svg.svgIcon(style="width: 26px; height: 26px")
+            use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
     .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
-        .material-symbols-outlined.notranslate.bold chevron_right
+        //- .material-symbols-outlined.notranslate.bold chevron_right
+        svg.svgIcon(style="width: 26px; height: 26px")
+            use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
 
 Modal(:open="emailToDelete")
     h4(style='margin:.5em 0 0;') Delete Email
