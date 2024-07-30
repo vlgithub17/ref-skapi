@@ -40,8 +40,8 @@ br
             br
 
             .bottom
-                template(v-if="promiseRunning")
-                    img.loading(src="@/assets/img/loading.png")
+                div(v-if="promiseRunning" style="width:100%; text-align:center")
+                    .loader(style="--loader-color:blue; --loader-size:12px")
                 template(v-else)
                     router-link(to='/login') Back to Login
                     button.unFinished(type="submit") Continue
@@ -130,8 +130,8 @@ br
             br
 
             .bottom(style="justify-content: flex-end;")
-                template(v-if="promiseRunning")
-                    img.loading(src="@/assets/img/loading.png")
+                div(v-if="promiseRunning" style="width:100%; text-align:center")
+                    .loader(style="--loader-color:blue; --loader-size:12px")
                 template(v-else)
                     button.final(type="submit") Submit
 
@@ -160,7 +160,7 @@ import { skapi } from '@/code/admin';
 const router = useRouter();
 const route = useRoute();
 
-let step = ref(1);
+let step = ref(3);
 let error = ref('');
 let promiseRunning = ref(false);
 let resending = ref(false);

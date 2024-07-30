@@ -8,7 +8,7 @@ nav#navBar(ref="navBar")
                     use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back-ios")
                 span.name My Services
             router-link.logo(to="/" v-else)
-                img.symbol.mobile(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;")
+                img.symbol.mobile(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation: none;")
                 img.symbol.desktop(src="@/assets/img/logo/logo-white.svg" style="image-orientation: none;height:24px")
         .right
             ul
@@ -58,9 +58,7 @@ nav#navBar(ref="navBar")
 
 #proceeding(v-if="running")
     .inner    
-        img.loading(src="@/assets/img/loading.png")
-        br
-        br
+        .loader(style="--loader-color:black; --loader-size: 20px")
         h4 Page Loading
 </template>
 
@@ -151,15 +149,6 @@ img.symbol.mobile {
     align-items: center;
     justify-content: center;
     text-align: center;
-
-    .loading {
-        width: 2rem;
-        height: 2rem;
-        filter: grayscale(1);
-    }
-    h4 {
-        color: #fff;
-    }
 }
 
 #navBar {

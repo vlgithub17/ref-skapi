@@ -209,7 +209,7 @@ main
     .dynamo-section
         
         div(v-if='user.user_id' style='text-align:center;')
-            img.symbol(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;width:5em;")
+            img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation: none;width:5em;")
             h2 Start Skapi
             p
                 span.wordset
@@ -219,7 +219,7 @@ main
             router-link(to="my-services")
                 button.final(style='background-color:white;color:black;width:170px') My Services
         div(v-else style='text-align:center;')
-            img.symbol(src="@/assets/img/logo/symbol-logo-white.png" style="image-orientation: none;width:5em;")
+            img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation: none;width:5em;")
             h2 Start Skapi
             p   
                 span.wordset

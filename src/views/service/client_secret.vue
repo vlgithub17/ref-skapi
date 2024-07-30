@@ -113,8 +113,8 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                     td
                         input.line(type="text" v-model="key.key" placeholder="string1234..." required :disabled='updating')
                     td.center.buttonWrap
-                        template(v-if="updating")
-                            img.loading(src="@/assets/img/loading.png")
+                        div(v-if="updating" style="width:100%; text-align:center")
+                            .loader(style="--loader-color:blue; --loader-size:12px")
                         template(v-else)
                             //- label.material-symbols-outlined.notranslate.clickable.save(@click="saveKey(key)" style="color:var(--main-color)") done
                             label
@@ -140,7 +140,7 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                             svg.svgIcon.reactive.clickable.hide(@click="deleteClientKey = key.name;deleteIndex = index;")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
 
-Modal(:open="deleteClientKey")
+Modal(:open="deleteClientKey" @close="deleteClientKey=false")
     h4(style='margin:.5em 0 0;') Delete Client Secret
     hr
 
@@ -151,8 +151,8 @@ Modal(:open="deleteClientKey")
             This action cannot be undone.
     br
     div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='deleteKeyLoad')
-            img.loading(src="@/assets/img/loading.png")
+        div(v-if="deleteKeyLoad" style="width:100%; text-align:center")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine.warning(@click="deleteClientKey = false") Cancel
             button.final.warning(@click="delCliKey") Delete

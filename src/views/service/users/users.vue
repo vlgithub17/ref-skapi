@@ -158,7 +158,7 @@ br
     template(v-if="fetching")
         #loading.
             Loading ... &nbsp;
-            #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+            #[.loader(style="--loader-color:black; --loader-size:12px")]
 
     Table(:key="tableKey" :class="{disabled: !user?.email_verified || currentService.service.active <= 0}" resizable)
 
@@ -266,7 +266,7 @@ br
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
 
 // create user
-Modal(:open="openCreateUser" style="width:478px")
+Modal(:open="openCreateUser" @close="openCreateUser=false" style="width:478px")
     h4(style='margin:.5em 0 0;') Create User
 
     hr
@@ -425,13 +425,13 @@ Modal(:open="openCreateUser" style="width:478px")
 
         div(style="display: flex; align-items: center; justify-content: space-between;")
             div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-                img.loading(src="@/assets/img/loading.png")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine(type="button" @click="closeModal") Cancel 
                 button.final(type="submit") Create User
 
 // invite user
-Modal(:open="openInviteUser")
+Modal(:open="openInviteUser" @close="openInviteUser=false")
     h4(style='margin:.5em 0 0;') Invite User
 
     hr
@@ -492,13 +492,13 @@ Modal(:open="openInviteUser")
 
         div(style="display: flex; align-items: center; justify-content: space-between;")
             div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-                img.loading(src="@/assets/img/loading.png")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine(type="button" @click="closeModal") Cancel 
                 button.final(type="submit") Create User
 
 // block user
-Modal(:open="openBlockUser")
+Modal(:open="openBlockUser" @close="openBlockUser=false")
     h4(style='margin:.5em 0 0;') Block User
 
     hr
@@ -513,13 +513,13 @@ Modal(:open="openBlockUser")
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-            img.loading(src="@/assets/img/loading.png")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine(type="button" @click="openBlockUser=false; selectedUser='';") Cancel 
             button.final(type="button" @click="changeUserState('block')") Block
 
 // unblock user
-Modal(:open="openUnblockUser")
+Modal(:open="openUnblockUser" @close="openUnblockUser=false")
     h4(style='margin:.5em 0 0;') Unblock User
 
     hr
@@ -534,13 +534,13 @@ Modal(:open="openUnblockUser")
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-            img.loading(src="@/assets/img/loading.png")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine(type="button" @click="openUnblockUser=false; selectedUser='';") Cancel 
             button.final(type="button" @click="changeUserState('unblock')") Unblock  
 
 // delete user
-Modal(:open="openDeleteUser")
+Modal(:open="openDeleteUser" @close="openDeleteUser=false")
     h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete User
 
     hr
@@ -555,7 +555,7 @@ Modal(:open="openDeleteUser")
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-            img.loading(src="@/assets/img/loading.png")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine.warning(type="button" @click="openDeleteUser=false; selectedUser='';") Cancel 
             button.final.warning(type="button" @click="deleteUser") Delete  
@@ -801,13 +801,24 @@ let callParams = computed(() => {
 //     }
 // })
 let getPage = async (refresh?: boolean) => {
-    if (!pager) {
-        return;
-    }
+    // if (!pager) {
+    //     return;
+    // }
     
     if (refresh) {
         endOfList.value = false;
     }
+
+    if(!serviceUsers[currentService.id]) {
+        serviceUsers[currentService.id] = await Pager.init({
+            id: 'user_id',
+            resultsPerPage: 10,
+            sortBy: !searchValue.value ? 'timestamp' : callParams.value.searchFor,
+            order: !searchValue.value ? 'desc' : 'asc',
+        });
+    }
+
+    pager = serviceUsers[currentService.id];
 
     if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
         listDisplay.value = pager.getPage(currentPage.value).list;
@@ -855,14 +866,17 @@ let init = async () => {
     currentPage.value = 1;
 
     // setup pagers
-    pager = await Pager.init({
-        id: 'user_id',
-        resultsPerPage: 10,
-        sortBy: !searchValue.value ? 'timestamp' : callParams.value.searchFor,
-        order: !searchValue.value ? 'desc' : 'asc',
-    });
+    if(serviceUsers[currentService.id] && Object.keys(serviceUsers[currentService.id]).length) {
+        pager = serviceUsers[currentService.id];
 
-    getPage(true);
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        listDisplay.value = disp.list;
+
+    } else {
+        serviceUsers[currentService.id] = pager;
+        getPage(true);
+    }
 }
 
 init();

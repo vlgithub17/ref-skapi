@@ -83,9 +83,9 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
             span &nbsp;Cancel Subscription
 
 div(v-else style="text-align:center")
-    img.loading(src="@/assets/img/loading.png")
+    .loader(style="--loader-color:blue; --loader-size:12px")
 
-Modal(:open="subscrOpt" style='max-width: 640px;')
+Modal(:open="subscrOpt" @close="subscrOpt=false" style='max-width: 640px;')
     h4(style='margin:.5em 0 0;') {{subscrOpt}} Plan
 
     hr
@@ -99,13 +99,13 @@ Modal(:open="subscrOpt" style='max-width: 640px;')
     br
 
     div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='promiseRunning')
-            img.loading(src="@/assets/img/loading.png")
+        div(v-if='promiseRunning' style="width:100%; text-align:center")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine(@click="subscrOpt = false") Cancel
             button.final(@click="upgrade") {{subscrOpt}}
 
-Modal(:open="openCancelplan" style='max-width: 640px;')
+Modal(:open="openCancelplan" @close="openCancelplan=false" style='max-width: 640px;')
     h4(style='margin:.5em 0 0;') Cancel Plan
 
     hr
@@ -119,8 +119,8 @@ Modal(:open="openCancelplan" style='max-width: 640px;')
     br
 
     div(style='justify-content:space-between;display:flex;flex-direction:row-reverse; align-items:center;min-height:44px;flex-wrap:wrap;')
-        template(v-if='promiseRunning')
-            img.loading(src="@/assets/img/loading.png")
+        div(v-if='promiseRunning' style="width:100%; text-align:center")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.final.warning(@click="cancelSubs") Cancel Plan
             button.noLine.warning(@click="openCancelplan = false" style='padding: 0 0.5rem;') No, I don't want to cancel my plan

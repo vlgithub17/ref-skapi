@@ -59,7 +59,7 @@ br
 
             .bottom
                 template(v-if="promiseRunning")
-                    img.loading(src="@/assets/img/loading.png")
+                    .loader(style="--loader-color:blue; --loader-size: 12px; margin:0 auto")
                 template(v-else)
                     router-link(to='/account-setting') Back
                     button.unFinished(type="submit") Continue
@@ -124,7 +124,7 @@ br
 
             .bottom
                 template(v-if="promiseRunning")
-                    img.loading(src="@/assets/img/loading.png")
+                    .loader(style="--loader-color:blue; --loader-size: 12px; margin:0 auto")
                 template(v-else)
                     router-link(to='/account-setting') Back
                     button.final(type="submit") Submit

@@ -3,6 +3,7 @@ import { currentService } from "../main";
 import { ref, computed } from "vue";
 import jsonCrawler from 'jsoncrawler'; // https://github.com/broadwayinc/jsoncrawler 참고
 import { compileScript } from "vue/compiler-sfc";
+
 let parseBinEndpoint = async (r: string[]) => {
     let binObj: any = {};
     if (Array.isArray(r)) {

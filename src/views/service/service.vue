@@ -129,7 +129,7 @@ section.infoBox
                     input.big(type="text" ref="focus_name" placeholder="Maximum 40 characters" maxlength="40" :value='inputName' @input="(e) => inputName = e.target.value" :disabled="updatingValue.name" required)
 
                     template(v-if="updatingValue.name")
-                        img.loading(src="@/assets/img/loading.png")
+                        .loader(style="--loader-color:blue; --loader-size:12px")
                     template(v-else)
                         input#saveHiddenInput(type="submit" hidden)
                         label(for="saveHiddenInput") <!-- done -->
@@ -138,7 +138,6 @@ section.infoBox
                     //- span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.name = false;") close
                     svg.svgIcon.cancel(@click="modifyMode.name = false;" style="height: 30px; width: 30px; fill: black")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-close")
-
 
             div(v-else)
                 .smallValue
@@ -153,7 +152,7 @@ section.infoBox
                     input#modifyCors.big(ref="focus_cors" :disabled="updatingValue.cors || null" type="text" placeholder='https://your.domain.com, http://second.domain.net, ...' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
 
                     template(v-if="updatingValue.cors")
-                        img.loading(src="@/assets/img/loading.png")
+                        .loader(style="--loader-color:blue; --loader-size:12px")
                     template(v-else)
                         input#saveHiddenInput2(type="submit" hidden)
                         label(for="saveHiddenInput2")
@@ -174,7 +173,7 @@ section.infoBox
                     input.big(ref="focus_key" :disabled="updatingValue.api_key || null" type="text" minlength="4" maxlength="256" placeholder='Maximum 256 characters, At least 4 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
 
                     template(v-if="updatingValue.api_key")
-                        img.loading(src="@/assets/img/loading.png")
+                        .loader(style="--loader-color:blue; --loader-size:12px")
                     template(v-else)
                         input#saveHiddenInput3(type="submit" hidden)
                         label(for="saveHiddenInput3")

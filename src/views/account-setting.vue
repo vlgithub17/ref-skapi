@@ -16,7 +16,7 @@ br
                     input.big(type="email" ref='emailInp' spellcheck="false" :value="inputEmail" @input="(e) => {e.target.setCustomValidity('');inputEmail = e.target.value;}" placeholder="your@email.com" required)
 
                     template(v-if="updatingValue")
-                        img.loading(src="@/assets/img/loading.png")
+                        .loader(style="--loader-color:blue; --loader-size:12px")
                     //- label.material-symbols-outlined.notranslate.save(v-else) done
                     label(v-else)
                         svg.svgIcon.clickable.save()
@@ -55,7 +55,7 @@ br
 br
 br
 br
-Modal(:open="proceedVerification")
+Modal(:open="proceedVerification" @close="proceedVerification=false")
     h4(style='margin:.5em 0 0;') Email Verification
     hr
 
@@ -67,7 +67,7 @@ Modal(:open="proceedVerification")
     br
     div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
         template(v-if='sendingEmail')
-            img.loading(src="@/assets/img/loading.png")
+            .loader(style="--loader-color:blue; --loader-size:12px; margin:0 auto")
         template(v-else)
             button.noLine(@click="proceedVerification = false") Cancel
             button.final(@click="sendEmail") Proceed
