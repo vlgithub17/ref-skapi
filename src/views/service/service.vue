@@ -7,19 +7,25 @@ section.infoBox
 
     
     .error(v-if='!user?.email_verified')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         router-link(to="/account-setting") Please verify your email address to modify settings.
         br
         br
 
     .error(v-else-if='currentService.service.active == 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently disabled.
         br
         br
 
     .error(v-else-if='currentService.service.active < 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently suspended.
         br
         br
@@ -113,7 +119,7 @@ section.infoBox
                 style='display:inline-flex;align-items:center;'
                 :active='!currentService.service.prevent_signup'
                 :disabled='updatingValue.prevent_signup'
-                @click="changeCreateUserMode(!currentService.service.prevent_signup)"
+                @click="c3hangeCreateUserMode(!currentService.service.prevent_signup)"
             )
         
         .infoValue
@@ -124,9 +130,14 @@ section.infoBox
 
                     template(v-if="updatingValue.name")
                         .loader(style="--loader-color:blue; --loader-size:12px")
-                    label.material-symbols-outlined.notranslate.save(v-else) done
-                        input(type="submit" hidden)
-                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.name = false;") close
+                    template(v-else)
+                        input#saveHiddenInput(type="submit" hidden)
+                        label(for="saveHiddenInput") <!-- done -->
+                            svg.svgIcon.save(style="height: 30px; width: 30px;")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-check")
+                    //- span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.name = false;") close
+                    svg.svgIcon.cancel(@click="modifyMode.name = false;" style="height: 30px; width: 30px; fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-close")
 
             div(v-else)
                 .smallValue
@@ -142,9 +153,14 @@ section.infoBox
 
                     template(v-if="updatingValue.cors")
                         .loader(style="--loader-color:blue; --loader-size:12px")
-                    label.material-symbols-outlined.notranslate.save(v-else) done
-                        input(type="submit" hidden)
-                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.cors = false;") close
+                    template(v-else)
+                        input#saveHiddenInput2(type="submit" hidden)
+                        label(for="saveHiddenInput2")
+                            svg.svgIcon.save(style="height: 30px; width: 30px;")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-check")
+                    //- span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.cors = false;") close
+                    svg.svgIcon.cancel(@click="modifyMode.cors = false;" style="height: 30px; width: 30px; fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-close")
 
             div(v-else)
                 .smallValue {{ currentService.service.cors || '*' }}
@@ -158,9 +174,16 @@ section.infoBox
 
                     template(v-if="updatingValue.api_key")
                         .loader(style="--loader-color:blue; --loader-size:12px")
-                    label.material-symbols-outlined.notranslate.save(v-else) done
+                    template(v-else)
+                        input#saveHiddenInput3(type="submit" hidden)
+                        label(for="saveHiddenInput3")
+                            svg.svgIcon.save(style="height: 30px; width: 30px;")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-check")
+                    //- label.material-symbols-outlined.notranslate.save(v-else) done
                         input(type="submit" hidden)
-                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.api_key = false;") close
+                    //- span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.api_key = false;") close
+                    svg.svgIcon.cancel(@click="modifyMode.api_key = false;" style="height: 30px; width: 30px; fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-close")
 
             div(v-else)
                 .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 2) + '*'.repeat(currentService.service.api_key.length - 2) + '...' : 'No Secret Key' }}&nbsp;
@@ -170,7 +193,9 @@ section.infoBox
         hr
         div(style="text-align:right")
             router-link.iconClick.square(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
-                .material-symbols-outlined.notranslate.fill(style='font-size:24px;') delete
+                //- .material-symbols-outlined.notranslate.fill(style='font-size:24px;') delete
+                svg.svgIcon.cancel(style="height: 22px; width: 22px; fill: var(--caution-color)")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
                 span &nbsp;Delete Service
 
 </template>
@@ -380,5 +405,9 @@ let enableDisable = async ()=>{
     &:hover {
         text-decoration: none;
     }
+}
+.svgIcon:hover {
+    border-radius: 50%;
+    background-color: #293FE61A;
 }
 </style>

@@ -69,6 +69,33 @@
     }
   }
 }
+
+.svgIcon { //svg icon
+  fill: var(--main-color);
+  width: 24px;
+  height: 24px;
+
+  &.reactive {
+    fill: black;
+    &:hover {
+      fill: var(--main-color);
+    }
+  }
+  &.reactiveDanger {
+    fill: black;
+    &:hover {
+      fill: var(--caution-color);
+    }
+  }
+
+  &.black {
+    fill:black;
+  }
+  &.danger {
+    fill: var(--caution-color);
+  }
+}
+
 .wideOnMobile {
   @media (max-width: 767px) {
     width: 100% !important;
