@@ -239,7 +239,7 @@ br
     template(v-if="fetching")
         #loading.
             Loading ... &nbsp;
-            #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+            #[.loader(style="--loader-color:black; --loader-size:12px")]
             
     Table(:key="tableKey" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}" resizable)
         template(v-slot:head)
@@ -352,7 +352,7 @@ br
                 .material-symbols-outlined.notranslate(@click="showDetail=false; selectedRecord=createRecordTemplate; fileList=[];" :class="{nonClickable: fetching}") arrow_back
                 .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
                 template(v-if="uploading")
-                    img.loading(style='margin: 12px;' src="@/assets/img/loading.png")
+                    .loader(style="--loader-color:blue; --loader-size:12px; margin: 12px;")
                 template(v-else)
                     button.noLine.iconClick.square(type="submit" style='padding:0 14px') SAVE
             .content(:class="{nonClickable: uploading}")
@@ -507,7 +507,7 @@ br
         .material-symbols-outlined.notranslate.bold chevron_right
 
 // delete records
-Modal(:open="openDeleteRecords")
+Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete Records
 
     hr
@@ -522,7 +522,7 @@ Modal(:open="openDeleteRecords")
 
     div(style="display: flex; align-items: center; justify-content: space-between;")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
-            img.loading(src="@/assets/img/loading.png")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine.warning(type="button" @click="openDeleteRecords=false;") Cancel 
             button.final.warning(type="button" @click="deleteRecords") Delete
@@ -540,7 +540,7 @@ import type { Ref } from "vue";
 import { ref, computed, nextTick, reactive, watch } from "vue";
 import { skapi } from "@/code/admin";
 import { user } from "@/code/user";
-import { currentService } from "@/views/service/main";
+import { currentService, serviceRecords, serviceBins} from "@/views/service/main";
 import { showDropDown } from "@/assets/js/event.js";
 import { convertToObject } from "typescript";
 import { uploadRecord } from "@/views/service/records/record";
@@ -668,13 +668,29 @@ let setCallParams = (e) => {
 };
 
 let getPage = async (refresh?: boolean) => {
-    if (!pager) {
-        return;
-    }
+    // if (!pager) {
+    //     return;
+    // }
 
     if (refresh) {
         endOfList.value = false;
     }
+
+    if(!serviceRecords[currentService.id]) {
+        serviceRecords[currentService.id] = await Pager.init({
+            id: "record_id",
+            resultsPerPage: 10,
+            sortBy: callParams?.index?.name || "record_id",
+            order:
+                callParams?.index?.name && (callParams?.index?.condition || "").includes("<")
+                    ? "desc"
+                    : callParams?.table?.name
+                    ? "asc"
+                    : "desc",
+        });
+    }
+
+    pager = serviceRecords[currentService.id];
 
     if ((!refresh && maxPage.value >= currentPage.value) || endOfList.value) {
         let disp = pager.getPage(currentPage.value);
@@ -694,13 +710,17 @@ let getPage = async (refresh?: boolean) => {
                 throw err;
             });
         fetchedData.list = fetchedData.list.map((r) => {
-            bins[r.record_id] = r?.bin || {};
+            serviceBins[currentService.id][r.record_id] = r?.bin || {};
             delete r.bin;
             return r;
         });
 
+        bins = serviceBins[currentService.id];
+        console.log(bins)
+
         // save endOfList status
         endOfList.value = fetchedData.endOfList;
+        console.log(fetchedData)
 
         // insert data in pager
         if (fetchedData.list.length > 0) {
@@ -736,19 +756,19 @@ let init = async () => {
     currentPage.value = 1;
 
     // setup pagers
-    pager = await Pager.init({
-        id: "record_id",
-        resultsPerPage: 10,
-        sortBy: callParams?.index?.name || "record_id",
-        order:
-            callParams?.index?.name && (callParams?.index?.condition || "").includes("<")
-                ? "desc"
-                : callParams?.table?.name
-                ? "asc"
-                : "desc",
-    });
+    if(serviceRecords[currentService.id] && Object.keys(serviceRecords[currentService.id]).length) {
+        pager = serviceRecords[currentService.id];
+        bins = serviceBins[currentService.id];
 
-    getPage(true);
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        listDisplay.value = disp.list;
+
+    } else {
+        serviceRecords[currentService.id] = pager;
+        serviceBins[currentService.id] = bins;
+        getPage(true);
+    }
 };
 
 init();

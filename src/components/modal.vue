@@ -1,5 +1,5 @@
 <template lang="pug">
-dialog(ref='dialog')
+dialog(ref='dialog' @keydown.esc.prevent="emit('close')")
     slot
 </template>
 
@@ -8,6 +8,7 @@ import { onMounted, ref, watch } from 'vue';
 let props = defineProps({
     open: Boolean
 });
+const emit = defineEmits(['close']);
 
 let dialog = ref(null);
 
