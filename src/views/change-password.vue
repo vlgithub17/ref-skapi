@@ -10,7 +10,11 @@ br
 
         .bottomLineTitle Change Password
     template(v-else)
-        .material-symbols-outlined.notranslate.fill(style="font-size:50px;color:rgba(90, 216, 88, 1);") check_circle
+        //- .material-symbols-outlined.notranslate.fill(style="font-size:50px;color:rgba(90, 216, 88, 1);") check_circle
+        svg.svgIcon(style="fill: rgba(90, 216, 88, 1); height: 50px; width: 50px")
+            use(xlink:href="@/assets/img/material-icon.svg#icon-check-circle-fill")
+
+
         .bottomLineTitle Success
 
     template(v-if="step === 1")
@@ -35,14 +39,20 @@ br
                     name="password")
                 .passwordIcon(@click="showPassword = !showPassword")
                     template(v-if="showPassword")
-                        .material-symbols-outlined.notranslate.fill visibility
+                        //- .material-symbols-outlined.notranslate.fill visibility
+                        svg.svgIcon(style="fill: var(--black-6)")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
                     template(v-else)
-                        .material-symbols-outlined.notranslate.fill visibility_off
+                        //- .material-symbols-outlined.notranslate.fill visibility_off
+                        svg.svgIcon(style="fill: var(--black-6)")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
 
             br
 
             .error(v-if="error")
-                .material-symbols-outlined.notranslate.fill error
+                //- .material-symbols-outlined.notranslate.fill error
+                svg
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-error-fill")
                 span {{ error }}
 
             br
@@ -71,9 +81,14 @@ br
                     required)
                 .passwordIcon(@click="showNewPassword = !showNewPassword")
                     template(v-if="showNewPassword")
-                        .material-symbols-outlined.notranslate.fill visibility
+                        //- .material-symbols-outlined.notranslate.fill visibility
+                        svg.svgIcon(style="fill: var(--black-6)")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
+                        
                     template(v-else)
-                        .material-symbols-outlined.notranslate.fill visibility_off
+                        //- .material-symbols-outlined.notranslate.fill visibility_off
+                        svg.svgIcon(style="fill: var(--black-6)")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
 
             label.passwordInput
                 | Confirm new password
@@ -89,14 +104,20 @@ br
                     required)
                 .passwordIcon(@click="showConfirmPassword = !showConfirmPassword")
                     template(v-if="showConfirmPassword")
-                        .material-symbols-outlined.notranslate.fill visibility
+                        //- .material-symbols-outlined.notranslate.fill visibility
+                        svg.svgIcon(style="fill: var(--black-6)")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
                     template(v-else)
-                        .material-symbols-outlined.notranslate.fill visibility_off
+                        //- .material-symbols-outlined.notranslate.fill visibility_off
+                        svg.svgIcon(style="fill: var(--black-6)")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
 
             br
 
             .error(v-if="error")
-                .material-symbols-outlined.notranslate.fill error
+                //- .material-symbols-outlined.notranslate.fill error
+                svg
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-error-fill")
                 span {{ error }}
 
             br

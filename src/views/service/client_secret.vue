@@ -3,14 +3,22 @@ section.infoBox
     .titleHead
         h2 Client Secret Key
             
-        span.moreInfo(@click="showDes = !showDes")
+        span.moreInfo(@click="showDes = !showDes" @mouseover="hovering = true" @mouseleave="hovering = false")
             span More Info&nbsp;
             template(v-if="showDes")
-                .material-symbols-outlined.notranslate.fill expand_circle_up 
-                .material-symbols-outlined.notranslate.noFill expand_circle_up
+                //- .material-symbols-outlined.notranslate.fill expand_circle_up 
+                //- .material-symbols-outlined.notranslate.noFill expand_circle_up
+                svg(v-if="hovering" style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up-fill")
+                svg(v-else style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up")
             template(v-else) 
-                .material-symbols-outlined.notranslate.fill expand_circle_down
-                .material-symbols-outlined.notranslate.noFill expand_circle_down
+                //- .material-symbols-outlined.notranslate.fill expand_circle_down
+                //- .material-symbols-outlined.notranslate.noFill expand_circle_down
+                svg(v-if="hovering" style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down-fill")
+                svg(v-else style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down")
 
     template(v-if="showDes")
         p(style='margin-bottom: 0').
@@ -48,15 +56,21 @@ section.infoBox
     hr
 
     .error(v-if='!user?.email_verified')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         router-link(to="/account-setting") Please verify your email address to modify settings.
 
     .error(v-else-if='currentService.service.active == 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently disabled.
 
     .error(v-else-if='currentService.service.active < 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently suspended.
 
     p(style='margin-bottom:0') Register your client secret keys by clicking '#[b Register Client Secret Key]' below.
@@ -64,7 +78,9 @@ section.infoBox
 br
 
 .iconClick.square(@click="addKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0 || editMode || addMode}" style='margin-bottom:8px;')
-    .material-symbols-outlined.notranslate.fill add_circle
+    //- .material-symbols-outlined.notranslate.fill add_circle
+    svg.svgIcon
+        use(xlink:href="@/assets/img/material-icon.svg#icon-add-circle-fill")
     span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Register Client Secret Key
 
 
@@ -73,7 +89,9 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
         template(v-slot:head)
             tr
                 th.center(style="width:48px; padding:0")
-                    .material-symbols-outlined.notranslate lock
+                    //- .material-symbols-outlined.notranslate lock
+                    svg.svgIcon(style="fill: black;")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-lock")
                     .resizer
                 th(style="width:26%")
                     | Name
@@ -98,18 +116,29 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                         div(v-if="updating" style="width:100%; text-align:center")
                             .loader(style="--loader-color:blue; --loader-size:12px")
                         template(v-else)
-                            label.material-symbols-outlined.notranslate.clickable.save(@click="saveKey(key)" style="color:var(--main-color)") done
+                            //- label.material-symbols-outlined.notranslate.clickable.save(@click="saveKey(key)" style="color:var(--main-color)") done
+                            label
+                              svg.svgIcon.clickable.save(style="fill: var(--main-color);" @click="saveKey(key)")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-check")
                                 input(type="submit" hidden)
-                            .material-symbols-outlined.notranslate.clickable.cancel(@click="cancelKey(key, index)") close
-                template(v-else)  
+                            //- .material-symbols-outlined.notranslate.clickable.cancel(@click="cancelKey(key, index)") close
+                            svg.svgIcon.clickable.cancel(style="fill: black;" @click="cancelKey(key, index)")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-close")
+                template(v-else)
                     td.center 
-                        .material-symbols-outlined.notranslate.bold(v-if="key.secure") check
+                        //- .material-symbols-outlined.notranslate.bold(v-if="key.secure") check
+                        svg.svgIcon(v-if="key.secure" style="fill: black")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-check")
                     td.overflow {{ key.name }}
                     td.overflow {{ key.key ? key.key.slice(0,2) + '*'.repeat(key.key.length - 2) : '' }}
                     td.center.buttonWrap
                         template(v-if="!editMode && !addMode")
-                            .material-symbols-outlined.notranslate.fill.clickable.icon.hide(@click="editKey(key)") edit
-                            .material-symbols-outlined.notranslate.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
+                            //- .material-symbols-outlined.notranslate.fill.clickable.icon.hide(@click="editKey(key)") edit
+                            svg.svgIcon.reactive.clickable.hide(@click="editKey(key)")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-edit-fill")
+                            //- .material-symbols-outlined.notranslate.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
+                            svg.svgIcon.reactive.clickable.hide(@click="deleteClientKey = key.name;deleteIndex = index;")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
 
 Modal(:open="deleteClientKey" @close="deleteClientKey=false")
     h4(style='margin:.5em 0 0;') Delete Client Secret
@@ -145,6 +174,7 @@ let addMode = ref(false);
 let editMode = ref(false);
 let deleteKeyLoad = ref(false);
 let deleteClientKey = ref(false);
+let hovering = ref(false);
 let deleteIndex = '';
 let client_key = ref([
     // {
@@ -343,6 +373,11 @@ table {
 
     &:hover::after {
         display: block;
+    }
+
+    &:hover {
+      border-radius: 50%;
+      background-color: #293FE61A;
     }
 }
 

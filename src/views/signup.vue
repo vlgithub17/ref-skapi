@@ -34,9 +34,13 @@ br
             required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
-                    .material-symbols-outlined.notranslate.fill visibility
+                    //- .material-symbols-outlined.notranslate.fill visibility
+                    svg.svgIcon(style="fill: var(--black-6)")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
                 template(v-else)
-                    .material-symbols-outlined.notranslate.fill visibility_off
+                    //- .material-symbols-outlined.notranslate.fill visibility_off
+                    svg.svgIcon(style="fill: var(--black-6)")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
 
         label.passwordInput
             | Confirm password
@@ -48,9 +52,13 @@ br
             required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
-                    .material-symbols-outlined.notranslate.fill visibility
+                    //- .material-symbols-outlined.notranslate.fill visibility
+                    svg.svgIcon(style="fill: var(--black-6)")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
                 template(v-else)
-                    .material-symbols-outlined.notranslate.fill visibility_off
+                    //- .material-symbols-outlined.notranslate.fill visibility_off
+                    svg.svgIcon(style="fill: var(--black-6)")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
 
         .actions 
             Checkbox(v-model="form.subscribe" style='font-weight:unset;') I agree to receive newsletters from Skapi.
@@ -58,7 +66,9 @@ br
         br
 
         .error(v-if="error")
-            .material-symbols-outlined.notranslate.fill error
+            //- .material-symbols-outlined.notranslate.fill error
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-error-fill")
             span {{ error }}
         
         br
