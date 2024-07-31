@@ -83,33 +83,34 @@ section.infoBox
             use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently suspended.
 
-    p.
+    p(style='margin-bottom:0').
         Search and manage your service users.
         #[br]
         #[b User must have at least one successful login to be listed here.]
 
-    form#searchForm(@submit.prevent="getPage(true)")
-        Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}" style="min-width:162px;flex-grow:1")
-        .search(:class="{'nonClickable' : fetching}")
-            .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click="showCalendar = !showCalendar;")
-                input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" name="date" readonly)
-                //- .material-symbols-outlined.notranslate.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
-                svg.svgIcon.reactive(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')")
-                    use(xlink:href="@/assets/img/material-icon.svg#icon-calendar-today-fill")  
-                Calendar(v-model="searchValue" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
-            //- input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue" :disabled="fetching")
-            input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue" name="address")
-            input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchValue" name="gender")
-            input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue" name="name")
-            .clickInput(v-else-if="searchFor === 'locale'" @click="showLocale = !showLocale")
-                input.big#searchInput(type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue" name="locale" readonly)
-                //- .material-symbols-outlined.notranslate.fill.icon(v-if="searchFor === 'locale'") arrow_drop_down
-                svg.svgIcon.reactive(v-if="searchFor === 'locale'")
-                    use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down") 
-                Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
-            input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" name="user_id" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-            input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue" name="email" type="email" minlength="5")
-        button.final(type="submit" style='flex-shrink: 0;') Search
+
+form#searchForm(@submit.prevent="getPage(true)" style="padding:1.2em")
+    Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}" style="min-width:162px;flex-grow:1")
+    .search(:class="{'nonClickable' : fetching}")
+        .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click="showCalendar = !showCalendar;")
+            input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" name="date" readonly)
+            //- .material-symbols-outlined.notranslate.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
+            svg.svgIcon.reactive(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')")
+                use(xlink:href="@/assets/img/material-icon.svg#icon-calendar-today-fill")  
+            Calendar(v-model="searchValue" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
+        //- input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue" :disabled="fetching")
+        input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue" name="address")
+        input.big#searchInput(v-else-if="searchFor === 'gender'" type="text" placeholder="Gender" v-model="searchValue" name="gender")
+        input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue" name="name")
+        .clickInput(v-else-if="searchFor === 'locale'" @click="showLocale = !showLocale")
+            input.big#searchInput(type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue" name="locale" readonly)
+            //- .material-symbols-outlined.notranslate.fill.icon(v-if="searchFor === 'locale'") arrow_drop_down
+            svg.svgIcon.reactive(v-if="searchFor === 'locale'")
+                use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down") 
+            Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
+        input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" name="user_id" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+        input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue" name="email" type="email" minlength="5")
+    button.final(type="submit" style='flex-shrink: 0;') Search
 
 br
 
