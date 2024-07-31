@@ -563,6 +563,7 @@ br
         //- .material-symbols-outlined.notranslate.bold chevron_right
         svg.svgIcon(style="width: 26px; height: 26px")
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
+
 // delete records
 Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete Records
@@ -964,6 +965,7 @@ let deleteRecords = () => {
             }
 
             checked.value = {};
+            checkedall.value = false;
             promiseRunning.value = false;
             openDeleteRecords.value = false;
         });
@@ -990,7 +992,7 @@ let copyID = (e) => {
 // checks
 let checked: any = ref({});
 let checkIfAny = (e) => {
-    // 하나라도 체크안되어있으면 전체 체크표시 해체
+    // 아무것도 체크안되어있으면 전체 체크표시 해체
     let chk = e.target.checked;
     if (chk) {
         return;
