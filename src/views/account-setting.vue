@@ -19,7 +19,7 @@ br
                         .loader(style="--loader-color:blue; --loader-size:12px")
                     //- label.material-symbols-outlined.notranslate.save(v-else) done
                     label(v-else)
-                        svg.svgIcon.clickable.save()
+                        svg.svgIcon.clickable.save
                             use(xlink:href="@/assets/img/material-icon.svg#icon-check")
                         input(type="submit" hidden)
                     //- span.material-symbols-outlined.notranslate.cancel(@click="modifyMode = false;") close
