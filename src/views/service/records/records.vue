@@ -723,7 +723,7 @@ let setCallParams = (e) => {
         callParams = toFetch.data;
     }
 
-    init();
+    getPage(true);
 };
 
 let getPage = async (refresh?: boolean) => {
@@ -735,7 +735,7 @@ let getPage = async (refresh?: boolean) => {
         endOfList.value = false;
     }
 
-    if(!serviceRecords[currentService.id]) {
+    if(!serviceRecords[currentService.id] || callParams?.table?.name) {
         serviceRecords[currentService.id] = await Pager.init({
             id: "record_id",
             resultsPerPage: 10,

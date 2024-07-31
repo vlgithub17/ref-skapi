@@ -88,7 +88,7 @@ section.infoBox
         #[br]
         #[b User must have at least one successful login to be listed here.]
 
-    form#searchForm(@submit.prevent="init()")
+    form#searchForm(@submit.prevent="getPage(true)")
         Select(v-model="searchFor" :selectOptions="selectOptions" :class="{'nonClickable' : fetching}" style="min-width:162px;flex-grow:1")
         .search(:class="{'nonClickable' : fetching}")
             .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click="showCalendar = !showCalendar;")
@@ -794,12 +794,6 @@ let callParams = computed(() => {
     return result;
 });
 
-// let updateEndTime = ref(false);
-// watch(() => updateEndTime, nv => {
-//     if (nv) {
-//         callParams.value.value = new Date().getTime();
-//     }
-// })
 let getPage = async (refresh?: boolean) => {
     // if (!pager) {
     //     return;
@@ -809,7 +803,7 @@ let getPage = async (refresh?: boolean) => {
         endOfList.value = false;
     }
 
-    if(!serviceUsers[currentService.id]) {
+    if(!serviceUsers[currentService.id] || searchValue.value) {
         serviceUsers[currentService.id] = await Pager.init({
             id: 'user_id',
             resultsPerPage: 10,
@@ -840,6 +834,8 @@ let getPage = async (refresh?: boolean) => {
             fetching.value = false;
             alert(err);
         });
+
+        // console.log(fetchedData)
 
         // save endOfList status
         serviceUsers[currentService.id].endOfList = fetchedData.endOfList;
