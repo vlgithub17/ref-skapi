@@ -3,14 +3,22 @@ section.infoBox
     .titleHead
         h2 Users
             
-        span.moreInfo(@click="showDes = !showDes")
+        span.moreInfo(@click="showDes = !showDes" @mouseover="hovering = true" @mouseleave="hovering = false")
             span More Info&nbsp;
             template(v-if="showDes")
-                .material-symbols-outlined.notranslate.fill expand_circle_up 
-                .material-symbols-outlined.notranslate.noFill expand_circle_up
+                //- .material-symbols-outlined.notranslate.fill expand_circle_up 
+                //- .material-symbols-outlined.notranslate.noFill expand_circle_up
+                svg(v-if="hovering" style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up-fill")
+                svg(v-else style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up")
             template(v-else) 
-                .material-symbols-outlined.notranslate.fill expand_circle_down
-                .material-symbols-outlined.notranslate.noFill expand_circle_down
+                //- .material-symbols-outlined.notranslate.fill expand_circle_down
+                //- .material-symbols-outlined.notranslate.noFill expand_circle_down
+                svg(v-if="hovering" style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down-fill")
+                svg(v-else style="width: 25px; height: 25px; fill: black;")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down")
 
     template(v-if="showDes")
         p.
@@ -58,15 +66,21 @@ section.infoBox
     hr
     
     .error(v-if='!user?.email_verified')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         router-link(to="/account-setting") Please verify your email address to modify settings.
         
     .error(v-else-if='currentService.service.active == 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently disabled.
 
     .error(v-else-if='currentService.service.active < 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently suspended.
 
     p.
@@ -79,7 +93,9 @@ section.infoBox
         .search(:class="{'nonClickable' : fetching}")
             .clickInput(v-if="searchFor === 'timestamp' || searchFor === 'birthdate'" @click="showCalendar = !showCalendar;")
                 input.big#searchInput(type="text" placeholder="YYYY-MM-DD ~ YYYY-MM-DD" v-model="searchValue" name="date" readonly)
-                .material-symbols-outlined.notranslate.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
+                //- .material-symbols-outlined.notranslate.fill.icon(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')") calendar_today
+                svg.svgIcon.reactive(v-if="(searchFor === 'timestamp' || searchFor === 'birthdate')")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-calendar-today-fill")  
                 Calendar(v-model="searchValue" :showCalendar="showCalendar" @close="showCalendar=false" alwaysEmit='true')
             //- input.big#searchInput(v-else-if="searchFor === 'phone_number'" type="text" placeholder="eg+821234567890" v-model="searchValue" :disabled="fetching")
             input.big#searchInput(v-else-if="searchFor === 'address'" type="text" placeholder="Address" v-model="searchValue" name="address")
@@ -87,7 +103,9 @@ section.infoBox
             input.big#searchInput(v-else-if="searchFor === 'name'" type="text" placeholder="Name" v-model="searchValue" name="name")
             .clickInput(v-else-if="searchFor === 'locale'" @click="showLocale = !showLocale")
                 input.big#searchInput(type="text" placeholder="2 digit country code e.g. KR" v-model="searchValue" name="locale" readonly)
-                .material-symbols-outlined.notranslate.fill.icon(v-if="searchFor === 'locale'") arrow_drop_down
+                //- .material-symbols-outlined.notranslate.fill.icon(v-if="searchFor === 'locale'") arrow_drop_down
+                svg.svgIcon.reactive(v-if="searchFor === 'locale'")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down") 
                 Locale(v-model="searchValue" :showLocale="showLocale" @close="showLocale=false")
             input.big#searchInput(v-else-if="searchFor === 'user_id'" type="search" placeholder="Search Users" v-model="searchValue" name="user_id" @input="e=>{e.target.setCustomValidity('');}" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
             input.big#searchInput(v-else-if="searchFor === 'email'" placeholder="Search public email address" v-model="searchValue" name="email" type="email" minlength="5")
@@ -97,7 +115,9 @@ br
 
 .tableMenu
     .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
-        .material-symbols-outlined.notranslate.fill checklist_rtl
+        //- .material-symbols-outlined.notranslate.fill checklist_rtl
+        svg.svgIcon
+            use(xlink:href="@/assets/img/material-icon.svg#icon-checklist-rtl")  
         span &nbsp;&nbsp;Show Columns
         .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal;color:black")
             .inner
@@ -116,15 +136,22 @@ br
                 Checkbox(v-model="filterOptions.misc" style="display:flex") Misc
 
     .iconClick.square(@click="openCreateUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill person_add
+        //- .material-symbols-outlined.notranslate.fill person_add
+        svg.svgIcon
+            use(xlink:href="@/assets/img/material-icon.svg#icon-person-add-fill") 
         span &nbsp;&nbsp;Create User
         
     .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentService.plan == 'Trial'}")
-        .material-symbols-outlined.notranslate.fill mark_email_unread
+        //- .material-symbols-outlined.notranslate.fill mark_email_unread
+        svg.svgIcon
+            use(xlink:href="@/assets/img/material-icon.svg#icon-mark-email-unread-fill")
+        
         span &nbsp;&nbsp;Invite User
 
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        svg.svgIcon(:class='{loading:fetching}')
+            use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
         span &nbsp;&nbsp;Refresh
 
 .userPart
@@ -138,7 +165,9 @@ br
         template(v-slot:head)
             tr
                 th.center(style='width:80px;padding:0')
-                    .material-symbols-outlined.notranslate.fill manage_accounts 
+                    //- .material-symbols-outlined.notranslate.fill manage_accounts
+                    svg.svgIcon(style="fill: black;")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-manage-accounts-fill")
                     .resizer
                 th.overflow(v-if="filterOptions.email" style="width:200px")
                     | Email
@@ -193,11 +222,18 @@ br
             template(v-else) 
                 tr(v-for="(user, index) in listDisplay") 
                     td.center.optionCol.overflow(style="padding:0")
-                        .material-symbols-outlined.notranslate.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
+                        //- .material-symbols-outlined.notranslate.fill.icon(@click="openDeleteUser = true; selectedUser = user") delete
+                        svg.svgIcon.reactive(@click="openDeleteUser = true; selectedUser = user")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
                         template(v-if="user.approved.includes('suspended')")
-                            .material-symbols-outlined.notranslate.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
+                            //- .material-symbols-outlined.notranslate.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
+                            svg.svgIcon.reactive(@click="openUnblockUser = true; selectedUser = user")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-no-accounts-fill")
+                            
                         template(v-else)
-                            .material-symbols-outlined.notranslate.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
+                            //- .material-symbols-outlined.notranslate.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
+                            svg.svgIcon.reactive(@click="openBlockUser = true; selectedUser = user")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-account-circle-fill")
                     td.overflow(v-if="filterOptions.email") {{ user.email }}
                     td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
                     td.overflow(v-if="filterOptions.name") {{ user.name }}
@@ -218,12 +254,16 @@ br
         
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage === 1 }")
-        .material-symbols-outlined.notranslate.bold chevron_left
+        //- .material-symbols-outlined.notranslate.bold chevron_left
+        svg.svgIcon(style="width: 26px; height: 26px")
+            use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
     .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
-        .material-symbols-outlined.notranslate.bold chevron_right
+        //- .material-symbols-outlined.notranslate.bold chevron_right
+        svg.svgIcon(style="width: 26px; height: 26px")
+            use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
 
 // create user
 Modal(:open="openCreateUser" @close="openCreateUser=false" style="width:478px")
@@ -376,7 +416,9 @@ Modal(:open="openCreateUser" @close="openCreateUser=false" style="width:478px")
         br
 
         .error(v-if="error")
-            .material-symbols-outlined.notranslate.mid error
+            //- .material-symbols-outlined.notranslate.mid error
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
             span {{ error }}
 
         br
@@ -441,7 +483,9 @@ Modal(:open="openInviteUser" @close="openInviteUser=false")
         br
 
         .error(v-if="error")
-            .material-symbols-outlined.notranslate.mid error
+            //- .material-symbols-outlined.notranslate.mid error
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
             span {{ error }}
 
         br
@@ -549,6 +593,7 @@ let endOfList = ref(false);
 let showCalendar = ref(false);
 let showLocale = ref(false);
 let showDes = ref(false);
+let hovering = ref(false);
 
 let filterOptions = ref({
     email: true,
@@ -1028,6 +1073,14 @@ body {
         padding-bottom: .25rem;
     }
 }
+// svg {
+//     fill: black;
+//     width: 22px;
+//     height: 22px;
+// }
+// svg:hover {
+//       fill: var(--main-color);
+// }
 #searchForm {
     display: flex;
     flex-wrap: wrap;
@@ -1053,6 +1106,7 @@ body {
     .big {
         padding-right: 40px;
     }
+    svg,
     .icon {
         position: absolute;
         top: 50%;
@@ -1060,6 +1114,10 @@ body {
         transform: translateY(-50%);
         cursor: pointer;
         user-select: none;
+        fill: black;
+    }
+    svg:hover {
+      fill: var(--main-color);
     }
     .final {
         flex-grow: 1;
