@@ -842,7 +842,8 @@ let getPage = async (refresh?: boolean) => {
         });
 
         // save endOfList status
-        endOfList.value = fetchedData.endOfList;
+        serviceUsers[currentService.id].endOfList = fetchedData.endOfList;
+        endOfList.value = serviceUsers[currentService.id].endOfList;
 
         // insert data in pager
         if (fetchedData.list.length > 0) {
@@ -868,6 +869,7 @@ let init = async () => {
     // setup pagers
     if(serviceUsers[currentService.id] && Object.keys(serviceUsers[currentService.id]).length) {
         pager = serviceUsers[currentService.id];
+        endOfList.value = serviceUsers[currentService.id].endOfList;
 
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;

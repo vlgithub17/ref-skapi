@@ -777,8 +777,8 @@ let getPage = async (refresh?: boolean) => {
         console.log(bins)
 
         // save endOfList status
-        endOfList.value = fetchedData.endOfList;
-        console.log(fetchedData)
+        serviceRecords[currentService.id].endOfList = fetchedData.endOfList;
+        endOfList.value = serviceRecords[currentService.id].endOfList;
 
         // insert data in pager
         if (fetchedData.list.length > 0) {
@@ -817,6 +817,7 @@ let init = async () => {
     if(serviceRecords[currentService.id] && Object.keys(serviceRecords[currentService.id]).length) {
         pager = serviceRecords[currentService.id];
         bins = serviceBins[currentService.id];
+        endOfList.value = serviceRecords[currentService.id].endOfList;
 
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
