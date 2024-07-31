@@ -2,9 +2,9 @@
 nav#navBar(ref="navBar")
     .wrap
         .left
-            router-link.logo(to="/my-services" v-if="route.name != 'home' && loginState && route.path !== '/my-services'")
+            router-link.logo(to="/my-services" v-if="route.name != 'home' && loginState && route.path !== '/my-services'" style="color:white")
                 //- .material-symbols-outlined.notranslate.nohover.back(style="font-size:1.5em") arrow_back_ios
-                svg(width="1.5em" height="1.5em")
+                svg(width="1.5em" height="1.5em" style="fill:white")
                     use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back-ios")
                 span.name My Services
             router-link.logo(to="/" v-else)
@@ -16,9 +16,9 @@ nav#navBar(ref="navBar")
                     li(v-if="route.name == 'home'" style="margin-left:1rem")
                         router-link(to="/my-services") My Services
                     li(v-else="route.name != 'home'")
-                        a.doc(href="https://docs.skapi.com" target="_blank")
+                        a.doc(href="https://docs.skapi.com" target="_blank" style="color:white")
                             //- .material-symbols-outlined.notranslate menu_book
-                            svg(width="24" height="24")
+                            svg(width="24" height="24" style="fill:white")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
                             | &nbsp;Docs
 
