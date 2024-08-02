@@ -845,7 +845,7 @@ let createRecordTemplate = {
     },
     reference: {
         record_id: "",
-        allow_multiple_reference: false,
+        allow_multiple_reference: true,
         reference_limit: null,
     },
     tags: [],
