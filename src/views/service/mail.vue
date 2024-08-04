@@ -35,7 +35,7 @@ section.infoBox
 
         small Required Placeholder
         ul
-            li #[b ${link}] - Activation link url. You can append this to the href attribute of the anchor tag.
+            li #[b https://link.skapi] - Activation link url. You can append this to the href attribute of the anchor tag.
 
         small Optional Placeholder
         ul
@@ -80,7 +80,7 @@ section.infoBox
 
         small Required Placeholder:
         ul
-            li #[b ${link}] - Invitation accept link url. You can append this to the href attribute of the anchor tag.
+            li #[b https://link.skapi] - Invitation accept link url. You can append this to the href attribute of the anchor tag.
             li #[b ${email}] - User's login email
             li #[b ${password}] - User's login password
 
@@ -586,7 +586,7 @@ let converter = (html: string, parsed: boolean, inv: boolean) => {
     html = html.replaceAll("${name}", user.name || user.email);
     html = html.replaceAll("${service_name}", service.name);
     html = html.replaceAll("${password}", "abc123&&");
-    html = html.replaceAll("${link}", "https://path.to/link");
+    html = html.replaceAll("https://link.skapi", "https://path.to/link");
     return html;
 };
 
@@ -623,14 +623,14 @@ Your login email is: <span style="font-weight: bold">\${email}</span></pre>`,
         verification:
             '<pre>Your verification code is <span style="font-weight: bold">${code}</span></pre>',
         confirmation: `<pre>
-Please activate your account by clicking this <a href="\${link}" style="font-weight: bold">LINK</a>
+Please activate your account by clicking this <a href="\https://link.skapi" style="font-weight: bold">LINK</a>
 Your activation link is valid for 7 days.
 </pre>`,
         invitation: `
 <pre>
 Hello \${name}
 You are invited to \${service_name}
-You can accept the invitation by clicking on this <a href="\${link}" style="font-weight: bold">LINK</a>
+You can accept the invitation by clicking on this <a href="\https://link.skapi" style="font-weight: bold">LINK</a>
 
 Your login e-mail is: <b>\${email}</b>
 Your account password is: <b>\${password}</b>
