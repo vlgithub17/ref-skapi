@@ -563,6 +563,7 @@ br
         //- .material-symbols-outlined.notranslate.bold chevron_right
         svg.svgIcon(style="width: 26px; height: 26px")
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
+
 // delete records
 Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     h4(style='margin:.5em 0 0; color: var(--caution-color)') Delete Records
@@ -722,7 +723,7 @@ let setCallParams = (e) => {
         callParams = toFetch.data;
     }
 
-    init();
+    getPage(true);
 };
 
 let getPage = async (refresh?: boolean) => {
@@ -734,7 +735,7 @@ let getPage = async (refresh?: boolean) => {
         endOfList.value = false;
     }
 
-    if(!serviceRecords[currentService.id]) {
+    if(!serviceRecords[currentService.id] || callParams?.table?.name) {
         serviceRecords[currentService.id] = await Pager.init({
             id: "record_id",
             resultsPerPage: 10,
@@ -777,8 +778,8 @@ let getPage = async (refresh?: boolean) => {
         console.log(bins)
 
         // save endOfList status
-        endOfList.value = fetchedData.endOfList;
-        console.log(fetchedData)
+        serviceRecords[currentService.id].endOfList = fetchedData.endOfList;
+        endOfList.value = serviceRecords[currentService.id].endOfList;
 
         // insert data in pager
         if (fetchedData.list.length > 0) {
@@ -817,6 +818,7 @@ let init = async () => {
     if(serviceRecords[currentService.id] && Object.keys(serviceRecords[currentService.id]).length) {
         pager = serviceRecords[currentService.id];
         bins = serviceBins[currentService.id];
+        endOfList.value = serviceRecords[currentService.id].endOfList;
 
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
@@ -843,7 +845,7 @@ let createRecordTemplate = {
     },
     reference: {
         record_id: "",
-        allow_multiple_reference: false,
+        allow_multiple_reference: true,
         reference_limit: null,
     },
     tags: [],
@@ -963,6 +965,7 @@ let deleteRecords = () => {
             }
 
             checked.value = {};
+            checkedall.value = false;
             promiseRunning.value = false;
             openDeleteRecords.value = false;
         });
@@ -989,7 +992,7 @@ let copyID = (e) => {
 // checks
 let checked: any = ref({});
 let checkIfAny = (e) => {
-    // 하나라도 체크안되어있으면 전체 체크표시 해체
+    // 아무것도 체크안되어있으면 전체 체크표시 해체
     let chk = e.target.checked;
     if (chk) {
         return;
