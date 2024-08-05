@@ -259,7 +259,7 @@ br
             use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
         span &nbsp;&nbsp;Delete Selected
 
-    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square(@click="getPage(true)" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
         svg.svgIcon(:class='{loading:fetching}')
             use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
