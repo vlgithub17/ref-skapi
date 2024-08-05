@@ -428,7 +428,7 @@ let converter = (html: string, parsed: boolean, inv: boolean) => {
     html = html.replaceAll('${email}', user.email);
     html = html.replaceAll('${name}', user.name || user.email);
     html = html.replaceAll('${service_name}', service.name);
-    html = html.replaceAll('${link}', inv ? '/invitation_confirmed_template' : '/signup_confirmed_template');
+    html = html.replaceAll('https://link.skapi', inv ? '/invitation_confirmed_template' : '/signup_confirmed_template');
     html = html.replaceAll('${password}', 'abc123&&');
     return html
 }
