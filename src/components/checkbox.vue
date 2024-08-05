@@ -6,7 +6,7 @@ label._checkbox(:class="{'nonClickable' : disabled}" :style='{opacity: disabled 
     template(v-if="modelValue === null")
         svg.svgIcon.black(:class='{fill:modelValue !== null}' :style='{"margin-top": hasSlotContent ? "-3px" : null}')
             use(xlink:href="@/assets/img/material-icon.svg#icon-indeterminate-check-box")
-    template(v-if="modelValue")
+    template(v-else-if="modelValue")
         svg.svgIcon.black(:class='{fill:modelValue !== null}' :style='{"margin-top": hasSlotContent ? "-3px" : null}')
             use(xlink:href="@/assets/img/material-icon.svg#icon-check-box-fill")
     template(v-else)
