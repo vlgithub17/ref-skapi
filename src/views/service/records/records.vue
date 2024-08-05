@@ -865,6 +865,7 @@ let fileList = ref([]);
 
 watch(selectedRecord, (nv) => {
     if (nv) {
+        console.log(nv)
         deleteFileList.value = [];
         selectedRecord_readOnly.value = nv?.readonly || false;
         selectedRecord_subscription.value = nv?.table?.subscription || false;
@@ -890,8 +891,8 @@ watch(selectedRecord, (nv) => {
             }
         }
 
-        index_name.value = nv?.index?.name || "";
-        index_value.value = nv?.index?.value || "";
+        index_name.value = nv?.index ? nv?.index?.name : "";
+        index_value.value = nv?.index ? nv?.index?.value : "";
         indexType.value = typeof index_value.value;
     }
 });
