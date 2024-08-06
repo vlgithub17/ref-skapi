@@ -259,14 +259,13 @@ main {
         top: -4px;
     }
     svg {
-      fill:yellow;
-      filter: drop-shadow(1px 1px 1px black;);
-      width: 2em;
-      height: 2em;
-
+        fill:yellow;
+        filter: drop-shadow(1px 1px 1px black;);
+        width: 2em;
+        height: 2em;
     }
     h2 {
-        padding-left: 1.77em;
+        padding-left: 0.5em;
         margin: 0;
     }
     margin-bottom: 1.5rem;

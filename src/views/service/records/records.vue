@@ -73,14 +73,14 @@ form#searchForm(@submit.prevent="setCallParams")
         input(hidden name='owner' :value='currentService.owner')
         
         .groupWrap(style='margin-bottom:.5rem;')
-            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'public'}" title="public" @click.stop="searchFormValue.table.access_group = 'public'") <!--language--> 
+            .group(:class="{active : searchFormValue.table.access_group == 'public'}" title="public" @click.stop="searchFormValue.table.access_group = 'public'") <!--language--> 
                 svg
                     use(xlink:href="@/assets/img/material-icon.svg#icon-language")
-            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'authorized'}" title="authorized" @click.stop="searchFormValue.table.access_group = 'authorized'") <!--  person -->
-                svg()
+            .group(:class="{active : searchFormValue.table.access_group == 'authorized'}" title="authorized" @click.stop="searchFormValue.table.access_group = 'authorized'") <!--  person -->
+                svg
                     use(xlink:href="@/assets/img/material-icon.svg#icon-person-fill")
-            .material-symbols-outlined.notranslate.fill.group(:class="{active : searchFormValue.table.access_group == 'private'}" title="private" @click.stop="searchFormValue.table.access_group = 'private'") <!-- vpn_key-->
-                svg()
+            .group(:class="{active : searchFormValue.table.access_group == 'private'}" title="private" @click.stop="searchFormValue.table.access_group = 'private'") <!-- vpn_key-->
+                svg
                     use(xlink:href="@/assets/img/material-icon.svg#icon-vpn-key-fill")
         .search(style='margin-bottom:.5rem;')
             input.big(name='table[name]' :placeholder="searchFormValue.table.access_group.charAt(0).toUpperCase() + searchFormValue.table.access_group.slice(1) + ' Table.Name'" :required="showAdvanced === true || null" style="padding-right: 40px;")
@@ -1196,7 +1196,7 @@ textarea::placeholder {
             svg {
                 width: 23px;
                 height: 23px;
-                margin-top: -11px;
+                vertical-align: unset !important;
             }
 
             &::after {
