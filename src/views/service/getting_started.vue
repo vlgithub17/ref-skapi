@@ -16,7 +16,7 @@ section.infoBox
 
     br
 
-    h4 For SPA Projects:
+    h4 For SPA Projects
     p If you are developing a Single Page Application (SPA), please refer to the following steps:
     p(style='margin-bottom: 0') 1. Install the library:
 
