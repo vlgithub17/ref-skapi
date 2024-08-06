@@ -19,7 +19,7 @@ main
 
             p(style='text-align:right;')
                 
-                small Current Version: 1.0.112
+                small Current Version: {{npmVersion}}
                 br
                 a(href='https://docs.skapi.com/introduction/getting-started.html' target='_blank' style='color:yellow')
                     //- .material-symbols-outlined.notranslate menu_book
@@ -239,6 +239,7 @@ main
 <script setup lang="ts">
 import Code from "@/components/code.vue";
 import { user } from "@/code/user";
+import {npmVersion} from "@/main.ts";
 </script>
 
 <style lang="less" scoped>
