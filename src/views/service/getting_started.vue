@@ -4,6 +4,7 @@ section.infoBox
 
     hr
 
+    p Service Name: #[b {{ currentService.service.name }}]
     p(style='margin-bottom: 0') Add the following code to your HTML website to get started:
 
     Code
@@ -16,7 +17,7 @@ section.infoBox
     br
 
     h4 For SPA Projects:
-
+    p If you are developing a Single Page Application (SPA), please refer to the following steps:
     p(style='margin-bottom: 0') 1. Install the library:
 
     Code
