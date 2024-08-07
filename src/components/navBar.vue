@@ -16,7 +16,7 @@ nav#navBar(ref="navBar")
                     li(v-if="route.name == 'home'" style="margin-left:1rem")
                         router-link(to="/my-services") My Services
                     li(v-else="route.name != 'home'")
-                        a.doc(href="https://docs.skapi.com" target="_blank" style="color:white")
+                        a.doc(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank" style="color:white")
                             //- .material-symbols-outlined.notranslate menu_book
                             svg(width="24" height="24" style="fill:white")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")

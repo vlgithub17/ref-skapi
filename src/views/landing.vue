@@ -19,9 +19,9 @@ main
 
             p(style='text-align:right;')
                 
-                small Current Version: 1.0.112
+                small Current Version: {{npmVersion}}
                 br
-                a(href='https://docs.skapi.com/introduction/getting-started.html' target='_blank' style='color:yellow')
+                a(href='https://docs.skapi.com' target='_blank' style='color:yellow')
                     //- .material-symbols-outlined.notranslate menu_book
                     svg(width="24" height="24" style="fill: yellow; filter: drop-shadow(1px 1px 1px black)")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
@@ -239,6 +239,7 @@ main
 <script setup lang="ts">
 import Code from "@/components/code.vue";
 import { user } from "@/code/user";
+import {npmVersion} from "@/main.ts";
 </script>
 
 <style lang="less" scoped>
