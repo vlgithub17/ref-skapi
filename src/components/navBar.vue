@@ -99,7 +99,9 @@ let openBillingPage = async () => {
         })
         .then((response) => {
             window.location = response.url;
-            // running.value = false;
+            setTimeout(function(){
+                running.value = false;
+            }, 3000);
         });
 };
 
