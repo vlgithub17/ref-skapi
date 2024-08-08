@@ -684,7 +684,7 @@ watch(subdomainReady,
     (n, o) => {
         if(n) {
             if(n !== 'no-subdomain') {
-                currentDirectory.value = "";
+                // currentDirectory.value = "";
                 fetching.value = true;
                 currentService.getDirInfo();
             }
@@ -740,6 +740,7 @@ async function getFileList(refresh = false) {
     }
 
     pager = folders[currDir].pager;
+
     if (refresh && refresh !== 'conditional' || !endOfList[currDir] && currentPage.value > maxPage.value) {
         try {
             let l = await currentService.listHostDirectory({ dir: currentDirectory.value }, !(refresh || maxPage.value == 0));
