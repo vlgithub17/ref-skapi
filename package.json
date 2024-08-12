@@ -14,14 +14,14 @@
   },
   "dependencies": {
     "jsoncrawler": "^0.2.1",
-    "less": "^4.2.0",
     "mime": "^4.0.4",
-    "pug": "^3.0.2",
-    "skapi-js": "^1.0.119",
-    "vue": "^3.4.15",
-    "vue-router": "^4.2.5"
+    "skapi-js": "^1.0.119"
   },
   "devDependencies": {
+    "pug": "^3.0.2",
+    "less": "^4.2.0",
+    "vue": "^3.4.15",
+    "vue-router": "^4.2.5",
     "@tsconfig/node20": "^20.1.2",
     "@types/node": "^20.11.10",
     "@vitejs/plugin-vue": "^5.0.3",
