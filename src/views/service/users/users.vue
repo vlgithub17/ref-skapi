@@ -27,6 +27,7 @@ section.infoBox
         Code
             pre.
                 #[span(style="color:#999") &lt;!-- signup.html --&gt;]
+                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") h1]#[span(style="color:#999") &gt;]Signup#[span(style="color:#999") &lt;/]#[span(style="color:#33adff") h1]#[span(style="color:#999") &gt;]
                 #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") action]=#[span(style="color:#FFED91") "login.html"] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.signup(event).catch(err=>alert(err.message))"]#[span(style="color:#999") &gt;]
                     #[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
                         Email
@@ -46,6 +47,7 @@ section.infoBox
         Code
             pre.
                 #[span(style="color:#999") &lt;!-- login.html --&gt;]
+                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") h1]#[span(style="color:#999") &gt;]Login#[span(style="color:#999") &lt;/]#[span(style="color:#33adff") h1]#[span(style="color:#999") &gt;]
                 #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") action]=#[span(style="color:#FFED91") "welcome.html"] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.login(event).catch(err=>alert(err.message))"]#[span(style="color:#999") &gt;]
                     #[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
                         Email
