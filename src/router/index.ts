@@ -14,9 +14,6 @@ import getting_started from '@/views/service/getting_started.vue'
 import service from '@/views/service/service.vue'
 import users from '@/views/service/users/users.vue'
 import records from '@/views/service/records/records.vue'
-import mail from '@/views/service/mail.vue'
-import newsletter from '@/views/service/newsletter.vue'
-import hosting from '@/views/service/hosting/hosting.vue'
 import client_secret from '@/views/service/client_secret.vue'
 
 let checkUser = async (t, f, n)=>{
@@ -167,17 +164,17 @@ const router = createRouter(
             {
               path: 'mail',
               name: 'mail',
-              component: mail
+              component: () => import('@/views/service/mail.vue'),
             },
             {
               path: 'newsletter',
               name: 'newsletter',
-              component: newsletter
+              component: () => import('@/views/service/newsletter.vue'),
             },
             {
               path: 'hosting',
               name: 'hosting',
-              component: hosting
+              component: () => import('@/views/service/hosting/hosting.vue'),
             },
             {
               path: 'clientsecret',

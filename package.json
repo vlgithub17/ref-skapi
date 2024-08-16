@@ -17,7 +17,7 @@
   "dependencies": {
     "jsoncrawler": "^0.2.1",
     "mime": "^4.0.4",
-    "skapi-js": "^1.0.119"
+    "skapi-js": "^1.0.122"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
