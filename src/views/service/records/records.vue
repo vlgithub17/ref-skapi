@@ -600,7 +600,6 @@ import { skapi } from "@/code/admin";
 import { user } from "@/code/user";
 import { currentService, serviceRecords, serviceBins} from "@/views/service/main";
 import { showDropDown } from "@/assets/js/event.js";
-import { convertToObject } from "typescript";
 import { uploadRecord } from "@/views/service/records/record";
 
 let searchIndex = ref("null");
@@ -678,12 +677,6 @@ watch(showDetail, (nv) => {
         let targetTop = window.scrollY + detailRecord.getBoundingClientRect().top;
         scrollTarget.scrollTop = 0;
         window.scrollTo(0, targetTop);
-
-        // nextTick(() => {
-        //     let nav = document.getElementById("navBar");
-
-        //     console.log(nav.getBoundingClientRect().bottom)
-        // })
     }
 });
 
