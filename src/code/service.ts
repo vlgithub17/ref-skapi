@@ -246,6 +246,7 @@ export default class Service {
     _subsPromise;
     newsletterSender: Promise<string>[] = [];
     reserved_key: string = randomString(16);
+    
     constructor(id: string, service: ServiceObj, endpoints: string[]) {
         this.id = id;
         this.admin_private_endpoint = endpoints[0];
@@ -1116,6 +1117,7 @@ export default class Service {
 
         let endpoints = await Promise.all([skapi.admin_endpoint, skapi.record_endpoint]);
         let admin_private_endpoint = endpoints[0].admin_private; // https://.../
+        let admin_public_endpoint = endpoints[0].admin_public; // https://.../
         let record_private_endpoint = endpoints[1].record_private; // https://.../
 
         let currentLocale = skapi.connection.locale;
@@ -1153,7 +1155,7 @@ export default class Service {
         }
 
         let service = await skapi.util.request(admin_private_endpoint + 'register-service', Object.assign(params, { service: skapi.service, owner: skapi.owner, execute: 'create', region: serviceRegion }), { auth: true });
-        return new Service(service.service, service, [admin_private_endpoint, record_private_endpoint]);
+        return new Service(service.service, service, [admin_private_endpoint, record_private_endpoint, admin_public_endpoint]);
     }
 
     async refresh() {
