@@ -47,15 +47,15 @@
                         use(xlink:href="@/assets/img/material-icon.svg#icon-database")
                     span.name Database
 
-                div(v-if='currentService.service.group <= 1' @click='()=>openOffer=true')
-                    .router.deact(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
-                        //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
-                        svg(v-if="route.name === 'mail'")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
-                        svg(v-else)
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-mail")                        
-                        span.name Automated Email
+                router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
+                    //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
+                    svg(v-if="route.name === 'mail'")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
+                    svg(v-else)
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-mail")                        
+                    span.name Automated Email
 
+                div(v-if='currentService.service.group <= 1' @click='()=>openOffer=true')
                     .router.deact(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter'}")
                         //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'newsletter'}") stacked_email
                         svg(v-if="route.name === 'newsletter'")
@@ -212,13 +212,14 @@ watch(() => route, nv => {
     plan.value = currentService?.plan;
 
         if (plan.value == "Trial") {
-            routerList = ["service", "dashboard", "users", "clientsecret", "records"];
+            routerList = ["service", "dashboard", "users", "clientsecret", "records", "mail"];
             titleList = [
                 "Getting Started",
                 "Dashboard & Settings",
                 "Users",
                 "Client Secret Key",
                 "Database",
+                "Automated Email"
             ];
         }
 
