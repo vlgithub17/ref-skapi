@@ -61,7 +61,7 @@ main#create
             ul
                 li 10GB of email storage
                 li Subdomain hosting
-                li Unlimited use with pay-as-you-go when exceeding the limit
+                li Removes watermark in browser console
 
     br
 

@@ -112,7 +112,7 @@
                     .title {{ titleList[index+1] }}
 
     
-    // delete records
+    // upgrade service
     Modal(:open="openOffer" @close="openOffer=false")
         h4(style='margin:.5em 0 0;') Upgrade
 
@@ -132,7 +132,7 @@
         div(style="display: flex; align-items: center; justify-content: space-between;")
             button.noLine(type="button" @click="openOffer=false;") No
             router-link(:to='`/subscription/${currentService.id}`')
-                button.final(type="button" @click="deleteRecords") Yes
+                button.final(type="button") Yes
 div(v-else style='text-align: center;margin-top: 100px;')
     .loader(style="--loader-color:blue; --loader-size:12px")
 

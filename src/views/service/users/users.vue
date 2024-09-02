@@ -144,7 +144,7 @@ br
             use(xlink:href="@/assets/img/material-icon.svg#icon-person-add-fill") 
         span &nbsp;&nbsp;Create User
         
-    .iconClick.square(@click="openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0 || currentService.plan == 'Trial'}")
+    .iconClick.square(@click="currentService.plan == 'Trial' ? openUpgrade = true : openInviteUser = true" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0, 'deact' : currentService.plan == 'Trial'}")
         //- .material-symbols-outlined.notranslate.fill mark_email_unread
         svg.svgIcon
             use(xlink:href="@/assets/img/material-icon.svg#icon-mark-email-unread-fill")
@@ -563,6 +563,27 @@ Modal(:open="openDeleteUser" @close="openDeleteUser=false")
             button.noLine.warning(type="button" @click="openDeleteUser=false; selectedUser='';") Cancel 
             button.final.warning(type="button" @click="deleteUser") Delete  
 
+// upgrade service
+Modal(:open="openUpgrade" @close="openUpgrade=false")
+    h4(style='margin:.5em 0 0;') Upgrade
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            You can access more features like Automated Email
+            #[br]
+            and File Hosting by upgrading your service.
+            
+        p Would you like you check out our service plans?
+
+
+    br
+
+    div(style="display: flex; align-items: center; justify-content: space-between;")
+        button.noLine(type="button" @click="openUpgrade=false;") No
+        router-link(:to='`/subscription/${currentService.id}`')
+            button.final(type="button") Yes
 
 </template>
 <script setup lang="ts">
@@ -666,6 +687,7 @@ let openCreateUser = ref(false);
 let openBlockUser = ref(false);
 let openUnblockUser = ref(false);
 let openDeleteUser = ref(false);
+let openUpgrade = ref(false);
 let selectedUser: { [key:string]: any } = {};
 let gender_public = ref(false);
 let address_public = ref(false);
@@ -1178,5 +1200,16 @@ body {
 .iconClick.arrow {
     padding:0;
     font-size: 0.8rem;
+}
+.iconClick.deact {
+    color: rgba(0,0,0,0.5);
+
+    &::before {
+        box-shadow: unset !important;
+    }
+
+    svg {
+        fill: rgba(0,0,0,0.5)
+    }
 }
 </style>
