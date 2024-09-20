@@ -5,8 +5,10 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { ref } from 'vue';
+import { skapi } from '@/code/admin'
 
 console.log('deploy:' + import.meta.env.VITE_DATE)
+skapi.version();
 const app = createApp(App)
 
 // Get the latest version number of skapi-js from npm
