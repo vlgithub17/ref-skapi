@@ -25,7 +25,8 @@ main#create
                 li Provides 10k user accounts
                 li 4 GB of database
                 li 50 GB of file storage
-                li.warning All the users and data will be deleted every 7 days
+                li Automated emails and sending bulk email
+                li.warning All the users and data will be deleted every 30 days
         .infoBox(:class="{'checked' : serviceMode == 'standard'}" @click="serviceMode='standard'")
             .mode Standard Mode
             .price $19
@@ -38,9 +39,9 @@ main#create
                 li 4GB of database
                 li 50GB each for file storage and hosting storage
                 li Real-time data
+                li Automated emails and sending bulk email
 
             ul
-                li Automated emails and sending bulk email
                 li 1GB of email storage
                 li Subdomain hosting
         .infoBox(:class="{'checked' : serviceMode == 'premium'}" @click="serviceMode='premium'")
@@ -55,12 +56,12 @@ main#create
                 li 100GB of database
                 li 1TB each for file storage and hosting storage
                 li Real-time data
+                li Automated emails and sending bulk email
 
             ul
-                li Automated emails and sending bulk email
                 li 10GB of email storage
                 li Subdomain hosting
-                li Unlimited use with pay-as-you-go when exceeding the limit
+                li Removes watermark in browser console
 
     br
 

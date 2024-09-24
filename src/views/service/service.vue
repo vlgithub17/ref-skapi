@@ -237,15 +237,15 @@ let resetTime = (timestamp:number) => {
   const diffInDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
 
   // Calculate the number of days since the last 7-day cycle
-  const daysSinceLastCycle = diffInDays % 7;
+  const daysSinceLastCycle = diffInDays % 30;
 
   // Calculate the number of days until the next cycle
-  let daysUntilNextCycle = (7 - daysSinceLastCycle) % 7;
+  let daysUntilNextCycle = (30 - daysSinceLastCycle) % 30;
 
   // If the cycle has just started today, then daysUntilNextCycle will be 0.
   // In that case, we want to return 7 (the next cycle will start in 7 days).
   if (daysUntilNextCycle === 0) {
-    daysUntilNextCycle = 7;
+    daysUntilNextCycle = 30;
   }
 
   // Add the number of days until the next cycle to today's date

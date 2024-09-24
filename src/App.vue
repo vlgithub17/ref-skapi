@@ -1,6 +1,6 @@
 <template lang="pug">
 div(style='min-height: calc(100vh - 1px - var(--footer-height, 0));' :style='{"--footer-height": footerHeight+"px"}')
-    router-view(v-if='loaded')
+    router-view(v-if='route.name === "home" || loaded')
 
 footer#footer
     img(src="@/assets/img/logo/logo-white.svg" style="height:.88rem;")
