@@ -25,7 +25,7 @@ main#create
                 li Provides 10k user accounts
                 li 4 GB of database
                 li 50 GB of file storage
-                li Automated emails and sending bulk email
+                li Automated emails
                 li.warning All the users and data will be deleted every 30 days
         .infoBox(:class="{'checked' : serviceMode == 'standard'}" @click="serviceMode='standard'")
             .mode Standard Mode
@@ -39,7 +39,8 @@ main#create
                 li 4GB of database
                 li 50GB each for file storage and hosting storage
                 li Real-time data
-                li Automated emails and sending bulk email
+                li Automated emails
+                li Sending newsletter emails
 
             ul
                 li 1GB of email storage
@@ -56,7 +57,8 @@ main#create
                 li 100GB of database
                 li 1TB each for file storage and hosting storage
                 li Real-time data
-                li Automated emails and sending bulk email
+                li Automated emails
+                li Sending newsletter emails
 
             ul
                 li 10GB of email storage
