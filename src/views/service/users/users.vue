@@ -571,9 +571,9 @@ Modal(:open="openUpgrade" @close="openUpgrade=false")
 
     div(style='font-size:.8rem;')
         p.
-            You can access more features like Automated Email
+            You can access more features like sending newsletters,
             #[br]
-            and File Hosting by upgrading your service.
+            inviting users and file hosting by upgrading your service.
             
         p Would you like you check out our service plans?
 
