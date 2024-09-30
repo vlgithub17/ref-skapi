@@ -89,6 +89,24 @@ section.infoBox
             li #[b ${name}] - User name, normaled to users email if not provided
             li #[b ${service_name}] - Service name
 
+    template(v-if='emailType === "Newsletter Email"')
+        p.
+            Newsletter Email is sent when the user requests to verify their email address or tries to reset their #[span.wordset forgotten password.]
+        p.
+            See #[a(href='https://docs.skapi.com/user-account/email-verification.html' target="_blank") Verification Email]
+            ,
+            #[a.wordset(href='https://docs.skapi.com/authentication/forgot-password.html' target="_blank") Forgot Password]
+
+        small Required Placeholder:
+        ul
+            li #[b ${code}] - Verification code.
+
+        small Optional Placeholder:
+        ul
+            li #[b ${email}] - User email
+            li #[b ${name}] - User name, normaled to users email if not provided
+            li #[b ${service_name}] - Service name
+
     p(style='margin-bottom: 0').
         You can customize the email by sending the template to the #[a(:href='"mailto:" + email_templates[group]') email address] provided below:
     Code
@@ -274,7 +292,7 @@ type Newsletter = {
 };
 
 let emailType: Ref<
-    "Signup Confirmation" | "Welcome Email" | "Verification Email" | "Invitation Email"
+    "Signup Confirmation" | "Welcome Email" | "Verification Email" | "Invitation Email" | "Newsletter Email"
 > = ref("Signup Confirmation");
 let emailTypeSelect = [
     {
@@ -292,6 +310,10 @@ let emailTypeSelect = [
     {
         value: "Invitation Email",
         option: "Invitation Email",
+    },
+    {
+        value: "Newsletter Email",
+        option: "Newsletter Email",
     },
 ];
 ///////////////////////////////////////////////////////////////////////////////// template history[start]
@@ -368,9 +390,9 @@ watch(emailType, () => {
 let mailEndpoint = ref("");
 
 let group: ComputedRef<
-    "confirmation" | "welcome" | "verification" | "invitation"
+    "confirmation" | "welcome" | "verification" | "invitation" | "newsletter_subscription"
 > = computed(() => {
-    let grp: "confirmation" | "welcome" | "verification" | "invitation" = "confirmation";
+    let grp: "confirmation" | "welcome" | "verification" | "invitation" | "newsletter_subscription" = "confirmation";
     switch (emailType.value) {
         case "Signup Confirmation":
             grp = "confirmation";
@@ -384,6 +406,9 @@ let group: ComputedRef<
             break;
         case "Invitation Email":
             grp = "invitation";
+            break;
+        case "Newsletter Email":
+            grp = "newsletter_subscription";
             break;
     }
 
@@ -567,6 +592,7 @@ let useEmail = (ns: Newsletter) => {
 
 let service = currentService.service;
 let email_templates = currentService.service.email_triggers.template_setters;
+console.log(currentService.service)
 let parseOpt: any = ref(true);
 
 let currentTemp = computed(() => {
@@ -599,6 +625,7 @@ let subjects = computed(() => {
         verification:
             s?.template_verification?.subject || "[${service_name}] Verification code",
         invitation: s?.template_invitation?.subject || "[${service_name}] Invitation",
+        newsletter_subscription: s?.template_newsletter_subscription?.subject || "[${service_name}] Thank you for subscribing to our newsletter.",
     };
 });
 
@@ -607,6 +634,7 @@ let htmls: { [key: string]: string } = reactive({
     welcome: null,
     verification: null,
     invitation: null,
+    newsletter_subscription: null,
 });
 
 let getHtml = async (key: string) => {
@@ -636,6 +664,10 @@ Your login e-mail is: <b>\${email}</b>
 Your account password is: <b>\${password}</b>
 
 Your activation link is valid for 7 days.
+</pre>`,
+        newsletter_subscription: `<pre>
+Thank you for subscribing to \${service_name} newsletter. 
+Please confirm your subscription by clicking this <a href="\https://link.skapi" style="font-weight: bold">LINK</a>
 </pre>`,
     };
 
