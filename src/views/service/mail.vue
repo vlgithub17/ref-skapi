@@ -88,6 +88,7 @@ section.infoBox
         ul
             li #[b ${name}] - User name, normaled to users email if not provided
             li #[b ${service_name}] - Service name
+
     template(v-if='emailType === "Newsletter Email"')
         p.
             Newsletter Email is sent when the user requests to verify their email address or tries to reset their #[span.wordset forgotten password.]
@@ -664,8 +665,10 @@ Your account password is: <b>\${password}</b>
 
 Your activation link is valid for 7 days.
 </pre>`,
-        newsletter_subscription:
-    '<pre>ddddds <span style="font-weight: bold">${code}</span></pre>',
+        newsletter_subscription: `<pre>
+Thank you for subscribing to \${service_name} newsletter. 
+Please confirm your subscription by clicking this <a href="\https://link.skapi" style="font-weight: bold">LINK</a>
+</pre>`,
     };
 
     let url = (service as any)?.["template_" + group.value]?.url;
