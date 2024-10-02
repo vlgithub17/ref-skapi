@@ -140,6 +140,10 @@ export type ServiceObj = {
     subject: string;
     url: string;
   };
+  template_newsletter_subscription: {
+    subject: string;
+    url: string;
+  };
 };
 
 type SubscriptionObj = {
@@ -638,6 +642,7 @@ export default class Service {
       value: string | number;
       range?: string | number;
       condition?: '>' | '>=' | '=' | '<' | '<=' | 'gt' | 'gte' | 'eq' | 'lt' | 'lte';
+      group: 'welcome' | 'confirmation' | 'verification' | 'invitation' | 'newsletter_subscription';
     },
     fetchOptions?: { [key: string]: any }
   ): Promise<any> {
