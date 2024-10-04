@@ -140,7 +140,7 @@ export type ServiceObj = {
     subject: string;
     url: string;
   };
-  template_subscription: { // is newsletter_subscription
+  template_newsletter_subscription: { // is newsletter_subscription
     subject: string;
     url: string;
   };
