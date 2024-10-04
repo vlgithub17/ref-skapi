@@ -2,7 +2,7 @@
 section.infoBox
     .titleHead
         h2(style='white-space: nowrap;') Automated Email&nbsp;
-        Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:192px;')
+        Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:220px;')
 
     hr
     .error(v-if='!user?.email_verified')
@@ -89,22 +89,19 @@ section.infoBox
             li #[b ${name}] - User name, normaled to users email if not provided
             li #[b ${service_name}] - Service name
 
-    template(v-if='emailType === "Newsletter Email"')
+    template(v-if='emailType === "Newsletter Confirmation"')
         p.
-            Newsletter Email is sent when the user requests to verify their email address or tries to reset their #[span.wordset forgotten password.]
+            Newsletter Confirmation is sent when the user subscribes to your public newsletter.
         p.
-            See #[a(href='https://docs.skapi.com/user-account/email-verification.html' target="_blank") Verification Email]
-            ,
-            #[a.wordset(href='https://docs.skapi.com/authentication/forgot-password.html' target="_blank") Forgot Password]
+            See #[a(href='https://docs.skapi.com/email/newsletters.html#sending-public-newsletters' target="_blank") Sending Public Newsletters]
 
         small Required Placeholder:
         ul
-            li #[b ${code}] - Verification code.
+            li #[b https://link.skapi] - Link to confirm newsletter subscription. You can append this to the href attribute of the anchor tag.
 
         small Optional Placeholder:
         ul
-            li #[b ${email}] - User email
-            li #[b ${name}] - User name, normaled to users email if not provided
+            li #[b ${email}] - Subscribed user's email
             li #[b ${service_name}] - Service name
 
     p(style='margin-bottom: 0').
@@ -292,7 +289,7 @@ type Newsletter = {
 };
 
 let emailType: Ref<
-    "Signup Confirmation" | "Welcome Email" | "Verification Email" | "Invitation Email" | "Newsletter Email"
+    "Signup Confirmation" | "Welcome Email" | "Verification Email" | "Invitation Email" | "Newsletter Confirmation"
 > = ref("Signup Confirmation");
 let emailTypeSelect = [
     {
@@ -312,8 +309,8 @@ let emailTypeSelect = [
         option: "Invitation Email",
     },
     {
-        value: "Newsletter Email",
-        option: "Newsletter Email",
+        value: "Newsletter Confirmation",
+        option: "Newsletter Confirmation",
     },
 ];
 ///////////////////////////////////////////////////////////////////////////////// template history[start]
@@ -407,7 +404,7 @@ let group: ComputedRef<
         case "Invitation Email":
             grp = "invitation";
             break;
-        case "Newsletter Email":
+        case "Newsletter Confirmation":
             grp = "newsletter_subscription";
             break;
     }
