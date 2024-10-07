@@ -2,7 +2,7 @@
 section.infoBox
     .titleHead
         h2(style='white-space: nowrap;') Automated Email&nbsp;
-        Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:220px;')
+        Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:240px;')
 
     hr
     .error(v-if='!user?.email_verified')
