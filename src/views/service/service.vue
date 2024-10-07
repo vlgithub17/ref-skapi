@@ -410,7 +410,7 @@ let changePreventInquiry = async (onlyAdmin: boolean) => {
      currentService.setServiceOption({
         prevent_inquiry: onlyAdmin,
      }).then(r => {
-        console.log(currentService)
+        console.log(r);
      })
      .catch(err=>{
         alert(err.message);
