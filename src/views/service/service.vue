@@ -119,7 +119,7 @@ section.infoBox
                 style='display:inline-flex;align-items:center;'
                 :active='!currentService.service.prevent_signup'
                 :disabled='updatingValue.prevent_signup'
-                @click="c3hangeCreateUserMode(!currentService.service.prevent_signup)"
+                @click="changeCreateUserMode(!currentService.service.prevent_signup)"
             )
         
         .infoValue

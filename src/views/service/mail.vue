@@ -542,7 +542,7 @@ let deleteEmail = (ns: Newsletter) => {
             getHtml(group.value);
             getPage();
         })
-        .catch((err) => window.alert(err))
+        // .catch((err) => window.alert(err))
         .finally(() => {
             deleteMailLoad.value = false;
         });
