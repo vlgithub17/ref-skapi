@@ -688,6 +688,14 @@ let init = async () => {
     // }
     currentPage.value = 1;
 
+
+    await currentService.getEmailTemplate(group.value).then(res => {
+        if (!res) return;
+
+        (currentService.service as any)["template_" + group.value].url = res.url;
+        (currentService.service as any)["template_" + group.value].subject = res.subject;
+    });
+
     // setup pagers
     pager = await Pager.init({
         id: "message_id",
