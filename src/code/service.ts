@@ -2,6 +2,7 @@ import { reactive, ref } from 'vue';
 import type { Ref } from 'vue';
 import { skapi } from './admin';
 import { Countries } from './countries';
+import templates from 'rollup-plugin-visualizer/dist/plugin/template-types';
 
 const regions = JSON.parse(import.meta.env.VITE_REG);
 
@@ -494,6 +495,14 @@ export default class Service {
       Object.assign(this.service, old);
       throw err;
     }
+  }
+
+  async getEmailTemplate(params:'invitation' | 'newsletter_subscription' | 'verification' | 'welcome' | 'confirmation'): Promise <{
+    subject: string;
+    url: string;
+  }> {
+    let updated = await skapi.util.request(this.admin_private_endpoint + 'email-templates', { service: this.id, owner: this.owner, template: params }, { auth: true });
+    return updated;
   }
 
   async getStorageInfo(): Promise<{
