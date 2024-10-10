@@ -2,6 +2,7 @@ import { reactive, ref } from 'vue';
 import type { Ref } from 'vue';
 import { skapi } from './admin';
 import { Countries } from './countries';
+import templates from 'rollup-plugin-visualizer/dist/plugin/template-types';
 
 const regions = JSON.parse(import.meta.env.VITE_REG);
 
@@ -120,6 +121,7 @@ export type ServiceObj = {
       invitation: string;
     };
   };
+  prevent_inquiry?: boolean;
   prevent_signup?: boolean;
   client_secret?: { [key: string]: string };
   auth_client_secret?: string[];
@@ -469,16 +471,19 @@ export default class Service {
     prevent_signup?: boolean;
     client_secret?: { [key: string]: string };
     auth_client_secret?: string[]; // client_secret key to be auth required
+    prevent_inquiry?: boolean; // true 인 경우 sendInquiry API 사용 불가능
   }): Promise<ServiceObj> {
     let old = {
       prevent_signup: this.service.prevent_signup || false,
       client_secret: this.service.client_secret || {},
       auth_client_secret: this.service.auth_client_secret || [],
+      prevent_inquiry: this.service.prevent_inquiry || false,
     };
     let toUpload = {
       prevent_signup: this.service.prevent_signup || false,
       client_secret: this.service.client_secret || {},
       auth_client_secret: this.service.auth_client_secret || [],
+      prevent_inquiry: this.service.prevent_inquiry || false,
     };
 
     Object.assign(toUpload, opt);
@@ -490,6 +495,14 @@ export default class Service {
       Object.assign(this.service, old);
       throw err;
     }
+  }
+
+  async getEmailTemplate(params:'invitation' | 'newsletter_subscription' | 'verification' | 'welcome' | 'confirmation'): Promise <{
+    subject: string;
+    url: string;
+  }> {
+    let updated = await skapi.util.request(this.admin_private_endpoint + 'email-templates', { service: this.id, owner: this.owner, template: params }, { auth: true });
+    return updated;
   }
 
   async getStorageInfo(): Promise<{

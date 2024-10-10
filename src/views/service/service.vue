@@ -113,13 +113,22 @@ section.infoBox
         )
 
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
-        .infoValue(style='display: flex;align-items: center;min-height: 0;')
+        .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0')
             .smallTitle Allow Signup
             Toggle(
                 style='display:inline-flex;align-items:center;'
                 :active='!currentService.service.prevent_signup'
                 :disabled='updatingValue.prevent_signup'
-                @click="c3hangeCreateUserMode(!currentService.service.prevent_signup)"
+                @click="changeCreateUserMode(!currentService.service.prevent_signup)"
+            )
+
+        .infoValue(style='display: flex;align-items: center;min-height: 0;')
+            .smallTitle Prevent Inquiry
+            Toggle(
+                style='display:inline-flex;align-items:center;'
+                :active='currentService.service.prevent_inquiry'
+                :disabled='updatingValue.prevent_inquiry'
+                @click="changePreventInquiry(!currentService.service.prevent_inquiry)"
             )
         
         .infoValue
@@ -189,7 +198,7 @@ section.infoBox
                 .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 2) + '*'.repeat(currentService.service.api_key.length - 2) + '...' : 'No Secret Key' }}&nbsp;
                 span.editHandle(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
     
-    template(v-if="currentService.plan == 'Trial' || currentService.service.plan == 'Canceled'")
+    template(v-if="currentService.plan == 'Trial' || currentService.plan == 'Unlimited' || currentService.service.plan == 'Canceled'")
         hr
         div(style="text-align:right")
             router-link.iconClick.square(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
@@ -222,7 +231,8 @@ let updatingValue = reactive({
     cors: false,
     api_key: false,
     prevent_signup: false,
-    enableDisable: false
+    enableDisable: false,
+    prevent_inquiry: false,
 });
 let focus_name = ref();
 let focus_cors = ref();
@@ -367,7 +377,7 @@ let getUserUnit = (user: number) => {
 }
 
 // change prevent_signup
-let changeCreateUserMode = async (onlyAdmin: string) => {
+let changeCreateUserMode = async (onlyAdmin: boolean) => {
     updatingValue.prevent_signup = true;
     currentService.setServiceOption({
         prevent_signup: onlyAdmin,
@@ -392,6 +402,21 @@ let enableDisable = async ()=>{
     finally {
         updatingValue.enableDisable = false;
     }
+}
+
+// change prevent_inquiry
+let changePreventInquiry = async (onlyAdmin: boolean) => {
+    updatingValue.prevent_inquiry = true;
+     currentService.setServiceOption({
+        prevent_inquiry: onlyAdmin,
+     }).then(r => {
+        console.log(r);
+     })
+     .catch(err=>{
+        alert(err.message);
+    }).finally(() => {
+        updatingValue.prevent_inquiry = false;
+    });
 }
 </script>
 

@@ -2,7 +2,7 @@
 section.infoBox
     .titleHead
         h2(style='white-space: nowrap;') Automated Email&nbsp;
-        Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:220px;')
+        Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:240px;')
 
     hr
     .error(v-if='!user?.email_verified')
@@ -542,7 +542,7 @@ let deleteEmail = (ns: Newsletter) => {
             getHtml(group.value);
             getPage();
         })
-        .catch((err) => window.alert(err))
+        // .catch((err) => window.alert(err))
         .finally(() => {
             deleteMailLoad.value = false;
         });
@@ -687,6 +687,14 @@ let init = async () => {
     //     fetching.value = false;
     // }
     currentPage.value = 1;
+
+
+    await currentService.getEmailTemplate(group.value).then(res => {
+        if (!res) return;
+
+        (currentService.service as any)["template_" + group.value].url = res.url;
+        (currentService.service as any)["template_" + group.value].subject = res.subject;
+    });
 
     // setup pagers
     pager = await Pager.init({
