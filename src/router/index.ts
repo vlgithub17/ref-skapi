@@ -181,11 +181,15 @@ const router = createRouter(
               name: 'clientsecret',
               component: client_secret
             },
-
             {
               path: 'etc/records',
               name: 'etc-records',
               component: () => import('@/views/service/records/record_search_example.vue')
+            },
+            {
+              path: 'etc/testing',
+              name: 'etc-testing',
+              component: () => import('@/views/service/testing.vue')
             },
           ]
         },
