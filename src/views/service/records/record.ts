@@ -51,6 +51,8 @@ let parseBinEndpoint = async (r: string[]) => {
 // remove_bin 파일 전체를 넣어도 되고 endpoint만 보내도 됨
 export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { [key: string]: any }[], progress?: (c: any) => void) => {
     // extract form values based on input names
+    let target = e.target;
+    console.log({target});
 
     let toUpload: {
         data: {
@@ -104,10 +106,15 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { 
         for (let k of p.path) {
             obj = obj[k];
         }
+        console.log(obj, p.key)
         delete obj[p.key];
     }
 
-    // console.log({ config });
+    if(config?.reference?.record_id === 'null') {
+        config.reference.record_id = '';
+    }
+    
+    console.log({ config });
 
     // upload json data first
     let rec;

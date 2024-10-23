@@ -476,6 +476,7 @@ br
                             v-if="indexType !== 'boolean'"
                             v-model="index_value"
                                 name='config[index][value]'
+                                :step='indexType === "number" ? "any" : "undefined"'
                                 :type='indexType' :placeholder='indexType === "string" ? "Alphanumeric, space only." : indexType === "number" ? "Number value (Required)" : "Boolean value"'
                                 :required="!!index_name"
                                 style="flex-grow:30; width:unset; vertical-align:middle;")
@@ -500,7 +501,7 @@ br
 
                 .row.indent 
                     .key Reference ID
-                    input.line.value(v-model="selectedRecord.reference.record_id" name='config[reference][record_id]' placeholder='Record ID to reference')
+                    input.line.value(@input="e => {selectedRecord.reference.record_id = e.target.value === '' ? 'null' : e.target.value}" v-model="selectedRecord.reference.record_id" name='config[reference][record_id]' placeholder='Record ID to reference' )
 
                 .row.indent 
                     .key Reference Limit
@@ -898,6 +899,10 @@ let upload = async (e: SubmitEvent) => {
 
     for (let i in deleteFileList.value) {
         remove_bin.push(deleteFileList.value[i].endpoint);
+    }
+
+    if (selectedRecord.value && selectedRecord.value.reference && selectedRecord.value.reference.record_id === '') {
+        selectedRecord.value.reference.record_id = null;
     }
 
     try {

@@ -122,7 +122,7 @@ export type ServiceObj = {
     };
   };
   prevent_inquiry?: boolean;
-  freeze_schema?: boolean;
+  freeze_database?: boolean;
   prevent_signup?: boolean;
   client_secret?: { [key: string]: string };
   auth_client_secret?: string[];
@@ -473,21 +473,21 @@ export default class Service {
     client_secret?: { [key: string]: string };
     auth_client_secret?: string[]; // client_secret key to be auth required
     prevent_inquiry?: boolean; // true 인 경우 sendInquiry API 사용 불가능
-    freeze_schema?: boolean; // 데이터 베이스 구조 고정시키는 기능
+    freeze_database?: boolean; // 데이터 베이스 구조 고정시키는 기능
   }): Promise<ServiceObj> {
     let old = {
       prevent_signup: this.service.prevent_signup || false,
       client_secret: this.service.client_secret || {},
       auth_client_secret: this.service.auth_client_secret || [],
       prevent_inquiry: this.service.prevent_inquiry || false,
-      freeze_schema: this.service.freeze_schema || false,
+      freeze_database: this.service.freeze_database || false,
     };
     let toUpload = {
       prevent_signup: this.service.prevent_signup || false,
       client_secret: this.service.client_secret || {},
       auth_client_secret: this.service.auth_client_secret || [],
       prevent_inquiry: this.service.prevent_inquiry || false,
-      freeze_schema: this.service.freeze_schema || false,
+      freeze_database: this.service.freeze_database || false,
     };
 
     Object.assign(toUpload, opt);
