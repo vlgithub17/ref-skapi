@@ -1,239 +1,89 @@
 <template lang="pug">
 main
-    .dynamo-section(style='min-height: 80vh;')
-        header(style='color:white;width:800px;')
-            img(src='@/assets/img/logo/logo-white.svg' style='height:3rem;')
-            h1(style='font-size:2.4em') Serverless Backend API =>
-            h3 Build Full-Stack Web Application from Your HTML Frontend
-
-            br
+    .dynamo-section.main(style='min-height: 80vh; padding:0; margin:0; background-color: #1D2939; border-bottom:1px solid #475467;')
+        .sec-wrapper(style='min-height: 80vh;')
+            img(src='@/assets/img/logo/logo-white.svg' style='height:2.875rem; margin-bottom:32px;')
+            h1.title #[span.yellow Serverless] Backend API
+            h1.title(style='margin-bottom:46px;') for HTML Frontend
+            p.desc Skapi is a powerful JavaScript library for client-side HTML, <br>allowing you to create web applications like chat, e-commerce, or AI products without backend engineering. 
 
             small For HTML Projects -
             Code(:hidecopy='true')
                 pre.
-                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-            br
+                    &lt;#[span(style="color:#33adff") script ] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"] &gt;&lt;/#[span(style="color:#33adff") script]&gt;
+
             small For SPA Projects -
-            Code(:hidecopy='true')
+            Code(:hidecopy='true' style="margin-bottom: 0.5rem")
                 pre npm i skapi-js@latest
 
             p(style='text-align:right;')
-                
                 small Current Version: {{npmVersion}}
-                br
-                a(href='https://docs.skapi.com' target='_blank' style='color:yellow')
-                    //- .material-symbols-outlined.notranslate menu_book
-                    svg(width="24" height="24" style="fill: yellow; filter: drop-shadow(1px 1px 1px black)")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
 
-                    | &nbsp;Read Docs
-            
-            br
-
-            div(v-if='user.user_id')
+            div.btn-wrap(v-if='user.user_id')
                 h4
                     | Go to&nbsp;
                     router-link(to='my-services' style='color:yellow') My Services
                     | &nbsp;#[span.wordset and start] building!
                 router-link(to="my-services")
-                    button.final(style='background-color:white;color:black;width:170px') My Services
-            div(v-else)
-                h2
-                    router-link(to='signup' style='color:yellow') Sign-up
-                    | &nbsp;today for FREE #[span.wordset and start] building!
+                    button.final My Services
+            div.btn-wrap(v-else)
                 router-link(to="signup")
-                    button.final(style='background-color:white;color:black;width:170px') Sign-Up
-            
-        section.intact
-            .explain.one
-                .image
-                    img(src="@/assets/img/landingpage/feature2.png")
-                .desc
-                    h2 Serverless Technology, #[span.wordset Scale without limits]
-                    p.
-                        Requires no additional server between your #[span.wordset website and your users.]
-                        Just import the API and start building immediately!
-            br
-            .explain.two
-                .image
-                    img(src="@/assets/img/landingpage/feature1.png") 
-                .desc
-                    h2 User-Centric #[span.wordset Database Design]
-                    p.
-                        Your users own their data, defining access levels and indexing for each piece of data.
-                        Skapi introduces a secure, #[span.wordset user-centric database] approach that requires #[span.wordset no pre-configuration.]
-            br
-            .explain.three
-                .image
-                    img(src="@/assets/img/landingpage/feature3.png")
-                .desc
-                    h2 3rd Party API Integration #[span.wordset Made Easy]
-                    p Skapi provides the simplest solution to make secure requests to your 3rd-party APIs.
-
-            br
-            .explain.four
-                .image
-                    img(src="@/assets/img/landingpage/frameworks.png")
-                .desc
-                    h2 Compatible with #[span.wordset Any Frameworks]
-                    p Skapi is compatible with vanilla HTML as well as any frontend framework, #[span.wordset including React,] Vue, Angular, and more.
-    
-    br
-
-    .dynamo-section(style='align-items: flex-start;')
-        .intact
-            .icoHead
-                //- .material-symbols-outlined.notranslate.yellow construction
-                svg
-                    use(xlink:href="@/assets/img/material-icon.svg#icon-construction")
-                h2 Build Anything Fast
-            p.
-                Skapi is a JavaScript library designed for #[span.wordset client-side] HTML. 
-                #[br]
-                Painstakingly developed to be simple yet powerful, enabling you to build any type of #[span.wordset web application.]
-                #[br]
-                #[br]
-                Whether it's a real-time chat, #[span.wordset e-commerce,] your next SaaS, or a cool new AI product,
-                #[span.wordset you can now create] it all directly from your client-side HTML without needing any backend engineering.
-            
-            br
-            br
-
-            .icoHead
-                //- .material-symbols-outlined.notranslate.yellow.fill eco
-                svg
-                    use(xlink:href="@/assets/img/material-icon.svg#icon-eco-fill")
-                h2 Save Time, Cost, #[span.wordset and Energy]
-            p.
-                We’ve designed Skapi’s backend infrastructure to be lightweight, while our #[span.wordset client-side] library is built to take on more responsibility.
-                Saving #[span.wordset data center] energy, helping the environment, and most importantly, reducing your development time and costs.
-                #[br]
-                #[br]
-                Plus, Skapi is designed to protect you from developer mistakes that can cost millions.
-
-            br
-
-            h4
-                | Check out our&nbsp;
-                a(href='https://docs.skapi.com' target='_blank' style='color:yellow') Documentation
-                | &nbsp;
-                span.wordset for more information
-            a(href="https://docs.skapi.com" target="_blank")    
-                button.final(style='background-color:white;color:black;width:170px')
-                    //- .material-symbols-outlined.notranslate  menu_book
-                    svg(width="24" height="24")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
-                    | &nbsp;Read Docs
-            
-            br
-            br
-
-        section.intact
-            h2(style='margin:0') Just One #[span.yellow.wordset(style='font-family:monospace') skapi.method()] Call Away...
-
-            ul(style='padding-left: 1.5em;')
-                .li
-                    //- .material-symbols-outlined.notranslate encrypted
-                    svg
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-encrypted")
-                    h3 Secure User Authentication
-                    p.
-                        Not just log-in or sign-up, but also #[span.wordset data security,] #[span.wordset password recovery,] #[span.wordset email confirmation,] and more. 
-                        #[br]
-                        Experience how effortless it is to implement all these features with Skapi.
-                        
-                .li
-                    //- .material-symbols-outlined.notranslate database
-                    svg
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-database")
-                    h3 User-Centric Database
-                    p.
-                        Worried about scalability, database schema, or costly errors?
-                        #[br]
-                        Our new database design has thrown these problems out the window.
-                        #[br]
-                        Read and write data freely, with no worries.
-                
-                .li
-                    //- .material-symbols-outlined.notranslate router
-                    svg
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-router")
-                    h3 Realtime, WebSocket
-                    p.
-                        Real-time chat, live updates, notifications—
-                        #[br]
-                        everything is just one method call away. We’ve done the hard work so you can focus on your business.
-
-                .li
-                    //- .material-symbols-outlined.notranslate webhook
-                    svg
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-webhook")
-                    h3 3rd Party API Integration
-                    p.
-                        Building an app with third-party APIs?
-                        #[br]
-                        Skapi hosts your API keys for FREE, so you don’t need a server to manage them.
-
-                .li
-                    //- .material-symbols-outlined.notranslate cloud_upload
-                    svg
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-cloud-upload")
-                    h3 CDN & File Storage
-                    p.
-                        Hosting files, images, or videos? Skapi has got you covered
-                        #[br]
-                        with secure and reliable file storage, served through a global CDN by default.
-
-                .li
-                    //- .material-symbols-outlined.notranslate outgoing_mail
-                    svg
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-outgoing-mail")
-                    h3 Email System
-                    p.
-                        Need to send newsletters? Skip the hassle of setting up an SMTP server. 
-                        #[br]
-                        Skapi provides a simple and reliable email system with no extra configuration needed.
-
-                .li
-                    //- .material-symbols-outlined.notranslate public
-                    svg
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-public")
-                    h3 Static Website Hosting
-                    p.
-                        With Skapi, you can build complex web applications using just static HTML.
-                        #[br]
-                        Our easy file hosting system lets you host your HTML files effortlessly.
-                        #[br]
-                        In fact, this entire website is built and hosted with Skapi as well.
+                    button.final Sign-Up
+                a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
+                    button.final(style='background-color:#344054;border:1px solid rgba(225,225,225,0.3);color:#fff;') Read Dosc
 
     .dynamo-section
-        
+        .sec-wrapper
+            h2.sub-title Build Anything Fast
+            p.sub-desc(style="max-width:584px; margin-bottom: 3.5rem;") Painstakingly developed to be simple yet powerful, enabling you to build any type of web application.
+            p.sub-desc(style="max-width:730px") Just import the Skapi library into your project, create a service, connect your production to the Skapi server, and that's it.
+
+            small For HTML Projects -
+            Code(:hidecopy='true')
+                pre.
+                    #[div(style="color:#35B85E") &lt;!-- index.html --&gt;]
+                    #[span &lt;!DOCTYPE html&gt;]
+                    &lt;#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]&gt;&lt;/#[span(style="color:#33adff") script]&gt;
+                    &lt;#[span(style="color:#33adff") script]&gt;
+                        #[span(style="color:#44E9FF") const] skapi = #[span(style="color:#44E9FF") new] Skapi&lpar;'#[span(style="color:#FFED91") service_id]', '#[span(style="color:#FFED91") owner_id]'&rpar;;
+                    &lt;/#[span(style="color:#33adff") script]&gt;
+
+            small For SPA Projects -
+            Code(:hidecopy='true' style="margin-bottom: 0")
+                pre.
+                    #[div(style="color:#35B85E") // main.js]
+                    #[span(style="color:#44E9FF") import] { Skapi } #[span(style="color:#44E9FF") from] '#[span(style="color:#FFED91") skapi-js]';
+                    #[span(style="color:#44E9FF") const] skapi = #[span(style="color:#44E9FF") new] Skapi&lpar;'#[span(style="color:#FFED91") service_id]', '#[span(style="color:#FFED91") owner_id]'&rpar;;
+                    #[span(style="color:#44E9FF; margin-top:24px; display:inline-block;") export] { Skapi }
+                    #[span(style="color:#35B85E; margin-top:24px; display:inline-block;") // Now you can import skapi from anywhere in your project.]
+
+    .dynamo-section
+        .sec-wrapper
+            h2.sub-title Save Time, Cost, and Energy
+            p.sub-desc(style="max-width:756px; margin-bottom: 3.5rem;") Saving data center energy, helping the environment,<br> and most importantly, reducing your development time and costs. Just One #[span.yellow skapi.method( )] Call Away.
+
+
+    .dynamo-section(style="padding:6rem 1rem; margin:0;")
         div(v-if='user.user_id' style='text-align:center;')
-            img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation: none;width:5em;")
-            h2 Start Skapi
-            p
+            img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation:none; width:3rem; margin-bottom:2rem;")
+            h2(style="margin-bottom:0.6rem;") Start Skapi
+            p(style="margin-bottom:2rem;")
                 span.wordset
                     | Go to&nbsp;
-                    router-link(to='my-services' style='color:yellow') My Services
+                    router-link(to='my-services' style='color:#FFED91') My Services
                 | &nbsp;and start building!
             router-link(to="my-services")
                 button.final(style='background-color:white;color:black;width:170px') My Services
         div(v-else style='text-align:center;')
-            img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation: none;width:5em;")
-            h2 Start Skapi
-            p   
+            img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation:none; width:3rem; margin-bottom:2rem;")
+            h2(style="margin-bottom:0.6rem;") Start Skapi
+            p(style="margin-bottom:2rem;")
                 span.wordset
-                    router-link(to='signup' style='color:yellow') Sign-up
+                    router-link(to='signup' style='color:#FFED91') Sign-up
                     | &nbsp;today for FREE
                 | &nbsp;and start building!
             router-link(to="signup")
-                button.final(style='background-color:white;color:black;width:170px') Sign-Up
-
-    br
-    br
-    br
-    br
-
+                button.final(style='background-color:white;color:#293FE6;width:170px') Sign-Up
 </template>
 
 <script setup lang="ts">
@@ -244,10 +94,12 @@ import {npmVersion} from "@/main.ts";
 
 <style lang="less" scoped>
 main {
-    background: linear-gradient(32deg, #293fe6, rgba(255, 0, 0, 0) 80%),
-        linear-gradient(229deg, #293fe6, rgba(0, 255, 0, 0) 80%),
-        linear-gradient(151deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
+    // background: linear-gradient(32deg, #293fe6, rgba(255, 0, 0, 0) 80%),
+    //     linear-gradient(229deg, #293fe6, rgba(0, 255, 0, 0) 80%),
+    //     linear-gradient(151deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
+    background-color: #101828;
 }
+
 .icoHead {
     position: relative;
     display: flex;
@@ -302,27 +154,57 @@ h2,
 h3 {
     margin-bottom: 1rem;
 }
+
 p {
     font-size: 1.12rem;
 }
+
 .dynamo-section {
+    font-family: 'Radio Canada', serif;
+    padding: 0 1rem;
+    margin: 11rem 0;
+
     .yellow {
-        color: yellow;
+        color: #FFED91;
     }
     .underline {
         text-decoration: underline;
     }
-    header {
-        color: white;
-        width: 800px;
+
+    .sec-wrapper {
+        color: #fff;
+        margin: 0 auto;
+        max-width: 80rem;
+    }
+
+    .title {
+        font-size: 3.625rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        line-height: 1.3;
+    }
+
+    .desc {
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin-bottom: 3.25rem;
+        max-width: 890px;
+    }
+
+    .sub-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .sub-desc {
+        font-size: 1.2rem;
+        color: #D0D5DD;
+        margin-bottom: 2.5rem;
     }
 
     & > * {
         max-width: 100%;
-    }
-
-    header > * {
-        color: white;
     }
 
     p,
@@ -333,18 +215,64 @@ p {
     h4 {
         color: white;
         text-shadow: 1px 1px 2px #000;
+        margin: 0;
+        padding: 0;
     }
 
     p {
         font-weight: 500;
     }
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem 14px;
-    flex-wrap: wrap;
-    gap: 3rem;
+    em {
+        font-style: normal;
+    }
+
+    small {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 300;
+        margin-bottom: 12px;
+        color: #D0D5DD;
+    }
+
+    ._codeWrap {
+        margin-bottom: 38px;
+
+        .code {
+            pre {
+                display: block;
+            }
+        }
+    }
+
+    .btn-wrap {
+        margin-top: 4rem;
+        display: flex;
+        gap: 1.2rem;
+    }
+
+    .final {
+        background-color: #fff;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #293FE6;
+        min-width: 10.5rem;
+    }
+
+    &.main {
+        .sec-wrapper {
+            padding: 10rem 1rem;
+        }
+
+        ._codeWrap {
+            .code {
+                pre {
+                    display: flex;
+                    padding: 0 1rem;
+                }
+            }
+        }
+    }
 }
 
 .intact {
@@ -371,6 +299,26 @@ section {
     display: flex;
     position: relative;
     gap: 1rem;
+}
+
+@media (max-width: 800px) {
+    .dynamo-section {
+        .sec-wrapper {
+            .title {
+                font-size: 2.625rem;
+
+                &:nth-of-type(2) {
+                    font-size: 1.75rem;
+                }
+            }
+        }
+
+        &.main {
+            .sec-wrapper {
+                padding: 4rem 1rem;
+            }
+        }
+    }
 }
 
 @media (max-width: 600px) {
@@ -420,6 +368,15 @@ section {
 
         .image {
             display: none;
+        }
+    }
+
+    .dynamo-section {
+        padding: 0 1rem;
+        margin: 5rem 0;
+        
+        .final {
+            min-width: 144px;
         }
     }
 }

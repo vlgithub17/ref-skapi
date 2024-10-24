@@ -43,18 +43,19 @@ onMounted(() => {
 </script>
 <style lang='less'>
 footer {
-    background-color: black;
-
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     justify-content: center;
     box-shadow: 0px 2px black; // compensate offset calc
 
+    background-color: #101828;
+    height: 8.125rem;
+
     & > * {
         font-size: 0.8rem;
         color: #fff;
-        margin: .5rem 8px;
+        margin: .5rem 18px;
     }
     img {
         margin-top: .88em;
@@ -63,6 +64,12 @@ footer {
         @media (max-width: 600px) {
             display: none;
         }
+    }
+}
+
+@media (max-width: 600px) {
+    footer {
+        height: 3rem;
     }
 }
 </style>
