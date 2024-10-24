@@ -367,7 +367,7 @@ br
                     td.overflow(v-if="filterOptions.tag") 
                         template(v-if="rc?.tags" v-for="(tag, index) in rc.tags")
                             span(v-if="rc.tags.length-1 == index") {{ tag }}
-                            span(v-else) {{ tag }}, 
+                            span(v-else) {{ tag }}
                         template(v-else) -
 
                     td.overflow(v-if="filterOptions.files") {{ bins[rc.record_id].length }}
@@ -902,16 +902,18 @@ let upload = async (e: SubmitEvent) => {
         remove_bin.push(deleteFileList.value[i].endpoint);
     }
 
-    if (selectedRecord.value && selectedRecord.value.reference && selectedRecord.value.reference.record_id === '') {
-        selectedRecord.value.reference.record_id = null;
-    }
-
     try {
         let upl = null;
         if (selectedRecord.value?.record_id) {
             upl = await uploadRecord(e, true, remove_bin);
             bins[upl.record_id] = upl?.bin || {}; // move bin data to bins
             delete upl.bin;
+            devLog({listDisplay})
+            for (let r of listDisplay.value) {
+                if (r.record_id == selectedRecord.value.record_id && selectedRecord.value.tags == '') {
+                    r.tags = [];
+                }
+            }
             await pager.editItem(upl);
         } else {
             upl = await uploadRecord(e, false);
