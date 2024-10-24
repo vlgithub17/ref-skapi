@@ -603,6 +603,7 @@ import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
 import { currentService, serviceUsers } from '@/views/service/main';
 import { Countries } from '@/code/countries';
+import { devLog } from '@/code/logger';
 
 let pager: Pager = null;
 
@@ -853,14 +854,14 @@ let getPage = async (refresh?: boolean) => {
             callParams.value.condition = '<=';
         }
 
-        // console.log(callParams.value)
+        // devLog({callParams.value})
 
         let fetchedData = await skapi.getUsers(callParams.value, { fetchMore: !refresh, ascending: !searchValue.value ? false : true }).catch((err) => {
             fetching.value = false;
             alert(err);
         });
 
-        // console.log(fetchedData)
+        // devLog({fetchedData})
 
         // save endOfList status
         serviceUsers[currentService.id].endOfList = fetchedData.endOfList;
@@ -953,8 +954,6 @@ let createUser = () => {
     if (gender_public.value || address_public.value || birthdate_public.value){
         createParams = Object.assign({gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value}, createParams)
     }
-
-    // console.log({createParams})
 
     currentService.admin_signup(Object.assign({service: currentService.id}, createParams)).then(async(res) => {
         res.email = res.email_admin;

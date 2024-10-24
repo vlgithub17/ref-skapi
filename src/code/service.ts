@@ -2,6 +2,7 @@ import { reactive, ref } from 'vue';
 import type { Ref } from 'vue';
 import { skapi } from './admin';
 import { Countries } from './countries';
+import { devLog } from './logger'
 import templates from 'rollup-plugin-visualizer/dist/plugin/template-types';
 
 const regions = JSON.parse(import.meta.env.VITE_REG);
@@ -783,7 +784,7 @@ export default class Service {
 
     let exec = async (time = 1000) => {
       let info = await skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service: this.id, owner: this.owner }, { auth: true });
-      // console.log({ subInfo: info });
+      // devLog({ subInfo: info });
 
       if (typeof info === 'string' || !info || (typeof info === 'object' && Object.keys(info).length === 0)) {
         // subdomain removed
@@ -1144,7 +1145,7 @@ export default class Service {
         auth: true,
       }
     );
-    // console.log({ dirInfo })
+    // devLog({ dirInfo });
     if (dirInfo) {
       Object.assign(this.dirInfo, dirInfo);
     }
@@ -1180,7 +1181,7 @@ export default class Service {
       method: 'post',
       auth: true,
     });
-    // console.log({ dirList });
+    // devLog({ dirList });
     return dirList;
   }
 

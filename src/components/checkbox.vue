@@ -32,9 +32,6 @@ let hasSlotContent = ref(false);
 onMounted(() => {
     hasSlotContent.value = !!slots.default && slots.default().length > 0;
 });
-// watch(modelValue, (nv) => {
-//     console.log(nv)
-// })
 </script>
 <style lang="less" scoped>
 label._checkbox {

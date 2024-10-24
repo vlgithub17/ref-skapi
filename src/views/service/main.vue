@@ -196,7 +196,6 @@ watch(serviceList, nv => {
         try {
             setService(serviceId);
             plan.value = currentService?.plan;
-            // console.log(currentService)
         }
         catch (err) {
             router.push('/my-services');

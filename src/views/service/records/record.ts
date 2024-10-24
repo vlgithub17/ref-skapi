@@ -1,4 +1,5 @@
 import { skapi } from "@/code/admin"
+import { devLog } from "@/code/logger";
 import { currentService } from "../main";
 import { ref, computed } from "vue";
 import jsonCrawler from 'jsoncrawler'; // https://github.com/broadwayinc/jsoncrawler 참고
@@ -50,9 +51,21 @@ let parseBinEndpoint = async (r: string[]) => {
 
 // remove_bin 파일 전체를 넣어도 되고 endpoint만 보내도 됨
 export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { [key: string]: any }[], progress?: (c: any) => void) => {
-    // extract form values based on input names
-    let target = e.target;
-    console.log({target});
+    let form = e.target as HTMLFormElement;
+    let elements = form.elements;
+    let updateInputName = ['config[tags]', 'config[reference][record_id]', 'config[reference][reference_limit]'];
+    let updateInputValue: { [key: string]: string | null } = {};
+
+    if (edit) {
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i] as HTMLInputElement;
+        
+            if (updateInputName.includes(element.name)) {
+                updateInputValue[element.name] = element.value;
+            }
+        }
+        devLog({updateInputValue});
+    }
 
     let toUpload: {
         data: {
@@ -85,7 +98,6 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { 
     }
 
     config = toUpload.data.config;
-
     config.service = currentService.id;
     config.owner = currentService.owner;
 
@@ -106,15 +118,17 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { 
         for (let k of p.path) {
             obj = obj[k];
         }
-        console.log(obj, p.key)
+        devLog(obj, p.key)
         delete obj[p.key];
     }
 
-    if(config?.reference?.record_id === 'null') {
-        config.reference.record_id = '';
+    if (Object.keys(updateInputValue)) {
+        config.tags = updateInputValue['config[tags]'];
+        config.reference.record_id = updateInputValue['config[reference][record_id]'];
+        config.reference.reference_limit = updateInputValue['config[reference][reference_limit]'] === '' ? null : updateInputValue['config[reference][reference_limit]'];
     }
     
-    console.log({ config });
+    devLog({ config });
 
     // upload json data first
     let rec;
@@ -139,7 +153,7 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { 
         }
 
         let { bin_endpoints } = await skapi.uploadFiles(bin_formData, uploadFileParams);
-        // console.log({bin_endpoints})
+        // devLog({bin_endpoints})
         let bin = await parseBinEndpoint(bin_endpoints);
 
         if (!rec.bin) {
@@ -149,6 +163,6 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { 
             Object.assign(rec.bin, bin)
         }
     }
-    // console.log({rec})
+    // devLog({rec})
     return rec;
 }

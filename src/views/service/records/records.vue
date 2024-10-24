@@ -501,7 +501,7 @@ br
 
                 .row.indent 
                     .key Reference ID
-                    input.line.value(@input="e => {selectedRecord.reference.record_id = e.target.value === '' ? 'null' : e.target.value}" v-model="selectedRecord.reference.record_id" name='config[reference][record_id]' placeholder='Record ID to reference' )
+                    input.line.value(v-model="selectedRecord.reference.record_id" name='config[reference][record_id]' placeholder='Record ID to reference' )
 
                 .row.indent 
                     .key Reference Limit
@@ -599,6 +599,7 @@ import type { Ref } from "vue";
 import { ref, computed, nextTick, reactive, watch } from "vue";
 import { skapi } from "@/code/admin";
 import { user } from "@/code/user";
+import { devLog } from "@/code/logger"
 import { currentService, serviceRecords, serviceBins} from "@/views/service/main";
 import { showDropDown } from "@/assets/js/event.js";
 import { uploadRecord } from "@/views/service/records/record";
@@ -769,7 +770,7 @@ let getPage = async (refresh?: boolean) => {
         });
 
         bins = serviceBins[currentService.id];
-        console.log(bins)
+        devLog({bins});
 
         // save endOfList status
         serviceRecords[currentService.id].endOfList = fetchedData.endOfList;
@@ -778,7 +779,7 @@ let getPage = async (refresh?: boolean) => {
         // insert data in pager
         if (fetchedData.list.length > 0) {
             await pager.insertItems(fetchedData.list);
-            // console.log(pager);
+            // devLog({pager});
         }
 
         // get page from pager
@@ -859,7 +860,7 @@ let fileList = ref([]);
 
 watch(selectedRecord, (nv) => {
     if (nv) {
-        console.log(nv)
+        devLog({nv});
         deleteFileList.value = [];
         selectedRecord_readOnly.value = nv?.readonly || false;
         selectedRecord_subscription.value = nv?.table?.subscription || false;
