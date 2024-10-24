@@ -42,11 +42,8 @@ let resending = ref(false);
 
 let resend = () => {
     resending.value = true;
-    // console.log('resend!');
     let redirectUrl = '/success'
-    skapi.resendSignupConfirmation(redirectUrl).then(res => {
-        // console.log(res); // 'SUCCESS: Signup confirmation E-Mail has been sent.'
-    });
+    skapi.resendSignupConfirmation(redirectUrl);    // 'SUCCESS: Signup confirmation E-Mail has been sent.'
 }
 </script>
 

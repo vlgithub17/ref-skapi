@@ -5,10 +5,14 @@
             input#here(type="date" hidden)
             input.big#year(type="text" :value="currentYear" @change.stop="(e) => updateCalendar(e, 'year')" @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}" style='cursor: text;')
             .month
-                .material-symbols-outlined.notranslate.prev(@click="reRender('prev')") arrow_back_ios
+                //- .material-symbols-outlined.notranslate.prev(@click="reRender('prev')") arrow_back_ios
+                svg.svgIcon.reactive.prev(@click="reRender('prev')")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back-ios" style="pointer-events: none;")
                 select(style='background-color:transparent' @change="(e) => updateCalendar(e, 'month')")
                     option(v-for="(m,i) in monthObj" :value="i" :selected="currentMonth === i") {{ m }}
-                .material-symbols-outlined.notranslate.next(@click="reRender('next')") arrow_forward_ios
+                //- .material-symbols-outlined.notranslate.next(@click="reRender('next')") arrow_forward_ios
+                svg.svgIcon.reactive.prev(@click="reRender('next')")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-forward-ios" style="pointer-events: none;")
         .timeCont 
             .days 
                 .day Mo
@@ -23,11 +27,15 @@
     .timeSettingWrap
         .input(@mouseover="startDate ? showIcon.start = true : showIcon.start = false" @mouseleave="showIcon.start = false")
             input#start(type="text" placeholder="Start" readonly v-model="startDate" :class="{'active' : activeDate}" @click="activeDate = true")
-            .material-symbols-outlined.notranslate.fill.delete(:class="{'show' : showIcon.start}" @click="deleteDate") cancel
+            //- .material-symbols-outlined.notranslate.fill.delete(:class="{'show' : showIcon.start}" @click="deleteDate") cancel
+            svg.svgIcon.black.delete(:class="{'show' : showIcon.start}" @click="deleteDate")
+                use(xlink:href="@/assets/img/material-icon.svg#icon-cancel-fill")
         span ~
         .input(@mouseover="endDate ? showIcon.end = true : showIcon.end = false" @mouseleave="showIcon.end = false") 
             input#end(type="text" placeholder="End" readonly v-model="endDate" :class="{'active' : !activeDate}" @click="activeDate = false")
-            .material-symbols-outlined.notranslate.fill.delete(:class="{'show' : showIcon.end}" @click="deleteDate") cancel
+            //- .material-symbols-outlined.notranslate.fill.delete(:class="{'show' : showIcon.end}" @click="deleteDate") cancel
+            svg.svgIcon.black.delete(:class="{'show' : showIcon.end}" @click="deleteDate")
+                use(xlink:href="@/assets/img/material-icon.svg#icon-cancel-fill")
 </template>
 
 <script setup>
@@ -98,7 +106,8 @@ let preventEnterKey = (e) => {
 
 let deleteDate = (e) => {
     let getDateClass = document.querySelectorAll('.date');
-    let deleteTarget = e.target.previousSibling;
+    let deleteWrapper = e.target.closest('.input');
+    let deleteTarget = deleteWrapper.querySelector('input');
 
     if (deleteTarget.id == 'start' && deleteTarget.value) {
         startDate.value = '';
@@ -350,6 +359,11 @@ let createdDate = (e, date) => {
             * {
                 text-align: center;
                 flex-grow: 1;
+            }
+
+            svg {
+              height: 18px;
+              width: 18px;
             }
 
             .month {

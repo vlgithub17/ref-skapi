@@ -6,29 +6,34 @@
   "scripts": {
     "dev": "vite --host",
     "prod": "vite --host --mode production",
-    "build": "node script.cjs; vite build --mode production",
+    "build": "npm run build:ts; node script.cjs; vite build --mode production",
+    "build:ts": "tsc",
     "build-check": "node script.cjs; run-p type-check \"build-only {@}\" --",
     "preview": "vite preview --host",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build --force"
+    "type-check": "vue-tsc --build --force",
+    "start": "serve dist"
   },
   "dependencies": {
     "jsoncrawler": "^0.2.1",
-    "less": "^4.2.0",
     "mime": "^4.0.4",
-    "pug": "^3.0.2",
-    "skapi-js": "^1.0.112",
-    "vue": "^3.4.15",
-    "vue-router": "^4.2.5"
+    "skapi-js": "^1.0.155"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
     "@types/node": "^20.11.10",
     "@vitejs/plugin-vue": "^5.0.3",
     "@vue/tsconfig": "^0.5.1",
+    "less": "^4.2.0",
     "npm-run-all2": "^6.1.1",
+    "pug": "^3.0.2",
+    "rollup-plugin-visualizer": "^5.12.0",
+    "serve": "^14.2.3",
     "typescript": "~5.3.0",
     "vite": "^5.0.11",
-    "vue-tsc": "^1.8.27"
+    "vite-plugin-compression": "^0.5.1",
+    "vue": "^3.4.15",
+    "vue-router": "^4.2.5",
+    "vue-tsc": "^2.0.29"
   }
 }

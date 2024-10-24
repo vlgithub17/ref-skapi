@@ -69,6 +69,33 @@
     }
   }
 }
+
+.svgIcon { //svg icon
+  fill: var(--main-color);
+  width: 24px;
+  height: 24px;
+
+  &.reactive {
+    fill: black;
+    &:hover {
+      fill: var(--main-color);
+    }
+  }
+  &.reactiveDanger {
+    fill: black;
+    &:hover {
+      fill: var(--caution-color);
+    }
+  }
+
+  &.black {
+    fill:black;
+  }
+  &.danger {
+    fill: var(--caution-color);
+  }
+}
+
 .wideOnMobile {
   @media (max-width: 767px) {
     width: 100% !important;
@@ -248,10 +275,10 @@
       margin: 4px 0;
       gap: 0.5rem;
 
-      .loading {
-        vertical-align: middle;
-        // margin-right: 10px;
-      }
+      // .loading {
+      //   vertical-align: middle;
+      //   // margin-right: 10px;
+      // }
 
       .save,
       .cancel {

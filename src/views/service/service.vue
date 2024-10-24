@@ -7,19 +7,25 @@ section.infoBox
 
     
     .error(v-if='!user?.email_verified')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         router-link(to="/account-setting") Please verify your email address to modify settings.
         br
         br
 
     .error(v-else-if='currentService.service.active == 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently disabled.
         br
         br
 
     .error(v-else-if='currentService.service.active < 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently suspended.
         br
         br
@@ -107,13 +113,22 @@ section.infoBox
         )
 
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
-        .infoValue(style='display: flex;align-items: center;min-height: 0;')
+        .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0')
             .smallTitle Allow Signup
             Toggle(
                 style='display:inline-flex;align-items:center;'
                 :active='!currentService.service.prevent_signup'
                 :disabled='updatingValue.prevent_signup'
                 @click="changeCreateUserMode(!currentService.service.prevent_signup)"
+            )
+
+        .infoValue(style='display: flex;align-items: center;min-height: 0;')
+            .smallTitle Prevent Inquiry
+            Toggle(
+                style='display:inline-flex;align-items:center;'
+                :active='currentService.service.prevent_inquiry'
+                :disabled='updatingValue.prevent_inquiry'
+                @click="changePreventInquiry(!currentService.service.prevent_inquiry)"
             )
         
         .infoValue
@@ -123,10 +138,15 @@ section.infoBox
                     input.big(type="text" ref="focus_name" placeholder="Maximum 40 characters" maxlength="40" :value='inputName' @input="(e) => inputName = e.target.value" :disabled="updatingValue.name" required)
 
                     template(v-if="updatingValue.name")
-                        img.loading(src="@/assets/img/loading.png")
-                    label.material-symbols-outlined.notranslate.save(v-else) done
-                        input(type="submit" hidden)
-                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.name = false;") close
+                        .loader(style="--loader-color:blue; --loader-size:12px")
+                    template(v-else)
+                        input#saveHiddenInput(type="submit" hidden)
+                        label(for="saveHiddenInput") <!-- done -->
+                            svg.svgIcon.save(style="height: 30px; width: 30px;")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-check")
+                    //- span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.name = false;") close
+                    svg.svgIcon.cancel(@click="modifyMode.name = false;" style="height: 30px; width: 30px; fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-close")
 
             div(v-else)
                 .smallValue
@@ -141,10 +161,15 @@ section.infoBox
                     input#modifyCors.big(ref="focus_cors" :disabled="updatingValue.cors || null" type="text" placeholder='https://your.domain.com, http://second.domain.net, ...' :value='inputCors' @input="(e) => {e.target.setCustomValidity(''); inputCors = e.target.value;}")
 
                     template(v-if="updatingValue.cors")
-                        img.loading(src="@/assets/img/loading.png")
-                    label.material-symbols-outlined.notranslate.save(v-else) done
-                        input(type="submit" hidden)
-                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.cors = false;") close
+                        .loader(style="--loader-color:blue; --loader-size:12px")
+                    template(v-else)
+                        input#saveHiddenInput2(type="submit" hidden)
+                        label(for="saveHiddenInput2")
+                            svg.svgIcon.save(style="height: 30px; width: 30px;")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-check")
+                    //- span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.cors = false;") close
+                    svg.svgIcon.cancel(@click="modifyMode.cors = false;" style="height: 30px; width: 30px; fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-close")
 
             div(v-else)
                 .smallValue {{ currentService.service.cors || '*' }}
@@ -157,20 +182,29 @@ section.infoBox
                     input.big(ref="focus_key" :disabled="updatingValue.api_key || null" type="text" minlength="4" maxlength="256" placeholder='Maximum 256 characters, At least 4 characters.' :value='inputKey' @input="(e) => inputKey = e.target.value")
 
                     template(v-if="updatingValue.api_key")
-                        img.loading(src="@/assets/img/loading.png")
-                    label.material-symbols-outlined.notranslate.save(v-else) done
+                        .loader(style="--loader-color:blue; --loader-size:12px")
+                    template(v-else)
+                        input#saveHiddenInput3(type="submit" hidden)
+                        label(for="saveHiddenInput3")
+                            svg.svgIcon.save(style="height: 30px; width: 30px;")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-check")
+                    //- label.material-symbols-outlined.notranslate.save(v-else) done
                         input(type="submit" hidden)
-                    span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.api_key = false;") close
+                    //- span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.api_key = false;") close
+                    svg.svgIcon.cancel(@click="modifyMode.api_key = false;" style="height: 30px; width: 30px; fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-close")
 
             div(v-else)
                 .ellipsis {{ currentService.service.api_key ? currentService.service.api_key.slice(0, 2) + '*'.repeat(currentService.service.api_key.length - 2) + '...' : 'No Secret Key' }}&nbsp;
                 span.editHandle(@click="editApiKey" :class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}") [EDIT]
     
-    template(v-if="currentService.plan == 'Trial' || currentService.service.plan == 'Canceled'")
+    template(v-if="currentService.plan == 'Trial' || currentService.plan == 'Unlimited' || currentService.service.plan == 'Canceled'")
         hr
         div(style="text-align:right")
             router-link.iconClick.square(:to='"/delete-service/" + currentService.id' style='color:var(--caution-color);font-size:0.66rem;')
-                .material-symbols-outlined.notranslate.fill(style='font-size:24px;') delete
+                //- .material-symbols-outlined.notranslate.fill(style='font-size:24px;') delete
+                svg.svgIcon.cancel(style="height: 22px; width: 22px; fill: var(--caution-color)")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
                 span &nbsp;Delete Service
 
 </template>
@@ -178,10 +212,11 @@ section.infoBox
 <script setup lang="ts">
 import { nextTick, reactive, ref, computed } from 'vue';
 import { currentService } from '@/views/service/main';
-import { user } from '@/code/user';
 import Toggle from '@/components/toggle.vue';
 import { dateFormat } from '@/code/admin';
 import { getFileSize } from '@/code/admin';
+import { devLog } from '@/code/logger';
+import { user } from '@/code/user';
 
 let inputName = '';
 let inputCors = '';
@@ -197,7 +232,8 @@ let updatingValue = reactive({
     cors: false,
     api_key: false,
     prevent_signup: false,
-    enableDisable: false
+    enableDisable: false,
+    prevent_inquiry: false,
 });
 let focus_name = ref();
 let focus_cors = ref();
@@ -212,15 +248,15 @@ let resetTime = (timestamp:number) => {
   const diffInDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
 
   // Calculate the number of days since the last 7-day cycle
-  const daysSinceLastCycle = diffInDays % 7;
+  const daysSinceLastCycle = diffInDays % 30;
 
   // Calculate the number of days until the next cycle
-  let daysUntilNextCycle = (7 - daysSinceLastCycle) % 7;
+  let daysUntilNextCycle = (30 - daysSinceLastCycle) % 30;
 
   // If the cycle has just started today, then daysUntilNextCycle will be 0.
   // In that case, we want to return 7 (the next cycle will start in 7 days).
   if (daysUntilNextCycle === 0) {
-    daysUntilNextCycle = 7;
+    daysUntilNextCycle = 30;
   }
 
   // Add the number of days until the next cycle to today's date
@@ -256,7 +292,6 @@ let changeName = () => {
         }).then(() => {
             updatingValue.name = false;
             currentService.service.name = inputName;
-            // console.log(currentService)
             modifyMode.name = false;
         }).catch(err => {
             updatingValue.name = false;
@@ -342,7 +377,7 @@ let getUserUnit = (user: number) => {
 }
 
 // change prevent_signup
-let changeCreateUserMode = async (onlyAdmin: string) => {
+let changeCreateUserMode = async (onlyAdmin: boolean) => {
     updatingValue.prevent_signup = true;
     currentService.setServiceOption({
         prevent_signup: onlyAdmin,
@@ -368,6 +403,21 @@ let enableDisable = async ()=>{
         updatingValue.enableDisable = false;
     }
 }
+
+// change prevent_inquiry
+let changePreventInquiry = async (onlyAdmin: boolean) => {
+    updatingValue.prevent_inquiry = true;
+     currentService.setServiceOption({
+        prevent_inquiry: onlyAdmin,
+     }).then(r => {
+        devLog({r});
+     })
+     .catch(err=>{
+        alert(err.message);
+    }).finally(() => {
+        updatingValue.prevent_inquiry = false;
+    });
+}
 </script>
 
 <style lang="less" scoped>
@@ -380,5 +430,9 @@ let enableDisable = async ()=>{
     &:hover {
         text-decoration: none;
     }
+}
+.svgIcon:hover {
+    border-radius: 50%;
+    background-color: #293FE61A;
 }
 </style>

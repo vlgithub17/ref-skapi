@@ -4,6 +4,7 @@ section.infoBox
 
     hr
 
+    p Service Name: #[b {{ currentService.service.name }}]
     p(style='margin-bottom: 0') Add the following code to your HTML website to get started:
 
     Code
@@ -15,16 +16,16 @@ section.infoBox
 
     br
 
-    h4 For SPA Projects:
-
-    p(style='margin-bottom: 0') 1. Install the library:
+    h4 For SPA Projects
+    p If you are developing a Single Page Application (SPA), please refer to the following steps:
+    p(style='margin-bottom: 0') 1. Install the library
 
     Code
         pre npm install skapi-js
 
     br
 
-    p(style='margin-bottom: 0') 2. Initialize Skapi from your main.js:
+    p(style='margin-bottom: 0') 2. Initialize Skapi from your main.js
 
     Code
         pre.

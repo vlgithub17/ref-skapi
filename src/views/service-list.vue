@@ -10,7 +10,9 @@ main#serviceList
         p Create a new service to get started.
 
         .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
-            .material-symbols-outlined.notranslate.fill warning
+            //- .material-symbols-outlined.notranslate.fill warning
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
             router-link(to="/account-setting") Please verify your email address to create services.
         form(@submit.prevent="createService" style='display: flex;gap: 8px;width: 480px;max-width: 100%;' :class='{disabled: !user?.email_verified}')
             input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
@@ -50,7 +52,7 @@ main#serviceList
                 tr(v-if="callServiceList")
                     td(colspan="8").
                         Loading ... &nbsp;
-                        #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+                        #[.loader(style="--loader-color:black; --loader-size:12px")]
                 tr(v-else-if="!Object.keys(serviceIdList).length")
                     td(colspan="8") You have no services yet.
 
@@ -60,7 +62,7 @@ main#serviceList
                         td.overflow(style="white-space:nowrap")
                             // plans
                             .state(v-if="serviceList[id].service.subs_id && !serviceList[id].subscription")
-                                img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")
+                                .loader(style="--loader-color:black; --loader-size:12px")
                             span(v-else :style="{fontWeight: serviceList[id].service.plan === 'Canceled' ? 'normal' : null, color: serviceList[id].service.plan === 'Canceled' ? 'var(--caution-color)' : null}") {{ serviceList[id].service.plan || serviceList[id].plan }}
                         td.overflow
                             // active state

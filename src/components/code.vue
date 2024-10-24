@@ -3,7 +3,9 @@
     div(style="text-align:right")
         .copy(v-if='cpy_btn' @click="copy")
             span.copyMsg Copy code
-            .material-symbols-outlined.notranslate.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
+            //- .material-symbols-outlined.notranslate.fill.nohover(style="font-size:20px;margin-left:5px") file_copy
+            svg(height="20" width="20" style="margin-left: 5px;")
+                use(xlink:href="@/assets/img/material-icon.svg#icon-file-copy-fill")            
     .code
         slot
 
@@ -13,7 +15,6 @@
 let props = defineProps(['hidecopy']);
 let cpy_btn = !props.hidecopy;
 
-// console.log({props})
 let copy = (e) => {
     let allcopy = document.querySelectorAll('.copyMsg');
     for (let i = 0; i < allcopy.length; i++) {

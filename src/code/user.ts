@@ -59,6 +59,11 @@ watch(() => user?.user_id, (u, ou) => {
     if (u) {
         if (u !== ou) {
             emailSubscribed.value = null;
+            skapi.getNewsletterSubscription({
+                group: 'authorized'
+            }).then(subs => {
+                emailSubscribed.value = !!subs.length
+            });
             skapi.getUsers({
                 searchFor: "user_id",
                 value: u

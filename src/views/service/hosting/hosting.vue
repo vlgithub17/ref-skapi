@@ -5,15 +5,21 @@
     hr
 
     .error(v-if='!user?.email_verified')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         router-link(to="/account-setting") Please verify your email address to modify settings.
         
     .error(v-else-if='currentService.service.active == 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently disabled.
 
     .error(v-else-if='currentService.service.active < 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently suspended.
 
     p.
@@ -30,7 +36,7 @@
             input.big(v-model='subdomain' pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="6" maxlength="32" :disabled="registerSubdomainRunning" placeholder="your-subdomain" required)
         button.final(style='min-width: 124px;' :disabled='registerSubdomainRunning' :class='{nonClickable: registerSubdomainRunning}')
             template(v-if="registerSubdomainRunning")
-                img.loading(src="@/assets/img/loading.png")
+                .loader(style="--loader-color:white; --loader-size:12px")
             template(v-else)
                 | Register
 
@@ -41,17 +47,23 @@ template(v-else)
         hr
 
         .error(v-if='!user?.email_verified')
-            .material-symbols-outlined.notranslate.fill warning
-                router-link(to="/account-setting") Please verify your email address to modify settings.
+            //- .material-symbols-outlined.notranslate.fill warning
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
+            router-link(to="/account-setting") Please verify your email address to modify settings.
             br
             br  
         .error(v-else-if='currentService.service.active == 0')
-            .material-symbols-outlined.notranslate.fill warning
+            //- .material-symbols-outlined.notranslate.fill warning
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
             span This service is currently disabled.
             br
             br
         .error(v-else-if='currentService.service.active < 0')
-            .material-symbols-outlined.notranslate.fill warning
+            //- .material-symbols-outlined.notranslate.fill warning
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
             span This service is currently suspended.
             br
             br
@@ -68,10 +80,15 @@ template(v-else)
                         .subdomain
                             input#modifySubdomain.big(ref="focus_subdomain" :disabled="updatingValue.subdomain || null" type="text"  pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' minlength="6" maxlength="32" placeholder="your-subdomain" required :value='inputSubdomain' @input="(e) => {e.target.setCustomValidity(''); inputSubdomain = e.target.value;}")
                         template(v-if="updatingValue.subdomain")
-                            img.loading(src="@/assets/img/loading.png")
-                        label.material-symbols-outlined.notranslate.save(v-else) done
+                            .loader(style="--loader-color:blue; --loader-size:12px")
+                        //- label.material-symbols-outlined.notranslate.save(v-else) done
+                        label(v-else)
+                            svg.svgIcon.clickable.save()
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-check")
                             input(type="submit" hidden)
-                        span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.subdomain = false;") close
+                        //- span.material-symbols-outlined.notranslate.cancel(@click="modifyMode.subdomain = false;") close
+                        svg.svgIcon.black.clickable.cancel(@click="modifyMode.subdomain = false;")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-close")
 
                 div(v-else)
                     .smallValue
@@ -89,9 +106,14 @@ template(v-else)
                         template(v-if="updatingValue.page404")
                             pre(style='margin:0;font-size: .8rem;font-weight:normal' v-if='progress404 < 100') {{ progress404 }}%
                             pre(style='margin:0;font-size: .8rem;font-weight:normal' v-else) Updating...
-                        label.material-symbols-outlined.notranslate.save.fill(v-else :class="{'nonClickable' : !selected404File}") done
+                        //- label.material-symbols-outlined.notranslate.save.fill(v-else :class="{'nonClickable' : !selected404File}") done
+                        label(v-else :class="{'nonClickable' : !selected404File}")
+                            svg.svgIcon.clickable.save()
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-check")
                             input(type="submit" hidden)
-                        span.material-symbols-outlined.notranslate.cancel(v-if='!updatingValue.page404' @click="modifyMode.page404 = false;selected404File=null;") close
+                        //- span.material-symbols-outlined.notranslate.cancel(v-if='!updatingValue.page404' @click="modifyMode.page404 = false;selected404File=null;") close
+                        svg.svgIcon.black.clickable.cancel(v-if='!updatingValue.page404' @click="modifyMode.page404 = false;selected404File=null;")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-close")
 
                 div(v-else)
                     .smallValue.editValue
@@ -101,7 +123,9 @@ template(v-else)
 
         div(style="text-align:right")
             .iconClick.square(@click="removeHosting = true" style='color:var(--caution-color);font-size:0.66rem;')
-                .material-symbols-outlined.notranslate.fill(style='font-size:24px;') delete
+                //- .material-symbols-outlined.notranslate.fill(style='font-size:24px;') delete
+                svg.svgIcon(style="fill: var(--caution-color)")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
                 span &nbsp;Remove Hosting
     br
 
@@ -109,16 +133,22 @@ template(v-else)
 
         .iconClick.square(@click='uploadFileInp.click()' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
             input(type="file" hidden multiple @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFileInp")
-            .material-symbols-outlined.notranslate.fill upload_file
+            //- .material-symbols-outlined.notranslate.fill upload_file
+            svg.svgIcon
+                use(xlink:href="@/assets/img/material-icon.svg#icon-upload-file-fill")
             span &nbsp;&nbsp;Upload Files
 
         .iconClick.square(@click='uploadFolderInp.click()' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
             input(type="file" hidden multiple directory webkitdirectory @change="e=>uploadFiles(e.target.files, getFileList)" ref="uploadFolderInp")
-            .material-symbols-outlined.notranslate.fill drive_folder_upload
+            //- .material-symbols-outlined.notranslate.fill drive_folder_upload
+            svg.svgIcon
+                use(xlink:href="@/assets/img/material-icon.svg#icon-drive-folder-upload-fill")
             span &nbsp;&nbsp;Upload Folder
 
         .iconClick.square(:class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching || noSelection}" @click='deleteSelected=true')
-            .material-symbols-outlined.notranslate.fill delete
+            //- .material-symbols-outlined.notranslate.fill delete
+            svg.svgIcon
+                use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
             span &nbsp;&nbsp;Delete Selected
 
         // .iconClick.square(@click='openRefreshCdn=true' :class="{'nonClickable' : email_is_unverified_or_service_is_disabled || isPending || fetching}")
@@ -128,15 +158,15 @@ template(v-else)
     .hostingPart
         #loading
             template(v-if="fetching")
-                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
+                .loader(style="--loader-color:black; --loader-size:12px")
                 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fetching ...
 
             template(v-else-if='!subdomainReady')
-                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
+                .loader(style="--loader-color:black; --loader-size:12px")
                 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Subdomain change in process ...
             
             template(v-else-if='currentService.pending.cdn')
-                img.loading(src="@/assets/img/loading.png" style='filter: grayscale(1);')
+                .loader(style="--loader-color:black; --loader-size:12px")
                 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDN Refresh in process... 
 
         Table(
@@ -153,18 +183,30 @@ template(v-else)
                     th(style='width:320px;')
                         span(@click='toggleSort("name")')
                             | Filename
-                            .material-symbols-outlined.notranslate.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            //- .material-symbols-outlined.notranslate.fill(v-if='sortBy === "name"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            svg.svgIcon.black(v-if='sortBy === "name" && ascending')
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                            svg.svgIcon.black(v-if='sortBy === "name" && !ascending')
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
                         .resizer
 
                     th(style='width:160px;')
                         span(@click='toggleSort("size")')
                             | Size
-                            span.material-symbols-outlined.notranslate.fill(v-if='sortBy === "size"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            //- span.material-s ymbols-outlined.notranslate.fill(v-if='sortBy === "size"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            svg.svgIcon.black(v-if='sortBy === "size" && ascending')
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                            svg.svgIcon.black(v-if='sortBy === "size" && !ascending')
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
                         .resizer
                     th(style='width:220px;')
                         span(@click='toggleSort("upl")')
                             | Uploaded
-                            span.material-symbols-outlined.notranslate.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            //- span.material-symbols-outlined.notranslate.fill(v-if='sortBy === "upl"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                            svg.svgIcon.black(v-if='sortBy === "upl" && ascending')
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                            svg.svgIcon.black(v-if='sortBy === "upl" && !ascending')
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
 
             template(v-slot:body)
                 template(v-if="fetching || isPending")
@@ -175,7 +217,9 @@ template(v-else)
                     .progress( :style="{ width: uploadProgress.progress + '%', height: '3px', background: 'var(--main-color)', position: 'absolute'}")
                     tr.uploadState(style="position:relative")
                         td
-                            .material-symbols-outlined.notranslate.center.moving upload
+                            //- .material-symbols-outlined.notranslate.center.moving upload
+                            svg.svgIcon.moving()
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-upload")
                         td(colspan="3")
                             | Uploading: /{{ uploadProgress.name }}&nbsp;
                             b ({{ uploadCount[0] }} / {{ uploadCount[1] }})
@@ -183,13 +227,18 @@ template(v-else)
                 template(v-else-if="!listDisplay || listDisplay.length === 0")
                     tr
                         td
-                            .material-symbols-outlined.notranslate.fill upload
+                            //- .material-symbols-outlined.notranslate.fill upload
+                            svg.svgIcon.black()
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-upload")
+
                         td(colspan="3") Drag and drop files here
 
                 template(v-else)
                     tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
                         td
-                            .material-symbols-outlined.notranslate.fill folder_open
+                            //- .material-symbols-outlined.notranslate.fill folder_open
+                            svg.svgIcon.black()
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-folder-open-fill")
 
                         td(colspan="3")
                             | {{hostUrl}}/{{ currentDirectory ? currentDirectory + '/' : '' }}
@@ -199,7 +248,9 @@ template(v-else)
                         Checkbox(@click.stop v-model='checked[ns.name]')
 
                     td.overflow(v-if='ns.name[0] == "#"')
-                        span.material-symbols-outlined.notranslate.fill(style='vertical-align: sub;') folder
+                        //- span.material-symbols-outlined.notranslate.fill(style='vertical-align: sub;') folder
+                        svg.svgIcon.black(style='height: 22px; width: 22px; vertical-align: sub;')
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-folder-fill")
                         | &nbsp;{{ ns.name.slice(1) }}
                     td.overflow(v-else) {{ ns.name }}
                     td.overflow {{ getFileSize(ns.size) }}
@@ -212,15 +263,21 @@ template(v-else)
 
     .tableMenu(style='display:block;text-align:center;')
         .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
-            .material-symbols-outlined.notranslate.bold chevron_left
+            //- .material-symbols-outlined.notranslate.bold chevron_left
+            svg.svgIcon(style="width: 26px; height: 26px")
+                use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
             span Previous&nbsp;&nbsp;
         | &nbsp;&nbsp;
         .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || currentPage >= maxPage || !listDisplay.length }")
             span &nbsp;&nbsp;Next
-            .material-symbols-outlined.notranslate.bold chevron_right
+            //- .material-symbols-outlined.notranslate.bold chevron_right
+            svg.svgIcon(style="width: 26px; height: 26px")
+                use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
 
     .dragPopup(:class="{'show' : dragHere}")
-        .material-symbols-outlined.notranslate(style='font-size:64px;') cloud_upload
+        //- .material-symbols-outlined.notranslate(style='font-size:64px;') cloud_upload
+        svg.svgIcon(style="width: 64px; height: 64px; fill: white")
+            use(xlink:href="@/assets/img/material-icon.svg#icon-cloud-upload")
         p Drop your files to upload
 
     Modal(:open="deleteSelected" @close="deleteSelected=false")
@@ -236,8 +293,8 @@ template(v-else)
             br
 
             div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-                template(v-if='modalPromise')
-                    img.loading(src="@/assets/img/loading.png")
+                div(v-if="modalPromise" style="width:100%; text-align:center")
+                    .loader(style="--loader-color:blue; --loader-size:12px")
                 template(v-else)
                     button.noLine.warning(@click="deleteSelected = false") Cancel
                     button.final.warning(@click="deleteFiles") Delete
@@ -257,8 +314,8 @@ template(v-else)
         br
 
         div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-            template(v-if='modalPromise')
-                img.loading(src="@/assets/img/loading.png")
+            div(v-if="modalPromise" style="width:100%; text-align:center")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine.warning(@click="removeHosting = false") Cancel
                 button.final.warning(@click="remove") Remove
@@ -276,13 +333,13 @@ template(v-else)
         br
 
         div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-            template(v-if='modalPromise')
-                img.loading(src="@/assets/img/loading.png")
+            div(v-if="modalPromise" style="width:100%; text-align:center")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine.warning(@click="openRemove404 = false") Cancel
                 button.final.warning(@click="remove404") Remove
 
-    // Modal(:open="openRefreshCdn")
+    // Modal(:open="openRefreshCdn" @close="openRefreshCdn=false")
         h4(style='margin:.5em 0 0;') Refresh CDN
 
         hr
@@ -296,8 +353,8 @@ template(v-else)
         br
 
         div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-            template(v-if='modalPromise')
-                img.loading(src="@/assets/img/loading.png")
+            div(v-if="modalPromise" style="width:100%; text-align:center")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine.warning(@click="openRefreshCdn = false") Cancel
                 button.final.warning(@click="()=>{currentService.refreshCDN(); openRefreshCdn=false;}") Refresh
@@ -627,7 +684,7 @@ watch(subdomainReady,
     (n, o) => {
         if(n) {
             if(n !== 'no-subdomain') {
-                currentDirectory.value = "";
+                // currentDirectory.value = "";
                 fetching.value = true;
                 currentService.getDirInfo();
             }
@@ -683,6 +740,7 @@ async function getFileList(refresh = false) {
     }
 
     pager = folders[currDir].pager;
+
     if (refresh && refresh !== 'conditional' || !endOfList[currDir] && currentPage.value > maxPage.value) {
         try {
             let l = await currentService.listHostDirectory({ dir: currentDirectory.value }, !(refresh || maxPage.value == 0));
@@ -838,6 +896,10 @@ form.register {
 
         flex-grow: 1;
     }
+    svg:hover {
+            border-radius: 50%;
+            background-color: rgba(41, 63, 230, 0.1);
+    }
 
     button {
         flex-shrink: 0;
@@ -950,7 +1012,7 @@ thead {
 
 @keyframes motion {
     0% {
-        margin-top: -5px;
+        margin-top: -10px;
     }
 
     100% {

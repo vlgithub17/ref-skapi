@@ -2,7 +2,17 @@
 label._checkbox(:class="{'nonClickable' : disabled}" :style='{opacity: disabled ? ".5" : "1", "align-items": hasSlotContent ? "flex-start" : "center"}')
     //- input(type="checkbox" :checked='modelValue' @input="e=>{modelValue = e.target.checked;$emit('update:modelValue', e.target.checked)}" :disabled="disabled" :name="name" hidden)
     input(type="checkbox" :checked='modelValue' @input.stop="e=>{$emit('update:modelValue', e.target.checked)}" :disabled="disabled" :name="name" hidden)
-    span.material-symbols-outlined.notranslate(:class='{fill:modelValue !== null}' :style='{"margin-top": hasSlotContent ? "-3px" : null}') {{ modelValue === null ? 'indeterminate_check_box' : modelValue ? 'check_box' : 'check_box_outline_blank' }}
+    //- span.material-symbols-outlined.notranslate(:class='{fill:modelValue !== null}' :style='{"margin-top": hasSlotContent ? "-3px" : null}') {{ modelValue === null ? 'indeterminate_check_box' : modelValue ? 'check_box' : 'check_box_outline_blank' }}
+    template(v-if="modelValue === null")
+        svg.svgIcon.black(:class='{fill:modelValue !== null}' :style='{"margin-top": hasSlotContent ? "-3px" : null}')
+            use(xlink:href="@/assets/img/material-icon.svg#icon-indeterminate-check-box")
+    template(v-else-if="modelValue")
+        svg.svgIcon.black(:class='{fill:modelValue !== null}' :style='{"margin-top": hasSlotContent ? "-3px" : null}')
+            use(xlink:href="@/assets/img/material-icon.svg#icon-check-box-fill")
+    template(v-else)
+        svg.svgIcon.black(:class='{fill:modelValue !== null}' :style='{"margin-top": hasSlotContent ? "-3px" : null}')
+            use(xlink:href="@/assets/img/material-icon.svg#icon-check-box-outline-blank")
+
     div
         slot
 </template>
@@ -22,9 +32,6 @@ let hasSlotContent = ref(false);
 onMounted(() => {
     hasSlotContent.value = !!slots.default && slots.default().length > 0;
 });
-// watch(modelValue, (nv) => {
-//     console.log(nv)
-// })
 </script>
 <style lang="less" scoped>
 label._checkbox {

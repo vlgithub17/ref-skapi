@@ -2,19 +2,25 @@
 section.infoBox
     .titleHead
         h2(style='white-space: nowrap;') Automated Email&nbsp;
-        Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:192px;')
+        Select(v-model="emailType" :selectOptions="emailTypeSelect" style='display:inline-block;vertical-align:middle;width:240px;')
 
     hr
     .error(v-if='!user?.email_verified')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         router-link(to="/account-setting") Please verify your email address to modify settings.
         
     .error(v-else-if='currentService.service.active == 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently disabled.
 
     .error(v-else-if='currentService.service.active < 0')
-        .material-symbols-outlined.notranslate.fill warning
+        //- .material-symbols-outlined.notranslate.fill warning
+        svg
+            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently suspended.
 
     template(v-if='emailType === "Signup Confirmation"')
@@ -29,7 +35,7 @@ section.infoBox
 
         small Required Placeholder
         ul
-            li #[b ${link}] - Activation link url. You can append this to the href attribute of the anchor tag.
+            li #[b https://link.skapi] - Activation link url. You can append this to the href attribute of the anchor tag.
 
         small Optional Placeholder
         ul
@@ -74,13 +80,28 @@ section.infoBox
 
         small Required Placeholder:
         ul
-            li #[b ${link}] - Invitation accept link url. You can append this to the href attribute of the anchor tag.
+            li #[b https://link.skapi] - Invitation accept link url. You can append this to the href attribute of the anchor tag.
             li #[b ${email}] - User's login email
             li #[b ${password}] - User's login password
 
         small Optional Placeholder:
         ul
             li #[b ${name}] - User name, normaled to users email if not provided
+            li #[b ${service_name}] - Service name
+
+    template(v-if='emailType === "Newsletter Confirmation"')
+        p.
+            Newsletter Confirmation is sent when the user subscribes to your public newsletter.
+        p.
+            See #[a(href='https://docs.skapi.com/email/newsletters.html#sending-public-newsletters' target="_blank") Sending Public Newsletters]
+
+        small Required Placeholder:
+        ul
+            li #[b https://link.skapi] - Link to confirm newsletter subscription. You can append this to the href attribute of the anchor tag.
+
+        small Optional Placeholder:
+        ul
+            li #[b ${email}] - Subscribed user's email
             li #[b ${service_name}] - Service name
 
     p(style='margin-bottom: 0').
@@ -114,10 +135,14 @@ br
 
 .tableMenu
     a.iconClick.square(:href="'mailto:' + mailEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill mail
+        //- .material-symbols-outlined.notranslate.fill mail
+        svg.svgIcon
+            use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
         span &nbsp;&nbsp;New {{emailType}}
     .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+        svg.svgIcon(:class='{loading:fetching}')
+            use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
         span &nbsp;&nbsp;Refresh
 
 Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
@@ -129,12 +154,20 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             th
                 span(@click='toggleSort("subject")')
                     | Subject
-                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    svg.svgIcon(v-if='searchFor === "subject" && ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                    svg.svgIcon(v-if='searchFor === "subject" && !ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
                 .resizer
             th
                 span(@click='toggleSort("timestamp")')
                     | Date
-                    span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                    svg.svgIcon(v-if='searchFor === "timestamp" && ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                    svg.svgIcon(v-if='searchFor === "timestamp" && !ascending' style="fill: black")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
             th(style="width:66px; padding:0")
 
     template(v-slot:body)
@@ -142,7 +175,7 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             tr
                 td#loading(colspan="4").
                     Loading {{emailType}} ... &nbsp;
-                    #[img.loading(style='filter: grayscale(1);' src="@/assets/img/loading.png")]
+                    #[.loader(style="--loader-color:black; --loader-size:12px")]
             tr(v-for="i in 9")
                 td(colspan="4")
         template(v-else-if="!listDisplay || listDisplay.length === 0")
@@ -154,13 +187,19 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
                 td.overflow
                     template(v-if='currentService.service?.["template_" + group]?.url === ns.url')
-                        span.material-symbols-outlined.notranslate.fill verified
+                        //- span.material-symbols-outlined.notranslate.fill verified
+                        svg.svgIcon.black
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-verified-fill")
                     template(v-else)
-                        span.material-symbols-outlined.notranslate.icon.clickable.hide(@click.stop="emailToUse = ns") verified
+                        //- span.material-symbols-outlined.notranslate.icon.clickable.hide(@click.stop="emailToUse = ns") verified
+                        svg.svgIcon.reactive.clickable.hide(@click.stop="emailToUse = ns")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-verified")
                 td.overflow {{ converter(ns.subject) }}
                 td.overflow {{ dateFormat(ns.timestamp) }}
                 td.center.buttonWrap(@click.stop)
-                    span.material-symbols-outlined.notranslate.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
+                    //- span.material-symbols-outlined.notranslate.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
+                    svg.svgIcon.reactiveDanger.clickable.hide(@click.stop="emailToDelete = ns")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
             tr(v-for="i in (10 - listDisplay.length)")
                 td(colspan="4")
 
@@ -168,12 +207,16 @@ br
 
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
-        .material-symbols-outlined.notranslate.bold chevron_left
+        //- .material-symbols-outlined.notranslate.bold chevron_left
+        svg.svgIcon(style="height: 26px; width: 26px")
+            use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
     .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
-        .material-symbols-outlined.notranslate.bold chevron_right
+        //- .material-symbols-outlined.notranslate.bold chevron_right
+        svg.svgIcon(style="height: 26px; width: 26px")
+            use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
 
 Modal(:open="!!emailToDelete" @close="emailToDelete=false")
     h4(style='margin:.5em 0 0;') Delete Email
@@ -192,8 +235,8 @@ Modal(:open="!!emailToDelete" @close="emailToDelete=false")
     br
 
     div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='deleteMailLoad')
-            img.loading(src="@/assets/img/loading.png")
+        div(v-if="deleteMailLoad" style="width:100%; text-align:center")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine.warning(@click="emailToDelete = null") Cancel
             button.final.warning(@click="deleteEmail(emailToDelete)") Delete
@@ -214,8 +257,8 @@ Modal(:open="!!emailToUse" @close="emailToUse=false")
     br
 
     div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        template(v-if='useMailLoad')
-            img.loading(src="@/assets/img/loading.png")
+        div(v-if="useMailLoad" style="width:100%; text-align:center")
+            .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
             button.noLine(@click="emailToUse = null") Cancel
             button.final(@click="useEmail(emailToUse)") Confirm
@@ -233,6 +276,7 @@ import Table from "@/components/table.vue";
 import Modal from "@/components/modal.vue";
 import Pager from "@/code/pager";
 import { skapi } from "@/code/admin";
+import { devLog } from "@/code/logger";
 import Select from "@/components/select.vue";
 import Toggle from "@/components/toggle.vue";
 type Newsletter = {
@@ -246,7 +290,7 @@ type Newsletter = {
 };
 
 let emailType: Ref<
-    "Signup Confirmation" | "Welcome Email" | "Verification Email" | "Invitation Email"
+    "Signup Confirmation" | "Welcome Email" | "Verification Email" | "Invitation Email" | "Newsletter Confirmation"
 > = ref("Signup Confirmation");
 let emailTypeSelect = [
     {
@@ -264,6 +308,10 @@ let emailTypeSelect = [
     {
         value: "Invitation Email",
         option: "Invitation Email",
+    },
+    {
+        value: "Newsletter Confirmation",
+        option: "Newsletter Confirmation",
     },
 ];
 ///////////////////////////////////////////////////////////////////////////////// template history[start]
@@ -340,9 +388,9 @@ watch(emailType, () => {
 let mailEndpoint = ref("");
 
 let group: ComputedRef<
-    "confirmation" | "welcome" | "verification" | "invitation"
+    "confirmation" | "welcome" | "verification" | "invitation" | "newsletter_subscription"
 > = computed(() => {
-    let grp: "confirmation" | "welcome" | "verification" | "invitation" = "confirmation";
+    let grp: "confirmation" | "welcome" | "verification" | "invitation" | "newsletter_subscription" = "confirmation";
     switch (emailType.value) {
         case "Signup Confirmation":
             grp = "confirmation";
@@ -356,6 +404,9 @@ let group: ComputedRef<
             break;
         case "Invitation Email":
             grp = "invitation";
+            break;
+        case "Newsletter Confirmation":
+            grp = "newsletter_subscription";
             break;
     }
 
@@ -492,7 +543,7 @@ let deleteEmail = (ns: Newsletter) => {
             getHtml(group.value);
             getPage();
         })
-        .catch((err) => window.alert(err))
+        // .catch((err) => window.alert(err))
         .finally(() => {
             deleteMailLoad.value = false;
         });
@@ -539,6 +590,7 @@ let useEmail = (ns: Newsletter) => {
 
 let service = currentService.service;
 let email_templates = currentService.service.email_triggers.template_setters;
+devLog(currentService.service)
 let parseOpt: any = ref(true);
 
 let currentTemp = computed(() => {
@@ -558,7 +610,7 @@ let converter = (html: string, parsed: boolean, inv: boolean) => {
     html = html.replaceAll("${name}", user.name || user.email);
     html = html.replaceAll("${service_name}", service.name);
     html = html.replaceAll("${password}", "abc123&&");
-    html = html.replaceAll("${link}", "https://path.to/link");
+    html = html.replaceAll("https://link.skapi", "https://path.to/link");
     return html;
 };
 
@@ -571,6 +623,7 @@ let subjects = computed(() => {
         verification:
             s?.template_verification?.subject || "[${service_name}] Verification code",
         invitation: s?.template_invitation?.subject || "[${service_name}] Invitation",
+        newsletter_subscription: s?.template_newsletter_subscription?.subject || "[${service_name}] Thank you for subscribing to our newsletter.",
     };
 });
 
@@ -579,6 +632,7 @@ let htmls: { [key: string]: string } = reactive({
     welcome: null,
     verification: null,
     invitation: null,
+    newsletter_subscription: null,
 });
 
 let getHtml = async (key: string) => {
@@ -595,19 +649,23 @@ Your login email is: <span style="font-weight: bold">\${email}</span></pre>`,
         verification:
             '<pre>Your verification code is <span style="font-weight: bold">${code}</span></pre>',
         confirmation: `<pre>
-Please activate your account by clicking this <a href="\${link}" style="font-weight: bold">LINK</a>
+Please activate your account by clicking this <a href="\https://link.skapi" style="font-weight: bold">LINK</a>
 Your activation link is valid for 7 days.
 </pre>`,
         invitation: `
 <pre>
 Hello \${name}
 You are invited to \${service_name}
-You can accept the invitation by clicking on this <a href="\${link}" style="font-weight: bold">LINK</a>
+You can accept the invitation by clicking on this <a href="\https://link.skapi" style="font-weight: bold">LINK</a>
 
 Your login e-mail is: <b>\${email}</b>
 Your account password is: <b>\${password}</b>
 
 Your activation link is valid for 7 days.
+</pre>`,
+        newsletter_subscription: `<pre>
+Thank you for subscribing to \${service_name} newsletter. 
+Please confirm your subscription by clicking this <a href="\https://link.skapi" style="font-weight: bold">LINK</a>
 </pre>`,
     };
 
@@ -630,6 +688,14 @@ let init = async () => {
     //     fetching.value = false;
     // }
     currentPage.value = 1;
+
+
+    await currentService.getEmailTemplate(group.value).then(res => {
+        if (!res) return;
+
+        (currentService.service as any)["template_" + group.value].url = res.url;
+        (currentService.service as any)["template_" + group.value].subject = res.subject;
+    });
 
     // setup pagers
     pager = await Pager.init({

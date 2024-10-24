@@ -24,9 +24,13 @@ br
             name="password" placeholder="Enter password" required)
             .passwordIcon(@click="showPassword = !showPassword")
                 template(v-if="showPassword")
-                    .material-symbols-outlined.notranslate.fill visibility
+                    //- .material-symbols-outlined.notranslate.fill visibility
+                    svg.svgIcon(style="fill: var(--black-6)")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
                 template(v-else)
-                    .material-symbols-outlined.notranslate.fill visibility_off
+                    //- .material-symbols-outlined.notranslate.fill visibility_off
+                    svg.svgIcon(style="fill: var(--black-6)")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
 
         .actions
             Checkbox(style='font-weight:unset;' @change="(e)=>{setLocalStorage(e)}" :disabled='promiseRunning' v-model='remVal') Remember Me
@@ -35,7 +39,9 @@ br
         br
 
         .error(v-if="error")
-            .material-symbols-outlined.notranslate.fill error
+            //- .material-symbols-outlined.notranslate.fill error
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-error-fill")
             div(v-if="enableAccount")
                 | {{ error }}
                 br
@@ -49,8 +55,8 @@ br
         br
 
         .bottom
-            template(v-if="promiseRunning")
-                img.loading(src="@/assets/img/loading.png")
+            div(v-if="promiseRunning" style="width:100%; text-align:center")
+                .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.final Login
                 .signup

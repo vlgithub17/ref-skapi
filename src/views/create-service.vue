@@ -25,7 +25,8 @@ main#create
                 li Provides 10k user accounts
                 li 4 GB of database
                 li 50 GB of file storage
-                li.warning All the users and data will be deleted every 7 days
+                li Automated emails
+                li.warning All the users and data will be deleted every 30 days
         .infoBox(:class="{'checked' : serviceMode == 'standard'}" @click="serviceMode='standard'")
             .mode Standard Mode
             .price $19
@@ -38,9 +39,10 @@ main#create
                 li 4GB of database
                 li 50GB each for file storage and hosting storage
                 li Real-time data
+                li Automated emails
+                li Sending newsletter emails
 
             ul
-                li Automated emails and sending bulk email
                 li 1GB of email storage
                 li Subdomain hosting
         .infoBox(:class="{'checked' : serviceMode == 'premium'}" @click="serviceMode='premium'")
@@ -55,19 +57,20 @@ main#create
                 li 100GB of database
                 li 1TB each for file storage and hosting storage
                 li Real-time data
+                li Automated emails
+                li Sending newsletter emails
 
             ul
-                li Automated emails and sending bulk email
                 li 10GB of email storage
                 li Subdomain hosting
-                li Unlimited use with pay-as-you-go when exceeding the limit
+                li Removes watermark in browser console
 
     br
 
     p(style='font-size: 16px;display: flex;justify-content: center;') Selected Plan:&nbsp; #[b(style='color:var(--main-color)') {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
     .inputWrap(@submit.prevent="createService")
-        div(v-if="promiseRunning" style="width:108px;display:flex;align-items:center")
-            img.loading(src="@/assets/img/loading.png")
+        div(v-if="promiseRunning" style="text-align:center")
+            .loader(style="--loader-color:blue; --loader-size: 12px")
         template(v-else)
             button.final(type="submit" @click='createService') Create {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}
 
