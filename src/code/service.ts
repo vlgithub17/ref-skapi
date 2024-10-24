@@ -352,21 +352,21 @@ export default class Service {
   }
 
   //send invitation email, when accepted, user will have their account created, and be redirected
-  async resendInvitation(params: { email: string; redirect: string }): Promise<'SUCCESS: Invitation E-Mail has been sent.'> {
-    let p: any = skapi.util.extractFormData(params).data;
-    let resend = await skapi.util.request(
-      'confirm-signup',
-      {
-        service: this.id,
-        owner: this.owner,
-        is_invitation: p.email,
-        redirect: p.redirect,
-      },
-      { auth: true }
-    );
+  // async resendInvitation(params: { email: string; redirect: string }): Promise<'SUCCESS: Invitation E-Mail has been sent.'> {
+  //   let p: any = skapi.util.extractFormData(params).data;
+  //   let resend = await skapi.util.request(
+  //     'confirm-signup',
+  //     {
+  //       service: this.id,
+  //       owner: this.owner,
+  //       is_invitation: p.email,
+  //       redirect: p.redirect,
+  //     },
+  //     { auth: true }
+  //   );
 
-    return resend; // 'SUCCESS: Invitation E-Mail has been sent.'
-  }
+  //   return resend; // 'SUCCESS: Invitation E-Mail has been sent.'
+  // }
 
   async getSubscription(refresh = false): Promise<SubscriptionObj> {
     if (this.subscription && !refresh) {
