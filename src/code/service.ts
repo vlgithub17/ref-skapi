@@ -2,6 +2,7 @@ import { reactive, ref } from 'vue';
 import type { Ref } from 'vue';
 import { skapi } from './admin';
 import { Countries } from './countries';
+import { devLog } from './logger'
 import templates from 'rollup-plugin-visualizer/dist/plugin/template-types';
 
 const regions = JSON.parse(import.meta.env.VITE_REG);
@@ -122,7 +123,7 @@ export type ServiceObj = {
     };
   };
   prevent_inquiry?: boolean;
-  freeze_schema?: boolean;
+  freeze_database?: boolean;
   prevent_signup?: boolean;
   client_secret?: { [key: string]: string };
   auth_client_secret?: string[];
@@ -351,21 +352,21 @@ export default class Service {
   }
 
   //send invitation email, when accepted, user will have their account created, and be redirected
-  async resendInvitation(params: { email: string; redirect: string }): Promise<'SUCCESS: Invitation E-Mail has been sent.'> {
-    let p: any = skapi.util.extractFormData(params).data;
-    let resend = await skapi.util.request(
-      'confirm-signup',
-      {
-        service: this.id,
-        owner: this.owner,
-        is_invitation: p.email,
-        redirect: p.redirect,
-      },
-      { auth: true }
-    );
+  // async resendInvitation(params: { email: string; redirect: string }): Promise<'SUCCESS: Invitation E-Mail has been sent.'> {
+  //   let p: any = skapi.util.extractFormData(params).data;
+  //   let resend = await skapi.util.request(
+  //     'confirm-signup',
+  //     {
+  //       service: this.id,
+  //       owner: this.owner,
+  //       is_invitation: p.email,
+  //       redirect: p.redirect,
+  //     },
+  //     { auth: true }
+  //   );
 
-    return resend; // 'SUCCESS: Invitation E-Mail has been sent.'
-  }
+  //   return resend; // 'SUCCESS: Invitation E-Mail has been sent.'
+  // }
 
   async getSubscription(refresh = false): Promise<SubscriptionObj> {
     if (this.subscription && !refresh) {
@@ -473,21 +474,21 @@ export default class Service {
     client_secret?: { [key: string]: string };
     auth_client_secret?: string[]; // client_secret key to be auth required
     prevent_inquiry?: boolean; // true 인 경우 sendInquiry API 사용 불가능
-    freeze_schema?: boolean; // 데이터 베이스 구조 고정시키는 기능
+    freeze_database?: boolean; // true 이면 데이터 베이스 구조 고정시키는 기능
   }): Promise<ServiceObj> {
     let old = {
       prevent_signup: this.service.prevent_signup || false,
       client_secret: this.service.client_secret || {},
       auth_client_secret: this.service.auth_client_secret || [],
       prevent_inquiry: this.service.prevent_inquiry || false,
-      freeze_schema: this.service.freeze_schema || false,
+      freeze_database: this.service.freeze_database || false,
     };
     let toUpload = {
       prevent_signup: this.service.prevent_signup || false,
       client_secret: this.service.client_secret || {},
       auth_client_secret: this.service.auth_client_secret || [],
       prevent_inquiry: this.service.prevent_inquiry || false,
-      freeze_schema: this.service.freeze_schema || false,
+      freeze_database: this.service.freeze_database || false,
     };
 
     Object.assign(toUpload, opt);
@@ -783,7 +784,7 @@ export default class Service {
 
     let exec = async (time = 1000) => {
       let info = await skapi.util.request(this.admin_private_endpoint + 'subdomain-info', { service: this.id, owner: this.owner }, { auth: true });
-      // console.log({ subInfo: info });
+      // devLog({ subInfo: info });
 
       if (typeof info === 'string' || !info || (typeof info === 'object' && Object.keys(info).length === 0)) {
         // subdomain removed
@@ -1144,7 +1145,7 @@ export default class Service {
         auth: true,
       }
     );
-    // console.log({ dirInfo })
+    // devLog({ dirInfo });
     if (dirInfo) {
       Object.assign(this.dirInfo, dirInfo);
     }
@@ -1180,7 +1181,7 @@ export default class Service {
       method: 'post',
       auth: true,
     });
-    // console.log({ dirList });
+    // devLog({ dirList });
     return dirList;
   }
 

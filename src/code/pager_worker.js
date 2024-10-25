@@ -90,7 +90,7 @@ self.addEventListener('message', (event) => {
 
     else if (method === 'edit') {
         let { items, list, id, sortBy } = event.data;
-        // console.log(event);
+
         try {
             const previousIndexValue = getIndexValue(list[items[0][id]], sortBy);
             const updatedIndexValue = getIndexValue(items[0], sortBy);

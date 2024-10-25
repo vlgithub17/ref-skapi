@@ -101,6 +101,7 @@ form(@submit.prevent='extractForm')
 <script setup>
 import { ref, watch } from 'vue';
 import { skapi } from '@/code/admin';
+import { devLog } from '@/code/logger';
 import { currentService } from '@/views/service/main';
 import jsonCrawler from 'jsoncrawler'; // https://github.com/broadwayinc/jsoncrawler 참고
 let index = ref('none');
@@ -143,7 +144,7 @@ async function extractForm(e) {
     let form = skapi.util.extractFormData(e);
     let params = form.data;
 
-    // console.log(form)
+    // devLog({form})
 
     if (params?.index?.condition === 'range') {
         delete params.index.condition;
@@ -159,12 +160,12 @@ async function extractForm(e) {
         delete obj[p.key];
     }
 
-    // console.log(params);
+    // devLog({params});
 
     try {
         let records = await skapi.getRecords(params, fetchOption);
         fetchOption.fetchMore = true;
-        // console.log(records); // 가져온 데이터
+        // devLog({records}); // 가져온 데이터
     } catch (err) {
         alert(err.message);
     }

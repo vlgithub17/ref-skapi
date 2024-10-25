@@ -212,10 +212,11 @@ section.infoBox
 <script setup lang="ts">
 import { nextTick, reactive, ref, computed } from 'vue';
 import { currentService } from '@/views/service/main';
-import { user } from '@/code/user';
 import Toggle from '@/components/toggle.vue';
 import { dateFormat } from '@/code/admin';
 import { getFileSize } from '@/code/admin';
+import { devLog } from '@/code/logger';
+import { user } from '@/code/user';
 
 let inputName = '';
 let inputCors = '';
@@ -291,7 +292,6 @@ let changeName = () => {
         }).then(() => {
             updatingValue.name = false;
             currentService.service.name = inputName;
-            // console.log(currentService)
             modifyMode.name = false;
         }).catch(err => {
             updatingValue.name = false;
@@ -410,7 +410,7 @@ let changePreventInquiry = async (onlyAdmin: boolean) => {
      currentService.setServiceOption({
         prevent_inquiry: onlyAdmin,
      }).then(r => {
-        console.log(r);
+        devLog({r});
      })
      .catch(err=>{
         alert(err.message);
