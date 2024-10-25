@@ -474,7 +474,7 @@ export default class Service {
     client_secret?: { [key: string]: string };
     auth_client_secret?: string[]; // client_secret key to be auth required
     prevent_inquiry?: boolean; // true 인 경우 sendInquiry API 사용 불가능
-    freeze_database?: boolean; // 데이터 베이스 구조 고정시키는 기능
+    freeze_database?: boolean; // true 이면 데이터 베이스 구조 고정시키는 기능
   }): Promise<ServiceObj> {
     let old = {
       prevent_signup: this.service.prevent_signup || false,
