@@ -331,7 +331,7 @@ p {
         position: relative;
         flex: 1;
         overflow: hidden;
-        transition: transform 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
 
         &:hover {
             border-color: #fff;
