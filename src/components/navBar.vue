@@ -165,7 +165,6 @@ img.symbol.mobile {
 
     font-family: 'Radio Canada', serif;
     font-size: 20px;
-    padding: 20px 16px;
     border-bottom: 1px solid #475467;
     background-color: #101828;
 
@@ -176,6 +175,7 @@ img.symbol.mobile {
         justify-content: space-between;
 
         max-width: 80rem;
+        padding: 20px 16px;
 
         .left {
             flex-shrink: 0;
@@ -191,6 +191,7 @@ img.symbol.mobile {
                 }
 
                 img {
+                    width: auto;
                     height: 32px;
                     margin-right: 10px;
                 }

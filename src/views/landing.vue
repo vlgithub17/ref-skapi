@@ -10,20 +10,20 @@ main
             small For HTML Projects -
             Code(:hidecopy='true')
                 pre.
-                    &lt;#[span(style="color:#33adff") script ] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"] &gt;&lt;/#[span(style="color:#33adff") script]&gt;
+                    &lt;#[span(style="color:#33adff") script ] #[span(style="color:#44E9FF") src]=#[span.text-small(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"] &gt;&lt;/#[span(style="color:#33adff") script]&gt;
 
             small For SPA Projects -
             Code(:hidecopy='true' style="margin-bottom: 0.5rem")
                 pre npm i skapi-js@latest
 
-            p(style='text-align:right;')
+            p(style='text-align:right; max-width:950px;')
                 small Current Version: {{npmVersion}}
 
             div.btn-wrap(v-if='user.user_id')
-                h4
-                    | Go to&nbsp;
-                    router-link(to='my-services' style='color:yellow') My Services
-                    | &nbsp;#[span.wordset and start] building!
+                //- h4
+                //-     | Go to&nbsp;
+                //-     router-link(to='my-services' style='color:yellow') My Services
+                //-     | &nbsp;#[span.wordset and start] building!
                 router-link(to="my-services")
                     button.final My Services
             div.btn-wrap(v-else)
@@ -39,32 +39,83 @@ main
             p.sub-desc(style="max-width:730px") Just import the Skapi library into your project, create a service, connect your production to the Skapi server, and that's it.
 
             small For HTML Projects -
-            Code(:hidecopy='true')
+            Code(:hidecopy='true' data-aos="fade-up")
                 pre.
                     #[div(style="color:#35B85E") &lt;!-- index.html --&gt;]
                     #[span &lt;!DOCTYPE html&gt;]
-                    &lt;#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]&gt;&lt;/#[span(style="color:#33adff") script]&gt;
+                    &lt;#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]&gt;&lt;#[span(style="color:#344054;font-size:1px;") .]/#[span(style="color:#33adff") script]&gt;
                     &lt;#[span(style="color:#33adff") script]&gt;
                         #[span(style="color:#44E9FF") const] skapi = #[span(style="color:#44E9FF") new] Skapi&lpar;'#[span(style="color:#FFED91") service_id]', '#[span(style="color:#FFED91") owner_id]'&rpar;;
-                    &lt;/#[span(style="color:#33adff") script]&gt;
+                    &lt;#[span(style="color:#344054;font-size:1px;") .]/#[span(style="color:#33adff") script]&gt;
 
             small For SPA Projects -
-            Code(:hidecopy='true' style="margin-bottom: 0")
+            Code(:hidecopy='true' style="margin-bottom: 0" data-aos="fade-up")
                 pre.
                     #[div(style="color:#35B85E") // main.js]
                     #[span(style="color:#44E9FF") import] { Skapi } #[span(style="color:#44E9FF") from] '#[span(style="color:#FFED91") skapi-js]';
                     #[span(style="color:#44E9FF") const] skapi = #[span(style="color:#44E9FF") new] Skapi&lpar;'#[span(style="color:#FFED91") service_id]', '#[span(style="color:#FFED91") owner_id]'&rpar;;
                     #[span(style="color:#44E9FF; margin-top:24px; display:inline-block;") export] { Skapi }
-                    #[span(style="color:#35B85E; margin-top:24px; display:inline-block;") // Now you can import skapi from anywhere in your project.]
+                    #[span.text-small(style="color:#35B85E; margin-top:24px; display:inline-block;") // Now you can import skapi from anywhere in your project.]
 
     .dynamo-section
         .sec-wrapper
             h2.sub-title Save Time, Cost, and Energy
             p.sub-desc(style="max-width:756px; margin-bottom: 3.5rem;") Saving data center energy, helping the environment,<br> and most importantly, reducing your development time and costs. Just One #[span.yellow skapi.method( )] Call Away.
+            .feature(data-aos="fade-up")
+                a.feature-card(href="https://docs.skapi.com/database/create.html" target="_blank" style="max-width:28%;")
+                    .card-top
+                        img(src='@/assets/img/landingpage/icon_feature1.svg')
+                        span.text Database
+                    p.desc Simple, scalable, yet flexible database at your service.
+                    img.img-feature(src='@/assets/img/landingpage/img_feature1.svg' style="right:19px; bottom:17px")
+                a.feature-card(href="https://docs.skapi.com/authentication/create-account.html" target="_blank" style="max-width:28%;")
+                    .card-top
+                        img(src='@/assets/img/landingpage/icon_feature2.svg')
+                        span.text Security
+                    p.desc Solid security for your users and data.
+                    img.img-feature(src='@/assets/img/landingpage/img_feature2.svg' style="right:0; bottom:0;")
+                a.feature-card(href="https://docs.skapi.com/database/create.html" target="_blank")
+                    .card-top
+                        img(src='@/assets/img/landingpage/icon_feature3.svg')
+                        span.text Cloud Storage
+                    p.desc Robust storage solutions for any data size.
+                    img.img-feature(src='@/assets/img/landingpage/img_feature3.svg' style="right:0; bottom:0; opacity:0.6;")
+            .feature(data-aos="fade-up")
+                a.feature-card(href="https://docs.skapi.com/hosting/hosting.html" target="_blank")
+                    .card-top
+                        img(src='@/assets/img/landingpage/icon_feature4.svg')
+                        span.text CDN
+                    p.desc Swift content delivery across the globe.
+                    img.img-feature(src='@/assets/img/landingpage/img_feature4.svg' style="right:0; bottom:0")
+                a.feature-card(href="https://docs.skapi.com/hosting/hosting.html" target="_blank")
+                    .card-top
+                        img(src='@/assets/img/landingpage/icon_feature5.svg')
+                        span.text Instant Hosting
+                    p.desc Host your HTML content swiftly.
+                    img.img-feature(src='@/assets/img/landingpage/img_feature5.svg' style="right:0; bottom:0; opacity:0.8;")
+            .feature(data-aos="fade-up")
+                a.feature-card(href="https://docs.skapi.com/email/email-templates.html" target="_blank")
+                    .card-top
+                        img(src='@/assets/img/landingpage/icon_feature6.svg')
+                        span.text Automated E-Mail Service
+                    p.desc Simplified email automation and newsletters.
+                    img.img-feature(src='@/assets/img/landingpage/img_feature6.svg' style="right:30px; bottom:25px; opacity:0.6;")
+                a.feature-card(href="https://docs.skapi.com/api-bridge/secure-post-request.html" target="_blank" style="max-width:28%;")
+                    .card-top
+                        img(src='@/assets/img/landingpage/icon_feature7.svg')
+                        span.text API Bridge
+                    p.desc Expand with your own custom APIs.
+                    img.img-feature(src='@/assets/img/landingpage/img_feature7.svg' style="right:0; bottom:0")
+                a.feature-card(href="https://docs.skapi.com/realtime/connecting.html" target="_blank" style="max-width:28%;")
+                    .card-top
+                        img(src='@/assets/img/landingpage/icon_feature8.svg')
+                        span.text Realtime Data
+                    p.desc Real-time chat, live updates-- everything is just one method call away.
+                    img.img-feature(src='@/assets/img/landingpage/img_feature8.svg' style="right:0; bottom:-61px; width:446px;")
 
 
     .dynamo-section(style="padding:6rem 1rem; margin:0;")
-        div(v-if='user.user_id' style='text-align:center;')
+        div(v-if='user.user_id' style='text-align:center;' data-aos="fade-up")
             img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation:none; width:3rem; margin-bottom:2rem;")
             h2(style="margin-bottom:0.6rem;") Start Skapi
             p(style="margin-bottom:2rem;")
@@ -74,7 +125,7 @@ main
                 | &nbsp;and start building!
             router-link(to="my-services")
                 button.final(style='background-color:white;color:black;width:170px') My Services
-        div(v-else style='text-align:center;')
+        div(v-else style='text-align:center;' data-aos="fade-up")
             img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation:none; width:3rem; margin-bottom:2rem;")
             h2(style="margin-bottom:0.6rem;") Start Skapi
             p(style="margin-bottom:2rem;")
@@ -161,7 +212,6 @@ p {
 
 .dynamo-section {
     font-family: 'Radio Canada', serif;
-    padding: 0 1rem;
     margin: 11rem 0;
 
     .yellow {
@@ -174,7 +224,8 @@ p {
     .sec-wrapper {
         color: #fff;
         margin: 0 auto;
-        max-width: 80rem;
+        padding: 0 1rem;
+        max-width: 55rem;
     }
 
     .title {
@@ -221,6 +272,7 @@ p {
 
     p {
         font-weight: 500;
+        text-shadow: none;
     }
 
     em {
@@ -259,12 +311,73 @@ p {
         min-width: 10.5rem;
     }
 
+    .feature {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+
+    .feature-card {
+        display: block;
+        padding: 30px 24px;
+        border: 1px solid #475467;
+        border-radius: 12px;
+        background-color: transparent;
+        min-height: 357px;
+        position: relative;
+        flex: 1;
+        overflow: hidden;
+        transition: transform 0.2s ease-in-out;
+
+        &:hover {
+            border-color: #fff;
+            text-decoration: none;
+            transform: translateY(-4px);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.6rem;
+
+            img {
+                height: 2.4rem;
+            }
+        }
+
+        .text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .desc {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: rgba(225, 225, 225, 0.8);
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0;
+        }
+
+        .img-feature {
+            position: absolute;
+        }
+    }
+
     &.main {
         .sec-wrapper {
             padding: 10rem 1rem;
         }
 
         ._codeWrap {
+            max-width: 950px;
+
             .code {
                 pre {
                     display: flex;
@@ -272,6 +385,10 @@ p {
                 }
             }
         }
+    }
+
+    &:nth-last-of-type(2) {
+        margin-bottom: 5rem;
     }
 }
 
@@ -301,6 +418,29 @@ section {
     gap: 1rem;
 }
 
+@media (max-width: 992px) {
+    .dynamo-section {
+        .feature {
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .feature-card {
+            min-height: fit-content;
+            padding: 24px 18px;
+
+            &:hover {
+                border-color: #475467;
+                transform: translateY(0);
+            }
+
+            .img-feature {
+                display: none;
+            }
+        }
+    }
+}
+
 @media (max-width: 800px) {
     .dynamo-section {
         .sec-wrapper {
@@ -310,6 +450,18 @@ section {
                 &:nth-of-type(2) {
                     font-size: 1.75rem;
                 }
+            }
+        }
+
+        .feature {
+            flex-direction: column;
+        }
+
+        .feature-card {
+            max-width: 100% !important;
+
+            .card-top {
+                margin-bottom: 1rem;
             }
         }
 
@@ -372,11 +524,18 @@ section {
     }
 
     .dynamo-section {
-        padding: 0 1rem;
         margin: 5rem 0;
+
+        &:nth-last-of-type(2) {
+            margin-bottom: 0;
+        }
         
         .final {
             min-width: 144px;
+        }
+
+        .text-small {
+            font-size: 12px;
         }
     }
 }
