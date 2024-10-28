@@ -334,7 +334,7 @@ export default class Service {
   async inviteUser(
     form: UserAttributes & UserProfilePublicSettings & { email: string; }, 
     options?: {
-      confirmation_url?: string; // url 없으면 무조건 true
+      confirmation_url?: string;
       email_subscription?: boolean;
     }
   ): Promise<'SUCCESS: Invitation has been sent.'> {
