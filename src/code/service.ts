@@ -341,6 +341,13 @@ export default class Service {
     return skapi.inviteUser(Object.assign({ service: this.id, owner: this.owner }, form), options);
   }
 
+  async grantAccess(params: {
+    user_id: string;
+    access_group: number;
+  }): Promise<'SUCCESS: Access has been granted to the user.'> {
+    return skapi.grantAccess(params);
+  }
+
   // get newsletter mail address
   async requestNewsletterSender(params: { group_numb: number }): Promise<string> {
     if (this.newsletterSender[params.group_numb]) {
