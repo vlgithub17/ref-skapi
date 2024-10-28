@@ -19,13 +19,13 @@ nav#navBar(ref="navBar")
                         a.doc(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank" style="color:white")
                             //- .material-symbols-outlined.notranslate menu_book
                             svg(width="24" height="24" style="fill:white")
-                                //- use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
                             | &nbsp;Docs
 
                     li
                         .prof(@click.stop="(e)=>{showDropDown(e)}")
                             //- .material-symbols-outlined.notranslate.notranslate.fill(style="margin: 0 .5rem 0 1rem;font-size:32px;") account_circle
-                            svg(width="32" height="32")
+                            svg(width="32" height="32" style="margin: 0 .5rem 0 1rem;")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-account-circle-fill")
                             .moreVert.profile(ref="moreVert" @click.stop style="--moreVert-right:0;display:none")
                                 .inner(style="padding:0")
@@ -49,8 +49,8 @@ nav#navBar(ref="navBar")
                                     //- .policy
                                     //-     router-link(to="/pp.html" target="_blank") Terms of service • Privacy policy
                 template(v-else)
-                    li.go-github
-                        a(href="https://github.com/broadwayinc/skapi-js" target="_blank")
+                    li
+                        .go-github
                             img(src="@/assets/img/icon/icon_github.svg")
                     li
                         a.ser(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank") Docs
@@ -78,6 +78,7 @@ import { setAutoHide, removeListener } from "./navBar-autohide.ts";
 const router = useRouter();
 const route = useRoute();
 
+// console.log(route.path.split("/")[1]);
 let navBar = ref(null);
 let moreVert = ref(null);
 let running = ref(false);
@@ -134,7 +135,14 @@ onBeforeUnmount(() => {
 img.symbol.mobile {
     display: none;
 }
-
+@media (max-width: 600px) {
+    img.symbol.desktop {
+        display: none;
+    }
+    img.symbol.mobile {
+        display: block;
+    }
+}
 #proceeding {
     position: fixed;
     top: 0;
@@ -164,6 +172,7 @@ img.symbol.mobile {
 
     font-family: 'Radio Canada', serif;
     font-size: 20px;
+    padding: 20px 16px;
     border-bottom: 1px solid #475467;
     background-color: #101828;
 
@@ -174,7 +183,6 @@ img.symbol.mobile {
         justify-content: space-between;
 
         max-width: 80rem;
-        padding: 20px 16px;
 
         .left {
             flex-shrink: 0;
@@ -190,7 +198,6 @@ img.symbol.mobile {
                 }
 
                 img {
-                    width: auto;
                     height: 32px;
                     margin-right: 10px;
                 }
@@ -228,27 +235,25 @@ img.symbol.mobile {
 
                     display: flex;
 
-
+                    &:first-of-type {
+                        margin-right: 24px;
+                    }
                 }
             }
 
             .go-github {
-                margin-right: 1.5rem;
+                width: 20px;
+                height: 20px;
+                position: relative;
 
-                a {
-                    width: 20px;
+                &::after {
+                    content: "";
+                    display: inline-block;
+                    width: 1px;
                     height: 20px;
-                    position: relative;
-
-                    &::after {
-                        content: "";
-                        display: inline-block;
-                        width: 1px;
-                        height: 20px;
-                        background-color: rgba(255, 255, 255, 0.4);
-                        position: absolute;
-                        right: -24px;
-                    }
+                    background-color: rgba(255, 255, 255, 0.4);
+                    position: absolute;
+                    right: -24px;
                 }
             }
         }
@@ -346,44 +351,6 @@ img.symbol.mobile {
         width: 100%;
         height: 100%;
         object-fit: conver;
-    }
-}
-
-@media (max-width: 600px) {
-    img.symbol.desktop {
-        display: none;
-    }
-
-    img.symbol.mobile {
-        display: block;
-    }
-
-    #navBar {
-        .wrap {
-            .right {
-                ul {
-                    gap: 0.9rem;
-
-                    li {
-                        font-size: 0.9rem;
-                    }
-                }
-
-                .go-github {
-                    margin-right: 0.9rem;
-
-                    a {
-                        width: 16px;
-                        height: 16px;
-
-                        &::after {
-                            height: 0.9rem;
-                            right: -0.9rem;
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 </style>

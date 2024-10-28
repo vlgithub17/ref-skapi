@@ -334,11 +334,18 @@ export default class Service {
   async inviteUser(
     form: UserAttributes & UserProfilePublicSettings & { email: string; }, 
     options?: {
-      confirmation_url?: string; // url 없으면 무조건 true
+      confirmation_url?: string;
       email_subscription?: boolean;
     }
   ): Promise<'SUCCESS: Invitation has been sent.'> {
     return skapi.inviteUser(Object.assign({ service: this.id, owner: this.owner }, form), options);
+  }
+
+  async grantAccess(params: {
+    user_id: string;
+    access_group: number;
+  }): Promise<'SUCCESS: Access has been granted to the user.'> {
+    return skapi.grantAccess(params);
   }
 
   // get newsletter mail address
