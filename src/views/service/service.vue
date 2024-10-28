@@ -135,7 +135,7 @@ section.infoBox
             .smallTitle Freeze Database
             Toggle(
                 style='display:inline-flex;align-items:center;'
-                :active='!currentService.service.freeze_database'
+                :active='currentService.service.freeze_database'
                 :disabled='updatingValue.freeze_database'
                 @click="changeFreezeDatabase(!currentService.service.freeze_database)"
             )
