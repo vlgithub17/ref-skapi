@@ -746,8 +746,8 @@ let callParams = computed(() => {
     
     switch (searchFor.value) {
         case 'timestamp':
-            let startDate = dates?.[0] ? new Date(dates?.[0]).getTime() : 0;
-            let endDate = dates?.[1] ? new Date(dates?.[1]).getTime() : '';
+            let startDate = dates?.[0] ? new Date(new Date(dates[0]).setHours(0, 0, 0, 0)).getTime() : 0;
+            let endDate = dates?.[1] ? new Date(new Date(dates[1]).setHours(23, 59, 59, 999)).getTime() : '';
             
             if (startDate && endDate) {
                 result = {
