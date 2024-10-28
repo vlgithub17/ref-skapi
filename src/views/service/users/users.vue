@@ -167,7 +167,7 @@ br
 
         template(v-slot:head)
             tr
-                th.center(style='width:80px;padding:0')
+                th.center(style='width:120px;padding:0')
                     //- .material-symbols-outlined.notranslate.fill manage_accounts
                     svg.svgIcon(style="fill: black;")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-manage-accounts-fill")
@@ -237,6 +237,9 @@ br
                             //- .material-symbols-outlined.notranslate.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
                             svg.svgIcon.reactive(@click="openBlockUser = true; selectedUser = user")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-account-circle-fill")
+
+                        svg.svgIcon.reactive(@click="openGrantAccess = true; selectedUser = user")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
                     td.overflow(v-if="filterOptions.email") {{ user.email }}
                     td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
                     td.overflow(v-if="filterOptions.name") {{ user.name }}
@@ -585,6 +588,30 @@ Modal(:open="openUpgrade" @close="openUpgrade=false")
         router-link(:to='`/subscription/${currentService.id}`')
             button.final(type="button") Yes
 
+// grant access
+Modal(:open="openGrantAccess" @close="openGrantAccess=false")
+    h4(style='margin:.5em 0 0;') Grant Access
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            This will grant the user access.
+            #[br]
+            Access rights can be granted from 0 to 99.
+
+        span.current-access(style="margin-bottom:8px; display:block; font-weight:bold;") Current Access : {{ selectedUser.access_group }}
+        input.change-access(style="background-color: white; outline: 1px solid rgba(0, 0, 0, 0.5); border-radius: 6px; width:100%; padding:8px;" type="number" placeholder='0~99')
+
+    br
+
+    div(style="display: flex; align-items: center; justify-content: space-between;")
+        div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
+            .loader(style="--loader-color:blue; --loader-size:12px")
+        template(v-else)
+            button.noLine(type="button" @click="openGrantAccess=false; selectedUser='';") Cancel 
+            button.final(type="button" @click="grantAccess") Change  
+
 </template>
 <script setup lang="ts">
 import Table from '@/components/table.vue';
@@ -689,6 +716,7 @@ let openBlockUser = ref(false);
 let openUnblockUser = ref(false);
 let openDeleteUser = ref(false);
 let openUpgrade = ref(false);
+let openGrantAccess = ref(false);
 let selectedUser: { [key:string]: any } = {};
 let gender_public = ref(false);
 let address_public = ref(false);
@@ -710,6 +738,10 @@ let createParams = {
 let inviteParams = {
     email: '',
     name: ''
+}
+let accessParams = {
+    user_id: '',
+    access_group: ''
 }
 let redirect = '';
 let error = ref('');
@@ -1081,6 +1113,31 @@ let closeModal = () => {
         openCreateUser.value = false;
     }
 }
+
+let grantAccess = (e) => {
+    promiseRunning.value = true;
+
+    let inputAcccess = document.querySelector('.change-access');
+    let result = Number(inputAcccess.value);
+
+    if (!/^[0-9]$/.test(e.key) && !['ArrowUp', 'ArrowDown', 'Backspace', 'Tab'].includes(e.key)) {
+        e.preventDefault();
+    }
+
+    console.log(selectedUser.access_group);
+
+    currentService.grantAccess({user_id: selectedUser.user_id, access_group: result}).then(res => {
+        selectedUser.access_group = result;
+        console.log(selectedUser.access_group);
+        console.log('ttt');
+
+        inputAcccess.value = ''; 
+
+        promiseRunning.value = false;
+        openGrantAccess.value = false;
+    }).catch(e => alert(e.message));
+}
+
 </script>
 <style scoped lang="less">
 body {
@@ -1200,7 +1257,7 @@ body {
     font-size: 0.8rem;
 }
 .optionCol {
-    &>*:first-child {
+    &>*:not(:last-child) {
         margin-right: 8px;
     }
 }
@@ -1218,5 +1275,15 @@ body {
     svg {
         fill: rgba(0,0,0,0.5)
     }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
 }
 </style>
