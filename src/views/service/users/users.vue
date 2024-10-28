@@ -601,7 +601,7 @@ Modal(:open="openGrantAccess" @close="openGrantAccess=false")
             Access rights can be granted from 0 to 99.
 
         span.current-access(style="margin-bottom:8px; display:block; font-weight:bold;") Current Access : {{ selectedUser.access_group }}
-        input.change-access(style="background-color: white; outline: 1px solid rgba(0, 0, 0, 0.5); border-radius: 6px; width:100%; padding:8px;" type="number" placeholder='0~99')
+        input.change-access(type="number" placeholder='0~99' @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}" style="background-color: white; outline: 1px solid rgba(0, 0, 0, 0.5); border-radius: 6px; width:100%; padding:8px;")
 
     br
 
@@ -609,7 +609,7 @@ Modal(:open="openGrantAccess" @close="openGrantAccess=false")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
             .loader(style="--loader-color:blue; --loader-size:12px")
         template(v-else)
-            button.noLine(type="button" @click="openGrantAccess=false; selectedUser='';") Cancel 
+            button.noLine(type="button" @click="closeGrantAccess") Cancel 
             button.final(type="button" @click="grantAccess") Change  
 
 </template>
@@ -1117,25 +1117,37 @@ let closeModal = () => {
 let grantAccess = (e) => {
     promiseRunning.value = true;
 
-    let inputAcccess = document.querySelector('.change-access');
-    let result = Number(inputAcccess.value);
+    let inputAccess: HTMLInputElement = document.querySelector('.change-access');
+    let resultAccess = Number(inputAccess.value);
 
-    if (!/^[0-9]$/.test(e.key) && !['ArrowUp', 'ArrowDown', 'Backspace', 'Tab'].includes(e.key)) {
-        e.preventDefault();
+    if (resultAccess <= 0 || resultAccess >= 99) {
+        promiseRunning.value = false;
+        inputAccess.value = '';
     }
 
-    console.log(selectedUser.access_group);
-
-    currentService.grantAccess({user_id: selectedUser.user_id, access_group: result}).then(res => {
-        selectedUser.access_group = result;
-        console.log(selectedUser.access_group);
-        console.log('ttt');
-
-        inputAcccess.value = ''; 
+    currentService.grantAccess({user_id: selectedUser.user_id, access_group: resultAccess}).then(res => {
+        selectedUser.access_group = resultAccess;
+        inputAccess.value = '';
 
         promiseRunning.value = false;
         openGrantAccess.value = false;
-    }).catch(e => alert(e.message));
+        alert(res);
+    }).catch(e => {
+        promiseRunning.value = false;
+        inputAccess.value = '';
+        alert(e.message);
+    });
+}
+
+let closeGrantAccess = () => {
+    let inputAccess: HTMLInputElement = document.querySelector('.change-access');
+    
+    openGrantAccess.value =false;
+    selectedUser = {};
+
+    if(inputAccess) {
+        inputAccess.value = '';
+    }
 }
 
 </script>
