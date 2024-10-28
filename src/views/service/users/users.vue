@@ -955,7 +955,9 @@ let createUser = () => {
         createParams = Object.assign({gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value}, createParams)
     }
 
-    currentService.admin_signup(Object.assign({service: currentService.id}, createParams)).then(async(res) => {
+    currentService.createAccount(createParams, {
+        // email_subscription: redirect || false,
+    }).then(async(res) => {
         res.email = res.email_admin;
         await pager.insertItems([res]);
 
@@ -967,6 +969,7 @@ let createUser = () => {
         for(let i in createParams) {
             createParams[i] = '';
         }
+        redirect = '';
         gender_public.value = false;
         address_public.value = false;
         birthdate_public.value = false;
@@ -984,11 +987,16 @@ let inviteUser = () => {
     promiseRunning.value = true;
     error.value = '';
 
-    currentService.admin_signup(Object.assign({access_group: 1, service: currentService.id}, inviteParams), {
-        signup_confirmation: redirect || false
-    }).then((res) => {
+    let options = {};
+    if (redirect) {
+        options.confirmation_url = redirect;
+    }
+
+    currentService.inviteUser(inviteParams, options).then((res) => {
         promiseRunning.value = false;
         openInviteUser.value = false;
+
+        document.getElementById("inviteForm").reset();
         for(let i in inviteParams) {
             inviteParams[i] = '';
         }
