@@ -598,10 +598,10 @@ Modal(:open="openGrantAccess" @close="openGrantAccess=false")
         p.
             This will grant the user access.
             #[br]
-            Access rights can be granted from 0 to 99.
+            Access rights can be granted from 1 to 99.
 
         span.current-access(style="margin-bottom:8px; display:block; font-weight:bold;") Current Access : {{ selectedUser.access_group }}
-        input.change-access(type="number" placeholder='0~99' @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}" style="background-color: white; outline: 1px solid rgba(0, 0, 0, 0.5); border-radius: 6px; width:100%; padding:8px;")
+        input.change-access(type="number" placeholder='1~99' @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}" style="background-color: white; outline: 1px solid rgba(0, 0, 0, 0.5); border-radius: 6px; width:100%; padding:8px;")
 
     br
 
@@ -1120,7 +1120,7 @@ let grantAccess = (e) => {
     let inputAccess: HTMLInputElement = document.querySelector('.change-access');
     let resultAccess = Number(inputAccess.value);
 
-    if (resultAccess <= 0 || resultAccess >= 99) {
+    if (resultAccess < 1 || resultAccess > 99) {
         promiseRunning.value = false;
         inputAccess.value = '';
     }
