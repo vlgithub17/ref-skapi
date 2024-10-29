@@ -35,7 +35,7 @@ onMounted(() => {
     window.addEventListener('resize', () => {
         footerHeight.value = document.getElementById('footer').offsetHeight;
 
-        console.log(footerHeight.value)
+        // console.log(footerHeight.value)
     });
 })
 
@@ -52,7 +52,7 @@ footer {
     box-shadow: 0px 2px black; // compensate offset calc
 
     background-color: #101828;
-    height: 4rem;
+    height: 3rem;
 
     & > * {
         font-size: 0.8rem;
