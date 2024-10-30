@@ -34,8 +34,6 @@ onMounted(() => {
     // detect window width change
     window.addEventListener('resize', () => {
         footerHeight.value = document.getElementById('footer').offsetHeight;
-
-        console.log(footerHeight.value)
     });
 })
 
