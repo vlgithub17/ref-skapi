@@ -50,7 +50,7 @@ footer {
     box-shadow: 0px 2px black; // compensate offset calc
 
     background-color: #101828;
-    height: 4rem;
+    height: 3rem;
 
     & > * {
         font-size: 0.8rem;
