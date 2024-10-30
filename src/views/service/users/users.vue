@@ -232,14 +232,17 @@ br
                             //- .material-symbols-outlined.notranslate.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
                             svg.svgIcon.reactive(@click="openUnblockUser = true; selectedUser = user")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-no-accounts-fill")
+
+                            svg.svgIcon.reactive(@click="openGrantAccess = false; selectedUser = user")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
                             
                         template(v-else)
                             //- .material-symbols-outlined.notranslate.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
                             svg.svgIcon.reactive(@click="openBlockUser = true; selectedUser = user")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-account-circle-fill")
 
-                        svg.svgIcon.reactive(@click="openGrantAccess = true; selectedUser = user")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
+                            svg.svgIcon.reactive(@click="openGrantAccess = true; selectedUser = user")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
                     td.overflow(v-if="filterOptions.email") {{ user.email }}
                     td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
                     td.overflow(v-if="filterOptions.name") {{ user.name }}
