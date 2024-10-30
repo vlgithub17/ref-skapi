@@ -78,7 +78,6 @@ import { setAutoHide, removeListener } from "./navBar-autohide.ts";
 const router = useRouter();
 const route = useRoute();
 
-// console.log(route.path.split("/")[1]);
 let navBar = ref(null);
 let moreVert = ref(null);
 let running = ref(false);

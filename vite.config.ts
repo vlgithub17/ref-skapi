@@ -21,6 +21,9 @@ export default defineConfig({
       },
     },
   },
+  define: {
+    'import.meta.env.MODE': JSON.stringify(process.env.NODE_ENV || 'development'),
+  },
   plugins: [
     visualizer({
       open: false, // 자동으로 브라우저를 열지 않음

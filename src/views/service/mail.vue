@@ -276,6 +276,7 @@ import Table from "@/components/table.vue";
 import Modal from "@/components/modal.vue";
 import Pager from "@/code/pager";
 import { skapi } from "@/code/admin";
+import { devLog } from "@/code/logger";
 import Select from "@/components/select.vue";
 import Toggle from "@/components/toggle.vue";
 type Newsletter = {
@@ -589,7 +590,7 @@ let useEmail = (ns: Newsletter) => {
 
 let service = currentService.service;
 let email_templates = currentService.service.email_triggers.template_setters;
-console.log(currentService.service)
+devLog(currentService.service)
 let parseOpt: any = ref(true);
 
 let currentTemp = computed(() => {

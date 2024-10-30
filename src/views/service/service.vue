@@ -122,13 +122,22 @@ section.infoBox
                 @click="changeCreateUserMode(!currentService.service.prevent_signup)"
             )
 
-        .infoValue(style='display: flex;align-items: center;min-height: 0;')
+        .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0')
             .smallTitle Prevent Inquiry
             Toggle(
                 style='display:inline-flex;align-items:center;'
                 :active='currentService.service.prevent_inquiry'
                 :disabled='updatingValue.prevent_inquiry'
                 @click="changePreventInquiry(!currentService.service.prevent_inquiry)"
+            )
+        
+        .infoValue(style='display: flex;align-items: center;min-height: 0;')
+            .smallTitle Freeze Database
+            Toggle(
+                style='display:inline-flex;align-items:center;'
+                :active='currentService.service.freeze_database'
+                :disabled='updatingValue.freeze_database'
+                @click="changeFreezeDatabase(!currentService.service.freeze_database)"
             )
         
         .infoValue
@@ -212,10 +221,11 @@ section.infoBox
 <script setup lang="ts">
 import { nextTick, reactive, ref, computed } from 'vue';
 import { currentService } from '@/views/service/main';
-import { user } from '@/code/user';
 import Toggle from '@/components/toggle.vue';
 import { dateFormat } from '@/code/admin';
 import { getFileSize } from '@/code/admin';
+import { devLog } from '@/code/logger';
+import { user } from '@/code/user';
 
 let inputName = '';
 let inputCors = '';
@@ -233,6 +243,7 @@ let updatingValue = reactive({
     prevent_signup: false,
     enableDisable: false,
     prevent_inquiry: false,
+    freeze_database: false,
 });
 let focus_name = ref();
 let focus_cors = ref();
@@ -291,7 +302,6 @@ let changeName = () => {
         }).then(() => {
             updatingValue.name = false;
             currentService.service.name = inputName;
-            // console.log(currentService)
             modifyMode.name = false;
         }).catch(err => {
             updatingValue.name = false;
@@ -409,13 +419,22 @@ let changePreventInquiry = async (onlyAdmin: boolean) => {
     updatingValue.prevent_inquiry = true;
      currentService.setServiceOption({
         prevent_inquiry: onlyAdmin,
-     }).then(r => {
-        console.log(r);
-     })
-     .catch(err=>{
+     }).catch(err=>{
         alert(err.message);
     }).finally(() => {
         updatingValue.prevent_inquiry = false;
+    });
+}
+
+// change freeze_database
+let changeFreezeDatabase = async (onlyAdmin: boolean) => {
+    updatingValue.freeze_database = true;
+     currentService.setServiceOption({
+        freeze_database: onlyAdmin,
+     }).catch(err=>{
+        alert(err.message);
+    }).finally(() => {
+        updatingValue.freeze_database = false;
     });
 }
 </script>
