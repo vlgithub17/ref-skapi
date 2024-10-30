@@ -1,8 +1,8 @@
 <template lang="pug">
 h1 Testing Page
 
-//freeze_schema
-button(@click="currentService.setServiceOption({freeze_schema: !currentService.service.freeze_schema}).then(r => console.log(r))") freeze_schema
+//freeze_database
+button(@click="currentService.setServiceOption({freeze_database: !currentService.service.freeze_database}).then(r => console.log(r))") freeze_database
 
 
 </template>

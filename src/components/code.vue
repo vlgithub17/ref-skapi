@@ -15,7 +15,6 @@
 let props = defineProps(['hidecopy']);
 let cpy_btn = !props.hidecopy;
 
-// console.log({props})
 let copy = (e) => {
     let allcopy = document.querySelectorAll('.copyMsg');
     for (let i = 0; i < allcopy.length; i++) {
@@ -42,6 +41,7 @@ let copy = (e) => {
 ._codeWrap {
     position: relative;
     margin-top: 8px;
+    
 
     .copy {
         display: inline-block;
@@ -52,17 +52,24 @@ let copy = (e) => {
     }
 
     .code {
-        background: var(--black-8);
+        // background: var(--black-8);
         margin-top: 8px;
         border-radius: 6px;
         box-shadow: 2px 2px 3px 0px rgba(0, 0, 0, 0.15);
         color: #FFF;
         overflow-x: auto;
 
+        background: #344054;
+        border: 1px solid #475467;
+
         pre {
-            font-size: 15px;
+            font-family: 'Space Mono', monospace;
+            // display: flex;
+            align-items: center;    
+            font-size: 16px;
             margin: 0;
             padding: 1rem;
+            min-height: 44px;
         }
     }
 }

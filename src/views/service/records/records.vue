@@ -367,7 +367,7 @@ br
                     td.overflow(v-if="filterOptions.tag") 
                         template(v-if="rc?.tags" v-for="(tag, index) in rc.tags")
                             span(v-if="rc.tags.length-1 == index") {{ tag }}
-                            span(v-else) {{ tag }}, 
+                            span(v-else) {{ tag }}
                         template(v-else) -
 
                     td.overflow(v-if="filterOptions.files") {{ bins[rc.record_id].length }}
@@ -476,6 +476,7 @@ br
                             v-if="indexType !== 'boolean'"
                             v-model="index_value"
                                 name='config[index][value]'
+                                :step='indexType === "number" ? "any" : "undefined"'
                                 :type='indexType' :placeholder='indexType === "string" ? "Alphanumeric, space only." : indexType === "number" ? "Number value (Required)" : "Boolean value"'
                                 :required="!!index_name"
                                 style="flex-grow:30; width:unset; vertical-align:middle;")
@@ -500,7 +501,7 @@ br
 
                 .row.indent 
                     .key Reference ID
-                    input.line.value(v-model="selectedRecord.reference.record_id" name='config[reference][record_id]' placeholder='Record ID to reference')
+                    input.line.value(v-model="selectedRecord.reference.record_id" name='config[reference][record_id]' placeholder='Record ID to reference' )
 
                 .row.indent 
                     .key Reference Limit
@@ -598,6 +599,7 @@ import type { Ref } from "vue";
 import { ref, computed, nextTick, reactive, watch } from "vue";
 import { skapi } from "@/code/admin";
 import { user } from "@/code/user";
+import { devLog } from "@/code/logger"
 import { currentService, serviceRecords, serviceBins} from "@/views/service/main";
 import { showDropDown } from "@/assets/js/event.js";
 import { uploadRecord } from "@/views/service/records/record";
@@ -768,7 +770,7 @@ let getPage = async (refresh?: boolean) => {
         });
 
         bins = serviceBins[currentService.id];
-        console.log(bins)
+        devLog({bins});
 
         // save endOfList status
         serviceRecords[currentService.id].endOfList = fetchedData.endOfList;
@@ -777,7 +779,7 @@ let getPage = async (refresh?: boolean) => {
         // insert data in pager
         if (fetchedData.list.length > 0) {
             await pager.insertItems(fetchedData.list);
-            // console.log(pager);
+            // devLog({pager});
         }
 
         // get page from pager
@@ -858,7 +860,7 @@ let fileList = ref([]);
 
 watch(selectedRecord, (nv) => {
     if (nv) {
-        console.log(nv)
+        devLog({nv});
         deleteFileList.value = [];
         selectedRecord_readOnly.value = nv?.readonly || false;
         selectedRecord_subscription.value = nv?.table?.subscription || false;
@@ -906,6 +908,12 @@ let upload = async (e: SubmitEvent) => {
             upl = await uploadRecord(e, true, remove_bin);
             bins[upl.record_id] = upl?.bin || {}; // move bin data to bins
             delete upl.bin;
+            devLog({listDisplay})
+            for (let r of listDisplay.value) {
+                if (r.record_id == selectedRecord.value.record_id && selectedRecord.value.tags == '') {
+                    r.tags = [];
+                }
+            }
             await pager.editItem(upl);
         } else {
             upl = await uploadRecord(e, false);
