@@ -8,35 +8,29 @@ main
             p.desc Skapi is a powerful JavaScript library for client-side HTML, <br>enabling you to create fully scalable web applications without backend engineering.
 
             small For HTML Projects -
-            Code(:hidecopy='true')
+            Code
                 pre.
                     &lt;#[span(style="color:#33adff") script ] #[span(style="color:#44E9FF") src]=#[span.text-small(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"] &gt;&lt;/#[span(style="color:#33adff") script]&gt;
 
             small For SPA Projects -
-            Code(:hidecopy='true' style="margin-bottom: 0.5rem")
+            Code(style="margin-bottom: 0.5rem")
                 pre npm i skapi-js@latest
 
             p(style='text-align:right; max-width:950px;')
                 small Current Version: {{npmVersion}}
 
-            div.btn-wrap(v-if='user.user_id')
-                router-link(to="my-services")
-                    button.final My Services
-            div.btn-wrap(v-else)
-                //- router-link(to="signup")
-                //-     button.final Sign-Up
+            div.btn-wrap
                 a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
-                    //- button.final(style='background-color:#344054;border:1px solid rgba(225,225,225,0.3);color:#fff;') Read Dosc
-                    button.final Read Dosc
+                    button.final Read Docs
 
     .dynamo-section
         .sec-wrapper
-            h2.sub-title Build Anything, Fast!
+            h2.sub-title(style="font-size:3rem; color:#FFED91;") Build Anything, Fast!
             p.sub-desc(style="max-width:800px; margin-bottom: 3.5rem;") Painstakingly developed to be both simple and powerful, #[span.wordset Skapi empowers] you to build any type of web application, #[span.wordset whether it’s a] #[span.wordset chat app,] #[span.wordset e-commerce platform,] #[span.wordset or your next big SaaS product.]
             p.sub-desc(style="max-width:870px") Just import Skapi library into your project, and you're ready to go.
 
             small For HTML Projects -
-            Code(:hidecopy='true' data-aos="fade-up")
+            Code(data-aos="fade-up")
                 pre.
                     #[div(style="color:#35B85E") &lt;!-- index.html --&gt;]
                     #[span &lt;!DOCTYPE html&gt;]
@@ -46,7 +40,7 @@ main
                     &lt;#[span(style="color:#344054;font-size:1px;") .]/#[span(style="color:#33adff") script]&gt;
 
             small For SPA Projects -
-            Code(:hidecopy='true' style="margin-bottom:0" data-aos="fade-up")
+            Code(style="margin-bottom:0" data-aos="fade-up")
                 pre.
                     #[div(style="color:#35B85E") // main.js]
                     #[span(style="color:#44E9FF") import] { Skapi } #[span(style="color:#44E9FF") from] '#[span(style="color:#FFED91") skapi-js]';
@@ -130,9 +124,6 @@ import {npmVersion} from "@/main.ts";
 
 <style lang="less" scoped>
 main {
-    // background: linear-gradient(32deg, #293fe6, rgba(255, 0, 0, 0) 80%),
-    //     linear-gradient(229deg, #293fe6, rgba(0, 255, 0, 0) 80%),
-    //     linear-gradient(151deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
     background-color: #101828;
 }
 
@@ -228,7 +219,7 @@ p {
     }
 
     .sub-title {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 1.5rem;
     }
@@ -274,6 +265,7 @@ p {
 
     ._codeWrap {
         margin-bottom: 38px;
+        fill: #fff;
 
         .code {
             pre {
