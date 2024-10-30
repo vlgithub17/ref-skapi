@@ -5,7 +5,9 @@
  */
 
 //  import font
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap'); // Noto Sans
+@import url('https://fonts.googleapis.com/css2?family=Radio+Canada:ital,wght@0,300..700;1,300..700&display=swap');  // Radio Canada
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');  // Space Mono
 
 :root {
   --main-color: #293fe6;
@@ -253,9 +255,8 @@ body {
   padding: 0;
   background-color: #fafaff;
   // font-family: "Radio Canada", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  font-family: "Noto Sans", sans-serif;
+  font-family: 'Noto Sans', sans-serif, 'Radio Canada', serif, 'Space Mono', monospace, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+  Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue";
   font-weight: 400; // 기본 굵기 400 - 특정 모니터에서 폰트가 너무 얇아 보이는 경우가 있었음
 
   font-optical-sizing: auto;
@@ -267,6 +268,8 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  cursor: default;
 }
 svg {
   vertical-align: middle;
