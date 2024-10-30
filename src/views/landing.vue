@@ -10,7 +10,7 @@ main
             small For HTML Projects -
             Code
                 pre.
-                    &lt;#[span(style="color:#33adff") script ] #[span(style="color:#44E9FF") src]=#[span.text-small(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"] &gt;&lt;/#[span(style="color:#33adff") script]&gt;
+                    &lt;#[span(style="color:#33adff") script ] #[span(style="color:#44E9FF") src]=#[span.text-small(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]&gt;&lt;/#[span(style="color:#33adff") script]&gt;
 
             small For SPA Projects -
             Code(style="margin-bottom: 0.5rem")
@@ -34,10 +34,10 @@ main
                 pre.
                     #[div(style="color:#35B85E") &lt;!-- index.html --&gt;]
                     #[span &lt;!DOCTYPE html&gt;]
-                    &lt;#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]&gt;&lt;#[span(style="color:#344054;font-size:1px;") .]/#[span(style="color:#33adff") script]&gt;
+                    &lt;#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]&gt;&lt;/#[span(style="color:#33adff") script]&gt;
                     &lt;#[span(style="color:#33adff") script]&gt;
                         #[span(style="color:#44E9FF") const] skapi = #[span(style="color:#44E9FF") new] Skapi&lpar;'#[span(style="color:#FFED91") service_id]', '#[span(style="color:#FFED91") owner_id]'&rpar;;
-                    &lt;#[span(style="color:#344054;font-size:1px;") .]/#[span(style="color:#33adff") script]&gt;
+                    &lt;/#[span(style="color:#33adff") script]&gt;
 
             small For SPA Projects -
             Code(style="margin-bottom:0" data-aos="fade-up")
