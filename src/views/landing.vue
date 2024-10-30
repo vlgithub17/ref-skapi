@@ -32,8 +32,8 @@ main
     .dynamo-section
         .sec-wrapper
             h2.sub-title Build Anything, Fast!
-            p.sub-desc(style="max-width:800px; margin-bottom: 3.5rem;") Painstakingly developed to be simple yet powerful, Skapi empowers you to build any type of web application.
-            p.sub-desc(style="max-width:870px") Whether it’s a chat app, e-commerce platform, or your next big SaaS product, just import the Skapi library into your project, and you're ready to go.
+            p.sub-desc(style="max-width:800px; margin-bottom: 3.5rem;") Painstakingly developed to be both simple and powerful, #[span.wordset Skapi empowers] you to build any type of web application, #[span.wordset whether it’s a] #[span.wordset chat app,] #[span.wordset e-commerce platform,] #[span.wordset or your next big SaaS product.]
+            p.sub-desc(style="max-width:870px") Just import Skapi library into your project, and you're ready to go.
 
             small For HTML Projects -
             Code(:hidecopy='true' data-aos="fade-up")
