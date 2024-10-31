@@ -1048,6 +1048,9 @@ let inviteUser = () => {
         promiseRunning.value = false;
         openInviteUser.value = false;
 
+        let successMessage = `Invitation E-Mail has been sent to: "${inviteParams.email}". Invited users will be listed once they accept their invitation.`;
+        alert(successMessage);
+
         document.getElementById("inviteForm").reset();
         for(let i in inviteParams) {
             inviteParams[i] = '';

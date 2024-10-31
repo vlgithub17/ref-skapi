@@ -310,20 +310,36 @@ watch(() => route, nv => {
     color: var(--main-color);
     white-space: nowrap;
     fill: var(--main-color); // for svg icon
+    
+    // border-radius: 12px;
+    // margin-bottom: 16px;
 
     &.active {
         background: #293fe60d;
         box-shadow: 0 0 0 1px var(--main-color) inset;
 
+        // background-color: #344054;
+        // color: #fff;
+        // fill: #fff;
+
         .name {
             font-weight: 700;
         }
+
+        // &:hover {
+        //     background-color: #344054;
+        // }
     }
 
     &:hover {
         background: #293fe60d;
+        // background-color: #34405521;
         // box-shadow: -1px -1px 0px 0px rgba(0, 0, 0, 0.1) inset;
     }
+
+    // &:last-child {
+    //     margin-bottom: 0;
+    // }
 
     span {
         vertical-align: middle;
