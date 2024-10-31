@@ -753,8 +753,6 @@ let getPage = async (refresh?: boolean) => {
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
         
-        console.log('listDisplay', listDisplay.value);
-        console.log('disp.list', disp.list);
         return;
     } else if (!endOfList.value || refresh) {
         fetching.value = true;
@@ -791,9 +789,6 @@ let getPage = async (refresh?: boolean) => {
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
-
-        console.log('listDisplay 2', listDisplay.value);
-        console.log('disp.list 2', disp.list);
 
         if (disp.maxPage > 0 && disp.maxPage < currentPage.value && !disp.list.length) {
             currentPage.value--;
@@ -1004,14 +999,12 @@ let checked: any = ref({});
 let checkIfAny = (e) => {
     // 아무것도 체크안되어있으면 전체 체크표시 해체
     let chk = e.target.checked;
-    console.log('chk', chk);
 
     if (chk) {
         return;
     }
 
     let n = checked.value;
-    console.log('n', n);
 
     let has = false;
     for (let k in n) {
@@ -1023,13 +1016,10 @@ let checkIfAny = (e) => {
         }
     }
 
-    console.log('has', has);
 
     if (!has) {
         checkedall.value = false;
     }
-
-    console.log('checked.value', checked.value);
 };
 let checkedall = ref(false);
 let checkall = () => {
