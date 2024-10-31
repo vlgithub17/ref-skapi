@@ -11,16 +11,22 @@ nav#navBar(ref="navBar")
                 img.symbol.mobile(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation: none;")
                 img.symbol.desktop(src="@/assets/img/logo/logo-white.svg" style="image-orientation: none;height:38px")
         .right
-            ul
+            ul.menu-wrap
                 template(v-if="loginState")
-                    li(v-if="route.name == 'home'" style="margin-left:1rem")
+                    li.go-github
+                        a(href="https://github.com/broadwayinc/skapi-js" target="_blank")
+                            img(src="@/assets/img/icon/icon_github.svg")
+                    li
+                        a.ser(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank") Docs
+                        
+                    li(v-if="route.name == 'home'")
                         router-link(to="/my-services") My Services
-                    li(v-else="route.name != 'home'")
-                        a.doc(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank" style="color:white")
-                            //- .material-symbols-outlined.notranslate menu_book
-                            svg(width="24" height="24" style="fill:white")
-                                //- use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
-                            | &nbsp;Docs
+                    //- li(v-else="route.name != 'home'")
+                    //-     a.doc(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank" style="color:white")
+                    //-         //- .material-symbols-outlined.notranslate menu_book
+                    //-         svg(width="24" height="24" style="fill:white")
+                    //-             //- use(xlink:href="@/assets/img/material-icon.svg#icon-menu-book")
+                    //-         | &nbsp;Docs
 
                     li
                         .prof(@click.stop="(e)=>{showDropDown(e)}")
@@ -219,6 +225,10 @@ img.symbol.mobile {
                 align-items: center;
                 gap: 24px;
 
+                &.menu-wrap {
+                    height: 40px;
+                }
+
                 li {
                     display: inline-block;
                     vertical-align: middle;
@@ -227,13 +237,11 @@ img.symbol.mobile {
                     cursor: pointer;
 
                     display: flex;
-
-
                 }
             }
 
             .go-github {
-                margin-right: 1.5rem;
+                margin-right: 1.25rem;
 
                 a {
                     width: 20px;

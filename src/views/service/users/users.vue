@@ -233,7 +233,7 @@ br
                             svg.svgIcon.reactive(@click="openUnblockUser = true; selectedUser = user")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-no-accounts-fill")
 
-                            svg.svgIcon.reactive(@click="openGrantAccess = false; selectedUser = user")
+                            svg.svgIcon.reactive(@click="openGrantAccess = false; selectedUser = user" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
                             
                         template(v-else)
@@ -504,7 +504,7 @@ Modal(:open="openInviteUser" @close="openInviteUser=false")
                 .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine(type="button" @click="closeModal") Cancel 
-                button.final(type="submit") Create User
+                button.final(type="submit") Invite
 
 // block user
 Modal(:open="openBlockUser" @close="openBlockUser=false")
@@ -615,6 +615,22 @@ Modal(:open="openGrantAccess" @close="openGrantAccess=false")
             button.noLine(type="button" @click="closeGrantAccess") Cancel 
             button.final(type="button" @click="grantAccess") Change  
 
+// grant access > success
+Modal(:open="successGrantAccess" @close="successGrantAccess=false")
+    h4(style='margin:.5em 0 0;') Grant Access
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            Access level #[strong {{selectedUser.access_group}}] has been granted to user : #[strong {{selectedUser.user_id}}].
+
+    br
+
+    div(style="display: flex; align-items: center; justify-content: flex-end;")
+        button.final(type="button" @click="successGrantAccess=false") close
+            
+
 </template>
 <script setup lang="ts">
 import Table from '@/components/table.vue';
@@ -720,6 +736,7 @@ let openUnblockUser = ref(false);
 let openDeleteUser = ref(false);
 let openUpgrade = ref(false);
 let openGrantAccess = ref(false);
+let successGrantAccess = ref(false);
 let selectedUser: { [key:string]: any } = {};
 let gender_public = ref(false);
 let address_public = ref(false);
@@ -1031,6 +1048,9 @@ let inviteUser = () => {
         promiseRunning.value = false;
         openInviteUser.value = false;
 
+        let successMessage = `Invitation E-Mail has been sent to: "${inviteParams.email}". Invited users will be listed once they accept their invitation.`;
+        alert(successMessage);
+
         document.getElementById("inviteForm").reset();
         for(let i in inviteParams) {
             inviteParams[i] = '';
@@ -1134,11 +1154,22 @@ let grantAccess = (e) => {
 
         promiseRunning.value = false;
         openGrantAccess.value = false;
-        alert(res);
+        successGrantAccess.value = true;
     }).catch(e => {
+        if (inputAccess.validity.valueMissing) {
+            inputAccess.setCustomValidity('');
+        } else {
+            inputAccess.setCustomValidity('Invalid Access Group');
+            inputAccess.addEventListener('input', (e) => {
+                const inputAccess = e.target;
+                inputAccess.setCustomValidity('');
+            });
+        }
+
+        inputAccess.reportValidity();
+
         promiseRunning.value = false;
         inputAccess.value = '';
-        alert(e.message);
     });
 }
 
