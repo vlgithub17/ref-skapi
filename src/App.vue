@@ -50,7 +50,8 @@ footer {
     box-shadow: 0px 2px black; // compensate offset calc
 
     background-color: #101828;
-    height: 3rem;
+    height: 2.5rem;
+    overflow-y: hidden;
 
     & > * {
         font-size: 0.8rem;
@@ -61,15 +62,9 @@ footer {
         margin-top: .88em;
     }
     .hideOnMobile {
-        @media (max-width: 600px) {
+        @media (max-width: 606px) {
             display: none;
         }
-    }
-}
-
-@media (max-width: 600px) {
-    footer {
-        height: 3rem;
     }
 }
 </style>

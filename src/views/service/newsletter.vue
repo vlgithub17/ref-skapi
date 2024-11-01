@@ -189,7 +189,7 @@ Modal(:open="emailToDelete" @close="emailToDelete=false")
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import type { Ref } from 'vue';
-import { currentService } from './main';
+import { currentService, serviceBulkMails } from './main';
 import { user } from '@/code/user';
 import Table from '@/components/table.vue';
 import { skapi } from '@/code/admin';
@@ -313,14 +313,25 @@ let callParams = computed(() => {
 });
 
 let getPage = async (refresh?: boolean) => {
-    if (!pager) {
-        // if pager is not ready, return
-        return;
-    }
+    // if (!pager) {
+    //     // if pager is not ready, return
+    //     return;
+    // }
     
     if(refresh) {
         endOfList.value = false;
     }
+
+    if(!serviceBulkMails[currentService.id] || searchFor.value) {
+        serviceBulkMails[currentService.id] = await Pager.init({
+            id: 'message_id',
+            resultsPerPage: 10,
+            sortBy: searchFor.value,
+            order: ascending.value ? 'asc' : 'desc',
+        });
+    }
+
+    pager = serviceBulkMails[currentService.id];
 
     if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
         // if is not refresh and has page data
@@ -368,15 +379,28 @@ let resetIndex = async () => {
 let init = async () => {
     currentPage.value = 1;
 
-    // setup pagers
-    pager = await Pager.init({
-        id: 'message_id',
-        resultsPerPage: 10,
-        sortBy: searchFor.value,
-        order: ascending.value ? 'asc' : 'desc',
-    });
+    if(serviceBulkMails[currentService.id] && Object.keys(serviceBulkMails[currentService.id]).length) {
+        pager = serviceBulkMails[currentService.id];
+        endOfList.value = serviceBulkMails[currentService.id].endOfList;
 
-    getPage(true);
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        listDisplay.value = disp.list;
+
+    } else {
+        serviceBulkMails[currentService.id] = pager;
+        getPage(true);
+    }
+
+    // setup pagers
+    // pager = await Pager.init({
+    //     id: 'message_id',
+    //     resultsPerPage: 10,
+    //     sortBy: searchFor.value,
+    //     order: ascending.value ? 'asc' : 'desc',
+    // });
+
+    // getPage(true);
 }
 
 init();
