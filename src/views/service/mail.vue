@@ -268,7 +268,7 @@ Modal(:open="!!emailToUse" @close="emailToUse=false")
 <script setup lang="ts">
 import { reactive, ref, computed, watch } from "vue";
 import type { ComputedRef, Ref } from "vue";
-import { currentService } from "./main";
+import { currentService, serviceAutoMails } from "./main";
 import { user } from "@/code/user";
 import Code from "@/components/code.vue";
 import { dateFormat } from "@/code/admin";
@@ -448,14 +448,25 @@ let callParams = computed(() => {
 });
 
 let getPage = async (refresh?: boolean) => {
-    if (!pager) {
-        // if pager is not ready, return
-        return;
-    }
+    // if (!pager) {
+    //     // if pager is not ready, return
+    //     return;
+    // }
 
     if (refresh) {
         endOfList.value = false;
     }
+
+    if(!serviceAutoMails[currentService.id] || searchFor.value) {
+        serviceAutoMails[currentService.id] = await Pager.init({
+            id: "message_id",
+            resultsPerPage: 10,
+            sortBy: searchFor.value,
+            order: ascending.value ? "asc" : "desc",
+        });
+    }
+
+    pager = serviceAutoMails[currentService.id];
 
     if ((!refresh && maxPage.value >= currentPage.value) || endOfList.value) {
         // if is not refresh and has page data
@@ -590,7 +601,7 @@ let useEmail = (ns: Newsletter) => {
 
 let service = currentService.service;
 let email_templates = currentService.service.email_triggers.template_setters;
-devLog(currentService.service)
+// devLog(currentService.service)
 let parseOpt: any = ref(true);
 
 let currentTemp = computed(() => {
@@ -690,22 +701,34 @@ let init = async () => {
     currentPage.value = 1;
 
 
-    await currentService.getEmailTemplate(group.value).then(res => {
-        if (!res) return;
+    // await currentService.getEmailTemplate(group.value).then(res => {
+    //     if (!res) return;
 
-        (currentService.service as any)["template_" + group.value].url = res.url;
-        (currentService.service as any)["template_" + group.value].subject = res.subject;
-    });
+    //     (currentService.service as any)["template_" + group.value].url = res.url;
+    //     (currentService.service as any)["template_" + group.value].subject = res.subject;
+    // });
 
     // setup pagers
-    pager = await Pager.init({
-        id: "message_id",
-        resultsPerPage: 10,
-        sortBy: searchFor.value,
-        order: ascending.value ? "asc" : "desc",
-    });
+    if(serviceAutoMails[currentService.id] && Object.keys(serviceAutoMails[currentService.id]).length) {
+        pager = serviceAutoMails[currentService.id];
+        endOfList.value = serviceAutoMails[currentService.id].endOfList;
 
-    getPage(true);
+        let disp = pager.getPage(currentPage.value);
+        maxPage.value = disp.maxPage;
+        listDisplay.value = disp.list;
+
+    } else {
+        serviceAutoMails[currentService.id] = pager;
+        getPage(true);
+    }
+
+    // pager = await Pager.init({
+    //     id: "message_id",
+    //     resultsPerPage: 10,
+    //     sortBy: searchFor.value,
+    //     order: ascending.value ? "asc" : "desc",
+    // });
+
     getHtml(group.value);
 };
 

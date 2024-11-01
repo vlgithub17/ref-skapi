@@ -336,7 +336,8 @@ br
             template(v-else)
                 tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=JSON.parse(JSON.stringify(rc))")
                     td
-                        Checkbox(@click.stop v-model='checked[rc?.record_id]' @change='checkIfAny')
+                        Checkbox(@click.stop :modelValue="checked[rc?.record_id] ?? false"  @update:modelValue="(value) => checked[rc?.record_id] = value" @change="checkIfAny")
+
                     td.overflow(v-if="filterOptions.table") 
                         //- span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group == 'private'") vpn_key
                         span
@@ -750,6 +751,7 @@ let getPage = async (refresh?: boolean) => {
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
+        
         return;
     } else if (!endOfList.value || refresh) {
         fetching.value = true;
@@ -996,11 +998,13 @@ let checked: any = ref({});
 let checkIfAny = (e) => {
     // 아무것도 체크안되어있으면 전체 체크표시 해체
     let chk = e.target.checked;
+
     if (chk) {
         return;
     }
 
     let n = checked.value;
+
     let has = false;
     for (let k in n) {
         if (n[k]) {
@@ -1010,6 +1014,8 @@ let checkIfAny = (e) => {
             delete n[k];
         }
     }
+
+
     if (!has) {
         checkedall.value = false;
     }
