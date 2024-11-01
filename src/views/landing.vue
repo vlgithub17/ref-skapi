@@ -5,51 +5,42 @@ main
             img(src='@/assets/img/logo/logo-white.svg' style='height:2.875rem; margin-bottom:32px;')
             h1.title #[span.yellow Serverless] Backend API
             h1.title(style='margin-bottom:46px;') for HTML Frontend
-            p.desc Skapi is a powerful JavaScript library for client-side HTML, <br>allowing you to create web applications like chat, e-commerce, or AI products without backend engineering. 
+            p.desc Skapi is a powerful JavaScript library for client-side HTML, <br>enabling you to create fully scalable web applications without backend engineering.
 
             small For HTML Projects -
-            Code(:hidecopy='true')
+            Code
                 pre.
-                    &lt;#[span(style="color:#33adff") script ] #[span(style="color:#44E9FF") src]=#[span.text-small(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"] &gt;&lt;/#[span(style="color:#33adff") script]&gt;
+                    &lt;#[span(style="color:#33adff") script ] #[span(style="color:#44E9FF") src]=#[span.text-small(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]&gt;&lt;/#[span(style="color:#33adff") script]&gt;
 
             small For SPA Projects -
-            Code(:hidecopy='true' style="margin-bottom: 0.5rem")
+            Code(style="margin-bottom: 0.5rem")
                 pre npm i skapi-js@latest
 
             p(style='text-align:right; max-width:950px;')
                 small Current Version: {{npmVersion}}
 
-            div.btn-wrap(v-if='user.user_id')
-                //- h4
-                //-     | Go to&nbsp;
-                //-     router-link(to='my-services' style='color:yellow') My Services
-                //-     | &nbsp;#[span.wordset and start] building!
-                router-link(to="my-services")
-                    button.final My Services
-            div.btn-wrap(v-else)
-                router-link(to="signup")
-                    button.final Sign-Up
+            div.btn-wrap
                 a(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank")
-                    button.final(style='background-color:#344054;border:1px solid rgba(225,225,225,0.3);color:#fff;') Read Dosc
+                    button.final Read Docs
 
     .dynamo-section
         .sec-wrapper
-            h2.sub-title Build Anything Fast
-            p.sub-desc(style="max-width:584px; margin-bottom: 3.5rem;") Painstakingly developed to be simple yet powerful, enabling you to build any type of web application.
-            p.sub-desc(style="max-width:730px") Just import the Skapi library into your project, create a service, connect your production to the Skapi server, and that's it.
+            h2.sub-title(style="font-size:3rem; color:#FFED91;") Build Anything, Fast!
+            p.sub-desc(style="max-width:800px; margin-bottom: 3.5rem;") Painstakingly developed to be both simple and powerful, #[span.wordset Skapi empowers] you to build any type of web application, #[span.wordset whether it’s a] #[span.wordset chat app,] #[span.wordset e-commerce platform,] #[span.wordset or your next big SaaS product.]
+            p.sub-desc(style="max-width:870px") Just import Skapi library into your project, and you're ready to go.
 
             small For HTML Projects -
-            Code(:hidecopy='true' data-aos="fade-up")
+            Code(data-aos="fade-up")
                 pre.
                     #[div(style="color:#35B85E") &lt;!-- index.html --&gt;]
                     #[span &lt;!DOCTYPE html&gt;]
-                    &lt;#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]&gt;&lt;#[span(style="color:#344054;font-size:1px;") .]/#[span(style="color:#33adff") script]&gt;
+                    &lt;#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]&gt;&lt;/#[span(style="color:#33adff") script]&gt;
                     &lt;#[span(style="color:#33adff") script]&gt;
                         #[span(style="color:#44E9FF") const] skapi = #[span(style="color:#44E9FF") new] Skapi&lpar;'#[span(style="color:#FFED91") service_id]', '#[span(style="color:#FFED91") owner_id]'&rpar;;
-                    &lt;#[span(style="color:#344054;font-size:1px;") .]/#[span(style="color:#33adff") script]&gt;
+                    &lt;/#[span(style="color:#33adff") script]&gt;
 
             small For SPA Projects -
-            Code(:hidecopy='true' style="margin-bottom: 0" data-aos="fade-up")
+            Code(style="margin-bottom:0" data-aos="fade-up")
                 pre.
                     #[div(style="color:#35B85E") // main.js]
                     #[span(style="color:#44E9FF") import] { Skapi } #[span(style="color:#44E9FF") from] '#[span(style="color:#FFED91") skapi-js]';
@@ -59,60 +50,48 @@ main
 
     .dynamo-section
         .sec-wrapper
-            h2.sub-title Save Time, Cost, and Energy
-            p.sub-desc(style="max-width:756px; margin-bottom: 3.5rem;") Saving data center energy, helping the environment,<br> and most importantly, reducing your development time and costs. Just One #[span.yellow skapi.method( )] Call Away.
+            h2.sub-title Features
+            p.sub-desc(style="max-width:820px; margin-bottom: 0;") Skapi packs all essential backend services into a single JavaScript library, reducing development time and costs.
+            p.sub-desc(style="max-width:830px; margin-bottom: 3.5rem;") Your application will scale effortlessly to millions of users, providing security and flexibility—all accessible through a single #[span.yellow skapi.method( )] call.
             .feature(data-aos="fade-up")
-                a.feature-card(href="https://docs.skapi.com/database/create.html" target="_blank" style="max-width:28%;")
+                a.feature-card(href="https://docs.skapi.com/database/introduction.html" target="_blank")
                     .card-top
                         img(src='@/assets/img/landingpage/icon_feature1.svg')
-                        span.text Database
-                    p.desc Simple, scalable, yet flexible database at your service.
+                        span.text Data Storage
+                    p.desc A simple, scalable, and flexible database solution at your fingertips, featuring robust, CDN-backed storage for any data size.
                     img.img-feature(src='@/assets/img/landingpage/img_feature1.svg' style="right:19px; bottom:17px")
-                a.feature-card(href="https://docs.skapi.com/authentication/create-account.html" target="_blank" style="max-width:28%;")
+                a.feature-card(href="https://docs.skapi.com/authentication/introduction.html" target="_blank" style="max-width:35%;")
                     .card-top
                         img(src='@/assets/img/landingpage/icon_feature2.svg')
                         span.text Security
-                    p.desc Solid security for your users and data.
+                    p.desc Built-in security and user authentication, ready to deploy without complex configurations.
                     img.img-feature(src='@/assets/img/landingpage/img_feature2.svg' style="right:0; bottom:0;")
-                a.feature-card(href="https://docs.skapi.com/database/create.html" target="_blank")
-                    .card-top
-                        img(src='@/assets/img/landingpage/icon_feature3.svg')
-                        span.text Cloud Storage
-                    p.desc Robust storage solutions for any data size.
-                    img.img-feature(src='@/assets/img/landingpage/img_feature3.svg' style="right:0; bottom:0; opacity:0.6;")
             .feature(data-aos="fade-up")
-                a.feature-card(href="https://docs.skapi.com/hosting/hosting.html" target="_blank")
+                a.feature-card(href="https://docs.skapi.com/realtime/connecting.html" target="_blank" style="max-width:35%;")
                     .card-top
-                        img(src='@/assets/img/landingpage/icon_feature4.svg')
-                        span.text CDN
-                    p.desc Swift content delivery across the globe.
-                    img.img-feature(src='@/assets/img/landingpage/img_feature4.svg' style="right:0; bottom:0")
+                        img(src='@/assets/img/landingpage/icon_feature8.svg')
+                        span.text Realtime Data
+                    p.desc Real-time chat, live updates --everything is just one method call away.
+                    img.img-feature(src='@/assets/img/landingpage/img_feature8.svg' style="right:0; bottom:-61px; width:446px;")
+                a.feature-card(href="https://docs.skapi.com/api-bridge/introduction.html" target="_blank" )
+                    .card-top
+                        img(src='@/assets/img/landingpage/icon_feature7.svg')
+                        span.text API Bridge
+                    p.desc Integrate with 3rd-party APIs with ease, expanding your application’s functionality through secure custom APIs.
+                    img.img-feature(src='@/assets/img/landingpage/img_feature7.svg' style="right:0; bottom:0")
+            .feature(data-aos="fade-up")
+                a.feature-card(href="https://docs.skapi.com/email/introduction.html" target="_blank" style="max-width:50%;")
+                    .card-top
+                        img(src='@/assets/img/landingpage/icon_feature6.svg')
+                        span.text Automated E-Mail service
+                    p.desc Simplify email automation and newsletters to stay connected with your users.
+                    img.img-feature(src='@/assets/img/landingpage/img_feature6.svg' style="right:30px; bottom:25px; opacity:0.6;")
                 a.feature-card(href="https://docs.skapi.com/hosting/hosting.html" target="_blank")
                     .card-top
                         img(src='@/assets/img/landingpage/icon_feature5.svg')
                         span.text Instant Hosting
-                    p.desc Host your HTML content swiftly.
+                    p.desc Swiftly host your public files or HTML website directly with Skapi.
                     img.img-feature(src='@/assets/img/landingpage/img_feature5.svg' style="right:0; bottom:0; opacity:0.8;")
-            .feature(data-aos="fade-up")
-                a.feature-card(href="https://docs.skapi.com/email/email-templates.html" target="_blank")
-                    .card-top
-                        img(src='@/assets/img/landingpage/icon_feature6.svg')
-                        span.text Automated E-Mail Service
-                    p.desc Simplified email automation and newsletters.
-                    img.img-feature(src='@/assets/img/landingpage/img_feature6.svg' style="right:30px; bottom:25px; opacity:0.6;")
-                a.feature-card(href="https://docs.skapi.com/api-bridge/secure-post-request.html" target="_blank" style="max-width:28%;")
-                    .card-top
-                        img(src='@/assets/img/landingpage/icon_feature7.svg')
-                        span.text API Bridge
-                    p.desc Expand with your own custom APIs.
-                    img.img-feature(src='@/assets/img/landingpage/img_feature7.svg' style="right:0; bottom:0")
-                a.feature-card(href="https://docs.skapi.com/realtime/connecting.html" target="_blank" style="max-width:28%;")
-                    .card-top
-                        img(src='@/assets/img/landingpage/icon_feature8.svg')
-                        span.text Realtime Data
-                    p.desc Real-time chat, live updates-- everything is just one method call away.
-                    img.img-feature(src='@/assets/img/landingpage/img_feature8.svg' style="right:0; bottom:-61px; width:446px;")
-
 
     .dynamo-section(style="padding:6rem 1rem; margin:0;")
         div(v-if='user.user_id' style='text-align:center;' data-aos="fade-up")
@@ -124,7 +103,7 @@ main
                     router-link(to='my-services' style='color:#FFED91') My Services
                 | &nbsp;and start building!
             router-link(to="my-services")
-                button.final(style='background-color:white;color:black;width:170px') My Services
+                button.final(style='background-color:white;width:170px') My Services
         div(v-else style='text-align:center;' data-aos="fade-up")
             img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation:none; width:3rem; margin-bottom:2rem;")
             h2(style="margin-bottom:0.6rem;") Start Skapi
@@ -134,7 +113,7 @@ main
                     | &nbsp;today for FREE
                 | &nbsp;and start building!
             router-link(to="signup")
-                button.final(style='background-color:white;color:#293FE6;width:170px') Sign-Up
+                button.final Sign-Up
 </template>
 
 <script setup lang="ts">
@@ -145,9 +124,6 @@ import {npmVersion} from "@/main.ts";
 
 <style lang="less" scoped>
 main {
-    // background: linear-gradient(32deg, #293fe6, rgba(255, 0, 0, 0) 80%),
-    //     linear-gradient(229deg, #293fe6, rgba(0, 255, 0, 0) 80%),
-    //     linear-gradient(151deg, rgba(0, 255, 170, 1), rgba(252, 208, 75, 0.8) 80%);
     background-color: #101828;
 }
 
@@ -239,11 +215,11 @@ p {
         font-size: 1.2rem;
         font-weight: 500;
         margin-bottom: 3.25rem;
-        max-width: 890px;
+        // max-width: 890px;
     }
 
     .sub-title {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 1.5rem;
     }
@@ -289,6 +265,7 @@ p {
 
     ._codeWrap {
         margin-bottom: 38px;
+        fill: #fff;
 
         .code {
             pre {
@@ -304,6 +281,8 @@ p {
     }
 
     .final {
+        // background-color: #7c5273;
+        // background-color: #437964;
         background-color: #fff;
         font-size: 1rem;
         font-weight: 700;

@@ -50,7 +50,8 @@ footer {
     box-shadow: 0px 2px black; // compensate offset calc
 
     background-color: #101828;
-    height: 4rem;
+    height: 3rem;
+    overflow-y: hidden;
 
     & > * {
         font-size: 0.8rem;
@@ -69,7 +70,7 @@ footer {
 
 @media (max-width: 600px) {
     footer {
-        height: 3rem;
+        height: 2.5rem;
     }
 }
 </style>

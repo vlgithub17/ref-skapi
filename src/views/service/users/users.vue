@@ -167,7 +167,7 @@ br
 
         template(v-slot:head)
             tr
-                th.center(style='width:80px;padding:0')
+                th.center(style='width:120px;padding:0')
                     //- .material-symbols-outlined.notranslate.fill manage_accounts
                     svg.svgIcon(style="fill: black;")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-manage-accounts-fill")
@@ -232,11 +232,17 @@ br
                             //- .material-symbols-outlined.notranslate.fill.icon(@click="openUnblockUser = true; selectedUser = user") no_accounts
                             svg.svgIcon.reactive(@click="openUnblockUser = true; selectedUser = user")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-no-accounts-fill")
+
+                            svg.svgIcon.reactive(@click="openGrantAccess = false; selectedUser = user" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
                             
                         template(v-else)
                             //- .material-symbols-outlined.notranslate.fill.icon(@click="openBlockUser = true; selectedUser = user") account_circle
                             svg.svgIcon.reactive(@click="openBlockUser = true; selectedUser = user")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-account-circle-fill")
+
+                            svg.svgIcon.reactive(@click="openGrantAccess = true; selectedUser = user")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
                     td.overflow(v-if="filterOptions.email") {{ user.email }}
                     td.overflow(v-if="filterOptions.userID") {{ user.user_id }}
                     td.overflow(v-if="filterOptions.name") {{ user.name }}
@@ -498,7 +504,7 @@ Modal(:open="openInviteUser" @close="openInviteUser=false")
                 .loader(style="--loader-color:blue; --loader-size:12px")
             template(v-else)
                 button.noLine(type="button" @click="closeModal") Cancel 
-                button.final(type="submit") Create User
+                button.final(type="submit") Invite
 
 // block user
 Modal(:open="openBlockUser" @close="openBlockUser=false")
@@ -584,6 +590,46 @@ Modal(:open="openUpgrade" @close="openUpgrade=false")
         button.noLine(type="button" @click="openUpgrade=false;") No
         router-link(:to='`/subscription/${currentService.id}`')
             button.final(type="button") Yes
+
+// grant access
+Modal(:open="openGrantAccess" @close="openGrantAccess=false")
+    h4(style='margin:.5em 0 0;') Grant Access
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            This will grant the user access.
+            #[br]
+            Access rights can be granted from 1 to 99.
+
+        span.current-access(style="margin-bottom:8px; display:block; font-weight:bold;") Current Access : {{ selectedUser.access_group }}
+        input.change-access(type="number" placeholder='1~99' @keyup.stop="(e) => {e.target.value=e.target.value.replace(/[^0-9]/g,'')}" style="background-color: white; outline: 1px solid rgba(0, 0, 0, 0.5); border-radius: 6px; width:100%; padding:8px;")
+
+    br
+
+    div(style="display: flex; align-items: center; justify-content: space-between;")
+        div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
+            .loader(style="--loader-color:blue; --loader-size:12px")
+        template(v-else)
+            button.noLine(type="button" @click="closeGrantAccess") Cancel 
+            button.final(type="button" @click="grantAccess") Change  
+
+// grant access > success
+Modal(:open="successGrantAccess" @close="successGrantAccess=false")
+    h4(style='margin:.5em 0 0;') Grant Access
+
+    hr
+
+    div(style='font-size:.8rem;')
+        p.
+            Access level #[strong {{selectedUser.access_group}}] has been granted to user : #[strong {{selectedUser.user_id}}].
+
+    br
+
+    div(style="display: flex; align-items: center; justify-content: flex-end;")
+        button.final(type="button" @click="successGrantAccess=false") close
+            
 
 </template>
 <script setup lang="ts">
@@ -689,6 +735,8 @@ let openBlockUser = ref(false);
 let openUnblockUser = ref(false);
 let openDeleteUser = ref(false);
 let openUpgrade = ref(false);
+let openGrantAccess = ref(false);
+let successGrantAccess = ref(false);
 let selectedUser: { [key:string]: any } = {};
 let gender_public = ref(false);
 let address_public = ref(false);
@@ -710,6 +758,10 @@ let createParams = {
 let inviteParams = {
     email: '',
     name: ''
+}
+let accessParams = {
+    user_id: '',
+    access_group: ''
 }
 let redirect = '';
 let error = ref('');
@@ -955,7 +1007,9 @@ let createUser = () => {
         createParams = Object.assign({gender_public: gender_public.value, address_public: address_public.value, birthdate_public: birthdate_public.value}, createParams)
     }
 
-    currentService.admin_signup(Object.assign({service: currentService.id}, createParams)).then(async(res) => {
+    currentService.createAccount(createParams, {
+        // email_subscription: redirect || false,
+    }).then(async(res) => {
         res.email = res.email_admin;
         await pager.insertItems([res]);
 
@@ -967,6 +1021,7 @@ let createUser = () => {
         for(let i in createParams) {
             createParams[i] = '';
         }
+        redirect = '';
         gender_public.value = false;
         address_public.value = false;
         birthdate_public.value = false;
@@ -984,15 +1039,19 @@ let inviteUser = () => {
     promiseRunning.value = true;
     error.value = '';
 
-    currentService.admin_signup(Object.assign({access_group: 1, service: currentService.id}, inviteParams), {
-        signup_confirmation: redirect || false
-    }).then((res) => {
+    let options = {};
+    if (redirect) {
+        options.confirmation_url = redirect;
+    }
+
+    currentService.inviteUser(inviteParams, options).then((res) => {
         promiseRunning.value = false;
         openInviteUser.value = false;
 
         let successMessage = `Invitation E-Mail has been sent to: "${inviteParams.email}". Invited users will be listed once they accept their invitation.`;
         alert(successMessage);
 
+        document.getElementById("inviteForm").reset();
         for(let i in inviteParams) {
             inviteParams[i] = '';
         }
@@ -1077,6 +1136,54 @@ let closeModal = () => {
         openCreateUser.value = false;
     }
 }
+
+let grantAccess = (e) => {
+    promiseRunning.value = true;
+
+    let inputAccess: HTMLInputElement = document.querySelector('.change-access');
+    let resultAccess = Number(inputAccess.value);
+
+    if (resultAccess < 1 || resultAccess > 99) {
+        promiseRunning.value = false;
+        inputAccess.value = '';
+    }
+
+    currentService.grantAccess({user_id: selectedUser.user_id, access_group: resultAccess}).then(res => {
+        selectedUser.access_group = resultAccess;
+        inputAccess.value = '';
+
+        promiseRunning.value = false;
+        openGrantAccess.value = false;
+        successGrantAccess.value = true;
+    }).catch(e => {
+        if (inputAccess.validity.valueMissing) {
+            inputAccess.setCustomValidity('');
+        } else {
+            inputAccess.setCustomValidity('Invalid Access Group');
+            inputAccess.addEventListener('input', (e) => {
+                const inputAccess = e.target;
+                inputAccess.setCustomValidity('');
+            });
+        }
+
+        inputAccess.reportValidity();
+
+        promiseRunning.value = false;
+        inputAccess.value = '';
+    });
+}
+
+let closeGrantAccess = () => {
+    let inputAccess: HTMLInputElement = document.querySelector('.change-access');
+    
+    openGrantAccess.value =false;
+    selectedUser = {};
+
+    if(inputAccess) {
+        inputAccess.value = '';
+    }
+}
+
 </script>
 <style scoped lang="less">
 body {
@@ -1196,7 +1303,7 @@ body {
     font-size: 0.8rem;
 }
 .optionCol {
-    &>*:first-child {
+    &>*:not(:last-child) {
         margin-right: 8px;
     }
 }
@@ -1214,5 +1321,15 @@ body {
     svg {
         fill: rgba(0,0,0,0.5)
     }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
 }
 </style>

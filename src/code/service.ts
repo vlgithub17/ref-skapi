@@ -2,7 +2,7 @@ import { reactive, ref } from 'vue';
 import type { Ref } from 'vue';
 import { skapi } from './admin';
 import { Countries } from './countries';
-import { devLog } from './logger'
+import { devLog } from './logger';
 import templates from 'rollup-plugin-visualizer/dist/plugin/template-types';
 
 const regions = JSON.parse(import.meta.env.VITE_REG);
@@ -74,6 +74,25 @@ export type UserAttributes = {
   nickname?: string;
 };
 
+export type PublicUser = {
+  /** Service id of the user account. */
+  service: string;
+  /** User ID of the service owner. */
+  owner: string;
+  /** Access level of the user's account. */
+  access_group: number;
+  /** User's ID. */
+  user_id: string;
+  /** Country code of where user first signed up from. */
+  locale: string;
+  /** Number of the user's subscribers. */
+  subscribers?: number;
+  /** Number of the records the user have created. */
+  records?: number;
+  /** Timestamp of user last signup time. */
+  timestamp: number;
+} & UserAttributes;
+
 export type UserProfile = {
   /** Service id of the user account. */
   service: string;
@@ -144,7 +163,8 @@ export type ServiceObj = {
     subject: string;
     url: string;
   };
-  template_newsletter_subscription: { // is newsletter subscription confirmation template
+  template_newsletter_subscription: {
+    // is newsletter subscription confirmation template
     subject: string;
     url: string;
   };
@@ -281,23 +301,46 @@ export default class Service {
     }
   }
 
-  async admin_signup(
-    form: UserAttributes &
-      UserProfilePublicSettings & { email: String; password?: String; username?: string } & {
-        access_group?: number;
-        service?: string;
-      },
-    option?: {
-      signup_confirmation?: boolean | string;
+  // async admin_signup(
+  //   form: UserAttributes &
+  //     UserProfilePublicSettings & { email: String; password?: String; username?: string } & {
+  //       access_group?: number;
+  //       service?: string;
+  //     },
+  //   option?: {
+  //     signup_confirmation?: boolean | string;
+  //     email_subscription?: boolean;
+  //   }
+  // ): Promise<UserProfile & { email_admin: string }> {
+  //   let params: any = form;
+  //   params.signup_confirmation = option?.signup_confirmation || false;
+  //   params.email_subscription = option?.email_subscription || false;
+
+  //   // cognito signup process below
+  //   return await skapi.util.request('admin-signup', Object.assign({ service: this.id, owner: this.owner }, params), { auth: true });
+  // }
+
+  async createAccount(
+    form: UserAttributes & UserProfilePublicSettings & { email: string; password: string },
+    options?: {
       email_subscription?: boolean;
     }
-  ): Promise<UserProfile & { email_admin: string }> {
-    let params: any = form;
-    params.signup_confirmation = option?.signup_confirmation || false;
-    params.email_subscription = option?.email_subscription || false;
+  ): Promise<UserProfile & PublicUser & { email_admin: string; approved: string; log: number; username: string }> {
+    return skapi.createAccount(Object.assign({ service: this.id, owner: this.owner }, form), options);
+  }
 
-    // cognito signup process below
-    return await skapi.util.request('admin-signup', Object.assign({ service: this.id, owner: this.owner }, params), { auth: true });
+  async inviteUser(
+    form: UserAttributes & UserProfilePublicSettings & { email: string },
+    options?: {
+      confirmation_url?: string;
+      email_subscription?: boolean;
+    }
+  ): Promise<'SUCCESS: Invitation has been sent.'> {
+    return skapi.inviteUser(Object.assign({ service: this.id, owner: this.owner }, form), options);
+  }
+
+  async grantAccess(params: { user_id: string; access_group: number }): Promise<'SUCCESS: Access has been granted to the user.'> {
+    return skapi.grantAccess(Object.assign({ service: this.id, owner: this.owner }, params));
   }
 
   // get newsletter mail address
@@ -336,19 +379,19 @@ export default class Service {
     this.subscriptionFetched.value = true;
   };
 
-  async blockAccount(userId: string): Promise<'SUCCESS'> {
-    await skapi.util.request(this.admin_private_endpoint + 'block-account', { owner: this.owner, service: this.id, block: userId }, { auth: true });
-    return 'SUCCESS';
+  async blockAccount(userId: string): Promise<'SUCCESS: The user has been blocked.'> {
+    await skapi.blockAccount(Object.assign({ service: this.id, owner: this.owner }, { user_id: userId }));
+    return 'SUCCESS: The user has been blocked.';
   }
 
-  async unblockAccount(userId: string): Promise<'SUCCESS'> {
-    await skapi.util.request(this.admin_private_endpoint + 'block-account', { owner: this.owner, service: this.id, unblock: userId }, { auth: true });
-    return 'SUCCESS';
+  async unblockAccount(userId: string): Promise<'SUCCESS: The user has been unblocked.'> {
+    await skapi.unblockAccount(Object.assign({ service: this.id, owner: this.owner }, { user_id: userId }));
+    return 'SUCCESS: The user has been unblocked.';
   }
 
-  async deleteAccount(userId: string): Promise<'SUCCESS'> {
-    await skapi.util.request('remove-account', { owner: this.owner, service: this.id, delete: userId }, { auth: true });
-    return 'SUCCESS';
+  async deleteAccount(userId: string): Promise<'SUCCESS: Account has been deleted.'> {
+    await skapi.deleteAccount(Object.assign({ service: this.id, owner: this.owner }, { user_id: userId }));
+    return 'SUCCESS: Account has been deleted.';
   }
 
   //send invitation email, when accepted, user will have their account created, and be redirected
@@ -502,11 +545,15 @@ export default class Service {
     }
   }
 
-  async getEmailTemplate(params:'invitation' | 'newsletter_subscription' | 'verification' | 'welcome' | 'confirmation'): Promise <{
+  async getEmailTemplate(params: 'invitation' | 'newsletter_subscription' | 'verification' | 'welcome' | 'confirmation'): Promise<{
     subject: string;
     url: string;
   }> {
-    let updated = await skapi.util.request(this.admin_private_endpoint + 'email-templates', { service: this.id, owner: this.owner, template: params }, { auth: true });
+    let updated = await skapi.util.request(
+      this.admin_private_endpoint + 'email-templates',
+      { service: this.id, owner: this.owner, template: params },
+      { auth: true }
+    );
     return updated;
   }
 
