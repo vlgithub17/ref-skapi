@@ -51,6 +51,7 @@ footer {
 
     background-color: #101828;
     height: 3rem;
+    overflow-y: hidden;
 
     & > * {
         font-size: 0.8rem;
@@ -69,7 +70,7 @@ footer {
 
 @media (max-width: 600px) {
     footer {
-        height: 3rem;
+        height: 2.5rem;
     }
 }
 </style>

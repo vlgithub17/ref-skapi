@@ -336,7 +336,6 @@ br
             template(v-else)
                 tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=JSON.parse(JSON.stringify(rc))")
                     td
-                        //- Checkbox(@click.stop v-model='checked[rc?.record_id]' @change='checkIfAny')
                         Checkbox(@click.stop :modelValue="checked[rc?.record_id] ?? false"  @update:modelValue="(value) => checked[rc?.record_id] = value" @change="checkIfAny")
 
                     td.overflow(v-if="filterOptions.table") 
