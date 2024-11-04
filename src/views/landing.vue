@@ -25,7 +25,7 @@ main
 
     .dynamo-section
         .sec-wrapper
-            h2.sub-title(style="font-size:3rem; color:#FFED91;") Build Anything, Fast!
+            h2.sub-title(data-aos="zoom-out-right" style="font-size:3rem; color:#FFED91;") Build Anything, Fast!
             p.sub-desc(style="max-width:800px; margin-bottom: 3.5rem;") Painstakingly developed to be both simple and powerful, #[span.wordset Skapi empowers] you to build any type of web application, #[span.wordset whether it’s a] #[span.wordset chat app,] #[span.wordset e-commerce platform,] #[span.wordset or your next big SaaS product.]
             p.sub-desc(style="max-width:870px") Just import Skapi library into your project, and you're ready to go.
 
