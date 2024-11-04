@@ -201,7 +201,7 @@ br
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
-    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
+    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || nextDisabled }")
         span &nbsp;&nbsp;Next
         svg.svgIcon(style="height: 26px; width: 26px")
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
@@ -367,6 +367,12 @@ watch(ascending, () => {
     }
 });
 
+watch(emailType, () => {
+    if (!fetching.value) {
+        init();
+    }
+});
+
 let mailEndpoint = ref("");
 
 let group: ComputedRef<
@@ -429,6 +435,8 @@ let callParams = computed(() => {
     };
 });
 
+const nextDisabled = ref(false);
+
 let getPage = async (refresh?: boolean) => {
     if (refresh) {
         endOfList.value = false;
@@ -455,18 +463,6 @@ let getPage = async (refresh?: boolean) => {
             sortBy: searchFor.value,
             order: ascending.value ? "asc" : "desc",
         });
-
-        // const pager = await Pager.init({
-        //     id: "message_id",
-        //     resultsPerPage: 10,
-        //     sortBy: searchFor.value,
-        //     order: ascending.value ? "asc" : "desc",
-        // });
-
-        // serviceAutoMails[currentService.id] = {
-        //     signup: pager,
-        //     auto: pager,
-        // };
     }
 
     pager = serviceAutoMails[currentService.id][group.value];
@@ -482,7 +478,7 @@ let getPage = async (refresh?: boolean) => {
         // fetch from server
         let fetchedData = await currentService.getMailTemplates(
             callParams.value.params,
-            Object.assign({ fetchMore: !refresh }, callParams.value.options),
+            Object.assign({ fetchMore: !refresh }, callParams.value.options)
         );
 
         // save endOfList status
@@ -502,17 +498,13 @@ let getPage = async (refresh?: boolean) => {
         // render data
         listDisplay.value = disp.list as Newsletter[];
         fetching.value = false;
+
+        // 다음 페이지가 없으면 next 버튼 비활성화
+        nextDisabled.value = currentPage.value >= maxPage.value || endOfList.value;
     }
 
-    console.log(JSON.parse(JSON.stringify(serviceAutoMails[currentService.id])))
+    // console.log(JSON.parse(JSON.stringify(serviceAutoMails[currentService.id])))
 };
-
-watch(emailType, (v, ov) => {
-    if (!fetching.value) {
-        // init();
-        getPage(true);
-    }
-}, { immediate: true });
 
 let resetIndex = async () => {
     currentPage.value = 1;

@@ -157,7 +157,7 @@ br
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
-    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
+    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || nextDisabled }")
         span &nbsp;&nbsp;Next
         //- .material-symbols-outlined.notranslate.bold chevron_right
         svg.svgIcon(style="width: 26px; height: 26px")
@@ -312,18 +312,21 @@ let callParams = computed(() => {
     }
 });
 
+const nextDisabled = ref(false);
+
 let getPage = async (refresh?: boolean) => {
-    // if (!pager) {
-    //     // if pager is not ready, return
-    //     return;
-    // }
-    
     if(refresh) {
         endOfList.value = false;
     }
 
-    if(!serviceBulkMails[currentService.id] || searchFor.value) {
-        serviceBulkMails[currentService.id] = await Pager.init({
+    // 서비스 ID가 없으면 객체 초기화
+    if (!serviceBulkMails[currentService.id]) {
+        serviceBulkMails[currentService.id] = {};
+    }
+
+    // group.value 키가 없거나 검색 조건이 있으면 초기화
+    if (!serviceBulkMails[currentService.id][group.value] || searchFor.value) {
+        serviceBulkMails[currentService.id][group.value] = await Pager.init({
             id: 'message_id',
             resultsPerPage: 10,
             sortBy: searchFor.value,
@@ -331,7 +334,18 @@ let getPage = async (refresh?: boolean) => {
         });
     }
 
-    pager = serviceBulkMails[currentService.id];
+    pager = serviceBulkMails[currentService.id][group.value];
+
+    // if(!serviceBulkMails[currentService.id] || searchFor.value) {
+    //     serviceBulkMails[currentService.id] = await Pager.init({
+    //         id: 'message_id',
+    //         resultsPerPage: 10,
+    //         sortBy: searchFor.value,
+    //         order: ascending.value ? 'asc' : 'desc',
+    //     });
+    // }
+
+    // pager = serviceBulkMails[currentService.id];
 
     if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
         // if is not refresh and has page data
@@ -363,6 +377,9 @@ let getPage = async (refresh?: boolean) => {
         // render data
         listDisplay.value = disp.list as Newsletter[];
         fetching.value = false;
+
+        // 다음 페이지가 없으면 next 버튼 비활성화
+        nextDisabled.value = currentPage.value >= maxPage.value || endOfList.value;
     }
 }
 
@@ -379,18 +396,37 @@ let resetIndex = async () => {
 let init = async () => {
     currentPage.value = 1;
 
-    if(serviceBulkMails[currentService.id] && Object.keys(serviceBulkMails[currentService.id]).length) {
-        pager = serviceBulkMails[currentService.id];
-        endOfList.value = serviceBulkMails[currentService.id].endOfList;
+    // 서비스 ID가 없을 때 초기화
+    if (!serviceBulkMails[currentService.id]) {
+        serviceBulkMails[currentService.id] = {};
+    }
+
+    // 선택된 그룹 값이 없을 때만 pager로 초기화
+    if (!serviceBulkMails[currentService.id][group.value]) {
+        serviceBulkMails[currentService.id][group.value] = { ...pager }; // 새로 추가
+        getPage(true);
+    } else {
+        // 기존 값이 있는 경우 가져와서 사용
+        pager = serviceBulkMails[currentService.id][group.value];
+        endOfList.value = pager.endOfList;
 
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
-
-    } else {
-        serviceBulkMails[currentService.id] = pager;
-        getPage(true);
     }
+
+    // if(serviceBulkMails[currentService.id] && Object.keys(serviceBulkMails[currentService.id]).length) {
+    //     pager = serviceBulkMails[currentService.id];
+    //     endOfList.value = serviceBulkMails[currentService.id].endOfList;
+
+    //     let disp = pager.getPage(currentPage.value);
+    //     maxPage.value = disp.maxPage;
+    //     listDisplay.value = disp.list;
+
+    // } else {
+    //     serviceBulkMails[currentService.id] = pager;
+    //     getPage(true);
+    // }
 
     // setup pagers
     // pager = await Pager.init({
