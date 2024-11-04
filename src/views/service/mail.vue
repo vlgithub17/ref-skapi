@@ -201,7 +201,7 @@ br
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
-    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || nextDisabled }")
+    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
         svg.svgIcon(style="height: 26px; width: 26px")
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
@@ -435,8 +435,6 @@ let callParams = computed(() => {
     };
 });
 
-const nextDisabled = ref(false);
-
 let getPage = async (refresh?: boolean) => {
     if (refresh) {
         endOfList.value = false;
@@ -456,7 +454,7 @@ let getPage = async (refresh?: boolean) => {
     }
 
     // group.value 키가 없거나 검색 조건이 있으면 초기화
-    if (!serviceAutoMails[currentService.id][group.value] || searchFor.value) {
+    if (!serviceAutoMails[currentService.id][group.value] || (refresh && searchFor.value)) {
         serviceAutoMails[currentService.id][group.value] = await Pager.init({
             id: "message_id",
             resultsPerPage: 10,
@@ -498,12 +496,7 @@ let getPage = async (refresh?: boolean) => {
         // render data
         listDisplay.value = disp.list as Newsletter[];
         fetching.value = false;
-
-        // 다음 페이지가 없으면 next 버튼 비활성화
-        nextDisabled.value = currentPage.value >= maxPage.value || endOfList.value;
     }
-
-    // console.log(JSON.parse(JSON.stringify(serviceAutoMails[currentService.id])))
 };
 
 let resetIndex = async () => {
@@ -513,7 +506,7 @@ let resetIndex = async () => {
         order: ascending.value ? "asc" : "desc",
     });
 
-    getPage();
+    getPage(true);
 };
 
 // ux related functions
