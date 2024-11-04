@@ -64,7 +64,7 @@ br
         svg.svgIcon
             use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
         span &nbsp;&nbsp;Send {{mailType}}
-    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square(@click="getPage(true)" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
         svg.svgIcon(:class='{loading:fetching}')
             use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
@@ -313,17 +313,18 @@ let callParams = computed(() => {
 });
 
 let getPage = async (refresh?: boolean) => {
-    // if (!pager) {
-    //     // if pager is not ready, return
-    //     return;
-    // }
-    
     if(refresh) {
         endOfList.value = false;
     }
 
-    if(!serviceBulkMails[currentService.id] || searchFor.value) {
-        serviceBulkMails[currentService.id] = await Pager.init({
+    // 서비스 ID가 없으면 객체 초기화
+    if (!serviceBulkMails[currentService.id]) {
+        serviceBulkMails[currentService.id] = {};
+    }
+
+    // group.value 키가 없거나 검색 조건이 있으면 초기화
+    if (!serviceBulkMails[currentService.id][group.value] || (refresh && searchFor.value)) {
+        serviceBulkMails[currentService.id][group.value] = await Pager.init({
             id: 'message_id',
             resultsPerPage: 10,
             sortBy: searchFor.value,
@@ -331,7 +332,18 @@ let getPage = async (refresh?: boolean) => {
         });
     }
 
-    pager = serviceBulkMails[currentService.id];
+    pager = serviceBulkMails[currentService.id][group.value];
+
+    // if(!serviceBulkMails[currentService.id] || searchFor.value) {
+    //     serviceBulkMails[currentService.id] = await Pager.init({
+    //         id: 'message_id',
+    //         resultsPerPage: 10,
+    //         sortBy: searchFor.value,
+    //         order: ascending.value ? 'asc' : 'desc',
+    //     });
+    // }
+
+    // pager = serviceBulkMails[currentService.id];
 
     if (!refresh && maxPage.value >= currentPage.value || endOfList.value) {
         // if is not refresh and has page data
@@ -373,24 +385,43 @@ let resetIndex = async () => {
         sortBy: searchFor.value,
         order: ascending.value ? 'asc' : 'desc',
     });
-    getPage();
+    getPage(true);
 }
 
 let init = async () => {
     currentPage.value = 1;
 
-    if(serviceBulkMails[currentService.id] && Object.keys(serviceBulkMails[currentService.id]).length) {
-        pager = serviceBulkMails[currentService.id];
-        endOfList.value = serviceBulkMails[currentService.id].endOfList;
+    // 서비스 ID가 없을 때 초기화
+    if (!serviceBulkMails[currentService.id]) {
+        serviceBulkMails[currentService.id] = {};
+    }
+
+    // 선택된 그룹 값이 없을 때만 pager로 초기화
+    if (!serviceBulkMails[currentService.id][group.value]) {
+        serviceBulkMails[currentService.id][group.value] = { ...pager }; // 새로 추가
+        getPage(true);
+    } else {
+        // 기존 값이 있는 경우 가져와서 사용
+        pager = serviceBulkMails[currentService.id][group.value];
+        endOfList.value = pager.endOfList;
 
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
-
-    } else {
-        serviceBulkMails[currentService.id] = pager;
-        getPage(true);
     }
+
+    // if(serviceBulkMails[currentService.id] && Object.keys(serviceBulkMails[currentService.id]).length) {
+    //     pager = serviceBulkMails[currentService.id];
+    //     endOfList.value = serviceBulkMails[currentService.id].endOfList;
+
+    //     let disp = pager.getPage(currentPage.value);
+    //     maxPage.value = disp.maxPage;
+    //     listDisplay.value = disp.list;
+
+    // } else {
+    //     serviceBulkMails[currentService.id] = pager;
+    //     getPage(true);
+    // }
 
     // setup pagers
     // pager = await Pager.init({

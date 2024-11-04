@@ -454,7 +454,7 @@ let getPage = async (refresh?: boolean) => {
     }
 
     // group.value 키가 없거나 검색 조건이 있으면 초기화
-    if (!serviceAutoMails[currentService.id][group.value] || searchFor.value) {
+    if (!serviceAutoMails[currentService.id][group.value] || (refresh && searchFor.value)) {
         serviceAutoMails[currentService.id][group.value] = await Pager.init({
             id: "message_id",
             resultsPerPage: 10,
@@ -497,8 +497,6 @@ let getPage = async (refresh?: boolean) => {
         listDisplay.value = disp.list as Newsletter[];
         fetching.value = false;
     }
-
-    console.log(JSON.parse(JSON.stringify(serviceAutoMails[currentService.id])))
 };
 
 let resetIndex = async () => {
@@ -508,7 +506,7 @@ let resetIndex = async () => {
         order: ascending.value ? "asc" : "desc",
     });
 
-    getPage();
+    getPage(true);
 };
 
 // ux related functions
