@@ -6,19 +6,16 @@ section.infoBox
 
     hr
     .error(v-if='!user?.email_verified')
-        //- .material-symbols-outlined.notranslate.fill warning
         svg
             use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         router-link(to="/account-setting") Please verify your email address to modify settings.
         
     .error(v-else-if='currentService.service.active == 0')
-        //- .material-symbols-outlined.notranslate.fill warning
         svg
             use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently disabled.
 
     .error(v-else-if='currentService.service.active < 0')
-        //- .material-symbols-outlined.notranslate.fill warning
         svg
             use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently suspended.
@@ -135,12 +132,10 @@ br
 
 .tableMenu
     a.iconClick.square(:href="'mailto:' + mailEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        //- .material-symbols-outlined.notranslate.fill mail
         svg.svgIcon
             use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
         span &nbsp;&nbsp;New {{emailType}}
-    .iconClick.square(@click="init" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+    .iconClick.square(@click="getPage(true)" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
         svg.svgIcon(:class='{loading:fetching}')
             use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
         span &nbsp;&nbsp;Refresh
@@ -154,7 +149,6 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             th
                 span(@click='toggleSort("subject")')
                     | Subject
-                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                     svg.svgIcon(v-if='searchFor === "subject" && ascending' style="fill: black")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
                     svg.svgIcon(v-if='searchFor === "subject" && !ascending' style="fill: black")
@@ -163,7 +157,6 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             th
                 span(@click='toggleSort("timestamp")')
                     | Date
-                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
                     svg.svgIcon(v-if='searchFor === "timestamp" && ascending' style="fill: black")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
                     svg.svgIcon(v-if='searchFor === "timestamp" && !ascending' style="fill: black")
@@ -187,17 +180,14 @@ Table(:class='{disabled: !user?.email_verified || currentService.service.active 
             tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
                 td.overflow
                     template(v-if='currentService.service?.["template_" + group]?.url === ns.url')
-                        //- span.material-symbols-outlined.notranslate.fill verified
                         svg.svgIcon.black
                             use(xlink:href="@/assets/img/material-icon.svg#icon-verified-fill")
                     template(v-else)
-                        //- span.material-symbols-outlined.notranslate.icon.clickable.hide(@click.stop="emailToUse = ns") verified
                         svg.svgIcon.reactive.clickable.hide(@click.stop="emailToUse = ns")
                             use(xlink:href="@/assets/img/material-icon.svg#icon-verified")
                 td.overflow {{ converter(ns.subject) }}
                 td.overflow {{ dateFormat(ns.timestamp) }}
                 td.center.buttonWrap(@click.stop)
-                    //- span.material-symbols-outlined.notranslate.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
                     svg.svgIcon.reactiveDanger.clickable.hide(@click.stop="emailToDelete = ns")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
             tr(v-for="i in (10 - listDisplay.length)")
@@ -207,14 +197,12 @@ br
 
 .tableMenu(style='display:block;text-align:center;')
     .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
-        //- .material-symbols-outlined.notranslate.bold chevron_left
         svg.svgIcon(style="height: 26px; width: 26px")
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
         span Previous&nbsp;&nbsp;
     | &nbsp;&nbsp;
     .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
         span &nbsp;&nbsp;Next
-        //- .material-symbols-outlined.notranslate.bold chevron_right
         svg.svgIcon(style="height: 26px; width: 26px")
             use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
 
@@ -448,17 +436,26 @@ let callParams = computed(() => {
 });
 
 let getPage = async (refresh?: boolean) => {
-    // if (!pager) {
-    //     // if pager is not ready, return
-    //     return;
-    // }
-
     if (refresh) {
         endOfList.value = false;
+
+        currentService.getEmailTemplate(group.value).then(res => {
+            if (!res) return;
+
+            (currentService.service as any)["template_" + group.value].url = res.url;
+            (currentService.service as any)["template_" + group.value].subject = res.subject;
+            getHtml(group.value);
+        });
     }
 
-    if(!serviceAutoMails[currentService.id] || searchFor.value) {
-        serviceAutoMails[currentService.id] = await Pager.init({
+    // 서비스 ID가 없으면 객체 초기화
+    if (!serviceAutoMails[currentService.id]) {
+        serviceAutoMails[currentService.id] = {};
+    }
+
+    // group.value 키가 없거나 검색 조건이 있으면 초기화
+    if (!serviceAutoMails[currentService.id][group.value] || (refresh && searchFor.value)) {
+        serviceAutoMails[currentService.id][group.value] = await Pager.init({
             id: "message_id",
             resultsPerPage: 10,
             sortBy: searchFor.value,
@@ -466,7 +463,7 @@ let getPage = async (refresh?: boolean) => {
         });
     }
 
-    pager = serviceAutoMails[currentService.id];
+    pager = serviceAutoMails[currentService.id][group.value];
 
     if ((!refresh && maxPage.value >= currentPage.value) || endOfList.value) {
         // if is not refresh and has page data
@@ -509,7 +506,7 @@ let resetIndex = async () => {
         order: ascending.value ? "asc" : "desc",
     });
 
-    getPage();
+    getPage(true);
 };
 
 // ux related functions
@@ -692,42 +689,26 @@ Please confirm your subscription by clicking this <a href="\https://link.skapi" 
 };
 
 let init = async () => {
-    // if (refreshService) {
-    //     fetching.value = true;
-    //     await currentService.refresh();
-    //     service = currentService.service;
-    //     fetching.value = false;
-    // }
     currentPage.value = 1;
 
+    // 서비스 ID가 없을 때 초기화
+    if (!serviceAutoMails[currentService.id]) {
+        serviceAutoMails[currentService.id] = {};
+    }
 
-    // await currentService.getEmailTemplate(group.value).then(res => {
-    //     if (!res) return;
-
-    //     (currentService.service as any)["template_" + group.value].url = res.url;
-    //     (currentService.service as any)["template_" + group.value].subject = res.subject;
-    // });
-
-    // setup pagers
-    if(serviceAutoMails[currentService.id] && Object.keys(serviceAutoMails[currentService.id]).length) {
-        pager = serviceAutoMails[currentService.id];
-        endOfList.value = serviceAutoMails[currentService.id].endOfList;
+    // 선택된 그룹 값이 없을 때만 pager로 초기화
+    if (!serviceAutoMails[currentService.id][group.value]) {
+        serviceAutoMails[currentService.id][group.value] = { ...pager }; // 새로 추가
+        getPage(true);
+    } else {
+        // 기존 값이 있는 경우 가져와서 사용
+        pager = serviceAutoMails[currentService.id][group.value];
+        endOfList.value = pager.endOfList;
 
         let disp = pager.getPage(currentPage.value);
         maxPage.value = disp.maxPage;
         listDisplay.value = disp.list;
-
-    } else {
-        serviceAutoMails[currentService.id] = pager;
-        getPage(true);
     }
-
-    // pager = await Pager.init({
-    //     id: "message_id",
-    //     resultsPerPage: 10,
-    //     sortBy: searchFor.value,
-    //     order: ascending.value ? "asc" : "desc",
-    // });
 
     getHtml(group.value);
 };
