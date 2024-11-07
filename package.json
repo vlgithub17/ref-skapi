@@ -18,7 +18,7 @@
     "aos": "^3.0.0-beta.6",
     "jsoncrawler": "^0.2.1",
     "mime": "^4.0.4",
-    "skapi-js": "^1.0.171"
+    "skapi-js": "^1.0.175"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
