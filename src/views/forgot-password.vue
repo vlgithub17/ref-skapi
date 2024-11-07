@@ -160,7 +160,7 @@ import { skapi } from '@/code/admin';
 const router = useRouter();
 const route = useRoute();
 
-let step = ref(3);
+let step = ref(1);
 let error = ref('');
 let promiseRunning = ref(false);
 let resending = ref(false);
