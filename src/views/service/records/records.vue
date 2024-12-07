@@ -341,7 +341,7 @@ br
                     td.overflow(v-if="filterOptions.table") 
                         //- span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group == 'private'") vpn_key
                         span
-                            svg.svgIcon(v-if="rc.table.access_group == 'private'" style="fill:black; margin-bottom: 2px")
+                            svg.svgIcon(v-if="rc.table.access_group == 'private' || rc.table.access_group == 99" style="fill:black; margin-bottom: 2px")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-vpn-key-fill")
                         //- span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
                         span
