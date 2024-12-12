@@ -53,7 +53,7 @@ let parseBinEndpoint = async (r: string[]) => {
 export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { [key: string]: any }[], progress?: (c: any) => void) => {
     let form = e.target as HTMLFormElement;
     let elements = form.elements;
-    let updateInputName = ['config[tags]', 'config[reference][record_id]', 'config[reference][reference_limit]'];
+    let updateInputName = ['config[tags]', 'config[reference]', 'config[source][referencing_limit]'];
     let updateInputValue: { [key: string]: string | null } = {};
 
     if (edit) {
@@ -124,8 +124,8 @@ export let uploadRecord = async (e: SubmitEvent, edit?: boolean, remove_bin?: { 
 
     if (Object.keys(updateInputValue)) {
         config.tags = updateInputValue['config[tags]'];
-        config.reference.record_id = updateInputValue['config[reference][record_id]'];
-        config.reference.reference_limit = updateInputValue['config[reference][reference_limit]'] === '' ? null : updateInputValue['config[reference][reference_limit]'];
+        config.reference = updateInputValue['config[reference]'];
+        config.source.referencing_limit = updateInputValue['config[source][referencing_limit]'] === '' ? null : updateInputValue['config[source][referencing_limit]'];
     }
     
     devLog({ config });

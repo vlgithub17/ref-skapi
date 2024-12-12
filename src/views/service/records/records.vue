@@ -92,7 +92,7 @@ form#searchForm(@submit.prevent="setCallParams")
 
         // table 검색일때 추가적인 필드
         .content(v-if="showAdvanced" style="width:100%;padding: 0;overflow:visible;")
-            .row(style="margin-bottom:6px")
+            //- .row(style="margin-bottom:6px")
                     .key Subscription ID
                     .value(style='min-width: 300px;')
                         input.line(pattern='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' title='Subscription ID should be the user\'s ID' placeholder="User ID of the subscription" name='table[subscription]')
@@ -233,7 +233,7 @@ br
                 Checkbox(v-model="filterOptions.table" style="display:flex;") Table
                 Checkbox(v-model="filterOptions.record_id" style="display:flex") Record ID
                 Checkbox(v-model="filterOptions.user_id" style="display:flex") User ID 
-                Checkbox(v-model="filterOptions.subscription" style="display:flex") Subscription
+                //- Checkbox(v-model="filterOptions.subscription" style="display:flex") Subscription
                 Checkbox(v-model="filterOptions.reference" style="display:flex") Reference
                 Checkbox(v-model="filterOptions.index" style="display:flex") Index/Value
                 Checkbox(v-model="filterOptions.tag" style="display:flex") Tag
@@ -242,9 +242,9 @@ br
                 Checkbox(v-model="filterOptions.updated" style="display:flex") Updated
                 Checkbox(v-model="filterOptions.uploaded" style="display:flex") Uploaded
                 Checkbox(v-model="filterOptions.readonly" style="display:flex") Read Only 
-                Checkbox(v-model="filterOptions.reference_limit" style="display:flex") Reference Limit
+                Checkbox(v-model="filterOptions.referencing_limit" style="display:flex") Referencing Limit
                 Checkbox(v-model="filterOptions.referenced" style="display:flex") Referenced
-                Checkbox(v-model="filterOptions.allow_multiple_reference" style="display:flex") Multiple Reference
+                Checkbox(v-model="filterOptions.prevent_multiple_referencing" style="display:flex") Prevent Multiple Referencing
                 Checkbox(v-model="filterOptions.ip" style="display:flex") IP
 
     .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = JSON.parse(JSON.stringify(createRecordTemplate)); showDetail=true; fileList=[]; }" :class="{'nonClickable' : showDetail || uploading || fetching || !user?.email_verified || currentService.service.active <= 0}")
@@ -286,7 +286,7 @@ br
                 th.overflow(v-if="filterOptions.user_id" style='width:160px;')
                     | User ID
                     .resizer
-                th.overflow(v-if="filterOptions.subscription" style='width:130px;')
+                //- th.overflow(v-if="filterOptions.subscription" style='width:130px;')
                     | Subscription
                     .resizer
                 th.overflow(v-if="filterOptions.reference" style='width:160px;')
@@ -313,14 +313,14 @@ br
                 th.overflow(v-if="filterOptions.readonly" style='width:100px;')
                     | Read Only
                     .resizer
-                th.overflow(v-if="filterOptions.reference_limit" style='width:140px;')
-                    | Reference Limit
+                th.overflow(v-if="filterOptions.referencing_limit" style='width:140px;')
+                    | Referencing Limit
                     .resizer
                 th.overflow(v-if="filterOptions.referenced" style='width:110px;')
                     | Referenced
                     .resizer
-                th.overflow(v-if="filterOptions.allow_multiple_reference" style='width:190px;')
-                    | Multiple Reference
+                th.overflow(v-if="filterOptions.prevent_multiple_referencing" style='width:190px;')
+                    | Prevent Multiple Referencing
                     .resizer
                 th.overflow(v-if="filterOptions.ip" style='width:160px;')
                     | IP
@@ -356,9 +356,9 @@ br
                         .click.overflow(@click.stop="copyID") {{ rc.record_id }}
                     td(v-if="filterOptions.user_id") 
                         .click.overflow(@click.stop="copyID") {{ rc.user_id }}
-                    td.overflow(v-if="filterOptions.subscription") {{ rc.table.subscription ? 'Required' : '-' }}
+                    //- td.overflow(v-if="filterOptions.subscription") {{ rc.table.subscription ? 'Required' : '-' }}
                     td(v-if="filterOptions.reference")
-                        .click.overflow(v-if="rc?.reference?.record_id" @click.stop="copyID") {{ rc?.reference?.record_id }}
+                        .click.overflow(v-if="rc?.reference" @click.stop="copyID") {{ rc?.reference }}
                         template(v-else) -
                     td.overflow(v-if="filterOptions.index") 
                         template(v-if="rc?.index") 
@@ -381,11 +381,11 @@ br
                             use(xlink:href="@/assets/img/material-icon.svg#icon-check-circle-fill")
 
                         template(v-else) -
-                    td.overflow(v-if="filterOptions.reference_limit") {{ (rc.reference.reference_limit == null) ? 'Infinite' : rc.reference.reference_limit }}
-                    td.overflow(v-if="filterOptions.referenced") {{ rc.reference.referenced_count }}
-                    td.overflow(v-if="filterOptions.allow_multiple_reference")
-                        //- .material-symbols-outlined.notranslate.fill(v-if="rc.reference.allow_multiple_reference") check_circle
-                        svg.svgIcon.black(v-if="rc.reference.allow_multiple_reference")
+                    td.overflow(v-if="filterOptions.referencing_limit") {{ (rc.source.referencing_limit == null) ? 'Infinite' : rc.source.referencing_limit }}
+                    td.overflow(v-if="filterOptions.referenced") {{ rc.referenced_count }}
+                    td.overflow(v-if="filterOptions.prevent_multiple_referencing")
+                        //- .material-symbols-outlined.notranslate.fill(v-if="rc.source.prevent_multiple_referencing") check_circle
+                        svg.svgIcon.black(v-if="rc.source.prevent_multiple_referencing")
                             use(xlink:href="@/assets/img/material-icon.svg#icon-check-circle-fill")
                     td.overflow(v-if="filterOptions.ip") {{ rc.ip }}
                 tr(v-for="i in (10 - listDisplay?.length)")
@@ -425,7 +425,7 @@ br
                         .value {{ selectedRecord?.ip }}
                     .row 
                         .key(style='font-weight:normal;') REFERENCED:
-                        .value {{ selectedRecord?.reference?.referenced_count }}
+                        .value {{ selectedRecord?.referenced_count }}
 
                     hr
 
@@ -449,8 +449,9 @@ br
                             option(value="public") Public
                             option(value="authorized") Authorized
                             option(value="private") Private
+                            option(value="admin") Admin
 
-                .row.indent(:class="{disabled : selectedRecord.table.access_group == 'public'}")
+                //- .row.indent(:class="{disabled : selectedRecord.table.access_group == 'public'}")
                     label.key(style='width:unset;color:black;')
                         | Subscription&nbsp;&nbsp;
                         Checkbox(v-model="selectedRecord_subscription" name='config[table][subscription]' :disabled="selectedRecord.table.access_group == 'public'" style='vertical-align:text-top;')
@@ -502,16 +503,16 @@ br
 
                 .row.indent 
                     .key Reference ID
-                    input.line.value(v-model="selectedRecord.reference.record_id" name='config[reference][record_id]' placeholder='Record ID to reference' )
+                    input.line.value(v-model="selectedRecord.reference" name='config[reference]' placeholder='Record ID to reference' )
 
                 .row.indent 
-                    .key Reference Limit
-                    input.line.value(type="number" min="0" placeholder="Infinite" v-model="selectedRecord.reference.reference_limit" name='config[reference][reference_limit]')
+                    .key Referencing Limit
+                    input.line.value(type="number" min="0" placeholder="Infinite" v-model="selectedRecord.source.referencing_limit" name='config[source][referencing_limit]')
                     
                 .row.indent 
                     label.key(style='width:unset;color:black;')
-                        | Allow Multi Reference&nbsp;&nbsp;
-                        Checkbox(v-model="selectedRecord.reference.allow_multiple_reference" name='config[reference][allow_multiple_reference]' style='vertical-align:text-top;')
+                        | Prevent Multiple Referencing&nbsp;&nbsp;
+                        Checkbox(v-model="selectedRecord.source.prevent_multiple_referencing" name='config[source][prevent_multiple_referencing]' style='vertical-align:text-top;')
 
                 br
 
@@ -613,7 +614,7 @@ let searchIndexCondition = ref("=");
 let filterOptions = ref({
     table: true,
     user_id: true,
-    subscription: true,
+    // subscription: true,
     reference: true,
     index: true,
     tag: true,
@@ -623,9 +624,9 @@ let filterOptions = ref({
     readonly: true,
     ip: true,
     files: true,
-    reference_limit: true,
+    referencing_limit: true,
     referenced: true,
-    allow_multiple_reference: true,
+    prevent_multiple_referencing: true,
     data: true,
 });
 
@@ -840,11 +841,11 @@ let createRecordTemplate = {
         name: "",
         value: "",
     },
-    reference: {
-        record_id: "",
-        allow_multiple_reference: true,
-        reference_limit: null,
+    source: {
+        referencing_limit: null,
+        prevent_multiple_referencing: false,
     },
+    reference: "",
     tags: [],
     readonly: false,
 };
