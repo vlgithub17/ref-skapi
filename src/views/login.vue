@@ -77,7 +77,11 @@ import { onMounted, ref } from 'vue';
 import Checkbox from '@/components/checkbox.vue';
 const router = useRouter();
 const route = useRoute();
-skapi.logout();
+skapi.logout().then(() => {
+    for (let k in user) {
+        delete user[k];
+    }
+});
 let showPassword = ref(false);
 let remVal = ref(false); // dom 업데이트시 checkbox value 유지하기 위함
 let promiseRunning = ref(false);
@@ -107,8 +111,11 @@ let login = (e) => {
         password: form.password
     }
 
-    skapi.login(params).then(async u => {
-        await updateUser(true);
+    skapi.login(params).then(u => {
+        // await updateUser(true);
+        for(let k in u) {
+            user[k] = u[k];
+        }
         router.push('/my-services');
     }).catch(err => {
         for (let k in user) {

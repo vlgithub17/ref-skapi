@@ -192,7 +192,7 @@ let changePassword = async () => {
     error.value = '';
     try {
         await skapi.changePassword({ current_password: currPassword, new_password: newPassword });
-        await skapi.logout();
+        // await skapi.logout();
         step.value++;
     }
     catch (err: any) {

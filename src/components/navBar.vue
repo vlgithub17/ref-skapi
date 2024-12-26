@@ -122,7 +122,10 @@ let navigateToPage = () => {
 
 let logout = () => {
     skapi.logout().then(() => {
-        updateUser();
+        // updateUser();
+        for(let k in user) {
+            delete user[k];
+        }
         router.push({ path: "/login" });
     });
 };
