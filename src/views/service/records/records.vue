@@ -341,15 +341,15 @@ br
                     td.overflow(v-if="filterOptions.table") 
                         //- span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group == 'private'") vpn_key
                         span
-                            svg.svgIcon(v-if="rc.table.access_group == 'private' || rc.table.access_group == 99" style="fill:black; margin-bottom: 2px")
+                            svg.svgIcon(v-if="rc.table.access_group == 'private' || rc.table.access_group == 99 || rc.table.access_group === 'admin'" style="fill:black; margin-bottom: 2px")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-vpn-key-fill")
                         //- span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group > 0 || rc.table.access_group == 'authorized'") person
                         span
-                            svg.svgIcon(v-if="rc.table.access_group == 'authorized'" style="fill:black; margin-bottom: 2px")
+                            svg.svgIcon(v-if="rc.table.access_group == 'authorized' || typeof rc.table.access_group === 'number' && rc.table.access_group > 0" style="fill:black; margin-bottom: 2px")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-person-fill")
                         //- span.material-symbols-outlined.notranslate.fill(v-if="rc.table.access_group == 0 || rc.table.access_group == 'public'") language
                         span
-                            svg.svgIcon(v-if="rc.table.access_group == 'public'" style="fill:black; margin-bottom: 2px")
+                            svg.svgIcon(v-if="rc.table.access_group == 'public' || rc.table.access_group === 0" style="fill:black; margin-bottom: 2px")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-language")
                         span(style="margin-left: 8px") {{ rc?.table?.name }}
                     td(v-if="filterOptions.record_id")
@@ -444,12 +444,28 @@ br
 
                 .row.indent 
                     .key Access Group 
-                    .value(style='flex-grow:0')
-                        select(v-model="selectedRecord.table.access_group" :disabled="selectedRecord?.record_id && selectedRecord_private" name='config[table][access_group]')
+                    //- .value(style='flex-grow:0')
+                    .value(style="display:flex; flex-wrap:wrap; gap:10px;")
+                        select(
+                            v-model="selectedRecordRecordAccessGroupSelector"
+                            :disabled="selectedRecord?.record_id && selectedRecord_private"
+                            :name='selectedRecordRecordAccessGroupSelector !== "_NumSel" ? "config[table][access_group]" : null'
+                        )
                             option(value="public") Public
                             option(value="authorized") Authorized
                             option(value="private") Private
                             option(value="admin") Admin
+                            option(value="_NumSel") Group Number
+
+                        input.line.value(
+                            style='width:unset;'
+                            v-if='selectedRecordRecordAccessGroupSelector === "_NumSel"'
+                            type="number"
+                            min="0"
+                            name='config[table][access_group]'
+                            :disabled="selectedRecord?.record_id && selectedRecord_private"
+                            :value="selectedRecord.table.access_group"
+                        )
 
                 //- .row.indent(:class="{disabled : selectedRecord.table.access_group == 'public'}")
                     label.key(style='width:unset;color:black;')
@@ -849,17 +865,31 @@ let createRecordTemplate = {
     tags: [],
     readonly: false,
 };
+
+let wasInitiallyPrivate = ref(false);
 let selectedRecord = ref(createRecordTemplate);
 let selectedRecord_private = computed(() => {
     return (
         selectedRecord.value?.table?.access_group == "private" &&
-        selectedRecord.value?.user_id !== user.user_id
+        selectedRecord.value?.user_id !== user.user_id &&
+        wasInitiallyPrivate.value
     );
 });
 let selectedRecord_readOnly = ref(false);
 let selectedRecord_subscription = ref(false);
 let selectedRecord_data = ref({});
 let fileList = ref([]);
+
+let selectedRecordRecordAccessGroupSelector = ref("public");
+
+watch(selectedRecordRecordAccessGroupSelector, (nv) => {
+    if (nv === "_NumSel") {
+        selectedRecord.value.table.access_group = typeof selectedRecord.value.table.access_group === 'number' ? selectedRecord.value.table.access_group : 2;
+    }
+    else {
+        selectedRecord.value.table.access_group = nv;
+    }
+});
 
 watch(selectedRecord, (nv) => {
     if (nv) {
@@ -868,6 +898,10 @@ watch(selectedRecord, (nv) => {
         selectedRecord_readOnly.value = nv?.readonly || false;
         selectedRecord_subscription.value = nv?.table?.subscription || false;
         selectedRecord_data.value = JSON.stringify(nv?.data, null, 2) || "";
+
+        wasInitiallyPrivate.value = nv?.table?.access_group === "private" && nv?.user_id === user.user_id;
+
+        selectedRecordRecordAccessGroupSelector.value = typeof selectedRecord.value.table.access_group === 'number' ? "_NumSel" : selectedRecord.value.table.access_group;
 
         if (Object.keys(bins).includes(nv.record_id)) {
             let normBin = (key, obj) => {
