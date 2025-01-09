@@ -4,17 +4,18 @@ import LandingPage from '@/views/landing.vue'
 import Login from '@/views/login.vue'
 import Signup from '@/views/signup.vue'
 import Create from '@/views/create-service.vue'
-import Subscription from '@/views/subscription/subscription.vue'
-import AccountSetting from '@/views/account-setting.vue'
-import MyServices from '@/views/service-list.vue'
-import ServiceMain from '@/views/service/main.vue'
 import NotFound from '@/views/notFound.vue'
 import { skapi } from '@/code/admin'
-import getting_started from '@/views/service/getting_started.vue'
-import service from '@/views/service/service.vue'
-import users from '@/views/service/users/users.vue'
-import records from '@/views/service/records/records.vue'
-import client_secret from '@/views/service/client_secret.vue'
+
+// import Subscription from '@/views/subscription/subscription.vue'
+// import AccountSetting from '@/views/account-setting.vue'
+// import MyServices from '@/views/service-list.vue'
+// import ServiceMain from '@/views/service/main.vue'
+// import getting_started from '@/views/service/getting_started.vue'
+// import service from '@/views/service/service.vue'
+// import users from '@/views/service/users/users.vue'
+// import records from '@/views/service/records/records.vue'
+// import client_secret from '@/views/service/client_secret.vue'
 
 let checkUser = async (t, f, n)=>{
   let u = await skapi.getProfile();
@@ -112,7 +113,7 @@ const router = createRouter(
     {
       path: '/subscription/:service',
       name: 'subscription',
-      component: Subscription,
+      component: ()=>import('@/views/subscription/subscription.vue'),
       beforeEnter: checkUser
     },
     {
@@ -127,39 +128,39 @@ const router = createRouter(
         {
           path: 'account-setting',
           name: 'accountsetting',
-          component: AccountSetting,
+          component: () => import('@/views/account-setting.vue'),
           beforeEnter: checkUser
         },
         {
           path: 'my-services',
           name: 'myservices',
-          component: MyServices,
+          component: () => import('@/views/service-list.vue'),
           beforeEnter: checkUser
         },
         {
           path: 'my-services/:service',
-          component: ServiceMain,
+          component: () => import('@/views/service/main.vue'),
           beforeEnter: checkUser,
           children: [
             {
               path: '',
               name: 'service',
-              component: getting_started
+              component: () => import('@/views/service/getting_started.vue'),
             },
             {
               path: 'dashboard',
               name: 'dashboard',
-              component: service
+              component: () => import('@/views/service/service.vue'),
             },
             {
               path: 'users',
               name: 'users',
-              component: users
+              component: () => import('@/views/service/users/users.vue'),
             },
             {
               path: 'records',
               name: 'records',
-              component: records
+              component: () => import('@/views/service/records/records.vue'),
             },
             {
               path: 'mail',
@@ -179,7 +180,7 @@ const router = createRouter(
             {
               path: 'clientsecret',
               name: 'clientsecret',
-              component: client_secret
+              component: () => import('@/views/service/client_secret.vue'),
             },
             {
               path: 'etc/records',
