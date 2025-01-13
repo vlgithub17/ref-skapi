@@ -320,6 +320,29 @@ export default class Service {
   //   return await skapi.util.request('admin-signup', Object.assign({ service: this.id, owner: this.owner }, params), { auth: true });
   // }
 
+  registerOpenIDLogger(params: {
+    url: string; // openid token 해석 url
+    mthd: string; // GET or POST
+    hder: {[key:string]: string}; // header
+    prms: {[key:string]: string}; // params
+    data: any; // post body data (post 만 해당)
+    id: string; // openid logger id
+    usr: string; // user id로 사용할 openid profile attribute
+    cdtn: {
+        key: string; // openid profile attribute
+        value: string | boolean | number; // openid profile attribute value
+        condition: "=" | ">" | "<" | ">=" | "<=" | "!=" | "ends_with";
+        range: string | boolean | number; // value range
+    },
+    request: 'create' | 'delete' | 'update' | 'list'; // request type
+  }) {
+    return skapi.util.request(
+        this.admin_private_endpoint + 'register-openid',
+        Object.assign({ service: this.id, owner: this.owner }, skapi.util.extractFormData(params).data || {}),
+        { auth: true }
+      );
+  }
+
   async createAccount(
     form: UserAttributes & UserProfilePublicSettings & { email: string; password: string },
     options?: {
