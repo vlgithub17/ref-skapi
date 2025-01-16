@@ -192,6 +192,11 @@ const router = createRouter(
               name: 'etc-testing',
               component: () => import('@/views/service/testing.vue')
             },
+            {
+              path: 'test/openid',
+              name: 'test/openid',
+              component: () => import('@/views/service/tester/openid.vue')
+            }
           ]
         },
       ]
