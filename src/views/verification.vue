@@ -70,7 +70,7 @@ br
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
-import { skapi } from '@/code/admin';
+import { skapi } from '@/main';
 import { updateUser } from '@/code/user';
 
 const router = useRouter();

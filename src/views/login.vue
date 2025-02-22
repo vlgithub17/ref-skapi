@@ -71,7 +71,7 @@ br
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { skapi } from '@/code/admin'
+import { skapi } from '@/main'
 import { user, updateUser } from '@/code/user'
 import { onMounted, ref } from 'vue';
 import Checkbox from '@/components/checkbox.vue';

@@ -155,7 +155,7 @@ br
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { ref, nextTick } from 'vue';
-import { skapi } from '@/code/admin';
+import { skapi } from '@/main';
 
 const router = useRouter();
 const route = useRoute();

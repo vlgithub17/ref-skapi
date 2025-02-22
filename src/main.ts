@@ -1,3 +1,4 @@
+
 import './assets/less/main.less';
 import './assets/less/uistruct.less';
 
@@ -5,11 +6,37 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import { ref } from 'vue';
-import { skapi } from '@/code/admin';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { Skapi } from 'skapi-js';
 
+
+let autoLogin = window.localStorage.getItem('remember') === 'true';
+
+const SERVICE_ID = import.meta.env.VITE_ADMIN;
+const ETC_CONFIG = JSON.parse(import.meta.env.VITE_ETC);
+
+
+
+let loggedAccount = ref(null);
+
+export const skapi = new Skapi(
+  SERVICE_ID,
+  'skapi',
+  {
+    autoLogin,
+    eventListener: {
+      onLogin: (user) => {
+        loggedAccount.value = user;
+      }
+    }
+  },
+  ETC_CONFIG
+);
+
+// build date
 console.log('deploy:' + import.meta.env.VITE_DATE);
+
 skapi.version();
 const app = createApp(App);
 

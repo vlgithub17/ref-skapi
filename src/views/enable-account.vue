@@ -26,7 +26,7 @@ br
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { skapi } from '@/code/admin';
+import { skapi } from '@/main';
 import { ref } from 'vue';
 
 const router = useRouter();

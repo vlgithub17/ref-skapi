@@ -5,7 +5,7 @@ import Login from '@/views/login.vue'
 import Signup from '@/views/signup.vue'
 import Create from '@/views/create-service.vue'
 import NotFound from '@/views/notFound.vue'
-import { skapi } from '@/code/admin'
+import { skapi } from '@/main.ts'
 
 // import Subscription from '@/views/subscription/subscription.vue'
 // import AccountSetting from '@/views/account-setting.vue'
