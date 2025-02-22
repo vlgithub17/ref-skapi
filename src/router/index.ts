@@ -5,7 +5,7 @@ import Login from '@/views/login.vue'
 import Signup from '@/views/signup.vue'
 import Create from '@/views/create-service.vue'
 import NotFound from '@/views/notFound.vue'
-import { skapi } from '@/main.ts'
+import { skapi, loggedAccount } from '@/main.ts'
 
 // import Subscription from '@/views/subscription/subscription.vue'
 // import AccountSetting from '@/views/account-setting.vue'
@@ -18,7 +18,7 @@ import { skapi } from '@/main.ts'
 // import client_secret from '@/views/service/client_secret.vue'
 
 let checkUser = async (t, f, n)=>{
-  let u = await skapi.getProfile();
+  let u = loggedAccount.value;
   if(u) return n();
   n('/login');
 }
