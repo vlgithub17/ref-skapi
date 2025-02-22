@@ -1,4 +1,4 @@
-import { skapi } from "@/code/admin"
+import { skapi } from "@/main"
 import { devLog } from "@/code/logger";
 import { currentService } from "../main";
 import { ref, computed } from "vue";

@@ -29,7 +29,7 @@ br
 </template>
 
 <script setup lang="ts">
-import { skapi } from '@/code/admin';
+import { skapi } from '@/main';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 

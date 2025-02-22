@@ -1,5 +1,5 @@
 import { computed, reactive, watch, ref } from "vue";
-import { skapi } from "./admin";
+import { skapi } from "@/main";
 import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
 import Service from "./service";
 

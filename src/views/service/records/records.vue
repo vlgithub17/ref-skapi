@@ -615,7 +615,7 @@ import Pager from "@/code/pager";
 
 import type { Ref } from "vue";
 import { ref, computed, nextTick, reactive, watch } from "vue";
-import { skapi } from "@/code/admin";
+import { skapi } from "@/main";
 import { user } from "@/code/user";
 import { devLog } from "@/code/logger"
 import { currentService, serviceRecords, serviceBins} from "@/views/service/main";

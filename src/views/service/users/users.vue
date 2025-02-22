@@ -644,7 +644,7 @@ import Pager from '@/code/pager'
 
 import type { Ref } from 'vue';
 import { ref, computed, watch } from 'vue';
-import { skapi } from '@/code/admin';
+import { skapi } from '@/main';
 import { user } from '@/code/user';
 import { showDropDown } from '@/assets/js/event.js'
 import { currentService, serviceUsers } from '@/views/service/main';

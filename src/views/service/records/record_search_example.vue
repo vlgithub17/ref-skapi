@@ -100,7 +100,7 @@ form(@submit.prevent='extractForm')
 
 <script setup>
 import { ref, watch } from 'vue';
-import { skapi } from '@/code/admin';
+import { skapi } from '@/main';
 import { devLog } from '@/code/logger';
 import { currentService } from '@/views/service/main';
 import jsonCrawler from 'jsoncrawler'; // https://github.com/broadwayinc/jsoncrawler 참고

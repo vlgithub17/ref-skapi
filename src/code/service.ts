@@ -1,6 +1,6 @@
 import { reactive, ref } from 'vue';
 import type { Ref } from 'vue';
-import { skapi } from './admin';
+import { skapi } from "@/main";
 import { Countries } from './countries';
 import { devLog } from './logger';
 import templates from 'rollup-plugin-visualizer/dist/plugin/template-types';
