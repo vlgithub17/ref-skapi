@@ -13,36 +13,25 @@ footer#footer
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { onMounted, onUnmounted, ref } from 'vue';
-// import { updateUser } from './code/user';
-// import { callServiceList } from './views/service-list';
-// import { hideMoreVert } from '@/assets/js/event.js'
 import { connected } from '@/main';
 
 const router = useRouter();
 const route = useRoute();
 
-// let loaded = ref(false);
-// callServiceList.value = true;
 let footerHeight = ref('0');
-// updateUser(true).finally(() => {
-//     loaded.value = true;
-// });
 
 onMounted(() => {
-    // document.addEventListener('click', hideMoreVert);
-
     // this is to make footer stick to bottom
     // get footer height
     footerHeight.value = document.getElementById('footer').offsetHeight.toString(); // number
     // detect window width change
     window.addEventListener('resize', () => {
-        footerHeight.value = document.getElementById('footer').offsetHeight.toString();
+        window.requestAnimationFrame(() => {
+            footerHeight.value = document.getElementById('footer').offsetHeight.toString();
+        });
     });
 })
 
-// onUnmounted(() => {
-//     document.removeEventListener('click', hideMoreVert);
-// })
 </script>
 <style lang='less'>
 footer {

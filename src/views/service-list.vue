@@ -103,17 +103,18 @@ main#serviceList
 import { useRouter } from 'vue-router';
 import { watch, ref } from 'vue';
 import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
-import { loginState, user } from '@/code/user';
+// import { loginState, user } from '@/code/user';
+import { user } from '@/code/user';
 import type Service from '@/code/service';
 import Table from '@/components/table.vue';
 
 const router = useRouter();
 
-watch(loginState, nv => {
-    if (!nv) {
-        router.push('/login');
-    }
-}, { immediate: true });
+// watch(loginState, nv => {
+//     if (!nv) {
+//         router.push('/login');
+//     }
+// }, { immediate: true });
 
 let goServiceDashboard = (service: { [key: string]: any }) => {
     router.push('/my-services/' + service.id);

@@ -1,10 +1,10 @@
-import { computed, reactive, watch, ref } from "vue";
+import { reactive, watch, ref } from "vue";
 import { skapi } from "@/main";
 import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
 import Service from "./service";
 
 export let user: { [key: string]: any } = reactive({});
-export let loginState = computed(() => !!user?.user_id);
+// export let loginState = computed(() => !!user?.user_id);
 
 export let customer: Promise<Customer> = null;
 export let emailSubscribed = ref(null);

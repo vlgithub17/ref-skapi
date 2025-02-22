@@ -6,12 +6,11 @@
     "cypress.config.*",
     "nightwatch.conf.*",
     "playwright.config.*",
-    "src/**/*.ts",
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "src/vite-env.d.ts"
+    // "src/**/*.ts",
+    // "src/**/*.ts",
+    // "src/**/*.d.ts",
+    // "src/**/*.tsx",
+    // "src/**/*.vue",
   ],
   "exclude": [
     "node_modules"
@@ -29,7 +28,7 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
     "lib": [
       "es5",
