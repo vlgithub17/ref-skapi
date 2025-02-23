@@ -840,12 +840,12 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
     {
       name: "Date Created",
       key: "timestamp",
-      value: true,
+      value: false,
     },
     {
       name: "Phone Number",
       key: "phone_number",
-      value: true,
+      value: false,
     },
     {
       name: "Address",
