@@ -134,7 +134,6 @@ div(v-else style='text-align: center;margin-top: 100px;')
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 import { ref, watch } from "vue";
-// import { loginState } from "@/code/user";
 import { serviceList } from "@/views/service-list";
 import { currentService, setService, serviceMainLoaded } from "@/views/service/main";
 import Modal from "@/components/modal.vue";
@@ -172,16 +171,6 @@ let index = 0;
 let prevRouter = ref("");
 let nextRouter = ref("");
 let plan = ref("Trial");
-
-// watch(
-//     loginState,
-//     (nv) => {
-//         if (!nv) {
-//             router.push("/login");
-//         }
-//     },
-//     { immediate: true }
-// );
 
 watch(serviceList, nv => {
     if (nv[serviceId] && currentService?.id !== serviceId) {

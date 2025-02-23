@@ -63,7 +63,7 @@ nav#navBar(ref="navBar")
                     li
                         router-link.ser(to="/login") Login
                     li
-                        router-link(to="/signup") 
+                        router-link(to="/signup")
                             button.final Sign-up
 
 
@@ -122,9 +122,6 @@ let navigateToPage = () => {
 
 let logout = () => {
     skapi.logout().then(() => {
-        for(let k in user) {
-            delete user[k];
-        }
         router.push({ path: "/login" });
     });
 };

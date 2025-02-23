@@ -110,12 +110,6 @@ import Table from '@/components/table.vue';
 
 const router = useRouter();
 
-// watch(loginState, nv => {
-//     if (!nv) {
-//         router.push('/login');
-//     }
-// }, { immediate: true });
-
 let goServiceDashboard = (service: { [key: string]: any }) => {
     router.push('/my-services/' + service.id);
 }
