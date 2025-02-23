@@ -71,7 +71,7 @@ nav#navBar(ref="navBar")
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, onBeforeUnmount, ref } from "vue";
 import { skapi } from "@/main";
-import { loginState, user, updateUser, customer } from "@/code/user";
+import { loginState, user, customer } from "@/code/user";
 import { showDropDown } from "@/assets/js/event.js";
 import { setAutoHide, removeListener } from "./navBar-autohide.ts";
 
@@ -117,7 +117,6 @@ let navigateToPage = () => {
 
 let logout = () => {
     skapi.logout().then(() => {
-        updateUser();
         router.push({ path: "/login" });
     });
 };

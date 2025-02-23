@@ -71,7 +71,6 @@ br
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { skapi } from '@/main';
-import { updateUser } from '@/code/user';
 
 const router = useRouter();
 
@@ -89,7 +88,7 @@ let resend = async () => {
 }
 let verifyEmail = e => {
     promiseRunning.value = true;
-    skapi.verifyEmail(e).then(() => { step.value++; updateUser(); }).catch(err => error = err.message).finally(() => promiseRunning.value = false);
+    skapi.verifyEmail(e).then(() => step.value++ ).catch(err => error = err.message).finally(() => promiseRunning.value = false);
 }
 </script>
 

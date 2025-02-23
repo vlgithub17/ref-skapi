@@ -75,6 +75,8 @@ export type UserAttributes = {
 };
 
 export type PublicUser = {
+  services: string[]; // service id list
+  
   /** Service id of the user account. */
   service: string;
   /** User ID of the service owner. */

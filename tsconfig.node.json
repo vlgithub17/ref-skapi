@@ -6,11 +6,11 @@
     "cypress.config.*",
     "nightwatch.conf.*",
     "playwright.config.*",
-    // "src/**/*.ts",
-    // "src/**/*.ts",
-    // "src/**/*.d.ts",
-    // "src/**/*.tsx",
-    // "src/**/*.vue",
+    "src/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
   ],
   "exclude": [
     "node_modules"

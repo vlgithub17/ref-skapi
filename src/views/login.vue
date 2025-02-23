@@ -72,7 +72,7 @@ br
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { skapi } from '@/main'
-import { user, updateUser } from '@/code/user'
+import { user } from '@/code/user'
 import { onMounted, ref } from 'vue';
 import Checkbox from '@/components/checkbox.vue';
 const router = useRouter();
@@ -112,7 +112,6 @@ let login = (e) => {
     }
 
     skapi.login(params).then(u => {
-        // await updateUser(true);
         for(let k in u) {
             user[k] = u[k];
         }

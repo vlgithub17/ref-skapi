@@ -259,7 +259,7 @@ import type { ComputedRef, Ref } from "vue";
 import { currentService, serviceAutoMails } from "./main";
 import { user } from "@/code/user";
 import Code from "@/components/code.vue";
-import { dateFormat } from "@/main";
+import { dateFormat } from "@/code/admin";
 import Table from "@/components/table.vue";
 import Modal from "@/components/modal.vue";
 import Pager from "@/code/pager";

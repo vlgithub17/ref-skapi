@@ -73,14 +73,6 @@
                         span.name File Hosting
 
                 template(v-else)
-                    //- router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
-                        //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
-                        svg(v-if="route.name === 'mail'")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
-                        svg(v-else)
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-mail")   
-                        span.name Automated Email
-
                     router-link.router(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter'}")
                         //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'newsletter'}") stacked_email
                         svg(v-if="route.name === 'newsletter'")

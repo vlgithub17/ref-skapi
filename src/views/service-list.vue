@@ -49,7 +49,7 @@ main#serviceList
                         | Email
 
             template(v-slot:body)
-                tr(v-if="callServiceList")
+                tr(v-if="fetchingServiceList")
                     td(colspan="8").
                         Loading ... &nbsp;
                         #[.loader(style="--loader-color:black; --loader-size:12px")]
@@ -102,7 +102,7 @@ main#serviceList
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { watch, ref } from 'vue';
-import { callServiceList, serviceList, serviceIdList } from '@/views/service-list';
+import { fetchingServiceList, serviceList, serviceIdList } from '@/views/service-list';
 // import { loginState, user } from '@/code/user';
 import { user } from '@/code/user';
 import type Service from '@/code/service';
