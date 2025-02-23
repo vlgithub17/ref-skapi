@@ -4,11 +4,11 @@ import LandingPage from '@/views/landing.vue'
 import Login from '@/views/login.vue'
 import Signup from '@/views/signup.vue'
 import NotFound from '@/views/notFound.vue'
-// import { loggedAccount } from '@/main.ts'
+
 import { user } from '@/code/user'
 let checkUser = async (t, f, n) => {
   let u = user?.user_id;
-  console.log('checkUser', {u: u.user_id});
+  console.log('checkUser', { u: u.user_id });
   if (u) return n();
   n('/login');
 }
