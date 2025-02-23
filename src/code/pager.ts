@@ -2,8 +2,8 @@ export default class Pager {
     sortBy: string;
     id: string;
     order: 'asc' | 'desc' = 'asc';
-    map: any[] = [];
-    list: { [key: string]: any } = {};
+    map: any[] = []; // [uniqueId, uniqueId, uniqueId, ...]
+    list: { [uniqueId: string]: any } = {};
     resultsPerPage = 10;
     worker: any;
 
