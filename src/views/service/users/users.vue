@@ -138,7 +138,7 @@ form#searchForm(@submit.prevent="getPage(true)", style="padding: 1.2em")
     input#searchInput.big(
       v-else-if="searchFor === 'phone_number'",
       type="text",
-      placeholder="eg+821234567890",
+      placeholder="+821234567890",
       v-model="searchValue",
       :disabled="fetching"
     )
@@ -185,7 +185,7 @@ form#searchForm(@submit.prevent="getPage(true)", style="padding: 1.2em")
     input#searchInput.big(
       v-else-if="searchFor === 'user_id'",
       type="search",
-      placeholder="Search Users",
+      placeholder="xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
       v-model="searchValue",
       name="user_id",
       @input="(e) => { e.target.setCustomValidity(''); }",
@@ -193,7 +193,7 @@ form#searchForm(@submit.prevent="getPage(true)", style="padding: 1.2em")
     )
     input#searchInput.big(
       v-else-if="searchFor === 'email'",
-      placeholder="Search public email address",
+      placeholder="user@email.com",
       v-model="searchValue",
       name="email",
       type="email",
