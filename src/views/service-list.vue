@@ -103,7 +103,6 @@ main#serviceList
 import { useRouter } from 'vue-router';
 import { watch, ref } from 'vue';
 import { fetchingServiceList, serviceList, serviceIdList } from '@/views/service-list';
-// import { loginState, user } from '@/code/user';
 import { user } from '@/code/user';
 import type Service from '@/code/service';
 import Table from '@/components/table.vue';
