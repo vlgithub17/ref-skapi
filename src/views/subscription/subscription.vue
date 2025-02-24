@@ -133,7 +133,7 @@ import { useRoute, useRouter } from "vue-router";
 import { serviceList } from "@/views/service-list";
 import Modal from "@/components/modal.vue";
 import { user, customer } from "@/code/user";
-import { skapi } from "@/code/admin";
+import { skapi } from "@/main";
 
 const router = useRouter();
 const route = useRoute();

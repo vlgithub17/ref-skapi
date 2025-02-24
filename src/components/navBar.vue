@@ -2,7 +2,7 @@
 nav#navBar(ref="navBar")
     .wrap
         .left
-            router-link.logo(to="/my-services" v-if="route.name != 'home' && loginState && route.path !== '/my-services'" style="color:white")
+            router-link.logo(to="/my-services" v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services'" style="color:white")
                 //- .material-symbols-outlined.notranslate.nohover.back(style="font-size:1.5em") arrow_back_ios
                 svg(width="1.5em" height="1.5em" style="fill:white")
                     use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back-ios")
@@ -12,7 +12,7 @@ nav#navBar(ref="navBar")
                 img.symbol.desktop(src="@/assets/img/logo/logo-white.svg" style="image-orientation: none;height:38px")
         .right
             ul.menu-wrap
-                template(v-if="loginState")
+                template(v-if="user?.user_id")
                     li.go-github
                         a(href="https://github.com/broadwayinc/skapi-js" target="_blank")
                             img(src="@/assets/img/icon/icon_github.svg")
@@ -63,7 +63,7 @@ nav#navBar(ref="navBar")
                     li
                         router-link.ser(to="/login") Login
                     li
-                        router-link(to="/signup") 
+                        router-link(to="/signup")
                             button.final Sign-up
 
 
@@ -76,8 +76,8 @@ nav#navBar(ref="navBar")
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, onBeforeUnmount, ref } from "vue";
-import { skapi } from "@/code/admin";
-import { loginState, user, updateUser, customer } from "@/code/user";
+import { skapi } from "@/main";
+import { user, customer } from "@/code/user";
 import { showDropDown } from "@/assets/js/event.js";
 import { setAutoHide, removeListener } from "./navBar-autohide.ts";
 
@@ -122,10 +122,6 @@ let navigateToPage = () => {
 
 let logout = () => {
     skapi.logout().then(() => {
-        // updateUser();
-        for(let k in user) {
-            delete user[k];
-        }
         router.push({ path: "/login" });
     });
 };

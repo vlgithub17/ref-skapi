@@ -368,7 +368,8 @@ import Code from '@/components/code.vue';
 import Table from '@/components/table.vue';
 import Modal from '@/components/modal.vue';
 import Pager from '@/code/pager';
-import { skapi, getFileSize, dateFormat } from '@/code/admin';
+import { getFileSize } from '@/code/admin';
+import { skapi } from '@/main';
 import { user } from '@/code/user';
 import Checkbox from '@/components/checkbox.vue';
 import { serviceFolders, uploadFiles, onDrop, currentDirectory, uploadCount, uploadProgress } from '@/views/service/hosting/file';
@@ -709,7 +710,7 @@ watch(currentDirectory, (n) => {
     getFileList();
 });
 
-async function getFileList(refresh = false) {
+async function getFileList(refresh:string | boolean = false) {
     if (!refresh && fetching.value) return;
 
     let resultsPerPage = 10;

@@ -83,7 +83,7 @@ br
 import { useRoute, useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { serviceIdList, serviceList } from '@/views/service-list'
-import { skapi } from '@/code/admin';
+import { skapi } from '@/main';
 import { customer } from '@/code/user';
 import Service from '@/code/service';
 

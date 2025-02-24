@@ -49,7 +49,7 @@ br
 </template>
 
 <script setup lang="ts">
-import { skapi } from '@/code/admin';
+import { skapi } from '@/main';
 import { currentService } from '@/views/service/main';
 import { useRoute, useRouter } from 'vue-router';
 import Checkbox from '@/components/checkbox.vue';

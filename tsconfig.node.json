@@ -6,9 +6,16 @@
     "cypress.config.*",
     "nightwatch.conf.*",
     "playwright.config.*",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "env.d.ts"
   ],
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules"
+  ],
   "compilerOptions": {
     "composite": true,
     "noEmit": true,
@@ -16,14 +23,25 @@
     "strictNullChecks": false,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["node"],
-    "lib": ["es5", "es6", "dom", "es2021"], // window 객체를 사용하기 위해 dom 추가
+    "types": [
+      "node",
+      "vite/client"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "lib": [
+      "es5",
+      "es6",
+      "dom",
+      "es2021"
+    ], // window 객체를 사용하기 위해 dom 추가
     "outDir": "./dist", // 컴파일된 JavaScript 파일의 출력 디렉토리
     "rootDir": "./src", // TypeScript 소스 파일의 루트 디렉토리
     "strict": true,
     "target": "es6",
     "esModuleInterop": true,
-    "sourceMap": true
+    "sourceMap": true,
   }
 }
-

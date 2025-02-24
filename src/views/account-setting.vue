@@ -75,8 +75,8 @@ Modal(:open="proceedVerification" @close="proceedVerification=false")
 </template>
 
 <script setup lang="ts">
-import { skapi } from '@/code/admin';
-import { user, updateUser, emailSubscribed } from '@/code/user';
+import { skapi } from '@/main';
+import { user, emailSubscribed } from '@/code/user';
 import router from '@/router';
 import { computed, ref, nextTick, watch } from 'vue';
 import Modal from '@/components/modal.vue';
@@ -114,7 +114,6 @@ let changeEmail = async () => {
         });
         updatingValue.value = false;
         modifyMode.value = false;
-        updateUser();
     }
     catch (err) {
         updatingValue.value = false;

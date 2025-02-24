@@ -73,14 +73,6 @@
                         span.name File Hosting
 
                 template(v-else)
-                    //- router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
-                        //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
-                        svg(v-if="route.name === 'mail'")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
-                        svg(v-else)
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-mail")   
-                        span.name Automated Email
-
                     router-link.router(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter'}")
                         //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'newsletter'}") stacked_email
                         svg(v-if="route.name === 'newsletter'")
@@ -142,7 +134,6 @@ div(v-else style='text-align: center;margin-top: 100px;')
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 import { ref, watch } from "vue";
-import { loginState } from "@/code/user";
 import { serviceList } from "@/views/service-list";
 import { currentService, setService, serviceMainLoaded } from "@/views/service/main";
 import Modal from "@/components/modal.vue";
@@ -180,16 +171,6 @@ let index = 0;
 let prevRouter = ref("");
 let nextRouter = ref("");
 let plan = ref("Trial");
-
-watch(
-    loginState,
-    (nv) => {
-        if (!nv) {
-            router.push("/login");
-        }
-    },
-    { immediate: true }
-);
 
 watch(serviceList, nv => {
     if (nv[serviceId] && currentService?.id !== serviceId) {

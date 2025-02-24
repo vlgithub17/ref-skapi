@@ -133,7 +133,7 @@ div(style='overflow-x: hidden;')
 
 <script setup>
 import { currentService } from "@/views/service/main";
-import { skapi } from "@/code/admin";
+import { skapi } from "@/main";
 import { ref } from "vue";
 let reqMethod = ref("GET");
 let cond = ref("=");

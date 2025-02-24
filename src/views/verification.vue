@@ -70,8 +70,7 @@ br
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
-import { skapi } from '@/code/admin';
-import { updateUser } from '@/code/user';
+import { skapi } from '@/main';
 
 const router = useRouter();
 
@@ -89,7 +88,7 @@ let resend = async () => {
 }
 let verifyEmail = e => {
     promiseRunning.value = true;
-    skapi.verifyEmail(e).then(() => { step.value++; updateUser(); }).catch(err => error = err.message).finally(() => promiseRunning.value = false);
+    skapi.verifyEmail(e).then(() => step.value++ ).catch(err => error = err.message).finally(() => promiseRunning.value = false);
 }
 </script>
 

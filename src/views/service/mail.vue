@@ -263,7 +263,7 @@ import { dateFormat } from "@/code/admin";
 import Table from "@/components/table.vue";
 import Modal from "@/components/modal.vue";
 import Pager from "@/code/pager";
-import { skapi } from "@/code/admin";
+import { skapi } from "@/main";
 import { devLog } from "@/code/logger";
 import Select from "@/components/select.vue";
 import Toggle from "@/components/toggle.vue";

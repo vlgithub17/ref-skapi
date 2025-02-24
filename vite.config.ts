@@ -39,6 +39,9 @@ export default defineConfig({
     }),
     vue(),
   ],
+  server: {
+    allowedHosts: ['seoul.broadwayinc.computer']
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

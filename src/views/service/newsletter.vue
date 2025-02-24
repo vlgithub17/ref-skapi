@@ -192,7 +192,7 @@ import type { Ref } from 'vue';
 import { currentService, serviceBulkMails } from './main';
 import { user } from '@/code/user';
 import Table from '@/components/table.vue';
-import { skapi } from '@/code/admin';
+import { skapi } from '@/main';
 import { dateFormat } from '@/code/admin';
 import Pager from '@/code/pager';
 import Code from '@/components/code.vue';

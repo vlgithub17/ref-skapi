@@ -90,7 +90,7 @@ br
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { skapi } from '@/code/admin'
+import { skapi } from '@/main'
 import { user } from '@/code/user'
 import { ref } from 'vue';
 import Checkbox from '@/components/checkbox.vue';
