@@ -1115,6 +1115,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
 
     if (refresh) {
       endOfList.value = false;
+      currentPage.value = 1;
     }
 
     if (!serviceUsers[currentService.id] || searchValue.value) {
@@ -1164,18 +1165,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
       }
 
       // get page from pager
-      let disp = pager.getPage(currentPage.value);
-      maxPage.value = disp.maxPage;
-      listDisplay.value = disp.list;
-
-      if (
-        disp.maxPage > 0 &&
-        disp.maxPage < currentPage.value &&
-        !disp.list.length
-      ) {
-        currentPage.value--;
-      }
-
+      updateListDisplay();
       fetching.value = false;
     }
   };
@@ -1375,7 +1365,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
     let disp = pager.getPage(currentPage.value);
     maxPage.value = disp.maxPage;
     listDisplay.value = disp.list;
-    if (
+    while (
       disp.maxPage > 0 &&
       disp.maxPage < currentPage.value &&
       !disp.list.length
