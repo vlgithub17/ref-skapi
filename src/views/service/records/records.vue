@@ -746,6 +746,7 @@ let getPage = async (refresh?: boolean) => {
 
     if (refresh) {
         endOfList.value = false;
+		currentPage.value = 1;
     }
 
     if(!serviceRecords[currentService.id] || callParams?.table?.name) {
