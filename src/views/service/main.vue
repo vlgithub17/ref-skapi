@@ -34,9 +34,9 @@
                 router-link.router(:to="`/my-services/${currentService.id}/openid`" :class="{'active': route.name == 'openid'}")
                     //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'users'}") supervisor_account
                     svg(v-if="route.name === 'openid'")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-openid-fill")
                     svg(v-else)
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-openid")
                     span.name OpenID Logger
 
                 router-link.router(:to="`/my-services/${currentService.id}/clientsecret`" :class="{'active': route.name == 'clientsecret'}")
