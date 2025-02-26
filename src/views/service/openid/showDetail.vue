@@ -107,17 +107,18 @@
     function load(rec: any) {
         rec = rec || def;
         selectedRecord.value = rec;
-        selectedRecord_hder.value = JSON.stringify(rec.hder || null, null, 2);
+        selectedRecord_hder.value = rec.hder ? JSON.stringify(rec.hder || null, null, 2) : "";
 
-        if(selectedRecord.value.mthd === 'GET') {
-            selectedRecord_data.value = JSON.stringify(rec.prms || null, null, 2);
-        } else {
-            selectedRecord_data.value = JSON.stringify(rec.data || null, null, 2);
+        if (selectedRecord.value.mthd === 'GET') {
+            selectedRecord_data.value = rec.prms ? JSON.stringify(rec.prms, null, 2) : "";
+        }
+        else {
+            selectedRecord_data.value = rec.data ? JSON.stringify(rec.data, null, 2) : "";
         }
 
         cdtn.value = rec.cdtn || def.cdtn;
 
-        if(!cdtn.value.condition) {
+        if (!cdtn.value.condition) {
             cdtn.value.condition = "=";
         }
     }

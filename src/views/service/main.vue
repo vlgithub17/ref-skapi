@@ -37,7 +37,7 @@
                         use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
                     svg(v-else)
                         use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account")
-                    span.name Open ID Logger
+                    span.name OpenID Logger
 
                 router-link.router(:to="`/my-services/${currentService.id}/clientsecret`" :class="{'active': route.name == 'clientsecret'}")
                     //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'clientsecret'}") key
