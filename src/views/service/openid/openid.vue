@@ -60,7 +60,7 @@ section.infoBox
     .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedLogger = null; showDetail=true; }" :class="{'nonClickable' : showDetail || uploading || fetching || !user?.email_verified || currentService.service.active <= 0}")
         svg.svgIcon
             use(xlink:href="@/assets/img/material-icon.svg#icon-add-circle-fill")
-        span &nbsp;&nbsp;Create Logger
+        span &nbsp;&nbsp;Register Logger
 
     .iconClick.square(@click="openDeleteRecords=true" :class="{'nonClickable': !Object.keys(checked).length || fetching || !user?.email_verified || currentService.service.active <= 0}" )
         svg.svgIcon
