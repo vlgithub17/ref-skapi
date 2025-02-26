@@ -118,7 +118,7 @@ section.infoBox
         .header(style='padding-right:10px;')
             svg.svgIcon.black.clickable(@click="showDetail=false; selectedLogger=null;" :class="{nonClickable: fetching}")
                 use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back")
-            .name {{ selectedLogger?.id ? selectedLogger.id : 'Create Record' }}
+            .name {{ selectedLogger?.id ? selectedLogger.id : 'Register Logger' }}
             template(v-if="uploading")
                 .loader(style="--loader-color:blue; --loader-size:12px; margin: 12px;")
             template(v-else)
