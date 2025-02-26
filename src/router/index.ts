@@ -8,8 +8,9 @@ import NotFound from '@/views/notFound.vue'
 import { user } from '@/code/user'
 let checkUser = async (t, f, n) => {
   let u = user?.user_id;
-  console.log('checkUser', { u: u.user_id });
-  if (u) return n();
+  if (u) {
+    return n();
+  }
   n('/login');
 }
 
@@ -148,6 +149,11 @@ const router = createRouter(
                 component: () => import('@/views/service/records/records.vue'),
               },
               {
+                path: 'openid',
+                name: 'openid',
+                component: () => import('@/views/service/openid/openid.vue'),
+              },
+              {
                 path: 'mail',
                 name: 'mail',
                 component: () => import('@/views/service/mail.vue'),
@@ -166,11 +172,6 @@ const router = createRouter(
                 path: 'clientsecret',
                 name: 'clientsecret',
                 component: () => import('@/views/service/client_secret.vue'),
-              },
-              {
-                path: 'etc/records',
-                name: 'etc-records',
-                component: () => import('@/views/service/records/record_search_example.vue')
               },
               {
                 path: 'etc/testing',

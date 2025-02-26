@@ -1,79 +1,71 @@
 <template lang="pug">
 section.infoBox
     .titleHead
-        h2 Database
-            
-        span.moreInfo(@click="showGuide = !showGuide" @mouseover="hovering = true" @mouseleave="hovering = false")
+        h2 Open ID Loggers
+
+        span.moreInfo(
+            @click="showGuide = !showGuide",
+            @mouseover="hovering = true",
+            @mouseleave="hovering = false"
+        )
             span More Info&nbsp;
             template(v-if="showGuide")
-                svg(v-if="hovering" style="width: 25px; height: 25px; fill: black;")
-                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up-fill")
-                svg(v-else style="width: 25px; height: 25px; fill: black;")
-                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up")
-            template(v-else) 
-                svg(v-if="hovering" style="width: 25px; height: 25px; fill: black;")
-                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down-fill")
-                svg(v-else style="width: 25px; height: 25px; fill: black;")
-                    use(xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down")
+                //- .material-symbols-outlined.notranslate.fill expand_circle_up 
+                //- .material-symbols-outlined.notranslate.noFill expand_circle_up
+                svg(v-if="hovering", style="width: 25px; height: 25px; fill: black")
+                    use(
+                    xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up-fill"
+                    )
+                svg(v-else, style="width: 25px; height: 25px; fill: black")
+                    use(
+                    xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-up"
+                    )
+            template(v-else)
+                //- .material-symbols-outlined.notranslate.fill expand_circle_down
+                //- .material-symbols-outlined.notranslate.noFill expand_circle_down
+                svg(v-if="hovering", style="width: 25px; height: 25px; fill: black")
+                    use(
+                    xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down-fill"
+                    )
+                svg(v-else, style="width: 25px; height: 25px; fill: black")
+                    use(
+                    xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down"
+                    )
 
     template(v-if="showGuide")
         Guide
 
     hr
 
-    .error(v-if='!user?.email_verified')
+    .error(v-if="!user?.email_verified")
+        //- .material-symbols-outlined.notranslate.fill warning
         svg
             use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         router-link(to="/account-setting") Please verify your email address to modify settings.
-        
-    .error(v-else-if='currentService.service.active == 0')
+
+    .error(v-else-if="currentService.service.active == 0")
+        //- .material-symbols-outlined.notranslate.fill warning
         svg
             use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently disabled.
 
-    .error(v-else-if='currentService.service.active < 0')
+    .error(v-else-if="currentService.service.active < 0")
+        //- .material-symbols-outlined.notranslate.fill warning
         svg
             use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         span This service is currently suspended.
 
-SearchBox(:callSearch='callSearch')
-
-hr
 
 .tableMenu
-    .iconClick.square(@click.stop="(e)=>{showDropDown(e)}")
-        svg.svgIcon()
-            use(xlink:href="@/assets/img/material-icon.svg#icon-checklist-rtl")
-        span &nbsp;&nbsp;Show Columns
-        .moreVert(@click.stop style="--moreVert-left:0;display:none;font-weight:normal; color:black")
-            .inner
-                Checkbox(v-model="filterOptions.table" style="display:flex;") Table
-                Checkbox(v-model="filterOptions.record_id" style="display:flex") Record ID
-                Checkbox(v-model="filterOptions.user_id" style="display:flex") User ID 
-                Checkbox(v-model="filterOptions.reference" style="display:flex") Reference
-                Checkbox(v-model="filterOptions.index" style="display:flex") Index/Value
-                Checkbox(v-model="filterOptions.tag" style="display:flex") Tag
-                Checkbox(v-model="filterOptions.files" style="display:flex") Files
-                Checkbox(v-model="filterOptions.data" style="display:flex") Data
-                Checkbox(v-model="filterOptions.updated" style="display:flex") Updated
-                Checkbox(v-model="filterOptions.referenced" style="display:flex") Referenced
-                Checkbox(v-model="filterOptions.ip" style="display:flex") IP
-
-    .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedRecord = null; showDetail=true; }" :class="{'nonClickable' : showDetail || uploading || fetching || !user?.email_verified || currentService.service.active <= 0}")
+    .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedLogger = null; showDetail=true; }" :class="{'nonClickable' : showDetail || uploading || fetching || !user?.email_verified || currentService.service.active <= 0}")
         svg.svgIcon
             use(xlink:href="@/assets/img/material-icon.svg#icon-add-circle-fill")
-        span &nbsp;&nbsp;Create Record
+        span &nbsp;&nbsp;Create Logger
 
     .iconClick.square(@click="openDeleteRecords=true" :class="{'nonClickable': !Object.keys(checked).length || fetching || !user?.email_verified || currentService.service.active <= 0}" )
         svg.svgIcon
             use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
         span &nbsp;&nbsp;Delete Selected
-
-    //- .iconClick.square(@click="getPage(true)" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-    //-     //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
-    //-     svg.svgIcon(:class='{loading:fetching}')
-    //-         use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
-    //-     span &nbsp;&nbsp;Refresh
 
 .recordPart 
     template(v-if="fetching")
@@ -85,107 +77,54 @@ hr
         template(v-slot:head)
             tr
                 th.fixed(style='width:60px;')
-                    Checkbox(@click.stop :modelValue="!!Object.keys(checked).length" @update:modelValue="(value) => { if (value) listDisplay.forEach((d) => (checked[d.record_id] = d)); else checked = {}; }" style="display:inline-block")
+                    Checkbox(@click.stop :modelValue="!!Object.keys(checked).length" @update:modelValue="(value) => { if (value) listDisplay.forEach((d) => (checked[d.id] = d)); else checked = {}; }" style="display:inline-block")
                     .resizer.fixed
-                th.overflow(v-if="filterOptions.table" style='width:160px;')
-                    | Table
+                th.overflow(style='width:160px;')
+                    | Logger ID
                     .resizer
-                th.overflow(v-if="filterOptions.record_id" style='width:160px;')
-                    | Record ID
+                th.overflow(style='width:160px;')
+                    | Username Key
                     .resizer
-                th.overflow(v-if="filterOptions.user_id" style='width:160px;')
-                    | User ID
+                th.overflow(style='width:100px;')
+                    | Method
                     .resizer
-                th.overflow(v-if="filterOptions.reference" style='width:120px;')
-                    | Reference
+                th.overflow
+                    | Request URL
                     .resizer
-                th.overflow(v-if="filterOptions.index" style='width:160px;')
-                    | Index/Value
-                    .resizer
-                th.overflow(v-if="filterOptions.tag" style='width:160px;')
-                    | Tag
-                    .resizer
-                th.overflow(v-if="filterOptions.files" style='width:80px;')
-                    | Files
-                    .resizer
-                th(v-if="filterOptions.data" style='width:200px;')
-                    | Data
-                    .resizer
-                th.overflow(v-if="filterOptions.updated" style='width:160px;')
-                    | Updated
-                    .resizer
-                th.overflow(v-if="filterOptions.referenced" style='width:120px;')
-                    | Referenced
-                    .resizer
-                th.overflow(v-if="filterOptions.ip" style='width:160px;')
-                    | IP
         template(v-slot:body)
             template(v-if="fetching")
                 tr(v-for="i in 10")
                     td(:colspan="colspan")
             template(v-else-if="!listDisplay || listDisplay?.length === 0")
                 tr
-                    td#noUsers(:colspan="colspan") No Records
+                    td#noUsers(:colspan="colspan") No Open ID Logger
                 tr(v-for="i in 9")
                     td(:colspan="colspan")
             template(v-else)
-                tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=rc")
+                tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedLogger=rc")
                     td
                         Checkbox(@click.stop
-                            :modelValue="!!checked?.[rc?.record_id]"
-                            @update:modelValue="(value) => { if (value) checked[rc?.record_id] = value; else delete checked[rc?.record_id]; }")
+                            :modelValue="!!checked?.[rc?.id]"
+                            @update:modelValue="(value) => { if (value) checked[rc?.id] = value; else delete checked[rc?.id]; }")
+                    td.overflow(v-if="rc.id") {{ rc.id }}
+                    td.overflow(v-if="rc.usr") {{ rc.usr }}
+                    td.overflow(v-if="rc.mthd") {{ rc.mthd }}
+                    td.overflow(v-if="rc.url") {{ rc.url }}
 
-                    td.overflow(v-if="filterOptions.table") 
-                        span
-                            svg.svgIcon(v-if="rc.table.access_group == 'private' || rc.table.access_group == 99 || rc.table.access_group === 'admin'" style="fill:black; margin-bottom: 2px")
-                                use(xlink:href="@/assets/img/material-icon.svg#icon-vpn-key-fill")
-                        span
-                            svg.svgIcon(v-if="rc.table.access_group == 'authorized' || typeof rc.table.access_group === 'number' && rc.table.access_group > 0" style="fill:black; margin-bottom: 2px")
-                                use(xlink:href="@/assets/img/material-icon.svg#icon-person-fill")
-                        span
-                            svg.svgIcon(v-if="rc.table.access_group == 'public' || rc.table.access_group === 0" style="fill:black; margin-bottom: 2px")
-                                use(xlink:href="@/assets/img/material-icon.svg#icon-language")
-                        span(style="margin-left: 8px") {{ rc?.table?.name }}
-
-                    td(v-if="filterOptions.record_id")
-                        .click.overflow(@click.stop="copyID") {{ rc.record_id }}
-
-                    td(v-if="filterOptions.user_id") 
-                        .click.overflow(@click.stop="copyID") {{ rc.user_id }}
-
-                    td(v-if="filterOptions.reference")
-                        .click.overflow(v-if="rc?.reference" @click.stop="copyID") {{ rc?.reference }}
-                        template(v-else) -
-                    td.overflow(v-if="filterOptions.index") 
-                        template(v-if="rc?.index") 
-                            span(v-if="typeof(rc?.index?.value) == 'string'") {{ rc?.index?.name }} / "{{ rc?.index?.value }}"
-                            span(v-else) {{ rc?.index?.name }} / {{ rc?.index?.value }}
-                        template(v-else) -
-                    td.overflow(v-if="filterOptions.tag") 
-                        template(v-if="rc?.tags" v-for="(tag, index) in rc.tags")
-                            span(v-if="rc.tags.length-1 == index") {{ tag }}
-                            span(v-else) {{ tag }}
-                        template(v-else) -
-
-                    td.overflow(v-if="filterOptions.files") {{ countMyFiles(rc) }}
-                    td.overflow(v-if="filterOptions.data") {{ rc.data }}
-                    td.overflow(v-if="filterOptions.updated") {{ new Date(rc.updated).toLocaleString() }}
-                    td.overflow(v-if="filterOptions.referenced") {{ rc.referenced_count }}
-                    td.overflow(v-if="filterOptions.ip") {{ rc.ip }}
                 tr(v-for="i in (10 - listDisplay?.length)")
                     td(:colspan="colspan")
 
     form.detailRecord(:class="{show: showDetail}" @submit.prevent='upload')
         .header(style='padding-right:10px;')
-            svg.svgIcon.black.clickable(@click="showDetail=false; selectedRecord=null;" :class="{nonClickable: fetching}")
+            svg.svgIcon.black.clickable(@click="showDetail=false; selectedLogger=null;" :class="{nonClickable: fetching}")
                 use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back")
-            .name {{ selectedRecord?.record_id ? selectedRecord?.record_id : 'Create Record' }}
+            .name {{ selectedLogger?.id ? selectedLogger.id : 'Create Record' }}
             template(v-if="uploading")
                 .loader(style="--loader-color:blue; --loader-size:12px; margin: 12px;")
             template(v-else)
                 button.noLine.iconClick.square(type="submit" style='padding:0 14px') SAVE
 
-        RecDetails(v-if='showDetail' :data='selectedRecord')
+        RecDetails(v-if='showDetail' :data='selectedLogger')
 
 br
 
@@ -208,7 +147,9 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
 
     div(style='font-size:.8rem;')
         p.
-            You sure want to delete {{ Object.values(checked).filter(value => value === true).length > 1 ? Object.values(checked).filter(value => value === true).length + ' records' : 'the record'}}?
+            This action will delete {{ Object.keys(checked).length }} open ID logger(s) from the service.
+            #[br]
+            Your users will loose access to the service if they are using this logger.
             #[br]
             This action cannot be undone.
 
@@ -217,6 +158,7 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     div(style="display: flex; align-items: center; justify-content: space-between;")
         div(v-if="promiseRunning" style="width:100%; height:44px; text-align:center;")
             .loader(style="--loader-color:blue; --loader-size:12px")
+
         template(v-else)
             button.noLine.warning(type="button" @click="openDeleteRecords=false;") Cancel 
             button.final.warning(type="button" @click="deleteRecords") Delete
@@ -228,7 +170,6 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     import Modal from "@/components/modal.vue";
     import Pager from "@/code/pager";
     import Guide from "./guide.vue";
-    import SearchBox from './searchbox.vue'
     import RecDetails from './showDetail.vue'
 
     import type { Ref } from "vue";
@@ -236,23 +177,8 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     import { skapi } from "@/main";
     import { user } from "@/code/user";
     import { devLog } from "@/code/logger"
-    import { currentService, serviceRecords } from "@/views/service/main";
+    import { currentService, serviceLoggers } from "@/views/service/main";
     import { showDropDown } from "@/assets/js/event.js";
-
-    // table columns
-    let filterOptions = ref({
-        table: true,
-        user_id: false,
-        reference: true,
-        index: false,
-        tag: false,
-        record_id: true,
-        updated: true,
-        ip: false,
-        files: true,
-        referenced: true,
-        data: true,
-    });
 
     // ui/ux related
     let openDeleteRecords = ref(false);
@@ -265,20 +191,7 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     let showDetail = ref(false);
     let showGuide = ref(false);
     let hovering = ref(false);
-
-    let colspan = computed(() => {
-        return Object.values(filterOptions.value).filter((value) => value === true).length + 1;
-    });
-
-    let countMyFiles = (rc: any) => {
-        let count = 0;
-        if (!rc.bin) return 0;
-        for (let k in rc.bin) {
-            count += rc.bin[k].length;
-        }
-
-        return count
-    }
+    let colspan = 4;
 
     watch(currentPage, (n, o) => {
         if (
@@ -307,75 +220,22 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     let pager: Pager = null;
     let listDisplay = ref(null);
 
-    let callParams: any = {};
-
-    let callSearch = async (e: HTMLFormElement) => {
-        let toFetch: {
-            data: {
-                record_id: string;
-                unique_id: string;
-                table: {
-                    name?: string;
-                    access_group?: string | number;
-                    subscription?: string;
-                };
-                index: {
-                    name?: any;
-                    value?: any;
-                    condition?: any;
-                    range?: any;
-                };
-                reference?: string;
-                tags?: string;
-            };
-            files: {
-                file: File;
-                name: string;
-            }[];
-        } = skapi.util.extractFormData(e, { ignoreEmpty: true });
-
-        if (!toFetch.data?.index?.name) {
-            delete toFetch.data.index
-        }
-
-        if (!toFetch.data?.table?.name) {
-            if (toFetch.data?.record_id || toFetch.data?.unique_id) {
-                callParams = {
-                    record_id: toFetch?.data?.record_id || undefined,
-                    unique_id: toFetch?.data?.unique_id || undefined,
-                }
-            }
-            else {
-                callParams = {};
-            }
-        }
-        else {
-            callParams = toFetch.data;
-        }
-        await setUpNewPageList();
-        getPage(true);
-    };
-
     let setUpNewPageList = async () => {
         endOfList.value = false;
         currentPage.value = 1;
         maxPage.value = 0;
 
-        serviceRecords[currentService.id] = await Pager.init({
-            id: "record_id",
+        serviceLoggers[currentService.id] = await Pager.init({
+            id: "id",
             resultsPerPage: 10,
-            sortBy: callParams?.index?.name || "record_id",
-            order:
-                callParams?.index?.name && (callParams?.index?.condition || "").includes("<")
-                    ? "desc"
-                    : callParams?.table?.name
-                        ? "asc"
-                        : "desc",
+            sortBy: "id",
+            order: "asc",
         });
     }
 
     let getPage = async (refresh?: boolean) => {
-        pager = serviceRecords[currentService.id];
+
+        pager = serviceLoggers[currentService.id];
         if (!refresh) {
             if ((maxPage.value >= currentPage.value) || endOfList.value) {
                 let disp = pager.getPage(currentPage.value);
@@ -391,29 +251,8 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
         }
 
         fetching.value = true;
+        let fetchedData = await currentService.registerOpenIDLogger({ req: 'list' })
 
-        let fetchedData = await skapi.getRecords(Object.assign({ service: currentService.id }, callParams), {
-            fetchMore: !refresh,
-        })
-            .catch((err) => {
-                alert(err);
-                fetching.value = false;
-                throw err;
-            });
-
-        fetchedData.list.forEach((r) => {
-            if (r.bin) {
-                // remove getFile function from bin data. Pager cannot handle functions.
-                for (let k in r.bin) {
-                    r.bin[k] = r.bin[k].map(f => {
-                        delete f.getFile;
-                        return f;
-                    })
-                }
-            }
-        });
-
-        // save endOfList status as a Pager property
         pager.endOfList = fetchedData.endOfList;
         endOfList.value = pager.endOfList;
 
@@ -432,15 +271,14 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
         }
 
         fetching.value = false;
-
     };
 
     let init = async () => {
         currentPage.value = 1;
 
         // setup pagers
-        if (serviceRecords[currentService.id] && Object.keys(serviceRecords[currentService.id]).length) {
-            endOfList.value = serviceRecords[currentService.id].endOfList;
+        if (serviceLoggers[currentService.id] && Object.keys(serviceLoggers[currentService.id]).length) {
+            endOfList.value = serviceLoggers[currentService.id].endOfList;
             getPage();
 
         } else {
@@ -451,48 +289,52 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
 
     init();
 
-    let selectedRecord = ref(null);
+    let selectedLogger = ref(null);
     let uploading = ref(false);
 
     let upload = async (e: SubmitEvent) => {
         uploading.value = true;
 
-        let { data, files } = skapi.util.extractFormData(e, { nullIfEmpty: true });
+        let { data } = skapi.util.extractFormData(e, { ignoreEmpty: true });
 
-        let jsonData = data.data || null;
+        let jsonData = data;
 
         try {
-            if (jsonData)
-                jsonData = JSON.parse(data.data);
+            if (jsonData.data) {
+                jsonData.data = JSON.parse(jsonData.data);
+                if(!jsonData.data) {
+                    delete jsonData.data;
+                }
+            }
+            if (jsonData.prms) {
+                jsonData.prms = JSON.parse(jsonData.prms);
+                if(!jsonData.prms) {
+                    delete jsonData.prms;
+                }
+            }
+            if (jsonData.hder) {
+                jsonData.hder = JSON.parse(jsonData.hder);
+                if(!jsonData.hder) {
+                    delete jsonData.hder;
+                }
+            }
         } catch (err) {
             alert('Invalid JSON data');
             uploading.value = false;
             return;
         }
 
-        let configs = data.config;
-
-        if (!configs.index?.name) {
-            delete configs.index;
+        if (!jsonData.cdtn?.key) {
+            delete jsonData.cdtn;
         }
 
         try {
-            let r = await skapi.postRecord(jsonData, configs, files);
-
-            if (r.bin) {
-                // remove getFile function from bin data. Pager cannot handle functions.
-                for (let k in r.bin) {
-                    r.bin[k] = r.bin[k].map(f => {
-                        delete f.getFile;
-                        return f;
-                    })
-                }
-            }
-
-            if (configs.record_id) {
-                await pager.editItem(r);
+            await currentService.registerOpenIDLogger(jsonData);
+            
+            if (pager.list[jsonData.is]) {
+                await pager.editItem(jsonData);
             } else {
-                await pager.insertItems([r]);
+                await pager.insertItems([jsonData]);
             }
 
             getPage();
@@ -509,44 +351,26 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     let deleteRecords = () => {
         promiseRunning.value = true;
 
-        let deleteIds = Object.keys(checked.value)
+        // let deleteIds = Object.keys(checked.value)
 
-        skapi
-            .deleteRecords({ service: currentService.id, record_id: deleteIds })
-            .then(async (r) => {
-                for (let id of deleteIds) {
-                    for (let i = 0; i < listDisplay.value.length; i++) {
-                        if (listDisplay.value[i].record_id == id) {
-                            listDisplay.value.splice(i, 1);
-                        }
-                    }
-                    await pager.deleteItem(id);
-                }
+        // skapi
+        //     .deleteRecords({ service: currentService.id, record_id: deleteIds })
+        //     .then(async (r) => {
+        //         for (let id of deleteIds) {
+        //             for (let i = 0; i < listDisplay.value.length; i++) {
+        //                 if (listDisplay.value[i].record_id == id) {
+        //                     listDisplay.value.splice(i, 1);
+        //                 }
+        //             }
+        //             await pager.deleteItem(id);
+        //         }
 
-                getPage();
+        //         getPage();
 
-                checked.value = {};
-                promiseRunning.value = false;
-                openDeleteRecords.value = false;
-            });
-    };
-
-    let copyID = (e) => {
-        let target = e.currentTarget;
-        let copy = target.textContent;
-        let doc = document.createElement("textarea");
-
-        doc.textContent = target.textContent;
-        document.body.append(doc);
-        doc.select();
-        document.execCommand("copy");
-        doc.remove();
-
-        target.classList.add("clicked");
-
-        setTimeout(() => {
-            target.classList.remove("clicked");
-        }, 1000);
+        //         checked.value = {};
+        //         promiseRunning.value = false;
+        //         openDeleteRecords.value = false;
+        //     });
     };
 
     // checks

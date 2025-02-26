@@ -336,7 +336,7 @@ export default class Service {
         condition: "=" | ">" | "<" | ">=" | "<=" | "!=" | "ends_with";
         range: string | boolean | number; // value range
     },
-    request: 'create' | 'delete' | 'update' | 'list'; // request type
+    req: 'create' | 'delete' | 'update' | 'list'; // request type
   }) {
     return skapi.util.request(
         this.admin_private_endpoint + 'register-openid',

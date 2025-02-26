@@ -30,6 +30,14 @@
                     svg(v-else)
                         use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account")
                     span.name Users
+                
+                router-link.router(:to="`/my-services/${currentService.id}/openid`" :class="{'active': route.name == 'openid'}")
+                    //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'users'}") supervisor_account
+                    svg(v-if="route.name === 'openid'")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
+                    svg(v-else)
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account")
+                    span.name Open ID Logger
 
                 router-link.router(:to="`/my-services/${currentService.id}/clientsecret`" :class="{'active': route.name == 'clientsecret'}")
                     //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'clientsecret'}") key

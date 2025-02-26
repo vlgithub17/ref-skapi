@@ -4,12 +4,12 @@ section.infoBox
     h2 Users
 
     span.moreInfo(
-      @click="showDes = !showDes",
+      @click="showGuide = !showGuide",
       @mouseover="hovering = true",
       @mouseleave="hovering = false"
     )
       span More Info&nbsp;
-      template(v-if="showDes")
+      template(v-if="showGuide")
         //- .material-symbols-outlined.notranslate.fill expand_circle_up 
         //- .material-symbols-outlined.notranslate.noFill expand_circle_up
         svg(v-if="hovering", style="width: 25px; height: 25px; fill: black")
@@ -32,50 +32,8 @@ section.infoBox
             xlink:href="@/assets/img/material-icon.svg#icon-expand-circle-down"
           )
 
-  template(v-if="showDes")
-    p.
-      The example below shows how to setup a basic sign-up / login form for your website.
-
-    Code
-      pre.
-        #[span(style="color: #999") &lt;!-- signup.html --&gt;]
-        #[span(style="color: #999") &lt;]#[span(style="color: #33adff") h1]#[span(style="color: #999") &gt;]Signup#[span(style="color: #999") &lt;/]#[span(style="color: #33adff") h1]#[span(style="color: #999") &gt;]
-        #[span(style="color: #999") &lt;]#[span(style="color: #33adff") form] #[span(style="color: #44e9ff") action]=#[span(style="color: #ffed91") "login.html"] #[span(style="color: #44e9ff") onsubmit]=#[span(style="color: #ffed91") "skapi.signup(event).catch(err=>alert(err.message))"]#[span(style="color: #999") &gt;]
-            #[span(style="color: #999") &lt;]#[span(style="color: #33adff") label]#[span(style="color: #999") &gt;]
-                Email
-                #[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]
-                #[span(style="color: #999") &lt;]#[span(style="color: #33adff") input] #[span(style="color: #44e9ff") type]=#[span(style="color: #ffed91") "email"] #[span(style="color: #44e9ff") name]=#[span(style="color: #ffed91") "email"] #[span(style="color: #44e9ff") placeholder]=#[span(style="color: #ffed91") "user@email.com"] #[span(style="color: #44e9ff") required]#[span(style="color: #999") &gt;]
-            #[span(style="color: #999") &lt;/]#[span(style="color: #33adff") label]#[span(style="color: #999") &gt;]#[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]#[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]
-            #[span(style="color: #999") &lt;]#[span(style="color: #33adff") label]#[span(style="color: #999") &gt;]
-                Password
-                #[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]
-                #[span(style="color: #999") &lt;]#[span(style="color: #33adff") input] #[span(style="color: #44e9ff") type]=#[span(style="color: #ffed91") "password"] #[span(style="color: #44e9ff") name]=#[span(style="color: #ffed91") "password"] #[span(style="color: #44e9ff") minlength]=#[span(style="color: #ffed91") "6"] #[span(style="color: #44e9ff") placeholder]=#[span(style="color: #ffed91") "At least 6 characters"] #[span(style="color: #44e9ff") required]#[span(style="color: #999") &gt;]
-            #[span(style="color: #999") &lt;/]#[span(style="color: #33adff") label]#[span(style="color: #999") &gt;]#[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]#[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]
-            #[span(style="color: #999") &lt;]#[span(style="color: #33adff") input] #[span(style="color: #44e9ff") type]=#[span(style="color: #ffed91") "submit"] #[span(style="color: #44e9ff") value]=#[span(style="color: #ffed91") "Signup"]#[span(style="color: #999") &gt;]
-        #[span(style="color: #999") &lt;/]#[span(style="color: #33adff") form]#[span(style="color: #999") &gt;]
-
-    br
-
-    Code
-      pre.
-        #[span(style="color: #999") &lt;!-- login.html --&gt;]
-        #[span(style="color: #999") &lt;]#[span(style="color: #33adff") h1]#[span(style="color: #999") &gt;]Login#[span(style="color: #999") &lt;/]#[span(style="color: #33adff") h1]#[span(style="color: #999") &gt;]
-        #[span(style="color: #999") &lt;]#[span(style="color: #33adff") form] #[span(style="color: #44e9ff") action]=#[span(style="color: #ffed91") "welcome.html"] #[span(style="color: #44e9ff") onsubmit]=#[span(style="color: #ffed91") "skapi.login(event).catch(err=>alert(err.message))"]#[span(style="color: #999") &gt;]
-            #[span(style="color: #999") &lt;]#[span(style="color: #33adff") label]#[span(style="color: #999") &gt;]
-                Email
-                #[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]
-                #[span(style="color: #999") &lt;]#[span(style="color: #33adff") input] #[span(style="color: #44e9ff") type]=#[span(style="color: #ffed91") "email"] #[span(style="color: #44e9ff") name]=#[span(style="color: #ffed91") "email"] #[span(style="color: #44e9ff") #[span(style="color: #44e9ff") placeholder]=#[span(style="color: #ffed91") "your@email.com"] required]#[span(style="color: #999") &gt;]
-            #[span(style="color: #999") &lt;/]#[span(style="color: #33adff") label]#[span(style="color: #999") &gt;]#[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]#[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]
-            #[span(style="color: #999") &lt;]#[span(style="color: #33adff") label]#[span(style="color: #999") &gt;]
-                Password
-                #[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]
-                #[span(style="color: #999") &lt;]#[span(style="color: #33adff") input] #[span(style="color: #44e9ff") type]=#[span(style="color: #ffed91") "password"] #[span(style="color: #44e9ff") name]=#[span(style="color: #ffed91") "password"] #[span(style="color: #44e9ff") #[span(style="color: #44e9ff") placeholder]=#[span(style="color: #ffed91") "Login password"] required]#[span(style="color: #999") &gt;]
-            #[span(style="color: #999") &lt;/]#[span(style="color: #33adff") label]#[span(style="color: #999") &gt;]#[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]#[span(style="color: #999") &lt;]#[span(style="color: #33adff") br]#[span(style="color: #999") &gt;]
-            #[span(style="color: #999") &lt;]#[span(style="color: #33adff") input] #[span(style="color: #44e9ff") type]=#[span(style="color: #ffed91") "submit"] #[span(style="color: #44e9ff") value]=#[span(style="color: #ffed91") "Login"]#[span(style="color: #999") &gt;]
-        #[span(style="color: #999") &lt;/]#[span(style="color: #33adff") form]#[span(style="color: #999") &gt;]
-    p.
-      Once the user have logged in for the first time, they will be listed on your #[b Users] section below.
-    p For more details, please refer to the #[a(href="https://docs.skapi.com/authentication/create-account.html", target="_blank") Documentation]
+  template(v-if="showGuide")
+    Guide
 
   hr
 
@@ -96,12 +54,6 @@ section.infoBox
     svg
       use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
     span This service is currently suspended.
-
-  p(style="margin-bottom: 0").
-    Search and manage your service users.
-    #[br]
-    #[b User must have at least one successful login to be listed here.]
-
 
 form#searchForm(@submit.prevent="getPage(true)", style="padding: 1.2em")
   Select(
@@ -145,7 +97,7 @@ form#searchForm(@submit.prevent="getPage(true)", style="padding: 1.2em")
     input#searchInput.big(
       v-else-if="searchFor === 'address'",
       type="text",
-      placeholder="Address",
+      placeholder="User's address",
       v-model="searchValue",
       name="address"
     )
@@ -159,7 +111,7 @@ form#searchForm(@submit.prevent="getPage(true)", style="padding: 1.2em")
     input#searchInput.big(
       v-else-if="searchFor === 'name'",
       type="text",
-      placeholder="Name",
+      placeholder="User's name",
       v-model="searchValue",
       name="name"
     )
@@ -235,36 +187,48 @@ br
 
     span &nbsp;&nbsp;Invite User
 
-
-  .iconClick.square(@click="openGrantAccess=true" :class="{'nonClickable': !Object.keys(checked).length || fetching}" )    
+  .iconClick.square(:class="{'nonClickable': !Object.keys(checked).length || fetching}" @click.stop="(e) => { showDropDown(e); }")
     svg.svgIcon
-      use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
-    span &nbsp;&nbsp;Grant Access
-    
-  .iconClick.square(@click="openUnblockUser=true" :class="{'nonClickable': !Object.keys(checked).length || fetching}" )    
-    svg.svgIcon
-      use(xlink:href="@/assets/img/material-icon.svg#icon-account-circle-fill")
-    span &nbsp;&nbsp;Unblock User
-  
-  .iconClick.square(@click="openBlockUser=true" :class="{'nonClickable': !Object.keys(checked).length || fetching}" )    
-    svg.svgIcon
-      use(xlink:href="@/assets/img/material-icon.svg#icon-no-accounts-fill")
-    span &nbsp;&nbsp;Block User
+      use(xlink:href="@/assets/img/material-icon.svg#icon-checklist-rtl") 
+    span &nbsp;&nbsp;Actions
+    .moreVert(
+      @click.stop,
+      style="--moreVert-right: 0; display: none; font-weight: normal; color: black"
+    )
+      .inner
+        .iconClick.square(@click="openGrantAccess=true" style='width: 100%;padding: .5rem;' :class="{'nonClickable': !Object.keys(checked).length || fetching}" )
+          span(style='white-space: nowrap')
+            svg.svgIcon
+              use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account-fill")
+            span &nbsp;&nbsp;Grant Access
+          
+        .iconClick.square(@click="openUnblockUser=true" style='width: 100%;padding: .5rem;' :class="{'nonClickable': !Object.keys(checked).length || fetching}" )
+          span(style='white-space: nowrap')
+            svg.svgIcon
+              use(xlink:href="@/assets/img/material-icon.svg#icon-account-circle-fill")
+            span &nbsp;&nbsp;Unblock User
+        
+        .iconClick.square(@click="openBlockUser=true" style='width: 100%;padding: .5rem;' :class="{'nonClickable': !Object.keys(checked).length || fetching}" )
+          span(style='white-space: nowrap')
+            svg.svgIcon
+              use(xlink:href="@/assets/img/material-icon.svg#icon-no-accounts-fill")
+            span &nbsp;&nbsp;Block User
 
-  .iconClick.square(@click="openDeleteUser=true" :class="{'nonClickable': !Object.keys(checked).length || fetching}" )
-      svg.svgIcon
-          use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
+        .iconClick.square(@click="openDeleteUser=true" style='width: 100%;padding: .5rem;' :class="{'nonClickable': !Object.keys(checked).length || fetching}")
+          span(style='white-space: nowrap')
+              svg.svgIcon
+                  use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
 
-      span &nbsp;&nbsp;Delete User
+              span &nbsp;&nbsp;Delete User
 
 
-  .iconClick.square(
-    @click="getPage(true)",
-    :class="{ nonClickable: fetching || !user?.email_verified || currentService.service.active <= 0 }"
-  )
-    svg.svgIcon(:class="{ loading: fetching }")
-      use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
-    span &nbsp;&nbsp;Refresh
+  //- .iconClick.square(
+  //-   @click="getPage(true)",
+  //-   :class="{ nonClickable: fetching || !user?.email_verified || currentService.service.active <= 0 }"
+  //- )
+  //-   svg.svgIcon(:class="{ loading: fetching }")
+  //-     use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
+  //-   span &nbsp;&nbsp;Refresh
 
 .userPart
   template(v-if="fetching")
@@ -279,7 +243,7 @@ br
     )
     template(v-slot:head)
       tr
-        th(style="width: 60px")
+        th.fixed(style="width: 60px")
           Checkbox(
             @click.stop
             :modelValue="!!Object.keys(checked).length"
@@ -287,7 +251,7 @@ br
             :class="{ nonClickable: !listDisplay || !listDisplay?.length }"
             style="display: inline-block"
           )
-          .resizer
+          .resizer.fixed
 
         template(v-for="c in columnList")
           th.overflow(v-if="c.value", style="width: 200px")
@@ -769,7 +733,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
 </template>
 <script setup lang="ts">
   import Table from "@/components/table.vue";
-  import Code from "@/components/code.vue";
+  import Guide from "./guide.vue";
   import Select from "@/components/select.vue";
   import Checkbox from "@/components/checkbox.vue";
   import Modal from "@/components/modal.vue";
@@ -797,7 +761,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
     | "name"
     | "locale"
     | "birthdate"
-  > = ref("timestamp");
+  > = ref("user_id");
 
   let searchValue: Ref<string | number> = ref("");
 
@@ -808,7 +772,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
   let endOfList = ref(false);
   let showCalendar = ref(false);
   let showLocale = ref(false);
-  let showDes = ref(false);
+  let showGuide = ref(false);
   let hovering = ref(false);
 
   let columnList = reactive([
@@ -1115,6 +1079,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
 
     if (refresh) {
       endOfList.value = false;
+      currentPage.value = 1;
     }
 
     if (!serviceUsers[currentService.id] || searchValue.value) {
@@ -1164,18 +1129,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
       }
 
       // get page from pager
-      let disp = pager.getPage(currentPage.value);
-      maxPage.value = disp.maxPage;
-      listDisplay.value = disp.list;
-
-      if (
-        disp.maxPage > 0 &&
-        disp.maxPage < currentPage.value &&
-        !disp.list.length
-      ) {
-        currentPage.value--;
-      }
-
+      updateListDisplay();
       fetching.value = false;
     }
   };
@@ -1375,7 +1329,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
     let disp = pager.getPage(currentPage.value);
     maxPage.value = disp.maxPage;
     listDisplay.value = disp.list;
-    if (
+    while (
       disp.maxPage > 0 &&
       disp.maxPage < currentPage.value &&
       !disp.list.length
@@ -1506,6 +1460,8 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
   //       fill: var(--main-color);
   // }
   #searchForm {
+    margin: 0 auto;
+
     display: flex;
     flex-wrap: wrap;
     align-items: center;
