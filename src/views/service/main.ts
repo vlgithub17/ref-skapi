@@ -13,3 +13,5 @@ export let setService = (id: string) => {
   currentService = serviceList[id];
   serviceMainLoaded.value = true;
 };
+
+export let serviceLoggers: any = {};

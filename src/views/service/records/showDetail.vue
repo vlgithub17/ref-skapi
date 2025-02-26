@@ -96,6 +96,9 @@
                     input(type='radio' name='config[index][value]' value='false' :checked='indexValue ? null : true' style='margin:0;width:unset;')
                     | &nbsp;False
 
+    input(:value='service' name='config[service]' hidden)
+    input(:value='owner' name='config[owner]' hidden)
+
     br
 
     .row 
@@ -160,7 +163,8 @@
     import { nextTick, ref, watch, type Ref } from 'vue';
     import Checkbox from '@/components/checkbox.vue';
     import { user } from '@/code/user';
-
+    import { currentService, serviceRecords } from "@/views/service/main";
+    
     let { data } = defineProps({
         data: Object
     })

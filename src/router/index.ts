@@ -149,6 +149,11 @@ const router = createRouter(
                 component: () => import('@/views/service/records/records.vue'),
               },
               {
+                path: 'openid',
+                name: 'openid',
+                component: () => import('@/views/service/openid/openid.vue'),
+              },
+              {
                 path: 'mail',
                 name: 'mail',
                 component: () => import('@/views/service/mail.vue'),
