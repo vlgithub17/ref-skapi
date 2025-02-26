@@ -302,19 +302,19 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
         try {
             if (jsonData.data) {
                 jsonData.data = JSON.parse(jsonData.data);
-                if(!jsonData.data) {
+                if (!jsonData.data) {
                     delete jsonData.data;
                 }
             }
             if (jsonData.prms) {
                 jsonData.prms = JSON.parse(jsonData.prms);
-                if(!jsonData.prms) {
+                if (!jsonData.prms) {
                     delete jsonData.prms;
                 }
             }
             if (jsonData.hder) {
                 jsonData.hder = JSON.parse(jsonData.hder);
-                if(!jsonData.hder) {
+                if (!jsonData.hder) {
                     delete jsonData.hder;
                 }
             }
@@ -330,7 +330,7 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
 
         try {
             await currentService.registerOpenIDLogger(jsonData);
-            
+
             if (pager.list[jsonData.is]) {
                 await pager.editItem(jsonData);
             } else {
@@ -351,26 +351,29 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     let deleteRecords = () => {
         promiseRunning.value = true;
 
-        // let deleteIds = Object.keys(checked.value)
+        let deleteIds = Object.keys(checked.value)
 
-        // skapi
-        //     .deleteRecords({ service: currentService.id, record_id: deleteIds })
-        //     .then(async (r) => {
-        //         for (let id of deleteIds) {
-        //             for (let i = 0; i < listDisplay.value.length; i++) {
-        //                 if (listDisplay.value[i].record_id == id) {
-        //                     listDisplay.value.splice(i, 1);
-        //                 }
-        //             }
-        //             await pager.deleteItem(id);
-        //         }
+        let promise = deleteIds.map(id => {
+            currentService.registerOpenIDLogger({ req: "delete", id });
+        })
 
-        //         getPage();
+        Promise.all(promise)
+            .then(async (r) => {
+                for (let id of deleteIds) {
+                    for (let i = 0; i < listDisplay.value.length; i++) {
+                        if (listDisplay.value[i].record_id == id) {
+                            listDisplay.value.splice(i, 1);
+                        }
+                    }
+                    await pager.deleteItem(id);
+                }
 
-        //         checked.value = {};
-        //         promiseRunning.value = false;
-        //         openDeleteRecords.value = false;
-        //     });
+                getPage();
+
+                checked.value = {};
+                promiseRunning.value = false;
+                openDeleteRecords.value = false;
+            });
     };
 
     // checks
