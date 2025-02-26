@@ -87,7 +87,7 @@ const router = createRouter(
       {
         path: '/create/:name',
         name: 'create',
-        component: () => '@/views/create-service.vue',
+        component: () => import('@/views/create-service.vue'),
         beforeEnter: checkUser
       },
       {
