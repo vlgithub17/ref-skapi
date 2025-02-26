@@ -71,7 +71,7 @@
     .row.indent
         .key Index Name
         .value(style='min-width: 300px;')
-            input.line(name='config[index][name]' v-model='indexName' placeholder='Alphanumeric, periods only. (Required)')
+            input.line(name='config[index][name]' v-model='indexName' placeholder='Alphanumeric, periods only.')
 
     .row.indent(:class="{'nonClickable': !indexName}")
         .key Value
@@ -85,7 +85,7 @@
                 v-if="indexValueType !== 'boolean'"
                     v-model='indexValue'
                     name='config[index][value]'
-                    :type='indexValueType' :placeholder='indexValueType === "string" ? "Alphanumeric, space only. (Required)" : indexValueType === "number" ? "Number value (Required)" : "Boolean value"'
+                    :type='indexValueType' :placeholder='indexValueType === "string" ? "Alphanumeric, space only." : indexValueType === "number" ? "Number value" : "Boolean value"'
                     style="flex-grow:30; width:unset; vertical-align:middle;")
             
             template(v-else)

@@ -67,7 +67,7 @@ form#searchForm(@submit.prevent="callSearch")
                 .row.indent(v-if='searchIndex == "name"' :class="{'nonClickable': !tableName}")
                     .key Index Name
                     .value(style='min-width: 300px;')
-                        input.line(name='index[name]' placeholder='Alphanumeric, periods only. (Required)')
+                        input.line(name='index[name]' placeholder='Alphanumeric, periods only.')
                 
                 input(v-else name='index[name]' hidden :value='searchIndex')
 
@@ -83,7 +83,7 @@ form#searchForm(@submit.prevent="callSearch")
                             input.line(
                                 v-if="searchIndexType !== 'boolean'"
                                     name='index[value]'
-                                    :type='searchIndexType' :placeholder='searchIndexType === "string" ? "Alphanumeric, space only. (Required)" : searchIndexType === "number" ? "Number value (Required)" : "Boolean value"'
+                                    :type='searchIndexType' :placeholder='searchIndexType === "string" ? "Alphanumeric, space only." : searchIndexType === "number" ? "Number value" : "Boolean value"'
                                     style="flex-grow:30; width:unset; vertical-align:middle;")
                             
                             template(v-else)
@@ -109,7 +109,7 @@ form#searchForm(@submit.prevent="callSearch")
                             template(v-else)
                                 input.line(
                                     name='index[range]'
-                                    :type='searchIndexType' :placeholder='searchIndexType === "string" ? "Alphanumeric, space only. (Required)" : searchIndexType === "number" ? "Number value (Required)" : "Boolean value"'
+                                    :type='searchIndexType' :placeholder='searchIndexType === "string" ? "Alphanumeric, space only." : searchIndexType === "number" ? "Number value" : "Boolean value"'
                                     style="flex-grow:30; width:unset; vertical-align:middle;")
 
                 template(v-else-if='searchIndex == "$user_id"')
