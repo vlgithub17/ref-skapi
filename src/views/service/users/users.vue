@@ -729,7 +729,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
   br
 
   div(style="display: flex; align-items: center; justify-content: flex-end")
-    button.final(type="button", @click="successGrantAccess = false") close
+    button.final(type="button", @click="()=>{checked.value = {};successGrantAccess = false;}") close
 </template>
 <script setup lang="ts">
   import Table from "@/components/table.vue";
@@ -1406,7 +1406,6 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
     await Promise.all(promises).then(() => {
       inputAccess.value = "";
       updateListDisplay();
-      checked.value = {};
       openGrantAccess.value = false;
       successGrantAccess.value = true;
     }).catch((e) => {
