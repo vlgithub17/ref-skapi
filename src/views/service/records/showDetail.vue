@@ -165,6 +165,9 @@
     import { user } from '@/code/user';
     import { currentService, serviceRecords } from "@/views/service/main";
     
+    let service = currentService.id;
+    let owner = currentService.owner;
+
     let { data } = defineProps({
         data: Object
     })
