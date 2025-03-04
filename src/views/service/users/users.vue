@@ -913,7 +913,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
   watch(
     columnList,
     (nv) => {
-      colspan = 0;
+      colspan = 1;
       nv.forEach((c) => {
         if (c.value) {
           colspan++;

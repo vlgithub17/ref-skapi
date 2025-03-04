@@ -249,7 +249,7 @@ watch(() => route, nv => {
     .right {
         width: 50%;
         flex-grow: 1;
-        padding: 8px 0;
+        // padding: 8px 0;
     }
 
     .bottom {

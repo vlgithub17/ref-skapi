@@ -4,8 +4,8 @@ import LandingPage from '@/views/landing.vue'
 import Login from '@/views/login.vue'
 import Signup from '@/views/signup.vue'
 import NotFound from '@/views/notFound.vue'
-
 import { user } from '@/code/user'
+
 let checkUser = async (t, f, n) => {
   let u = user?.user_id;
   if (u) {
