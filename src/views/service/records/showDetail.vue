@@ -116,7 +116,7 @@
 
     .row
         .key(style="margin-bottom: 6px") Data (JSON Object)
-        textarea.value(:disabled='accessGroup !== "private" ? data : selectedRecord.user_id === user.user_id ? null : data' v-model="selectedRecord_data" @keydown.stop="handleKey" style="padding: 8px;width:100%;height:160px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" :name='accessGroup !== "private" ? data : selectedRecord.user_id === user.user_id ? null : data'
+        textarea.value(:disabled='accessGroup !== "private" ? null : selectedRecord.user_id === user.user_id ? null : true' v-model="selectedRecord_data" @keydown.stop="handleKey" style="padding: 8px;width:100%;height:160px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" :name='accessGroup !== "private" ? "data" : selectedRecord.user_id === user.user_id ? null : "data"'
             placeholder='{ "key": "value" }')
 
     br

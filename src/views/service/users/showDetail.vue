@@ -71,7 +71,7 @@
 
     .row
         .key(style="margin-bottom: 6px") MISC
-        textarea.value(v-model="selectedUser_data" @keydown.stop="handleKey" style="padding: 8px;width:100%;height:160px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" name='attributes[misc]'
+        textarea.value(v-model="selectedUser_data" style="padding: 8px;width:100%;height:160px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" name='attributes[misc]'
             placeholder='Misc data (String)')
 
 </template>
@@ -103,67 +103,6 @@
     watch(() => data, (newVal) => {
         load(newVal);
     }, { immediate: true });
-
-    // textarea tab key
-    let handleKey = (e: any) => {
-        let start = e.target.selectionStart;
-        let end = e.target.selectionEnd;
-        let beforeCursor = e.target.value.slice(0, start);
-        let afterCursor = e.target.value.slice(start);
-
-        if (e.key == "Tab") {
-            e.preventDefault();
-
-            e.target.value =
-                e.target.value.substring(0, start) + "\t" + e.target.value.substring(end);
-            e.target.setSelectionRange(start + 1, start + 1);
-        } else if (e.key == "Enter") {
-            e.preventDefault();
-
-            let indentMatch = beforeCursor.match(/(\n|\s)*$/);
-            let startCount = indentMatch.input.split("{").length - 1;
-            let endCount = indentMatch.input.split("}").length - 1;
-
-            let currentLineStart = beforeCursor.lastIndexOf("\n") + 1;
-            let currentIndentation = beforeCursor.slice(currentLineStart).match(/^\s*/)[0];
-            let newIndentation = currentIndentation + "\t";
-            let newCursorPosition = beforeCursor.length + newIndentation.length + 1;
-
-            if (
-                (beforeCursor.endsWith("{") && afterCursor.startsWith("}")) ||
-                (beforeCursor.endsWith("[") && afterCursor.startsWith("]"))
-            ) {
-                e.target.value =
-                    beforeCursor +
-                    "\n" +
-                    newIndentation +
-                    "\n" +
-                    currentIndentation +
-                    afterCursor;
-                e.target.setSelectionRange(newCursorPosition, newCursorPosition);
-            } else {
-                if (startCount > endCount) {
-                    e.target.value =
-                        beforeCursor +
-                        "\n" +
-                        currentIndentation +
-                        currentIndentation +
-                        afterCursor;
-                    e.target.setSelectionRange(
-                        beforeCursor.length + newIndentation.length,
-                        beforeCursor.length + newIndentation.length
-                    );
-                }
-            }
-        } else if (e.key == "{" && e.shiftKey) {
-            e.target.value = beforeCursor + "}" + afterCursor;
-            e.target.setSelectionRange(start, start);
-        } else if (e.key == "[") {
-            e.target.value = beforeCursor + "]" + afterCursor;
-            e.target.setSelectionRange(start, start);
-        }
-    }
-
 </script>
 <style lang="less">
 
