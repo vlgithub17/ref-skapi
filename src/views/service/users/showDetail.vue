@@ -66,129 +66,14 @@
             
         hr
 
-    //- label.row
-    //-     .key(style='color:black;') Read Only&nbsp;&nbsp;
-    //-     .value
-    //-         Checkbox(v-model="selectedUser.readonly" name='config[readonly]' style='vertical-align:text-top;')
-    
-    //- br
-
-    //- .row(style='margin-bottom: 1rem')
-    //-     .key Table
-
-    //- .row.indent(style='height: 42px;')
-    //-     .key
-    //-         select(v-model='accessGroup')
-    //-             option(value='public') Public
-    //-             option(value='authorized') Authorized
-    //-             option(value='private') Private
-                
-    //-     .value(v-if='accessGroup === "authorized"' style='min-width: 300px;')
-    //-         input.line(required placeholder="1 ~ 99" :value='accessGroup === "authorized" ? 1 : accessGroup' type='number' name='config[table][access_group]')
-
-    //-     template(v-else)
-    //-         input.line(hidden v-if='accessGroup === "public"' value='public' name='config[table][access_group]')
-    //-         input.line(hidden v-else-if='accessGroup === "Private"' value='Private' name='config[table][access_group]')
-
-    //- .row.indent
-    //-     .key Table Name
-    //-     .value(style='min-width: 300px;')
-    //-         input.line(placeholder="Table.Name" name='config[table][name]' v-model='selectedUser.table.name' required)
-    
-    //- br
-
-    //- .row(style="margin-bottom:1rem")
-    //-     .key Index&nbsp;&nbsp;
-
-    //- .row.indent
-    //-     .key Index Name
-    //-     .value(style='min-width: 300px;')
-    //-         input.line(name='config[index][name]' v-model='indexName' placeholder='Alphanumeric, periods only.')
-
-    //- .row.indent(:class="{'nonClickable': !indexName}")
-    //-     .key Value
-    //-     .value(style="display:flex; flex-wrap:wrap; gap:10px;min-width: 300px;")
-    //-         select(v-model='indexValueType')
-    //-             option(value='string' selected) String
-    //-             option(value='number') Number
-    //-             option(value='boolean') Boolean
-
-    //-         input.line(
-    //-             v-if="indexValueType !== 'boolean'"
-    //-                 v-model='indexValue'
-    //-                 name='config[index][value]'
-    //-                 :type='indexValueType' :placeholder='indexValueType === "string" ? "Alphanumeric, space only." : indexValueType === "number" ? "Number value" : "Boolean value"'
-    //-                 style="flex-grow:30; width:unset; vertical-align:middle;")
-            
-    //-         template(v-else)
-    //-             label(style='width:unset;display: flex;align-items: center;')
-    //-                 input(type='radio' name='config[index][value]' value='true' :checked='indexValue' style='margin:0;width:unset;')
-    //-                 | &nbsp;True
-    //-             label(style='width:unset;display: flex;align-items: center;')
-    //-                 input(type='radio' name='config[index][value]' value='false' :checked='indexValue ? null : true' style='margin:0;width:unset;')
-    //-                 | &nbsp;False
-
     input(:value='service' name='service' hidden)
     input(:value='owner' name='owner' hidden)
 
-    //- br
-
-    //- .row 
-    //-     .key Tags 
-    //-     .value
-    //-         input.line(v-model="selectedUser.tags" name='config[tags]' placeholder="Tag1, Tag2, ... Alphanumeric and space only. Separated with comma.")
-
-    //- br
-
-    //- .row(style='margin-bottom: 1rem')
-    //-     .key Reference
-    //-     input.line.value(v-model="selectedUser.reference" name='config[reference]' placeholder='Record ID to reference')
-
-    //- br
-
     .row
         .key(style="margin-bottom: 6px") MISC
-        textarea.value(v-model="selectedUser_data" @keydown.stop="handleKey" style="width:100%;height:160px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" name='attributes[misc]'
+        textarea.value(v-model="selectedUser_data" @keydown.stop="handleKey" style="padding: 8px;width:100%;height:160px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" name='attributes[misc]'
             placeholder='Misc data (String)')
 
-    //- br
-
-    //- .row(style='margin-bottom: 1rem')
-    //-     .key Files 
-    //-     .value(style="width:100%;")
-    //-         // already uploaded files
-    //-         .file(v-if="selectedUser.bin" v-for="(fileList, key) in selectedUser.bin")
-    //-                 template(v-for="(file, index) in fileList")
-    //-                     div(style='display: flex;gap:8px;margin-bottom: 8px;')
-    //-                         svg.svgIcon.black.clickable(@click="deleteFile(key, index)" style='margin-top: 3px; padding-top: 1px;')
-    //-                             use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
-
-    //-                         div(style='display: flex;flex-wrap: wrap;')
-    //-                             input.line.key(style='width:unset;flex-grow:1;' :value="key" required placeholder="Key name for file" disabled)
-                                
-    //-                             | &nbsp;&nbsp;
-
-    //-                             a.filename(:href='file.url' target="_blank") {{ file.filename }}
-
-    //-         // new files
-    //-         .file(v-for="(file, index) in addFileList")
-    //-             div(style='display: flex;gap:8px;margin-bottom: 8px;')
-    //-                 svg.svgIcon.black.clickable(@click="addFileList.splice(index, 1)" style='margin-top: 3px; padding-top: 1px;')
-    //-                     use(xlink:href="@/assets/img/material-icon.svg#icon-do-not-disturb-on-fill")
-    //-                 div(style='display: flex;flex-wrap: wrap;')
-    //-                     input.line.key(style='width:unset;flex-grow:1;' v-model="file.key" required placeholder="Key name for file")
-    //-                     | &nbsp;&nbsp;
-    //-                     label.filename {{ file.filename || "Choose a file"}}
-    //-                         input(@click.stop type="file" :name='file.key' @change="e=>{ file.filename = e.target.files[0].name }" required hidden)
-
-    //-     // files to delete
-    //-     template(v-for='furl in deleteFileList')
-    //-         input(:value='furl' name='config[remove_bin]' hidden)
-
-    //-     .add(:class="{disabled: restrictedAccess}" @click="addFile" style='margin-top: 1em;')
-    //-         svg.svgIcon
-    //-             use(xlink:href="@/assets/img/material-icon.svg#icon-add-circle-fill")
-    //-         span &nbsp;Add File
 </template>
 
 <script setup lang="ts">

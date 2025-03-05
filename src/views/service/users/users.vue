@@ -221,7 +221,6 @@ br
 
               span &nbsp;&nbsp;Delete User
 
-
   //- .iconClick.square(
   //-   @click="getPage(true)",
   //-   :class="{ nonClickable: fetching || !user?.email_verified || currentService.service.active <= 0 }"
