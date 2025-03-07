@@ -27,7 +27,7 @@
     label.row
         .key(style='color:black;') Read Only&nbsp;&nbsp;
         .value
-            Checkbox(v-model="selectedRecord.readonly" name='config[readonly]' style='vertical-align:text-top;')
+            Checkbox(v-model="selectedRecord.readonly" name='config[readonly]' style='vertical-align:text-top;' :disabled='restrictedAccess')
     
     br
 
@@ -36,22 +36,22 @@
 
     .row.indent(style='height: 42px;')
         .key
-            select(v-model='accessGroup')
+            select(v-model='accessGroup' :disabled='restrictedAccess')
                 option(value='public') Public
                 option(value='authorized') Authorized
                 option(value='private') Private
                 
         .value(v-if='accessGroup === "authorized"' style='min-width: 300px;')
-            input.line(required placeholder="1 ~ 99" :value='accessGroup === "authorized" ? 1 : accessGroup' type='number' name='config[table][access_group]')
+            input.line(required placeholder="1 ~ 99" :value='accessGroup === "authorized" ? 1 : accessGroup' type='number' name='config[table][access_group]' :disabled='restrictedAccess')
 
         template(v-else)
-            input.line(hidden v-if='accessGroup === "public"' value='public' name='config[table][access_group]')
-            input.line(hidden v-else-if='accessGroup === "Private"' value='Private' name='config[table][access_group]')
+            input.line(hidden v-if='accessGroup === "public"' value='public' name='config[table][access_group]' :disabled='restrictedAccess')
+            input.line(hidden v-else-if='accessGroup === "Private"' value='Private' name='config[table][access_group]' :disabled='restrictedAccess')
 
     .row.indent
         .key Table Name
         .value(style='min-width: 300px;')
-            input.line(placeholder="Table.Name" name='config[table][name]' v-model='selectedRecord.table.name' required)
+            input.line(placeholder="Table.Name" name='config[table][name]' v-model='selectedRecord.table.name' required :disabled='restrictedAccess')
     
     //- .row.indent(:class="{'nonClickable': !tableName}")
     //-     .key Subscription
@@ -71,12 +71,12 @@
     .row.indent
         .key Index Name
         .value(style='min-width: 300px;')
-            input.line(name='config[index][name]' v-model='indexName' placeholder='Alphanumeric, periods only.')
+            input.line(name='config[index][name]' v-model='indexName' placeholder='Alphanumeric, periods only.' :disabled='restrictedAccess')
 
     .row.indent(:class="{'nonClickable': !indexName}")
         .key Value
         .value(style="display:flex; flex-wrap:wrap; gap:10px;min-width: 300px;")
-            select(v-model='indexValueType')
+            select(v-model='indexValueType' :disabled='restrictedAccess')
                 option(value='string' selected) String
                 option(value='number') Number
                 option(value='boolean') Boolean
@@ -86,14 +86,14 @@
                     v-model='indexValue'
                     name='config[index][value]'
                     :type='indexValueType' :placeholder='indexValueType === "string" ? "Alphanumeric, space only." : indexValueType === "number" ? "Number value" : "Boolean value"'
-                    style="flex-grow:30; width:unset; vertical-align:middle;")
+                    style="flex-grow:30; width:unset; vertical-align:middle;" :disabled='restrictedAccess')
             
             template(v-else)
                 label(style='width:unset;display: flex;align-items: center;')
-                    input(type='radio' name='config[index][value]' value='true' :checked='indexValue' style='margin:0;width:unset;')
+                    input(type='radio' name='config[index][value]' value='true' :checked='indexValue' style='margin:0;width:unset;' :disabled='restrictedAccess')
                     | &nbsp;True
                 label(style='width:unset;display: flex;align-items: center;')
-                    input(type='radio' name='config[index][value]' value='false' :checked='indexValue ? null : true' style='margin:0;width:unset;')
+                    input(type='radio' name='config[index][value]' value='false' :checked='indexValue ? null : true' style='margin:0;width:unset;' :disabled='restrictedAccess')
                     | &nbsp;False
 
     input(:value='service' name='config[service]' hidden)
@@ -104,19 +104,19 @@
     .row 
         .key Tags 
         .value
-            input.line(v-model="selectedRecord.tags" name='config[tags]' placeholder="Tag1, Tag2, ... Alphanumeric and space only. Separated with comma.")
+            input.line(v-model="selectedRecord.tags" name='config[tags]' placeholder="Tag1, Tag2, ... Alphanumeric and space only. Separated with comma." :disabled='restrictedAccess')
 
     br
 
     .row(style='margin-bottom: 1rem')
         .key Reference
-        input.line.value(v-model="selectedRecord.reference" name='config[reference]' placeholder='Record ID to reference')
+        input.line.value(v-model="selectedRecord.reference" name='config[reference]' placeholder='Record ID to reference' :disabled='restrictedAccess')
 
     br
 
     .row
         .key(style="margin-bottom: 6px") Data (JSON Object)
-        textarea.value(:disabled='accessGroup !== "private" ? null : selectedRecord.user_id === user.user_id ? null : true' v-model="selectedRecord_data" @keydown.stop="handleKey" style="padding: 8px;width:100%;height:160px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" :name='accessGroup !== "private" ? "data" : selectedRecord.user_id === user.user_id ? null : "data"'
+        textarea.value(:disabled='restrictedAccess' v-model="selectedRecord_data" @keydown.stop="handleKey" style="padding: 8px;width:100%;height:160px;resize: none;tab-size: 2;font-family: monospace;white-space: pre;" :name='accessGroup !== "private" ? "data" : selectedRecord.user_id === user.user_id ? null : "data"'
             placeholder='{ "key": "value" }')
 
     br
@@ -127,7 +127,7 @@
             // already uploaded files
             .file(v-if="selectedRecord.bin" v-for="(fileList, key) in selectedRecord.bin")
                     template(v-for="(file, index) in fileList")
-                        div(style='display: flex;gap:8px;margin-bottom: 8px;')
+                        div(style='display: flex;gap:8px;margin-bottom: 8px;' :class="{disabled: restrictedAccess}")
                             svg.svgIcon.black.clickable(@click="deleteFile(key, index)" style='margin-top: 3px; padding-top: 1px;')
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
 
@@ -144,7 +144,7 @@
                     svg.svgIcon.black.clickable(@click="addFileList.splice(index, 1)" style='margin-top: 3px; padding-top: 1px;')
                         use(xlink:href="@/assets/img/material-icon.svg#icon-do-not-disturb-on-fill")
                     div(style='display: flex;flex-wrap: wrap;')
-                        input.line.key(style='width:unset;flex-grow:1;' v-model="file.key" required placeholder="Key name for file")
+                        input.line.key(style='width:unset;flex-grow:1;' v-model="file.key" required placeholder="Key name for file" :disabled='restrictedAccess')
                         | &nbsp;&nbsp;
                         label.filename {{ file.filename || "Choose a file"}}
                             input(@click.stop type="file" :name='file.key' @change="e=>{ file.filename = e.target.files[0].name }" required hidden)
@@ -160,7 +160,7 @@
 </template>
 
 <script setup lang="ts">
-    import { nextTick, ref, watch, type Ref } from 'vue';
+    import { computed, nextTick, ref, watch, type Ref } from 'vue';
     import Checkbox from '@/components/checkbox.vue';
     import { user } from '@/code/user';
     import { currentService, serviceRecords } from "@/views/service/main";
@@ -209,7 +209,7 @@
     let selectedRecord_data = ref('');
     let indexValue: Ref<any> = ref("");
     let restrictedAccess = ref(false);
-
+    
     // file
     let deleteFileList = ref([]);
     let addFileList = ref([]);
