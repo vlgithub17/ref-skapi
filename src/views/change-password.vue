@@ -37,15 +37,15 @@ br
                     placeholder="Enter your current password"
                     required
                     name="password")
-                .passwordIcon(@click="showPassword = !showPassword")
-                    template(v-if="showPassword")
-                        //- .material-symbols-outlined.notranslate.fill visibility
-                        svg.svgIcon(style="fill: var(--black-6)")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
-                    template(v-else)
-                        //- .material-symbols-outlined.notranslate.fill visibility_off
-                        svg.svgIcon(style="fill: var(--black-6)")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
+                //- .passwordIcon(@click="showPassword = !showPassword")
+                //-     template(v-if="showPassword")
+                //-         //- .material-symbols-outlined.notranslate.fill visibility
+                //-         svg.svgIcon(style="fill: var(--black-6)")
+                //-             use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
+                //-     template(v-else)
+                //-         //- .material-symbols-outlined.notranslate.fill visibility_off
+                //-         svg.svgIcon(style="fill: var(--black-6)")
+                //-             use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
 
             br
 
@@ -79,16 +79,16 @@ br
                     @input="e=>newPassword=e.target.value"
                     placeholder="Min 6 characters and max 60 characters"
                     required)
-                .passwordIcon(@click="showNewPassword = !showNewPassword")
-                    template(v-if="showNewPassword")
-                        //- .material-symbols-outlined.notranslate.fill visibility
-                        svg.svgIcon(style="fill: var(--black-6)")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
+                //- .passwordIcon(@click="showNewPassword = !showNewPassword")
+                //-     template(v-if="showNewPassword")
+                //-         //- .material-symbols-outlined.notranslate.fill visibility
+                //-         svg.svgIcon(style="fill: var(--black-6)")
+                //-             use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
                         
-                    template(v-else)
-                        //- .material-symbols-outlined.notranslate.fill visibility_off
-                        svg.svgIcon(style="fill: var(--black-6)")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
+                //-     template(v-else)
+                //-         //- .material-symbols-outlined.notranslate.fill visibility_off
+                //-         svg.svgIcon(style="fill: var(--black-6)")
+                //-             use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
 
             label.passwordInput
                 | Confirm new password
@@ -102,15 +102,15 @@ br
                     @change="validateNewPassword" 
                     placeholder="Confirm the new password"
                     required)
-                .passwordIcon(@click="showConfirmPassword = !showConfirmPassword")
-                    template(v-if="showConfirmPassword")
-                        //- .material-symbols-outlined.notranslate.fill visibility
-                        svg.svgIcon(style="fill: var(--black-6)")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
-                    template(v-else)
-                        //- .material-symbols-outlined.notranslate.fill visibility_off
-                        svg.svgIcon(style="fill: var(--black-6)")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
+                //- .passwordIcon(@click="showConfirmPassword = !showConfirmPassword")
+                //-     template(v-if="showConfirmPassword")
+                //-         //- .material-symbols-outlined.notranslate.fill visibility
+                //-         svg.svgIcon(style="fill: var(--black-6)")
+                //-             use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-fill")
+                //-     template(v-else)
+                //-         //- .material-symbols-outlined.notranslate.fill visibility_off
+                //-         svg.svgIcon(style="fill: var(--black-6)")
+                //-             use(xlink:href="@/assets/img/material-icon.svg#icon-visibility-off-fill")
 
             br
 
@@ -211,17 +211,17 @@ let changePassword = async () => {
     margin: 0 auto;
 }
 
-.passwordInput {
-    position: relative;
+// .passwordInput {
+//     position: relative;
 
-    .passwordIcon {
-        position: absolute;
-        right: 15px;
-        bottom: 10px;
-        opacity: 0.5;
-        cursor: pointer;
-    }
-}
+//     .passwordIcon {
+//         position: absolute;
+//         right: 15px;
+//         bottom: 10px;
+//         opacity: 0.5;
+//         cursor: pointer;
+//     }
+// }
 
 .navigator {
     text-align: center;
@@ -245,6 +245,8 @@ let changePassword = async () => {
 }
 
 form {
+    padding: 8px;
+    
     >label {
         margin-bottom: 16px;
     }

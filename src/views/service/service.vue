@@ -140,6 +140,8 @@ section.infoBox
                 @click="changeFreezeDatabase(!currentService.service.freeze_database)"
             )
         
+        br
+
         .infoValue
             .smallTitle Service Name:
             template(v-if="modifyMode.name")
@@ -159,9 +161,8 @@ section.infoBox
 
             div(v-else)
                 .smallValue
-                    | {{ currentService.service.name }}
+                    | {{ currentService.service.name }}&nbsp;
                     span.editHandle(@click="editName") [EDIT]
-
 
         .infoValue
             .smallTitle CORS:
@@ -181,7 +182,7 @@ section.infoBox
                         use(xlink:href="@/assets/img/material-icon.svg#icon-close")
 
             div(v-else)
-                .smallValue {{ currentService.service.cors || '*' }}
+                .smallValue {{ currentService.service.cors || '*' }}&nbsp;
                     span.editHandle(@click="editCors") [EDIT]
 
         .infoValue

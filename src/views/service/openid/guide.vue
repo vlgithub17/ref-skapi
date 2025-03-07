@@ -17,7 +17,7 @@
     p.
       Once the user have logged in for the first time, they will be listed on your #[b Users] section below.
       
-    p For more details, please refer to the #[a(href="https://docs.skapi.com/authentication/open-id.html", target="_blank") Documentation]
+    p For more details, please refer to the #[a(href="https://docs.skapi.com/authentication/openid-login.html", target="_blank") Documentation]
 </template>
 
 <script setup lang="ts">

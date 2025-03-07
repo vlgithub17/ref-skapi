@@ -221,7 +221,6 @@ br
 
               span &nbsp;&nbsp;Delete User
 
-
   //- .iconClick.square(
   //-   @click="getPage(true)",
   //-   :class="{ nonClickable: fetching || !user?.email_verified || currentService.service.active <= 0 }"
@@ -268,11 +267,11 @@ br
         tr(v-for="i in 9")
           td(:colspan="colspan")
       template(v-else)
-        tr(v-for="(user, index) in listDisplay")
+        tr.nsrow(v-for="(user, index) in listDisplay" @click="showDetail=true; selectedUser=user")
           td
             Checkbox(
-              @click.stop,
-              :modelValue="!!checked?.[user?.user_id]",
+              @click.stop
+              :modelValue="!!checked?.[user?.user_id]"
               @update:modelValue="(value) => { if (value) checked[user?.user_id] = value; else delete checked[user?.user_id]; }"
             )
 
@@ -291,7 +290,19 @@ br
         tr(v-for="i in 10 - listDisplay.length")
           td(:colspan="colspan")
 
-.tableMenu(style="display: block; text-align: center")
+  form.detailRecord(:class="{show: showDetail}" @submit.prevent='upload')
+    .header(style='padding-right:10px;')
+        svg.svgIcon.black.clickable(@click="showDetail=false; selectedUser=null;" :class="{nonClickable: fetching}")
+          use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back")
+        .name {{ selectedUser?.name || selectedUser?.email || selectedUser?.user_id }}
+        template(v-if="uploading")
+          .loader(style="--loader-color:blue; --loader-size:12px; margin: 12px;")
+        template(v-else)
+          button.noLine.iconClick.square(type="submit" style='padding:0 14px') SAVE
+
+    UserDetails(v-if='showDetail' :data='selectedUser')
+
+.tableMenu(v-if="!showDetail" style="display: block; text-align: center")
   .iconClick.square.arrow(
     @click="currentPage--",
     :class="{ nonClickable: fetching || currentPage === 1 }"
@@ -694,11 +705,11 @@ Modal(:open="openGrantAccess", @close="openGrantAccess = false")
       Access group can be granted from 1 to 99.
 
     input.change-access(
-      type="number",
-      placeholder="1~99",
+      type="number"
+      placeholder="1~99"
       min=1
       max=99
-      @keyup.stop="(e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); }",
+      @keyup.stop="(e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); }"
       style="background-color: white; outline: 1px solid rgba(0, 0, 0, 0.5); border-radius: 6px; width: 100%; padding: 8px"
     )
 
@@ -708,7 +719,7 @@ Modal(:open="openGrantAccess", @close="openGrantAccess = false")
     style="display: flex; align-items: center; justify-content: space-between"
   )
     div(
-      v-if="promiseRunning",
+      v-if="promiseRunning"
       style="width: 100%; height: 44px; text-align: center"
     )
       .loader(style="--loader-color: blue; --loader-size: 12px")
@@ -729,7 +740,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
   br
 
   div(style="display: flex; align-items: center; justify-content: flex-end")
-    button.final(type="button", @click="successGrantAccess = false") close
+    button.final(type="button", @click="()=>{checked.value = {};successGrantAccess = false;}") close
 </template>
 <script setup lang="ts">
   import Table from "@/components/table.vue";
@@ -741,15 +752,17 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
   import Locale from "@/components/locale.vue";
   import Pager from "@/code/pager";
 
-  import { reactive, ref, computed, watch, type Ref } from "vue";
+  import { nextTick, reactive, ref, computed, watch, type Ref } from "vue";
   import { skapi } from "@/main";
   import { user } from "@/code/user";
   import { showDropDown } from "@/assets/js/event.js";
   import { currentService, serviceUsers } from "@/views/service/main";
   import { Countries } from "@/code/countries";
   import { devLog } from "@/code/logger";
+  import UserDetails from './showDetail.vue'
 
   let pager: Pager = null;
+  let selectedUser = ref(null);
 
   let searchFor: Ref<
     "timestamp"
@@ -774,6 +787,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
   let showLocale = ref(false);
   let showGuide = ref(false);
   let hovering = ref(false);
+  let showDetail = ref(false);
 
   let columnList = reactive([
     {
@@ -896,6 +910,37 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
       value: "timestamp",
     },
   ];
+  let uploading = ref(false);
+
+  let upload = async (e: SubmitEvent) => {
+    uploading.value = true;
+
+    try {
+      let att = await currentService.updateUserAttribute(e);
+      console.log(att);
+
+      for (let k in att.attributes) {
+        selectedUser.value[k] = att.attributes[k];
+      }
+
+      let sel:any = {};
+      for(let k in selectedUser.value) {
+          sel[k] = selectedUser.value[k];
+      }
+
+      await pager.editItem(sel);
+
+      getPage();
+
+      selectedUser.value = null;
+      showDetail.value = false;
+    } catch (err: any) {
+      alert(err.message);
+      throw err;
+    } finally {
+      uploading.value = false;
+    }
+  };
 
   let checked: Ref<{ [key: string]: any }> = ref({});
   function checkall() {
@@ -913,7 +958,7 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
   watch(
     columnList,
     (nv) => {
-      colspan = 0;
+      colspan = 1;
       nv.forEach((c) => {
         if (c.value) {
           colspan++;
@@ -924,6 +969,18 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
     },
     { immediate: true }
   );
+
+  watch(showDetail, (nv) => {
+    if (nv) {
+      nextTick(() => {
+        let scrollTarget = document.querySelector(".detailRecord .content");
+        let detailRecord = document.querySelector(".detailRecord");
+        let targetTop = window.scrollY + detailRecord.getBoundingClientRect().top;
+        scrollTarget.scrollTop = 0;
+        window.scrollTo(0, targetTop);
+      });
+    }
+  });
 
   // modal related
   let promiseRunning = ref(false);
@@ -1406,7 +1463,6 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
     await Promise.all(promises).then(() => {
       inputAccess.value = "";
       updateListDisplay();
-      checked.value = {};
       openGrantAccess.value = false;
       successGrantAccess.value = true;
     }).catch((e) => {
@@ -1591,5 +1647,107 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
 
   input[type="number"] {
     -moz-appearance: textfield;
+  }
+
+  .detailRecord {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    transform: translateX(110%);
+    transition: all 0.3s;
+
+    &.show {
+      transform: translateX(0px);
+    }
+
+    .header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      padding: 0 20px;
+      font-weight: 500;
+      background-color: #f0f0f0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+
+      .material-symbols-outlined {
+        cursor: pointer;
+      }
+
+      .name {
+        flex-grow: 1;
+        padding-left: 20px;
+      }
+
+      button {
+        padding: 0;
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  tbody {
+    tr.nsrow {
+      @media (pointer: fine) {
+        &:not(.active):hover {
+          background-color: rgba(41, 63, 230, 0.05);
+        }
+      }
+
+      &.active {
+        background-color: rgba(41, 63, 230, 0.1);
+      }
+
+      &:hover {
+        .hide {
+          display: block;
+        }
+      }
+
+      .hide {
+        display: none;
+      }
+    }
+
+    td {
+      .click {
+        position: relative;
+        color: var(--main-color);
+        font-weight: 500;
+
+        &::after {
+          position: absolute;
+          content: "copied!";
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          border-radius: 4px;
+          text-align: center;
+          background-color: var(--main-color);
+          color: #fff;
+          display: none;
+        }
+
+        &:hover {
+          text-decoration: underline;
+          cursor: pointer;
+        }
+
+        &.clicked {
+          &::after {
+            display: block;
+          }
+        }
+      }
+    }
   }
 </style>

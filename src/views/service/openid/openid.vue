@@ -60,7 +60,7 @@ section.infoBox
     .iconClick.square(@click="()=>{ !user.email_verified ? false : selectedLogger = null; showDetail=true; }" :class="{'nonClickable' : showDetail || uploading || fetching || !user?.email_verified || currentService.service.active <= 0}")
         svg.svgIcon
             use(xlink:href="@/assets/img/material-icon.svg#icon-add-circle-fill")
-        span &nbsp;&nbsp;Create Logger
+        span &nbsp;&nbsp;Register Logger
 
     .iconClick.square(@click="openDeleteRecords=true" :class="{'nonClickable': !Object.keys(checked).length || fetching || !user?.email_verified || currentService.service.active <= 0}" )
         svg.svgIcon
@@ -118,7 +118,7 @@ section.infoBox
         .header(style='padding-right:10px;')
             svg.svgIcon.black.clickable(@click="showDetail=false; selectedLogger=null;" :class="{nonClickable: fetching}")
                 use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back")
-            .name {{ selectedLogger?.id ? selectedLogger.id : 'Create Record' }}
+            .name {{ selectedLogger?.id ? selectedLogger.id : 'Register Logger' }}
             template(v-if="uploading")
                 .loader(style="--loader-color:blue; --loader-size:12px; margin: 12px;")
             template(v-else)
