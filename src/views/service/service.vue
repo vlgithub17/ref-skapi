@@ -103,8 +103,15 @@ section.infoBox
 
     hr(style='margin-top: 1.5rem;')
 
-    .infoValue(:class="{'nonClickable' : !user?.email_verified && currentService.service.suspended}" style='display: flex;align-items: center;margin-bottom:0;min-height: 0;')
+    .infoValue(:class="{'nonClickable' : !user?.email_verified && currentService.service.suspended}" style='display: flex;align-items: center;margin-bottom: 0;min-height: 0;gap: 10px;')
         .smallTitle Disable/Enable
+        Tooltip(tip-background-color="var(--main-color)" text-color="white")
+            //- template(v-slot:tool)
+                svg
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-help")
+            template(v-slot:tip)
+                | This service is currently disabled.
+
         Toggle(
             style='display:inline-flex;align-items:center;'
             :disabled="!user?.email_verified || currentService.service.suspended || updatingValue.enableDisable"
@@ -113,8 +120,11 @@ section.infoBox
         )
 
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
-        .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0')
+        .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0;gap: 10px;')
             .smallTitle Allow Signup
+            Tooltip(tip-background-color="var(--main-color)" text-color="white")
+                template(v-slot:tip)
+                    | This service is currently disabled.
             Toggle(
                 style='display:inline-flex;align-items:center;'
                 :active='!currentService.service.prevent_signup'
@@ -122,8 +132,11 @@ section.infoBox
                 @click="changeCreateUserMode(!currentService.service.prevent_signup)"
             )
 
-        .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0')
+        .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0; gap: 10px;')
             .smallTitle Prevent Inquiry
+            Tooltip(tip-background-color="var(--main-color)" text-color="white")
+                template(v-slot:tip)
+                    | This service is currently disabled.
             Toggle(
                 style='display:inline-flex;align-items:center;'
                 :active='currentService.service.prevent_inquiry'
@@ -131,8 +144,11 @@ section.infoBox
                 @click="changePreventInquiry(!currentService.service.prevent_inquiry)"
             )
         
-        .infoValue(style='display: flex;align-items: center;min-height: 0;')
+        .infoValue(style='display: flex;align-items: center;min-height: 0;gap: 10px;')
             .smallTitle Freeze Database
+            Tooltip(tip-background-color="var(--main-color)" text-color="white")
+                template(v-slot:tip)
+                    | This service is currently disabled.
             Toggle(
                 style='display:inline-flex;align-items:center;'
                 :active='currentService.service.freeze_database'
@@ -223,6 +239,7 @@ section.infoBox
 import { nextTick, reactive, ref, computed } from 'vue';
 import { currentService } from '@/views/service/main';
 import Toggle from '@/components/toggle.vue';
+import Tooltip from '@/components/tooltip.vue';
 import { dateFormat } from '@/code/admin';
 import { getFileSize } from '@/code/admin';
 import { devLog } from '@/code/logger';
@@ -450,6 +467,9 @@ let changeFreezeDatabase = async (onlyAdmin: boolean) => {
     &:hover {
         text-decoration: none;
     }
+}
+.svgIcon.nohover {
+    background-color: unset;
 }
 .svgIcon:hover {
     border-radius: 50%;
