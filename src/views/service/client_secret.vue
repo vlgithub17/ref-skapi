@@ -90,8 +90,11 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
             tr
                 th.center(style="width:48px; padding:0")
                     //- .material-symbols-outlined.notranslate lock
-                    svg.svgIcon(style="fill: black;")
+                    //- svg.svgIcon(style="fill: black;")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-lock")
+                    Tooltip(tip-background-color="var(--main-color)" text-color="white")
+                        template(v-slot:tip)
+                            | You can enable or disable the service. When the service is disabled, users cannot access the service.
                     .resizer
                 th(style="width:26%")
                     | Name
@@ -168,6 +171,7 @@ import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
+import Tooltip from '@/components/tooltip.vue';
 
 import { ref, nextTick } from 'vue';
 import { user } from '@/code/user';
