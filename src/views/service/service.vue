@@ -113,7 +113,7 @@ section.infoBox
         )
         Tooltip(tip-background-color="var(--main-color)" text-color="white")
             template(v-slot:tip)
-                | You can enable or disable the service. When the service is disabled, users cannot access the service.
+                | When the service is disabled, users cannot access the service.
 
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
         .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0;gap: 10px;')
@@ -126,7 +126,7 @@ section.infoBox
             )
             Tooltip(tip-background-color="var(--main-color)" text-color="white")
                 template(v-slot:tip)
-                    | You can control service subscriptions from outside the service. If you disable this, only the administrator can create users.
+                    | When signup is disallowed, only the administrator can create accounts.
 
         .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0; gap: 10px;')
             .smallTitle Prevent Inquiry
@@ -138,7 +138,7 @@ section.infoBox
             )
             Tooltip(tip-background-color="var(--main-color)" text-color="white")
                 template(v-slot:tip)
-                    | You can prevent users from inquiring about the service. If you prevent inquiries, users cannot send inquiries about the service.
+                    | You can prevent users from sending inquiries via sendInquiry() to the service.
         
         .infoValue(style='display: flex;align-items: center;min-height: 0;gap: 10px;')
             .smallTitle Freeze Database
@@ -150,7 +150,7 @@ section.infoBox
             )
             Tooltip(tip-background-color="var(--main-color)" text-color="white")
                 template(v-slot:tip)
-                    | You can fix the database structure. If you freeze the database, the database structure will not be changed.
+                    | You can prevent users from uploading any data to the database by freezing the database.
         
         br
 
