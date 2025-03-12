@@ -97,7 +97,8 @@ const handleMouseEnter = (e) => {
 
     .tip {
         // min-width: 100%;
-        max-width: 100%;
+        // max-width: 100%;
+		width: 100%;
         min-width: 10rem;
         display: none;
         position: absolute;
@@ -107,7 +108,8 @@ const handleMouseEnter = (e) => {
         left: 0;
         right: unset;
         z-index: 999;
-        // white-space: pre;
+        white-space: pre-wrap;
+		text-align: left;
         // overflow: hidden;
         
         background-color: var(--tip-background-color); // 배경색 적용
