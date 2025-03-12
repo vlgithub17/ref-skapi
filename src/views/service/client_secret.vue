@@ -84,7 +84,11 @@ br
     span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Register Client Secret Key
 
 
-form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
+form.table-form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
+    .table-tootlip
+        Tooltip(tip-background-color="var(--main-color)" text-color="white")
+            template(v-slot:tip)
+                | When LOCKED only signed users can have access to the client secret key.
     Table
         template(v-slot:head)
             tr
@@ -92,9 +96,6 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                     //- .material-symbols-outlined.notranslate lock
                     //- svg.svgIcon(style="fill: black;")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-lock")
-                    Tooltip(tip-background-color="var(--main-color)" text-color="white")
-                        template(v-slot:tip)
-                            | When LOCKED only signed users can have access to the client secret key.
                     .resizer
                 th(style="width:26%")
                     | Name
@@ -315,6 +316,17 @@ let saveKey = async (key) => {
 }
 </script>
 <style scoped lang="less">
+.table-form {
+    position: relative;
+
+    .table-tootlip {
+        position: absolute;
+        left: 11px;
+        top: 17px;
+        z-index: 999;
+    }
+}
+
 .updown {
     background-color: #fff;
     background-color: var(--main-color);
