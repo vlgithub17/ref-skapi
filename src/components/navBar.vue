@@ -7,6 +7,12 @@ nav#navBar(ref="navBar")
                 svg(width="1.5em" height="1.5em" style="fill:white")
                     use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back-ios")
                 span.name My Services
+            //- .logo(v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services'" style="color:white")
+                svg(width="1.5em" height="1.5em" style="fill:white")
+                    use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back-ios")
+                span.name.router(@click="router.push('/my-services')") My Services
+                span(style="font-size:1.3rem")  / 
+                span.router(@click="router.push('/my-services/' + currentService.id)" v-if="serviceMainLoaded") {{ currentService.service.name }}
             router-link.logo(to="/" v-else)
                 img.symbol.mobile(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation: none;")
                 img.symbol.desktop(src="@/assets/img/logo/logo-white.svg" style="image-orientation: none;height:38px")
@@ -77,6 +83,7 @@ nav#navBar(ref="navBar")
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, onBeforeUnmount, ref } from "vue";
 import { skapi } from "@/main";
+import { serviceMainLoaded, currentService } from '@/views/service/main';
 import { user, customer } from "@/code/user";
 import { showDropDown } from "@/assets/js/event.js";
 import { setAutoHide, removeListener } from "./navBar-autohide.ts";
@@ -87,6 +94,7 @@ const route = useRoute();
 let navBar = ref(null);
 let moreVert = ref(null);
 let running = ref(false);
+let serviceName = ref("");
 
 let openBillingPage = async () => {
     running.value = true;
@@ -202,6 +210,14 @@ img.symbol.mobile {
 
                 span {
                     font-weight: bold;
+                }
+
+                .router {
+                    cursor: pointer;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
                 }
             }
         }

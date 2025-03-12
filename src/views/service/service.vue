@@ -103,7 +103,7 @@ section.infoBox
 
     hr(style='margin-top: 1.5rem;')
 
-    .infoValue(:class="{'nonClickable' : !user?.email_verified && currentService.service.suspended}" style='display: flex;align-items: center;margin-bottom:0;min-height: 0;')
+    .infoValue(:class="{'nonClickable' : !user?.email_verified && currentService.service.suspended}" style='display: flex;align-items: center;margin-bottom: 0;min-height: 0;gap: 10px;')
         .smallTitle Disable/Enable
         Toggle(
             style='display:inline-flex;align-items:center;'
@@ -111,9 +111,12 @@ section.infoBox
             :active="currentService.service.active >= 1"
             @click="enableDisable"
         )
+        Tooltip(tip-background-color="var(--main-color)" text-color="white")
+            template(v-slot:tip)
+                | You can enable or disable the service. When the service is disabled, users cannot access the service.
 
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
-        .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0')
+        .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0;gap: 10px;')
             .smallTitle Allow Signup
             Toggle(
                 style='display:inline-flex;align-items:center;'
@@ -121,8 +124,11 @@ section.infoBox
                 :disabled='updatingValue.prevent_signup'
                 @click="changeCreateUserMode(!currentService.service.prevent_signup)"
             )
+            Tooltip(tip-background-color="var(--main-color)" text-color="white")
+                template(v-slot:tip)
+                    | You can control service subscriptions from outside the service. If you disable this, only the administrator can create users.
 
-        .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0')
+        .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0; gap: 10px;')
             .smallTitle Prevent Inquiry
             Toggle(
                 style='display:inline-flex;align-items:center;'
@@ -130,8 +136,11 @@ section.infoBox
                 :disabled='updatingValue.prevent_inquiry'
                 @click="changePreventInquiry(!currentService.service.prevent_inquiry)"
             )
+            Tooltip(tip-background-color="var(--main-color)" text-color="white")
+                template(v-slot:tip)
+                    | You can prevent users from inquiring about the service. If you prevent inquiries, users cannot send inquiries about the service.
         
-        .infoValue(style='display: flex;align-items: center;min-height: 0;')
+        .infoValue(style='display: flex;align-items: center;min-height: 0;gap: 10px;')
             .smallTitle Freeze Database
             Toggle(
                 style='display:inline-flex;align-items:center;'
@@ -139,6 +148,9 @@ section.infoBox
                 :disabled='updatingValue.freeze_database'
                 @click="changeFreezeDatabase(!currentService.service.freeze_database)"
             )
+            Tooltip(tip-background-color="var(--main-color)" text-color="white")
+                template(v-slot:tip)
+                    | You can fix the database structure. If you freeze the database, the database structure will not be changed.
         
         br
 
@@ -223,6 +235,7 @@ section.infoBox
 import { nextTick, reactive, ref, computed } from 'vue';
 import { currentService } from '@/views/service/main';
 import Toggle from '@/components/toggle.vue';
+import Tooltip from '@/components/tooltip.vue';
 import { dateFormat } from '@/code/admin';
 import { getFileSize } from '@/code/admin';
 import { devLog } from '@/code/logger';
@@ -450,6 +463,9 @@ let changeFreezeDatabase = async (onlyAdmin: boolean) => {
     &:hover {
         text-decoration: none;
     }
+}
+.svgIcon.nohover {
+    background-color: unset;
 }
 .svgIcon:hover {
     border-radius: 50%;
