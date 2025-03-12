@@ -2,17 +2,12 @@
 nav#navBar(ref="navBar")
     .wrap
         .left
-            router-link.logo(to="/my-services" v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services'" style="color:white")
-                //- .material-symbols-outlined.notranslate.nohover.back(style="font-size:1.5em") arrow_back_ios
-                svg(width="1.5em" height="1.5em" style="fill:white")
-                    use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back-ios")
-                span.name My Services
-            //- .logo(v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services'" style="color:white")
-                svg(width="1.5em" height="1.5em" style="fill:white")
-                    use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-back-ios")
-                span.name.router(@click="router.push('/my-services')") My Services
-                span(style="font-size:1.3rem")  / 
-                span.router(@click="router.push('/my-services/' + currentService.id)" v-if="serviceMainLoaded") {{ currentService.service.name }}
+            .logo(v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services'")
+                img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" @click="router.push('/')" style="image-orientation:none; width:28px; cursor:pointer; vertical-align:top")
+                .router-wrap
+                    .router
+                        p.small(@click="router.push('/my-services')") My Services/
+                        p.big(@click="router.push('/my-services/' + currentService.id)") {{ serviceMainLoaded ? currentService.service.name : 'loading...' }}
             router-link.logo(to="/" v-else)
                 img.symbol.mobile(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation: none;")
                 img.symbol.desktop(src="@/assets/img/logo/logo-white.svg" style="image-orientation: none;height:38px")
@@ -212,11 +207,32 @@ img.symbol.mobile {
                     font-weight: bold;
                 }
 
-                .router {
-                    cursor: pointer;
+                .router-wrap {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-left: 8px;
+                    gap: 10px;
 
-                    &:hover {
-                        text-decoration: underline;
+                    p {
+                        margin: 0;
+                    }
+                    // .router {
+                    //     line-height: 0.8;
+                    // }
+                    .small {
+                        line-height: 1.1;
+                        font-size: 0.7rem;
+                        cursor: pointer;
+                        opacity: 0.7;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                    .big {
+                        line-height: 1.1;
+                        font-weight: bold;
                     }
                 }
             }
