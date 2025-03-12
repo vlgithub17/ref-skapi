@@ -94,7 +94,7 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                         use(xlink:href="@/assets/img/material-icon.svg#icon-lock")
                     Tooltip(tip-background-color="var(--main-color)" text-color="white")
                         template(v-slot:tip)
-                            | You can enable or disable the service. When the service is disabled, users cannot access the service.
+                            | When LOCKED only signed users can have access to the client secret key.
                     .resizer
                 th(style="width:26%")
                     | Name
