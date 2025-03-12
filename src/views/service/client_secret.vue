@@ -110,7 +110,7 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
                         //- Checkbox(v-model="key.secure" :disabled='updating')
                         svg.svgIcon.black(@click="key.secure = !key.secure" :class="{ 'reactive' : !updating }" :style="{ opacity : updating ? 0.3 : 1, pointerEvents : updating ? 'none' : 'default' }" style="cursor:pointer")
                             template(v-if="key.secure")
-                                use(xlink:href="@/assets/img/material-icon.svg#icon-lock")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-lock-fill")
                             template(v-else)
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-lock-open")
                     td  
