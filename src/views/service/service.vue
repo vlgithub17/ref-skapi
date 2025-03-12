@@ -105,56 +105,52 @@ section.infoBox
 
     .infoValue(:class="{'nonClickable' : !user?.email_verified && currentService.service.suspended}" style='display: flex;align-items: center;margin-bottom: 0;min-height: 0;gap: 10px;')
         .smallTitle Disable/Enable
-        Tooltip(tip-background-color="var(--main-color)" text-color="white")
-            //- template(v-slot:tool)
-                svg
-                    use(xlink:href="@/assets/img/material-icon.svg#icon-help")
-            template(v-slot:tip)
-                | This service is currently disabled.
-
         Toggle(
             style='display:inline-flex;align-items:center;'
             :disabled="!user?.email_verified || currentService.service.suspended || updatingValue.enableDisable"
             :active="currentService.service.active >= 1"
             @click="enableDisable"
         )
+        Tooltip(tip-background-color="var(--main-color)" text-color="white")
+            template(v-slot:tip)
+                | You can enable or disable the service. When the service is disabled, users cannot access the service.
 
     div(:class="{'nonClickable' : !user?.email_verified || currentService.service.active <= 0}")
         .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0;gap: 10px;')
             .smallTitle Allow Signup
-            Tooltip(tip-background-color="var(--main-color)" text-color="white")
-                template(v-slot:tip)
-                    | This service is currently disabled.
             Toggle(
                 style='display:inline-flex;align-items:center;'
                 :active='!currentService.service.prevent_signup'
                 :disabled='updatingValue.prevent_signup'
                 @click="changeCreateUserMode(!currentService.service.prevent_signup)"
             )
+            Tooltip(tip-background-color="var(--main-color)" text-color="white")
+                template(v-slot:tip)
+                    | You can control service subscriptions from outside the service. If you disable this, only the administrator can create users.
 
         .infoValue(style='display: flex;align-items: center;min-height: 0; margin-bottom:0; gap: 10px;')
             .smallTitle Prevent Inquiry
-            Tooltip(tip-background-color="var(--main-color)" text-color="white")
-                template(v-slot:tip)
-                    | This service is currently disabled.
             Toggle(
                 style='display:inline-flex;align-items:center;'
                 :active='currentService.service.prevent_inquiry'
                 :disabled='updatingValue.prevent_inquiry'
                 @click="changePreventInquiry(!currentService.service.prevent_inquiry)"
             )
+            Tooltip(tip-background-color="var(--main-color)" text-color="white")
+                template(v-slot:tip)
+                    | You can prevent users from inquiring about the service. If you prevent inquiries, users cannot send inquiries about the service.
         
         .infoValue(style='display: flex;align-items: center;min-height: 0;gap: 10px;')
             .smallTitle Freeze Database
-            Tooltip(tip-background-color="var(--main-color)" text-color="white")
-                template(v-slot:tip)
-                    | This service is currently disabled.
             Toggle(
                 style='display:inline-flex;align-items:center;'
                 :active='currentService.service.freeze_database'
                 :disabled='updatingValue.freeze_database'
                 @click="changeFreezeDatabase(!currentService.service.freeze_database)"
             )
+            Tooltip(tip-background-color="var(--main-color)" text-color="white")
+                template(v-slot:tip)
+                    | You can fix the database structure. If you freeze the database, the database structure will not be changed.
         
         br
 
