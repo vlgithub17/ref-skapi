@@ -191,6 +191,7 @@ input {
 
     .infoBox {
         width: 280px;
+		padding: 20px;
         flex-grow: 1;
         user-select: none;
         cursor: pointer;
