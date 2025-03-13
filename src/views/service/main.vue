@@ -169,7 +169,6 @@ let titleList = [
     "Getting Started",
     "Service Settings",
     "Users",
-	"Open ID Loggers",
     "Client Secret Key",
     "Database",
     "Automated Email",
@@ -207,7 +206,7 @@ watch(() => route, nv => {
                 "Getting Started",
                 "Dashboard & Settings",
                 "Users",
-				"Open ID Loggers",
+				"OpenID Logger",
                 "Client Secret Key",
                 "Database",
                 "Automated Email"
