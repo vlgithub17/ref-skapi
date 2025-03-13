@@ -2,12 +2,11 @@
 nav#navBar(ref="navBar")
     .wrap
         .left
-            .logo(v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services'")
-                img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" @click="router.push('/')" style="image-orientation:none; width:28px; cursor:pointer; vertical-align:top")
-                .router-wrap
-                    .router
-                        p.small(@click="router.push('/my-services')") My Services/
-                        p.big {{ serviceName }}
+            div(v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services'" style="display:flex;gap:10px")
+                img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" @click="router.push('/')" style="image-orientation:none; width:26px; cursor:pointer; vertical-align:top")
+                .router
+                    p.small(@click="router.push('/my-services')") My Services/
+                    p.big {{ serviceName }}
             router-link.logo(to="/" v-else)
                 img.symbol.mobile(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation: none;")
                 img.symbol.desktop(src="@/assets/img/logo/logo-white.svg" style="image-orientation: none;height:38px")
@@ -186,60 +185,54 @@ img.symbol.mobile {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 10px;
 
         max-width: 80rem;
         padding: 20px 16px;
 
         .left {
-            flex-shrink: 0;
+            // flex-shrink: 0;
+            flex-grow: 1;
             display: inline-block;
             vertical-align: middle;
 
             .logo {
                 display: block;
                 text-decoration: none;
-
-                * {
-                    vertical-align: middle;
-                }
-
+                
                 img {
                     width: auto;
                     height: 32px;
                     margin-right: 10px;
+                    vertical-align: middle;
                 }
+            }
 
-                span {
+            .router {
+                flex-grow: 1;
+
+                p {
+                    margin: 0;
+                }
+                .small {
+                    line-height: 1.1;
+                    font-size: 0.7rem;
+                    cursor: pointer;
+                    white-space: nowrap;
+                    opacity: 0.7;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+                .big {
+                    width: calc(100vw - 245px);
+                    min-width: 60px;
+                    line-height: 1.1;
                     font-weight: bold;
-                }
-
-                .router-wrap {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin-left: 8px;
-                    gap: 10px;
-
-                    p {
-                        margin: 0;
-                    }
-                    // .router {
-                    //     line-height: 0.8;
-                    // }
-                    .small {
-                        line-height: 1.1;
-                        font-size: 0.7rem;
-                        cursor: pointer;
-                        opacity: 0.7;
-
-                        &:hover {
-                            text-decoration: underline;
-                        }
-                    }
-                    .big {
-                        line-height: 1.1;
-                        font-weight: bold;
-                    }
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
             }
         }
@@ -247,7 +240,7 @@ img.symbol.mobile {
         .right {
             display: inline-block;
             vertical-align: middle;
-            flex-grow: 1;
+            // flex-grow: 1;
             font-weight: bold;
 
             ul {
