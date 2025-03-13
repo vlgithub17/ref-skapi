@@ -9,9 +9,13 @@ export let serviceRecords: any = {};
 export let serviceBins: any = {};
 export let serviceAutoMails: any = {};
 export let serviceBulkMails: any = {};
+
+const serviceChangedEvent = new Event('serviceChanged');
+
 export let setService = (id: string) => {
   currentService = serviceList[id];
   serviceMainLoaded.value = true;
+  window.dispatchEvent(serviceChangedEvent);
 };
 
 export let serviceLoggers: any = {};

@@ -7,7 +7,7 @@ nav#navBar(ref="navBar")
                 .router-wrap
                     .router
                         p.small(@click="router.push('/my-services')") My Services/
-                        p.big(@click="router.push('/my-services/' + currentService.id)") {{ serviceMainLoaded ? currentService.service.name : 'loading...' }}
+                        p.big {{ serviceName }}
             router-link.logo(to="/" v-else)
                 img.symbol.mobile(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation: none;")
                 img.symbol.desktop(src="@/assets/img/logo/logo-white.svg" style="image-orientation: none;height:38px")
@@ -89,7 +89,11 @@ const route = useRoute();
 let navBar = ref(null);
 let moreVert = ref(null);
 let running = ref(false);
-let serviceName = ref("");
+let serviceName = ref(currentService?.service?.name || "");
+
+const updateServiceName = () => {
+    serviceName.value = currentService?.service?.name || "loading...";
+};
 
 let openBillingPage = async () => {
     running.value = true;
@@ -131,10 +135,12 @@ let logout = () => {
 
 onMounted(() => {
     setAutoHide(navBar.value, 3);
+    window.addEventListener('serviceChanged', updateServiceName);
 });
 
 onBeforeUnmount(() => {
     removeListener();
+    window.removeEventListener('serviceChanged', updateServiceName);
 });
 </script>
 
