@@ -226,7 +226,7 @@ img.symbol.mobile {
                     }
                 }
                 .big {
-                    width: calc(100vw - 245px);
+                    width: 100%;
                     min-width: 60px;
                     line-height: 1.1;
                     font-weight: bold;
@@ -398,6 +398,13 @@ img.symbol.mobile {
 
     #navBar {
         .wrap {
+            .left {
+                .router {
+                    .big {
+                        width: calc(100vw - 200px);
+                    }
+                }
+            }
             .right {
                 ul {
                     gap: 0.9rem;
