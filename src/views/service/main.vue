@@ -169,6 +169,7 @@ let titleList = [
     "Getting Started",
     "Service Settings",
     "Users",
+	"OpenID Logger",
     "Client Secret Key",
     "Database",
     "Automated Email",
