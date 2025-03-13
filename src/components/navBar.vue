@@ -401,7 +401,7 @@ img.symbol.mobile {
             .left {
                 .router {
                     .big {
-                        width: calc(100vw - 200px);
+                        width: calc(100vw - 215px);
                     }
                 }
             }
