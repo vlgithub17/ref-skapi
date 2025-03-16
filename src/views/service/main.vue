@@ -158,6 +158,7 @@ let routerList = [
     "service",
     "dashboard",
     "users",
+	"openid",
     "clientsecret",
     "records",
     "mail",
@@ -168,6 +169,7 @@ let titleList = [
     "Getting Started",
     "Service Settings",
     "Users",
+	"OpenID Logger",
     "Client Secret Key",
     "Database",
     "Automated Email",
@@ -200,11 +202,12 @@ watch(() => route, nv => {
     plan.value = currentService?.plan;
 
         if (plan.value == "Trial") {
-            routerList = ["service", "dashboard", "users", "clientsecret", "records", "mail"];
+            routerList = ["service", "dashboard", "users", "openid", "clientsecret", "records", "mail"];
             titleList = [
                 "Getting Started",
                 "Dashboard & Settings",
                 "Users",
+				"OpenID Logger",
                 "Client Secret Key",
                 "Database",
                 "Automated Email"
