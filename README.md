@@ -124,8 +124,8 @@ We offer a **free plan** so you can start building today:
 ✔ **10K User Accounts**  
 ✔ **4GB Database Storage**  
 ✔ **50GB File Storage**  
-✔ **Bulk Email Sending (Automated emails not included)**  
-✔ **All user data is deleted every 30 days**  
+⚠ **Bulk Email Sending & Automated emails not included**  
+⚠ **All user data is deleted every 30 days**  
 
 ---
 
