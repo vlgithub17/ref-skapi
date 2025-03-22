@@ -34,7 +34,7 @@ br
                     .resending Email has been re-sent.
                 template(v-else)
                     | Haven’t received the email?&nbsp;
-                    span.click(@click="resend") Re-send
+                    a.clickable(@click="resend") Re-send
 
             br
 
@@ -71,7 +71,6 @@ br
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { skapi } from '@/main';
-import { updateUser } from '@/code/user';
 
 const router = useRouter();
 
@@ -89,7 +88,7 @@ let resend = async () => {
 }
 let verifyEmail = e => {
     promiseRunning.value = true;
-    skapi.verifyEmail(e).then(() => { step.value++; updateUser(); }).catch(err => error = err.message).finally(() => promiseRunning.value = false);
+    skapi.verifyEmail(e).then(() => step.value++ ).catch(err => error = err.message).finally(() => promiseRunning.value = false);
 }
 </script>
 
@@ -100,17 +99,17 @@ let verifyEmail = e => {
     margin: 0 auto;
 }
 
-.passwordInput {
-    position: relative;
+// .passwordInput {
+//     position: relative;
 
-    .passwordIcon {
-        position: absolute;
-        right: 15px;
-        bottom: 10px;
-        opacity: 0.5;
-        cursor: pointer;
-    }
-}
+//     .passwordIcon {
+//         position: absolute;
+//         right: 15px;
+//         bottom: 10px;
+//         opacity: 0.5;
+//         cursor: pointer;
+//     }
+// }
 
 .navigator {
     text-align: center;
@@ -134,6 +133,8 @@ let verifyEmail = e => {
 }
 
 form {
+    padding: 8px;
+
     >label {
         margin-bottom: 16px;
     }
@@ -141,11 +142,11 @@ form {
     .resend {
         font-size: 16px;
 
-        .click {
-            color: var(--main-color);
-            font-weight: 600;
-            cursor: pointer;
-        }
+        // .click {
+        //     color: var(--main-color);
+        //     font-weight: 600;
+        //     cursor: pointer;
+        // }
     }
 
     .bottom {

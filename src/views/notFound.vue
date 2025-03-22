@@ -9,6 +9,9 @@ div(style="text-align:center")
     br
 
     div(style="font-weight:bold; font-size:2rem") 404
+
+    br
+
     div Page not found
 br
 br

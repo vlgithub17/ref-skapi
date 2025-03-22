@@ -7,25 +7,10 @@
     {
       "path": "./tsconfig.app.json"
     }
-  ]
+  ],
+  "vueCompilerOptions": {
+    "plugins": [
+      "@vue/language-plugin-pug"
+    ]
+  }
 }
-
-// {
-//   "compilerOptions": {
-//     "target": "ESNext",
-//     "module": "ESNext",
-//     "strict": true,
-//     // "jsx": "preserve",
-//     "sourceMap": true,
-//     "esModuleInterop": true,
-//     "lib": ["ESNext", "DOM"],
-//     "types": ["vite/client"],
-//     "moduleResolution": "nodenext", // Add this line
-//     "baseUrl": ".", // Add this line
-//     "paths": { // Add this section if you want to use path aliases
-//       "@/*": ["src/*"]
-//     }
-//   },
-//   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/vite-env.d.ts"],
-//   // "exclude": ["node_modules"]
-// }

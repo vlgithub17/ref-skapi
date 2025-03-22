@@ -84,13 +84,17 @@ br
     span(style="font-size: 0.8rem;font-weight:bold") &nbsp;&nbsp;Register Client Secret Key
 
 
-form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
+form.table-form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
+    .table-tootlip
+        Tooltip(tip-background-color="var(--main-color)" text-color="white")
+            template(v-slot:tip)
+                | When LOCKED only signed users can have access to the client secret key.
     Table
         template(v-slot:head)
             tr
                 th.center(style="width:48px; padding:0")
                     //- .material-symbols-outlined.notranslate lock
-                    svg.svgIcon(style="fill: black;")
+                    //- svg.svgIcon(style="fill: black;")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-lock")
                     .resizer
                 th(style="width:26%")
@@ -107,7 +111,12 @@ form(@submit.prevent :class='{disabled: !user?.email_verified || currentService.
             tr(v-for="(key, index) in client_key")
                 template(v-if="editMode && key.edit || addMode && key.edit")
                     td.center 
-                        Checkbox(v-model="key.secure" :disabled='updating')
+                        //- Checkbox(v-model="key.secure" :disabled='updating')
+                        svg.svgIcon.black(@click="key.secure = !key.secure" :class="{ 'reactive' : !updating }" :style="{ opacity : updating ? 0.3 : 1, pointerEvents : updating ? 'none' : 'default' }" style="cursor:pointer")
+                            template(v-if="key.secure")
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-lock-fill")
+                            template(v-else)
+                                use(xlink:href="@/assets/img/material-icon.svg#icon-lock-open")
                     td  
                         input#keyName.line(type="text" v-model="key.name" placeholder="myapi" required maxlength="16" @input="e=>e.target.setCustomValidity('')" :disabled='updating')
                     td
@@ -163,6 +172,7 @@ import Table from '@/components/table.vue';
 import Code from '@/components/code.vue';
 import Checkbox from '@/components/checkbox.vue';
 import Modal from '@/components/modal.vue';
+import Tooltip from '@/components/tooltip.vue';
 
 import { ref, nextTick } from 'vue';
 import { user } from '@/code/user';
@@ -306,6 +316,17 @@ let saveKey = async (key) => {
 }
 </script>
 <style scoped lang="less">
+.table-form {
+    position: relative;
+
+    .table-tootlip {
+        position: absolute;
+        left: 11px;
+        top: 17px;
+        z-index: 999;
+    }
+}
+
 .updown {
     background-color: #fff;
     background-color: var(--main-color);

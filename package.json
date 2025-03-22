@@ -1,5 +1,5 @@
 {
-  "name": "ref-skapi",
+  "name": "skapi-website",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -18,12 +18,13 @@
     "aos": "^3.0.0-beta.6",
     "jsoncrawler": "^0.2.1",
     "mime": "^4.0.4",
-    "skapi-js": "^1.0.211"
+    "skapi-js": "^1.0.223"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
     "@types/node": "^20.11.10",
     "@vitejs/plugin-vue": "^5.0.3",
+    "@vue/language-plugin-pug": "^2.2.4",
     "@vue/tsconfig": "^0.5.1",
     "less": "^4.2.0",
     "npm-run-all2": "^6.1.1",

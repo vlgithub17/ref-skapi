@@ -1,9 +1,11 @@
+import jsonCrawler from 'jsoncrawler';
+
 export default class Pager {
     sortBy: string;
     id: string;
     order: 'asc' | 'desc' = 'asc';
-    map: any[] = [];
-    list: { [key: string]: any } = {};
+    map: any[] = []; // [uniqueId, uniqueId, uniqueId, ...]
+    list: { [uniqueId: string]: any } = {};
     resultsPerPage = 10;
     worker: any;
 
@@ -81,7 +83,7 @@ export default class Pager {
         }
     ): Promise<"Edit Saved"> {
         let { withinRange = false } = options || {};
-        if(Array.isArray(item)) {
+        if (Array.isArray(item)) {
             throw new Error('item should be an object');
         }
         return new Promise((res) => {
@@ -89,7 +91,7 @@ export default class Pager {
                 if (event.data) {
                     this.map = event.data;
                 }
-                if(this.list?.[item[this.id]]) {
+                if (this.list?.[item[this.id]]) {
                     Object.assign(this.list[item[this.id]], item);
                 }
                 else {

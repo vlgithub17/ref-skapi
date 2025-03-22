@@ -30,6 +30,14 @@
                     svg(v-else)
                         use(xlink:href="@/assets/img/material-icon.svg#icon-supervisor-account")
                     span.name Users
+                
+                router-link.router(:to="`/my-services/${currentService.id}/openid`" :class="{'active': route.name == 'openid'}")
+                    //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'users'}") supervisor_account
+                    svg(v-if="route.name === 'openid'")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-openid-fill")
+                    svg(v-else)
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-openid")
+                    span.name OpenID Logger
 
                 router-link.router(:to="`/my-services/${currentService.id}/clientsecret`" :class="{'active': route.name == 'clientsecret'}")
                     //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'clientsecret'}") key
@@ -73,14 +81,6 @@
                         span.name File Hosting
 
                 template(v-else)
-                    //- router-link.router(:to="`/my-services/${currentService.id}/mail`" :class="{'active': route.name == 'mail'}")
-                        //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'mail'}") email
-                        svg(v-if="route.name === 'mail'")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
-                        svg(v-else)
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-mail")   
-                        span.name Automated Email
-
                     router-link.router(:to="`/my-services/${currentService.id}/newsletter`" :class="{'active': route.name == 'newsletter'}")
                         //- span.material-symbols-outlined.notranslatel.nohover(:class="{'fill': route.name == 'newsletter'}") stacked_email
                         svg(v-if="route.name === 'newsletter'")
@@ -142,7 +142,6 @@ div(v-else style='text-align: center;margin-top: 100px;')
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 import { ref, watch } from "vue";
-import { loginState } from "@/code/user";
 import { serviceList } from "@/views/service-list";
 import { currentService, setService, serviceMainLoaded } from "@/views/service/main";
 import Modal from "@/components/modal.vue";
@@ -159,6 +158,7 @@ let routerList = [
     "service",
     "dashboard",
     "users",
+	"openid",
     "clientsecret",
     "records",
     "mail",
@@ -169,6 +169,7 @@ let titleList = [
     "Getting Started",
     "Service Settings",
     "Users",
+	"OpenID Logger",
     "Client Secret Key",
     "Database",
     "Automated Email",
@@ -180,16 +181,6 @@ let index = 0;
 let prevRouter = ref("");
 let nextRouter = ref("");
 let plan = ref("Trial");
-
-watch(
-    loginState,
-    (nv) => {
-        if (!nv) {
-            router.push("/login");
-        }
-    },
-    { immediate: true }
-);
 
 watch(serviceList, nv => {
     if (nv[serviceId] && currentService?.id !== serviceId) {
@@ -211,11 +202,12 @@ watch(() => route, nv => {
     plan.value = currentService?.plan;
 
         if (plan.value == "Trial") {
-            routerList = ["service", "dashboard", "users", "clientsecret", "records", "mail"];
+            routerList = ["service", "dashboard", "users", "openid", "clientsecret", "records", "mail"];
             titleList = [
                 "Getting Started",
                 "Dashboard & Settings",
                 "Users",
+				"OpenID Logger",
                 "Client Secret Key",
                 "Database",
                 "Automated Email"
@@ -260,7 +252,7 @@ watch(() => route, nv => {
     .right {
         width: 50%;
         flex-grow: 1;
-        padding: 8px 0;
+        // padding: 8px 0;
     }
 
     .bottom {

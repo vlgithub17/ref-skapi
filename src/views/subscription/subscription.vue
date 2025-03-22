@@ -317,6 +317,7 @@ let updateSubscription = async (ticket_id) => {
 
     .infoBox {
         width: 280px;
+		padding: 20px;
         flex-grow: 1;
         box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1) inset;
     }

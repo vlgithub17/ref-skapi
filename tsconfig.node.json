@@ -11,7 +11,7 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/vite-env.d.ts"
+    "env.d.ts"
   ],
   "exclude": [
     "node_modules"
@@ -29,7 +29,7 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
     "lib": [
       "es5",

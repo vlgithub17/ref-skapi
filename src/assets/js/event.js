@@ -28,6 +28,8 @@ let hideMoreVert = (e) => {
     }
 }
 
+document.addEventListener('click', hideMoreVert);
+
 let hideDialog = () => {
     document.addEventListener('click', (e) => {
         let getDialog = document.getElementsByTagName('dialog');
