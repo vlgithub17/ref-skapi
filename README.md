@@ -113,7 +113,7 @@ Skapi is written in **TypeScript** and works with any JavaScript framework.
 ✔ **10GB Email Storage**  
 
 #### **🚀 Limited-Time Offer: One-Time Purchase for Lifetime Access!**  
-Get **lifetime access** to the Standard plan for just **$300**—upgrade anytime when your usage grows.  
+Get **lifetime access** to the Standard plan for just **$300**—upgrade anytime as your needs grow.
 
 ---
 
@@ -133,3 +133,7 @@ We offer a **free plan** so you can start building today:
 🚀 Experience the future of backend development—**No servers. No databases. Just pure HTML & JavaScript.**  
 
 👉 **Get Started Now at [skapi.com](https://skapi.com)**  
+
+## **Explore More**
+
+**📖 Read the Docs: [docs.skapi.com](https://docs.skapi.com)**
