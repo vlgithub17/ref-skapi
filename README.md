@@ -66,7 +66,7 @@ No need for complex JavaScript just to handle user input—Skapi fully embraces 
 ### **Uploading Data & Files**  
 
 ```html
-<form onsubmit="skapi.postRecord(event, { table: 'my_photos' }).then(() => alert('Success!') )">
+<form onsubmit="skapi.postRecord(event, { table: 'my_photos' }).then(res => alert('Success!') )">
     <input name="picture" type="file"><br><br>
     <label>
         Description<br>
