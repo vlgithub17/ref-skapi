@@ -51,8 +51,14 @@ No need for complex JavaScript just to handle user input—Skapi fully embraces 
 
 ```html
 <form action="welcome.html" onsubmit="skapi.login(event)">
-    <label>Email<br><input type="email" name="email" required></label><br><br>
-    <label>Password<br><input type="password" name="password" required></label><br><br>
+    <label>
+        Email<br>
+        <input type="email" name="email" required>
+    </label><br><br>
+    <label>
+        Password<br>
+        <input type="password" name="password" required>
+    </label><br><br>
     <input type="submit" value="Login">
 </form>
 ```
@@ -61,8 +67,11 @@ No need for complex JavaScript just to handle user input—Skapi fully embraces 
 
 ```html
 <form action="uploaded.html" onsubmit="skapi.postRecord(event, { table: 'my_photos' })">
-    <input name="picture" type="file" multiple><br><br>
-    <label>Description<br><input name="description" placeholder="Enter description"></label><br><br>
+    <input name="picture" type="file"><br><br>
+    <label>
+        Description<br>
+        <input name="description" placeholder="Enter description">
+    </label><br><br>
     <input type="submit" value="Upload">
 </form>
 ```
