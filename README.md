@@ -5,7 +5,7 @@ Skapi is a **fully serverless backend API** that works seamlessly with **pure HT
 
 ## **Get Started in Seconds**  
 
-Simply add Skapi to your project:  
+Simply add Skapi to your HTML header:  
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"></script>
