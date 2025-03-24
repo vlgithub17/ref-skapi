@@ -24,13 +24,13 @@ npm i skapi-js@latest
 Skapi simplifies backend development by bundling essential services into a single JavaScript library, dramatically reducing development time and costs.  
 
 ✅ **Authentication** – Secure, AWS Cognito-based user management  
-✅ **Database** – Scalable, auto-indexing DynamoDB  
+✅ **Database** – Scalable, auto-indexing database  
 ✅ **File Storage** – Reliable, S3-based storage  
 ✅ **CDN** – Deliver content globally with ease  
 ✅ **Realtime Data** – Instant WebRTC and WebSocket implementation  
 ✅ **API Bridge** – Connect external APIs effortlessly  
-✅ **Email Solution** – Built-in email automation & bulk sending  
-✅ **Instant Hosting** – Easy hosting of static files  
+✅ **Automated Emails** – Built-in email automation & sending bulk emails  
+✅ **Website Hosting** – Easy file & website hosting  
 
 All fully **serverless**, requiring **zero backend setup or deployment**.  
 
@@ -100,10 +100,10 @@ Skapi is written in **TypeScript** and works with any JavaScript framework.
 ### **Standard Plan** – $19 Monthly / $300 (One-time Purchase)  
 ✔ **10K User Accounts**  
 ✔ **User Invitation System**  
-✔ **Website hosting**  
+✔ **Website Hosting**  
 ✔ **8GB Database Storage**  
 ✔ **100GB File Storage & Subdomain Hosting**  
-✔ **Automated Emails & Bulk Email Sending**  
+✔ **Automated Emails & Sending Bulk Emails**  
 ✔ **1GB Email Storage**  
 
 #### **🚀 Limited-Time Offer: One-Time Purchase for Lifetime Access!**  
@@ -125,7 +125,7 @@ We offer a **free trial** so you can start building today:
 ✔ **10K User Accounts**  
 ✔ **4GB Database Storage**  
 ✔ **50GB File Storage**  
-⚠ **Bulk Email Sending not included**  
+⚠ **Sending bulk emails not included**  
 ⚠ **All user data is deleted every 30 days**  
 
 ---
