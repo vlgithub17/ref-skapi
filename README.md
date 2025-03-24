@@ -100,6 +100,7 @@ Skapi is written in **TypeScript** and works with any JavaScript framework.
 ### **Standard Plan** – $19 Monthly / $300 (One-time Purchase)  
 ✔ **10K User Accounts**  
 ✔ **User Invitation System**  
+✔ **Website hosting**  
 ✔ **8GB Database Storage**  
 ✔ **100GB File Storage & Subdomain Hosting**  
 ✔ **Automated Emails & Bulk Email Sending**  
@@ -109,10 +110,10 @@ Skapi is written in **TypeScript** and works with any JavaScript framework.
 Get **lifetime access** to the Standard plan for just **$300**—upgrade anytime as your needs grow.
 
 ### **Premium Plan** - $89 Monthly  
+✔ **Includes all Standard Plan features**  
 ✔ **100K User Accounts**  
 ✔ **100GB Database Storage**  
 ✔ **1TB File Storage & Subdomain Hosting**  
-✔ **Automated Email System**  
 ✔ **10GB Email Storage**  
 
 ---
@@ -124,7 +125,7 @@ We offer a **free trial** so you can start building today:
 ✔ **10K User Accounts**  
 ✔ **4GB Database Storage**  
 ✔ **50GB File Storage**  
-⚠ **Bulk Email Sending & Automated emails not included**  
+⚠ **Bulk Email Sending not included**  
 ⚠ **All user data is deleted every 30 days**  
 
 ---
