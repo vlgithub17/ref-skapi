@@ -11,12 +11,6 @@ Simply add Skapi to your HTML header:
 <script src="https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"></script>
 ```
 
-Or install via NPM:  
-
-```bash
-npm i skapi-js@latest
-```
-
 ---
 
 ## **Everything You Need in One API**  
