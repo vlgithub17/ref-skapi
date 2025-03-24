@@ -45,9 +45,7 @@ All fully **serverless**, requiring **zero backend setup or deployment**.
 
 ## **Works Seamlessly with Pure HTML**  
 
-No need for complex JavaScript just to handle user input.
-
-Skapi fully embraces pure HTML forms, making backend interaction as simple as submitting a form.  
+No need for complex JavaScript just to handle user input—Skapi fully embraces pure HTML forms, making backend interaction as simple as submitting a form.  
 
 ### **User Login**  
 
