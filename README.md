@@ -5,10 +5,23 @@ Skapi is a **fully serverless backend API** that works seamlessly with **pure HT
 
 ## **Get Started in Seconds**  
 
-Simply add Skapi to your HTML header:  
+Skapi eliminates the need for frameworks or installations—you can add backend features directly to your static HTML pages.  
+
+**Example Setup:**  
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"></script>
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"></script>
+</head>
+<body>
+    <script>
+        const skapi = new Skapi('your_service_id', 'your_owner_id');
+    </script>
+</body>
+</html>
 ```
 
 ---
@@ -31,29 +44,6 @@ All fully **serverless**, requiring **zero backend setup or deployment**.
 ---
 
 ## **Works Seamlessly with Pure HTML**  
-
-Skapi eliminates the need for frameworks or installations—you can add backend features directly to your static HTML pages.  
-
-**Example Setup:**  
-
-```html
-<!-- index.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"></script>
-</head>
-<body>
-    <script>
-        const skapi = new Skapi('your_service_id', 'your_owner_id');
-    </script>
-</body>
-</html>
-```
-
----
-
-## **Effortless Backend Integration with HTML Forms**  
 
 No need for complex JavaScript just to handle user input—Skapi fully embraces HTML forms, making backend interaction as simple as submitting a form.  
 
