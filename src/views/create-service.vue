@@ -22,11 +22,11 @@ main#create
             hr
 
             ul
-                li Provides 10k user accounts
-                li 4 GB of database
-                li 50 GB of file storage
-                li Automated emails
-                li.warning All the users and data will be deleted every 30 days
+                li 10K User Accounts
+                li 4GB Database Storage
+                li 50GB File Storage
+                li.warning Sending bulk emails not included
+                li.warning All user data is deleted every 30 days
         .infoBox(:class="{'checked' : serviceMode == 'standard'}" @click="serviceMode='standard'")
             .mode Standard Mode
             .price $19
@@ -34,17 +34,13 @@ main#create
             hr
 
             ul
-                li 10k user accounts
-                li User invitations
-                li 4GB of database
-                li 50GB each for file storage and hosting storage
-                li Real-time data
-                li Automated emails
-                li Sending newsletter emails
-
-            ul
-                li 1GB of email storage
-                li Subdomain hosting
+                li 10K User Accounts
+                li User Invitation System
+                li Website Hosting
+                li 8GB Database Storage
+                li 100GB File Storage & Subdomain Hosting
+                li Automated Emails & Sending Bulk Emails
+                li 1GB Email Storage
         .infoBox(:class="{'checked' : serviceMode == 'premium'}" @click="serviceMode='premium'")
             .mode Premium Mode
             .price $89
@@ -52,18 +48,11 @@ main#create
             hr
 
             ul
-                li 100k user accounts
-                li User invitations
-                li 100GB of database
-                li 1TB each for file storage and hosting storage
-                li Real-time data
-                li Automated emails
-                li Sending newsletter emails
-
-            ul
-                li 10GB of email storage
-                li Subdomain hosting
-                li Removes watermark in browser console
+                li Includes all Standard Plan features
+                li 100K User Accounts
+                li 100GB Database Storage
+                li 1TB File Storage & Subdomain Hosting
+                li 10GB Email Storage
 
     br
 
@@ -191,7 +180,7 @@ input {
 
     .infoBox {
         width: 280px;
-		padding: 20px;
+        padding: 20px;
         flex-grow: 1;
         user-select: none;
         cursor: pointer;
