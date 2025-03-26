@@ -5,12 +5,20 @@
  */
 
 //  import font
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap'); // Noto Sans
-@import url('https://fonts.googleapis.com/css2?family=Radio+Canada:ital,wght@0,300..700;1,300..700&display=swap');  // Radio Canada
+// @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap'); // Noto Sans
+// @import url('https://fonts.googleapis.com/css2?family=Radio+Canada:ital,wght@0,300..700;1,300..700&display=swap');  // Radio Canada
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');  // Space Mono
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');  // Inter
+@font-face {
+	font-family: 'Faktum';
+	font-style: normal;
+	font-weight: normal;
+	src: local('Faktum'), url('../font/Faktum_700.otf') format('truetype');
+}
 
 :root {
-  --main-color: #293fe6;
+  --main-color: rgb(20, 99, 255);
+  // --main-color: #293fe6;
   // --main-color: #101828;
   // --main-color: #344054;
   //  --main-color: rgb(29, 41, 57);
@@ -265,7 +273,8 @@ body {
   padding: 0;
   // background-color: #fafaff;
   background-color: #fff;
-  font-family: "Radio Canada", 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Inter', 'Faktum', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  // font-family: "Radio Canada", 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   // font-family: 'Noto Sans', sans-serif, 'Radio Canada', serif, 'Space Mono', monospace, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue";
   // font-family: 'Noto Sans', sans-serif, serif, 'Space Mono', monospace, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue";
   font-weight: 400; // 기본 굵기 400 - 특정 모니터에서 폰트가 너무 얇아 보이는 경우가 있었음

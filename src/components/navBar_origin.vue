@@ -2,14 +2,14 @@
 nav#navBar(ref="navBar")
     .wrap
         .left
-            template(v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services'")
-                img.symbol(src="@/assets/img/logo/symbol-logo.png" @click="router.push('/')")
+            div(v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services'" style="display:flex;gap:10px")
+                img.symbol(src="@/assets/img/logo/symbol-logo-white.svg" @click="router.push('/')" style="image-orientation:none; width:26px; cursor:pointer; vertical-align:top")
                 .router
                     p.small(@click="router.push('/my-services')") My Services/
                     p.big {{ serviceName }}
             router-link.logo(to="/" v-else)
-                img.symbol(src="@/assets/img/logo/symbol-logo.png" @click="router.push('/')")
-                span.faktum.desktop(style="font-size:1.4rem;") Skapi
+                img.symbol.mobile(src="@/assets/img/logo/symbol-logo-white.svg" style="image-orientation: none;")
+                img.symbol.desktop(src="@/assets/img/logo/logo-white.svg" style="image-orientation: none;height:38px")
         .right
             ul.menu-wrap
                 template(v-if="user?.user_id")
@@ -171,12 +171,14 @@ img.symbol.mobile {
     width: 100%;
     display: flex;
     align-items: center;
-    fill: #333; // for svg
+    fill: #fff; // for svg
+    color: #fff;
     justify-content: center;
-    background-color: #fff;
 
+    font-family: 'Radio Canada', serif;
     font-size: 20px;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid #475467;
+    background-color: #101828;
 
     .wrap {
         width: 100%;
@@ -191,22 +193,19 @@ img.symbol.mobile {
         .left {
             // flex-shrink: 0;
             flex-grow: 1;
-            display:flex;
-            gap:10px;
+            display: inline-block;
             vertical-align: middle;
 
-            .symbol {
-                width:26px;
-                cursor:pointer;
-                vertical-align:top;
-                image-orientation:none;
-            }
-
             .logo {
-                display: flex;
-                gap:10px;
-                color: #000;
+                display: block;
                 text-decoration: none;
+                
+                img {
+                    width: auto;
+                    height: 32px;
+                    margin-right: 10px;
+                    vertical-align: middle;
+                }
             }
 
             .router {
@@ -229,7 +228,7 @@ img.symbol.mobile {
                 .big {
                     width: 100%;
                     min-width: 60px;
-                    line-height: 0.9;
+                    line-height: 1.1;
                     font-weight: bold;
                     white-space: nowrap;
                     overflow: hidden;
@@ -242,8 +241,7 @@ img.symbol.mobile {
             display: inline-block;
             vertical-align: middle;
             // flex-grow: 1;
-            // font-weight: bold;
-            // font-size: 0.9rem;
+            font-weight: bold;
 
             ul {
                 position: relative;
@@ -267,12 +265,8 @@ img.symbol.mobile {
                     list-style: none;
                     user-select: none;
                     cursor: pointer;
-                    display: flex;
 
-                    a {
-                        // color: rgb(83, 84, 121);
-                        color: #333;
-                    }
+                    display: flex;
                 }
             }
 
@@ -373,7 +367,7 @@ img.symbol.mobile {
         }
 
         a:not(.policy a) {
-            // color: #fff;
+            color: #fff;
         }
     }
 
@@ -394,7 +388,7 @@ img.symbol.mobile {
 }
 
 @media (max-width: 600px) {
-    .desktop {
+    img.symbol.desktop {
         display: none;
     }
 
