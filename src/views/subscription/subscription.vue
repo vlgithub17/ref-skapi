@@ -35,16 +35,13 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                 hr
 
                 ul
-                    li Provides 10k user accounts
-                    li User invitations
-                    li 4GB of database
-                    li 50GB each for file storage and hosting storage
-                    li Real-time data
-
-                ul
-                    li Automated emails and sending newsletters
-                    li 1GB of email storage
-                    li Subdomain hosting
+                    li 10K User Accounts
+                    li User Invitation System
+                    li Website Hosting
+                    li 8GB Database Storage
+                    li 100GB File Storage & Subdomain Hosting
+                    li Automated Emails & Sending Bulk Emails
+                    li 1GB Email Storage
             .infoBox
                 .mode
                     | Premium
@@ -61,17 +58,11 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                 hr
 
                 ul
-                    li 100k user accounts
-                    li User invitations
-                    li 100GB of database
-                    li 1TB each for file storage and hosting storage
-                    li Real-time data
-
-                ul
-                    li Automated emails and sending newsletters
-                    li 10GB of email storage
-                    li Subdomain hosting
-                    li unlimited use with pay-as-you-go when exceeding the limit (currently free for limited time)
+                    li Includes all Standard Plan features
+                    li 100K User Accounts
+                    li 100GB Database Storage
+                    li 1TB File Storage & Subdomain Hosting
+                    li 10GB Email Storage
 
     br
 
@@ -317,7 +308,7 @@ let updateSubscription = async (ticket_id) => {
 
     .infoBox {
         width: 280px;
-		padding: 20px;
+        padding: 20px;
         flex-grow: 1;
         box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1) inset;
     }
