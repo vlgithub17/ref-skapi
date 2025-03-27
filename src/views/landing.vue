@@ -10,12 +10,7 @@ main
         .title.faktum Serverless #[span.wordset Backend API]
         .title.faktum for HTML Frontend
 
-        br
-
         p.desc Skapi is a fully serverless backend API that works seamlessly with pure HTML and JavaScript—no complex installations, no backend configurations, and no database management required.
-
-        br
-        br
 
         .vscode
             .header
@@ -47,11 +42,7 @@ main
         .title.faktum Works Seamlessly
         .title.faktum with Pure HTML
 
-        br
-
         .desc No need for complex JavaScript just to handle user input—Skapi fully embraces pure HTML forms, making backend interaction as simple as submitting a form.
-
-        br
 
         .tab-menu
             ul
@@ -97,6 +88,55 @@ main
                             #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "submit" ]#[span(style="color:#9CDCFE") value]=#[span(style="color:#CE9178") "Upload"]#[span(style="color:#999") &gt;]
                         #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
+
+    .dynamo-section.center
+        .title.faktum Built with TypeScript,
+        .title.faktum Compatible with Any JS Framework
+
+        .desc Skapi is compatible with Vue.js, React, Angular, and more, providing pre-built templates for various frameworks. It also works seamlessly with plain HTML without requiring any dependencies.
+
+        .card-wrap
+            //- .icon-card 
+                a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
+                    img.icon(src="@/assets/img/icon/react.png" alt="React logo")
+                    .content
+                        p.big React
+                        p.small Javascript
+            .icon-card(style="padding: 0.5rem")
+                a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
+                    .change-toggle
+                        img.skapi(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo")
+                        svg.rotate(style="fill:var(--main-color); height: 15px; width: 15px")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-cached")
+                        //- .dot-wrap
+                            span.dot .
+                            span.dot .
+                            span.dot .
+                        img(src="@/assets/img/icon/react.png" alt="React logo")
+                    .content
+                        p.big React
+                        p.small Javascript
+            .icon-card
+                a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
+                    img.icon(src="@/assets/img/icon/angular.png" alt="Angular logo")
+                    .content
+                        p.big Angular
+                        p.small Javascript
+            .icon-card
+                a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
+                    img.icon(src="@/assets/img/icon/vue.png" alt="Vue logo")
+                    .content
+                        p.big Vue
+                        p.small Javascript
+            .icon-card
+                a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
+                    img.icon(src="@/assets/img/icon/html.png" alt="Html logo")
+                    .content
+                        p.big Html
+                        p.small Html
+
+    
+
 </template>
 
 <script setup>
@@ -131,6 +171,11 @@ onMounted(() => {
 
     &.center {
         text-align: center;
+
+        .desc {
+            margin: 0 auto;
+            margin-bottom: 1rem;
+        }
     }
 
     &.main {
@@ -139,17 +184,18 @@ onMounted(() => {
 
         .title {
             font-size: 3rem;
+            margin-bottom: 1rem;
         }
     }
 
-
     .title {
         font-size: 2.4rem;
+        margin-bottom: 1rem;
     }
 
     .desc {
         max-width: 570px;
-        margin: 0 auto;
+        margin-bottom: 1rem;
         line-height: 1.9;
         color: #333;
     }
@@ -239,6 +285,7 @@ onMounted(() => {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        margin: 0;
         padding: 4px;
         background-color: rgba(0,0,0,0.05);
         border-radius: 24px;
@@ -300,6 +347,104 @@ onMounted(() => {
     // 		transition: left 200ms cubic-bezier(0.6, 0.6, 0, 1), 350ms cubic-bezier(0.6, 0.6, 0, 1);
     // 	}
     // }
+}
+
+.card-wrap {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+
+    @keyframes scaleBounce{
+        from {transform:scale(1)}
+        to {transform:scale(1.08)}
+    }
+
+    @keyframes rotateBounce {
+        0% {
+            transform: rotate(0deg) scale(1);
+            opacity: 0.3;
+        }
+        50% {
+            transform: rotate(180deg) scale(1.3);
+            opacity: 1;
+        }
+        100% {
+            transform: rotate(360deg) scale(1);
+            opacity: 0.3;
+        }
+    }
+
+    .change-toggle {
+        display: flex;
+        align-items: center;
+        background-color: rgba(0,0,0,0.03);
+        border-radius: 12px;
+        padding: 0.7rem;
+        gap: 0.8rem;
+
+        img {
+            width: 2.5rem;
+
+            &.skapi {
+                width: 2rem;
+            }
+        }
+    }
+
+    .icon-card {
+        flex-grow: 1;
+        width: 48%;
+        min-width: 250px;
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 12px;
+        padding: 1rem;
+        transition: all .3s;
+        cursor: pointer;
+
+        &:hover {
+            // border-color: var(--main-color);
+            box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
+
+            .change-toggle {
+                img {
+                    animation: scaleBounce .5s alternate infinite;
+                }
+                .rotate {
+                    animation: rotateBounce 1s infinite ease-in-out;
+                    // animation: scaleBounce .5s alternate infinite;
+                }
+            }
+        }
+        
+        a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .icon {
+            width: 3rem;
+            height: 3rem;
+        }
+        .content {
+            text-align: left;
+
+            p {
+                margin: 0;
+
+                &.small {
+                    font-size: 0.8rem;
+                    color: rgba(0,0,0,0.5);
+                }
+            }
+        }
+    }
 }
 
 // .icoHead {
