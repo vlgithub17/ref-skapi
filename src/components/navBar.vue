@@ -381,8 +381,8 @@ img.symbol.mobile {
     .final {
         // min-width: 128px;
         height: 40px;
-        color: #293FE6;
-        background-color: #fff;
+        // color: #293FE6;
+        // background-color: #fff;
         padding: 0px 16px;
     }
 

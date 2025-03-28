@@ -44,13 +44,7 @@ main
 
         .desc No need for complex JavaScript just to handle user input—Skapi fully embraces pure HTML forms, making backend interaction as simple as submitting a form.
 
-        .tab-menu
-            ul
-                li(ref="tab1" @click="(e) => {activeMenu = e.target}") User Login
-                li(ref="tab2" @click="(e) => {activeMenu = e.target}") Uploading Data & Files
-                .active-menu(ref="activeTabMenu")
-
-        br
+        TabMenu(v-model="activeTabs.pureHTML" :tabs="['User Login', 'Uploading Data & Files']")
 
         .vscode
             .header
@@ -60,12 +54,12 @@ main
                     .cir
                 .route 
                     span(style="color:#E37834; margin-right:4px") <>
-                    template(v-if="activeMenu === tab1")
+                    template(v-if="activeTabs.pureHTML === 0")
                         span login.html
-                    template(v-if="activeMenu === tab2")
+                    template(v-if="activeTabs.pureHTML === 1")
                         span upload.html
             .body
-                template(v-if="activeMenu === tab1")
+                template(v-if="activeTabs.pureHTML === 0")
                     pre.
                         #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form ]#[span(style="color:#9CDCFE") action]=#[span(style="color:#CE9178") "welcome.html" ]#[span(style="color:#9CDCFE") onsubmit]=#[span(style="color:#CE9178") "skapi.login(event)"]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
@@ -78,7 +72,7 @@ main
                             #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "submit" ]#[span(style="color:#9CDCFE") value]=#[span(style="color:#CE9178") "Login"]#[span(style="color:#999") &gt;]
                         #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
-                template(v-if="activeMenu === tab2")
+                template(v-if="activeTabs.pureHTML === 1")
                     pre.
                         #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form ]#[span(style="color:#9CDCFE") onsubmit]=#[span(style="color:#CE9178") "skapi.postRecord(event, { table: 'my_photos' }).then(res => alert('Success!') )"]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "picture" ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "file"]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
@@ -89,6 +83,49 @@ main
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "submit" ]#[span(style="color:#9CDCFE") value]=#[span(style="color:#CE9178") "Upload"]#[span(style="color:#999") &gt;]
                         #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
 
+    .dynamo-section.center.wide
+        .title.faktum Everything You Need in One API
+
+        .desc Skapi simplifies backend development by bundling essential services into a single JavaScript library, dramatically reducing development time and costs.
+
+        .tab-icon
+            .icon-wrap
+                .icon
+                    svg
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-encrypted-fill")
+                    //- p Authentication
+                .icon
+                    svg
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-database-fill")
+                    //- p Database
+                .icon
+                    svg
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-cloud-upload-fill")
+                    //- p File Storage
+                .icon
+                    svg
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-public")
+                    //- p CDN
+                .icon
+                    svg
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-wifi-fill")
+                    //- p Realtime Data
+                .icon
+                    svg
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-graph-fill")
+                    //- p API Bridge
+                .icon
+                    svg
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
+                    //- p Automated Emails
+                .icon
+                    svg
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-language")
+                    //- p Website Hosting
+
+            .icon-content
+                p All fully serverless, requiring zero backend setup or deployment.
+    
     .dynamo-section.center
         .title.faktum Built with TypeScript,
         .title.faktum Compatible with Any JS Framework
@@ -102,40 +139,125 @@ main
                     .content
                         p.big React
                         p.small Javascript
-            .icon-card(style="padding: 0.5rem")
+            .card(style="padding: 0.5rem")
                 a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
                     .change-toggle
                         img.skapi(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo")
-                        svg.rotate(style="fill:var(--main-color); height: 15px; width: 15px")
+                        //- svg.rotate(style="fill:var(--main-color); height: 15px; width: 15px")
                             use(xlink:href="@/assets/img/material-icon.svg#icon-cached")
-                        //- .dot-wrap
-                            span.dot .
-                            span.dot .
-                            span.dot .
+                        .fade-dot-wrap
+                            .dot
+                            .dot
+                            .dot
                         img(src="@/assets/img/icon/react.png" alt="React logo")
                     .content
                         p.big React
                         p.small Javascript
-            .icon-card
+            .card
                 a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
                     img.icon(src="@/assets/img/icon/angular.png" alt="Angular logo")
                     .content
                         p.big Angular
                         p.small Javascript
-            .icon-card
+            .card
                 a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
                     img.icon(src="@/assets/img/icon/vue.png" alt="Vue logo")
                     .content
                         p.big Vue
                         p.small Javascript
-            .icon-card
+            .card
                 a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
                     img.icon(src="@/assets/img/icon/html.png" alt="Html logo")
                     .content
                         p.big Html
                         p.small Html
 
-    
+    .dynamo-section.center
+        .title.faktum Pricing Plans
+
+        TabMenu(v-model="activeTabs.plan" :tabs="['Monthly', 'Limited']")
+
+        .plan-wrap.card-wrap
+            template(v-if="activeTabs.plan === 0")
+                //- .plan
+                    .card
+                        .title Trial
+                        .price
+                            .faktum $19
+                            span /mo
+                        .desc Suits best for hobby use for small projects #[span.wordset or businesses.]
+                        button.final(type="button") Get
+                    ul.provides
+                        li 10K User Accounts
+                        li 4GB Database Storage
+                        li 50GB File Storage
+                .plan
+                    .card
+                        .title Standard 
+                        .price
+                            .faktum $19
+                            span /mo
+                        .desc Suits best for hobby use for small projects #[span.wordset or businesses.]
+                        button.final(type="button") Get
+                    ul.provides
+                        li 10K User Accounts
+                        li User Invitation System
+                        li Website Hosting
+                        li 8GB Database Storage
+                        li 100GB File Storage & Subdomain Hosting
+                        li Automated Emails & Sending Bulk Emails
+                        li 1GB Email Storage
+                .plan
+                    .card
+                        .title Premium 
+                        .price
+                            .faktum $89
+                            span /mo
+                        .desc Empower your business with formcarry, #[span.wordset for big businesses]
+                        button.final(type="button") Get
+                    ul.provides
+                        li Includes all Standard Plan features
+                        li 100K User Accounts
+                        li 100GB Database Storage
+                        li 1TB File Storage & Subdomain Hosting
+                        li 10GB Email Storage
+            template(v-else)
+                .card
+                    .title Limited-Time Offer
+                    .price
+                        .faktum $300
+                        span /only-once
+                    .desc Get lifetime access #[span.wordset to the Standard plan] #[span.wordset for just $300—upgrade anytime #[span.wordset as your needs grow.]]
+                    button.final(type="button") Get
+
+    .dynamo-section.center
+        .title.faktum Try Skapi for Free!
+        .desc We offer a free trial so you can start building today
+        .plan-wrap.card-wrap(style="max-width: 400px")
+            .plan
+                .card
+                    .title Trial
+                    .price
+                        .faktum $19
+                        span /mo
+                    .desc Suits best for hobby use for small projects #[span.wordset or businesses.]
+                    button.final(type="button") Get
+                ul.provides
+                    li 10K User Accounts
+                    li 4GB Database Storage
+                    li 50GB File Storage
+        //- .trial-card
+            .left
+                .title Trial
+                .price
+                    .faktum FREE
+                    span /mo
+                button.final(type="button") Get Started
+            .right
+                ul.provides
+                    li 10K User Accounts
+                    li 4GB Database Storage
+                    li 50GB File Storage
 
 </template>
 
@@ -145,22 +267,28 @@ import { npmVersion } from "@/main.ts";
 import { user } from "@/code/user";
 
 import Code from "@/components/code.vue";
+import TabMenu from '@/components/tab.vue';
 
-let tab1 = ref(null);
-let tab2 = ref(null);
-let activeMenu = ref(null);
-let activeTabMenu = ref(null);
+let activeTabs = ref({
+    pureHTML: 0,
+    plan: 0,
+})
 
-watch(activeMenu, (nv) => {
-    if (nv) {
-        activeTabMenu.value.style.width = `${nv.offsetWidth}px`;
-        activeTabMenu.value.style.left = `${nv.offsetLeft}px`;
-    }
-}, { immediate: true });
+// let tab1 = ref(null);
+// let tab2 = ref(null);
+// let activeMenu = ref(null);
+// let activeTabMenu = ref(null);
 
-onMounted(() => {
-    activeMenu.value = tab1.value;
-});
+// watch(activeMenu, (nv) => {
+//     if (nv) {
+//         activeTabMenu.value.style.width = `${nv.offsetWidth}px`;
+//         activeTabMenu.value.style.left = `${nv.offsetLeft}px`;
+//     }
+// }, { immediate: true });
+
+// onMounted(() => {
+//     activeMenu.value = tab1.value;
+// });
 </script>
 
 <style lang="less" scoped>
@@ -176,6 +304,14 @@ onMounted(() => {
             margin: 0 auto;
             margin-bottom: 1rem;
         }
+    }
+
+    &.wide {
+        max-width:unset;
+        background-color:rgb(247, 249, 252);
+        margin: 0 20px;
+        border-radius: 24px;
+        padding: 5rem 20px;
     }
 
     &.main {
@@ -279,74 +415,15 @@ onMounted(() => {
     }
 }
 
-.tab-menu {
-    ul {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0;
-        padding: 4px;
-        background-color: rgba(0,0,0,0.05);
-        border-radius: 24px;
+@keyframes scaleBounce{
+    from { transform:scale(1) }
+    to { transform:scale(1.08) }
+}
 
-        li {
-            position: relative;
-            list-style: none;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-        .active-menu {
-            position: absolute;
-            content: '';
-            height: calc(100% - 8px);
-            border-radius: 20px;
-            background-color: rgb(255, 255, 255);
-            box-shadow: rgba(113, 116, 152, 0.1) 0px 18px 31px, rgba(113, 116, 152, 0.067) 0px 8px 16.2244px, rgba(113, 116, 152, 0.05) 0px 8px 8.46625px;
-            transition: left 200ms cubic-bezier(0.6, 0.6, 0, 1), 350ms cubic-bezier(0.6, 0.6, 0, 1);
-        }
-    }
-    // display: flex;
-    // align-items: center;
-    // justify-content: center;
-
-    // ul {
-    // 	position: relative;
-    // 	padding: 4px;
-    // 	display: flex;
-    // 	align-items: center;
-    // 	justify-content: center;
-    // 	background-color: rgba(0,0,0,0.05);
-    // 	border-radius: 24px;
-
-    // 	li {
-    // 		position: relative;
-    // 		display: flex;
-    // 		height: 40px;
-    // 		align-items: center;
-    // 		justify-content: center;
-
-    // 		list-style: none;
-    // 		// padding: 8px 24px;
-    // 		font-size: 0.9rem;
-    // 		cursor: pointer;
-    // 		z-index: 2;
-    // 	}
-
-    // 	.active-menu {
-    // 		position: absolute;
-    // 		top: 4px;
-    // 		left: 4px;
-    // 		height: 40px;
-    // 		border-radius: 20px;
-    // 		background-color: rgb(255, 255, 255);
-    // 		box-shadow: rgba(113, 116, 152, 0.1) 0px 18px 31px, rgba(113, 116, 152, 0.067) 0px 8px 16.2244px, rgba(113, 116, 152, 0.05) 0px 8px 8.46625px;
-    // 		transition: left 200ms cubic-bezier(0.6, 0.6, 0, 1), 350ms cubic-bezier(0.6, 0.6, 0, 1);
-    // 	}
-    // }
+@keyframes loadingFade {
+    0% { opacity: 0; transform:scale(1) }
+    50% { opacity: 0.8; transform:scale(1.3) }
+    100% { opacity: 0; transform:scale(1) }
 }
 
 .card-wrap {
@@ -358,44 +435,7 @@ onMounted(() => {
     justify-content: center;
     gap: 1rem;
 
-    @keyframes scaleBounce{
-        from {transform:scale(1)}
-        to {transform:scale(1.08)}
-    }
-
-    @keyframes rotateBounce {
-        0% {
-            transform: rotate(0deg) scale(1);
-            opacity: 0.3;
-        }
-        50% {
-            transform: rotate(180deg) scale(1.3);
-            opacity: 1;
-        }
-        100% {
-            transform: rotate(360deg) scale(1);
-            opacity: 0.3;
-        }
-    }
-
-    .change-toggle {
-        display: flex;
-        align-items: center;
-        background-color: rgba(0,0,0,0.03);
-        border-radius: 12px;
-        padding: 0.7rem;
-        gap: 0.8rem;
-
-        img {
-            width: 2.5rem;
-
-            &.skapi {
-                width: 2rem;
-            }
-        }
-    }
-
-    .icon-card {
+    .card {
         flex-grow: 1;
         width: 48%;
         min-width: 250px;
@@ -413,11 +453,30 @@ onMounted(() => {
                 img {
                     animation: scaleBounce .5s alternate infinite;
                 }
-                .rotate {
-                    animation: rotateBounce 1s infinite ease-in-out;
-                    // animation: scaleBounce .5s alternate infinite;
+                .fade-dot-wrap {
+                    .dot {
+                        animation: loadingFade 1s infinite;
+
+                        &:nth-child(1) {
+                            animation-delay: 0s;
+                        }
+
+                        &:nth-child(2) {
+                            animation-delay: 0.1s;
+                        }
+
+                        &:nth-child(3) {
+                            animation-delay: 0.2s;
+                        }
+                    }
                 }
             }
+        }
+
+        &.dark {
+            // background-color: var(--main-color);
+            // background: linear-gradient(to right, rgb(11, 53, 218), rgb(172, 250, 5), rgb(172, 250, 5), rgb(11, 53, 218));
+            // color: #fff;
         }
         
         a {
@@ -428,6 +487,35 @@ onMounted(() => {
             color: #333;
         }
 
+        .change-toggle {
+            // position: relative;
+            display: flex;
+            align-items: center;
+            background-color: rgba(0,0,0,0.03);
+            border-radius: 12px;
+            padding: 0.7rem;
+            gap: 0.8rem;
+
+            img {
+                width: 2.5rem;
+
+                &.skapi {
+                    width: 2rem;
+                }
+            }
+            .fade-dot-wrap {
+                .dot {
+                    display: inline-block;
+                    vertical-align: middle;
+                    width: 6px;
+                    height: 6px;
+                    margin: 0 4px;
+                    background: #333;
+                    border-radius: 50%;
+                    opacity: 0.5;
+                }
+            }
+        }
         .icon {
             width: 3rem;
             height: 3rem;
@@ -447,395 +535,137 @@ onMounted(() => {
     }
 }
 
-// .icoHead {
-//     position: relative;
-//     display: flex;
-//     // align-items: center;
-//     .material-symbols-outlined {
-//         position: absolute;
-//         font-size: 2em;
-//         color: yellow;
-//         text-shadow: 1px 1px 1px black;
-//         top: -4px;
-//     }
-//     svg {
-//         fill:yellow;
-//         filter: drop-shadow(1px 1px 1px black;);
-//         width: 2em;
-//         height: 2em;
-//     }
-//     h2 {
-//         padding-left: 0.5em;
-//         margin: 0;
-//     }
-//     margin-bottom: 1.5rem;
-// }
+.plan-wrap {
+    // max-width: unset;
+    align-items: start;
 
-// .li {
-//     position: relative;
-//     .material-symbols-outlined {
-//         font-size: 1.17em;
-//         color: yellow;
-//         position: absolute;
-//         left: -1.33em;
-//         top: 2px;
-//         text-shadow: 1px 1px 1px black;
-//     }
-//     h3 {
-//         margin-bottom: 0;
-//     }
-//     p {
-//         margin-bottom: 2em;
-//     }
-//     svg {
-//       position: absolute;
-//       width: 1.17em;
-//       height: 1.17em;
-//       transform: translateX(-130%) translateY(10%);
-//       fill:yellow;
-//       filter: drop-shadow(1px 1px 1px black;);
-//     }
-// }
+    .plan {
+        // width: 48%;
+        width: 31%;
+        min-width: 250px;
+        flex-grow: 1;
 
-// h2,
-// h3 {
-//     margin-bottom: 1rem;
-// }
+        // &.trial {
+        //     width: 48%;
+        //     display: flex;
+        //     flex-wrap: wrap;
 
-// p {
-//     font-size: 1.12rem;
-// }
+        //     .card {
+        //         width: 48% !important;
+        //     }
+        // }
+    }
+    .card {
+        width: 100% !important;
+    }
+    .title {
+        font-size: 1rem;
+    }
+    .price {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        margin-bottom: 1rem;
 
-// .dynamo-section {
-//     font-family: 'Radio Canada', serif;
-//     margin: 11rem 0;
+        .faktum {
+            font-size: 2.4rem;
+            margin-right: 0.5rem;
+        }
+        span {
+            color: #888
+        }
+    }
+    .desc {
+        margin: 0;
+        line-height: 1.4;
+        font-size: 0.8rem;
+        color: #777;
+    }
+    button {
+        width: 100% !important;
+    }
+}
 
-//     .yellow {
-//         color: #FFED91;
-//     }
-//     .underline {
-//         text-decoration: underline;
-//     }
+.provides {
+    li {
+        position: relative;
+        list-style: none;
+        text-align: left;
+        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
 
-//     .sec-wrapper {
-//         color: #fff;
-//         margin: 0 auto;
-//         padding: 0 1rem;
-//         max-width: 55rem;
-//     }
+        &::before {
+            position: absolute;
+            content: '';
+            left: -1.3rem;
+            top: 0.1rem;
+            background: url('@/assets/img/icon/check.svg') no-repeat;
+            background-size: cover;
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+        }
+    }
+}
 
-//     .title {
-//         font-size: 3.625rem;
-//         font-weight: 700;
-//         margin-bottom: 8px;
-//         line-height: 1.3;
-//     }
+.trial-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
 
-//     .desc {
-//         font-size: 1.2rem;
-//         font-weight: 500;
-//         margin-bottom: 3.25rem;
-//         // max-width: 890px;
-//     }
+    > div {
+        flex-grow: 1;
+    }
+    .left {
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 12px;
+        padding: 1rem;
+    }
+    .title {
+        font-size: 1rem;
+    }
+    .price {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        margin-bottom: 1rem;
 
-//     .sub-title {
-//         font-size: 2.5rem;
-//         font-weight: 700;
-//         margin-bottom: 1.5rem;
-//     }
+        .faktum {
+            font-size: 2.4rem;
+            margin-right: 0.5rem;
+        }
+        span {
+            color: #888
+        }
+    }
+}
 
-//     .sub-desc {
-//         font-size: 1.2rem;
-//         color: #D0D5DD;
-//         margin-bottom: 2.5rem;
-//     }
+.icon-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
 
-//     & > * {
-//         max-width: 100%;
-//     }
+    .icon {
 
-//     p,
-//     li,
-//     h1,
-//     h2,
-//     h3,
-//     h4 {
-//         color: white;
-//         text-shadow: 1px 1px 2px #000;
-//         margin: 0;
-//         padding: 0;
-//     }
+    }
+    svg {
+        width: 2.2rem;
+        height: 2.2rem;
+        fill: rgb(213 215 218);
+        cursor: pointer;
+        transition: all .3s;
 
-//     p {
-//         font-weight: 500;
-//         text-shadow: none;
-//     }
+        &:hover {
+            fill: var(--main-color);
+        }
+    }
+}
 
-//     em {
-//         font-style: normal;
-//     }
-
-//     small {
-//         display: block;
-//         font-size: 0.9rem;
-//         font-weight: 300;
-//         margin-bottom: 12px;
-//         color: #D0D5DD;
-//     }
-
-//     ._codeWrap {
-//         margin-bottom: 38px;
-//         fill: #fff;
-
-//         .code {
-//             pre {
-//                 display: block;
-//             }
-//         }
-//     }
-
-//     .btn-wrap {
-//         margin-top: 4rem;
-//         display: flex;
-//         gap: 1.2rem;
-//     }
-
-//     .final {
-//         // background-color: #7c5273;
-//         // background-color: #437964;
-//         background-color: #fff;
-//         font-size: 1rem;
-//         font-weight: 700;
-//         color: #293FE6;
-//         min-width: 10.5rem;
-//     }
-
-//     .feature {
-//         display: flex;
-//         gap: 1.5rem;
-//         margin-bottom: 1.5rem;
-
-//         &:last-of-type {
-//             margin-bottom: 0;
-//         }
-//     }
-
-//     .feature-card {
-//         display: block;
-//         padding: 30px 24px;
-//         border: 1px solid #475467;
-//         border-radius: 12px;
-//         background-color: transparent;
-//         min-height: 357px;
-//         position: relative;
-//         flex: 1;
-//         overflow: hidden;
-//         transition: all 0.2s ease-in-out;
-
-//         &:hover {
-//             border-color: #fff;
-//             text-decoration: none;
-//             transform: translateY(-4px);
-//         }
-
-//         .card-top {
-//             display: flex;
-//             align-items: center;
-//             gap: 1rem;
-//             margin-bottom: 1.6rem;
-
-//             img {
-//                 height: 2.4rem;
-//             }
-//         }
-
-//         .text {
-//             font-size: 1.1rem;
-//             font-weight: 700;
-//             color: #fff;
-//         }
-
-//         .desc {
-//             font-size: 0.9rem;
-//             font-weight: 500;
-//             color: rgba(225, 225, 225, 0.8);
-//             position: relative;
-//             z-index: 1;
-//             margin-bottom: 0;
-//         }
-
-//         .img-feature {
-//             position: absolute;
-//         }
-//     }
-
-//     &.main {
-//         .sec-wrapper {
-//             padding: 10rem 1rem;
-//         }
-
-//         ._codeWrap {
-//             max-width: 950px;
-
-//             .code {
-//                 pre {
-//                     display: flex;
-//                     padding: 0 1rem;
-//                 }
-//             }
-//         }
-//     }
-
-//     &:nth-last-of-type(2) {
-//         margin-bottom: 5rem;
-//     }
-// }
-
-// .intact {
-//     width: 800px;
-// }
-
-// section {
-//     .image {
-//         width: 30%;
-
-//         img {
-//             width: 200px;
-//             max-width: 100%;
-//         }
-//     }
-
-//     .desc {
-//         width: 640px;
-//         z-index: 1;
-//     }
-// }
-
-// .explain {
-//     display: flex;
-//     position: relative;
-//     gap: 1rem;
-// }
-
-// @media (max-width: 992px) {
-//     .dynamo-section {
-//         .feature {
-//             gap: 1.2rem;
-//             margin-bottom: 1.2rem;
-//         }
-
-//         .feature-card {
-//             min-height: fit-content;
-//             padding: 24px 18px;
-
-//             &:hover {
-//                 border-color: #475467;
-//                 transform: translateY(0);
-//             }
-
-//             .img-feature {
-//                 display: none;
-//             }
-//         }
-//     }
-// }
-
-// @media (max-width: 800px) {
-//     .dynamo-section {
-//         .sec-wrapper {
-//             .title {
-//                 font-size: 2.625rem;
-
-//                 &:nth-of-type(2) {
-//                     font-size: 1.75rem;
-//                 }
-//             }
-//         }
-
-//         .feature {
-//             flex-direction: column;
-//         }
-
-//         .feature-card {
-//             max-width: 100% !important;
-
-//             .card-top {
-//                 margin-bottom: 1rem;
-//             }
-//         }
-
-//         &.main {
-//             .sec-wrapper {
-//                 padding: 4rem 1rem;
-//             }
-//         }
-//     }
-// }
-
-// @media (max-width: 600px) {
-//     .explain {
-//         position: relative;
-
-//         &::before {
-//             pointer-events: none;
-//             position: absolute;
-//             content: "";
-//             right: 0;
-//             top: 0;
-//             left: 0;
-//             bottom: 0;
-//             background-repeat: no-repeat;
-//             background-position: right top;
-//             opacity: 0.2;
-//         }
-
-//         &.one {
-//             &::before {
-//                 background-size: 9rem;
-//                 background-image: url("@/assets/img/landingpage/feature2.png");
-//             }
-//         }
-
-//         &.two {
-//             &::before {
-//                 background-image: url("@/assets/img/landingpage/feature1.png");
-//                 background-size: 10rem;
-//             }
-//         }
-
-//         &.three {
-//             &::before {
-//                 background-image: url("@/assets/img/landingpage/feature3.png");
-//                 background-size: 10rem;
-//             }
-//         }
-
-//         &.four {
-//             &::before {
-//                 background-size: 9rem;
-//                 background-image: url("@/assets/img/landingpage/frameworks.png");
-//             }
-//         }
-
-//         .image {
-//             display: none;
-//         }
-//     }
-
-//     .dynamo-section {
-//         margin: 5rem 0;
-
-//         &:nth-last-of-type(2) {
-//             margin-bottom: 0;
-//         }
-        
-//         .final {
-//             min-width: 144px;
-//         }
-
-//         .text-small {
-//             font-size: 12px;
-//         }
-//     }
-// }
+.icon-content {
+    
+}
 </style>
