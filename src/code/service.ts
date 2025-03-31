@@ -322,6 +322,29 @@ export default class Service {
   //   return await skapi.util.request('admin-signup', Object.assign({ service: this.id, owner: this.owner }, params), { auth: true });
   // }
 
+  registerSenderEmail(params: {
+    email_alias: string;
+  }): Promise<"SUCCESS: Sender e-mail has been registered."> {
+    let emailAlias: string;
+
+    if (params && 'email_alias' in params) {
+      emailAlias = params.email_alias;
+    } else {
+      emailAlias = '';
+    }
+
+    if (!emailAlias) {
+      throw 'Email is required.';
+    }
+
+    const specialCharPattern = /[!#$%^&*(),?":{}|<>]/g;
+    if (specialCharPattern.test(emailAlias)) {
+      throw 'Email contains special characters.';
+    }
+
+    return skapi.util.request(this.admin_private_endpoint + 'register-sender-email', Object.assign({ service: this.id, owner: this.owner }, { email_alias: emailAlias }), { auth: true });
+  }
+
   registerOpenIDLogger(params: {
     url: string; // openid token 해석 url
     mthd: string; // GET or POST
