@@ -78,7 +78,10 @@ main
                         #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
                 template(v-if="activeTabs.pureHTML === 1")
                     pre.
-                        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form ]#[span(style="color:#9CDCFE") onsubmit]=#[span(style="color:#CE9178") "skapi.postRecord(event, { table: 'my_photos' }).then(res => alert('Success!') )"]#[span(style="color:#999") &gt;]
+                        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form ]#[span(style="color:#9CDCFE") onsubmit]=#[span(style="color:#CE9178") "]
+                            #[span(style="color:#CE9178") skapi.postRecord(event, { table: 'my_photos' })]
+                            #[span(style="color:#CE9178") .then(res => alert('Success!') )]
+                        #[span(style="color:#CE9178") "]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "picture" ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "file"]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
                                 Description#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
@@ -150,34 +153,20 @@ main
                     .content
                         p.big React
                         p.small Javascript
-            //- .card(style="padding: 0.5rem")
-                a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
-                    .change-toggle
-                        img.skapi(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo")
-                        //- svg.rotate(style="fill:var(--main-color); height: 15px; width: 15px")
-                            use(xlink:href="@/assets/img/material-icon.svg#icon-cached")
-                        .fade-dot-wrap
-                            .dot
-                            .dot
-                            .dot
-                        img(src="@/assets/img/icon/react.png" alt="React logo")
-                    .content
-                        p.big React
-                        p.small Javascript
             .card(@mouseenter="hoverFramework = 'angular'" @mouseleave="hoverFramework = null")
-                a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
+                a(href="https://github.com/broadwayinc/getting-started-template-angular" target="_blank")
                     img.icon(src="@/assets/img/icon/angular.png" alt="Angular logo")
                     .content
                         p.big Angular
                         p.small Javascript
             .card(@mouseenter="hoverFramework = 'vue'" @mouseleave="hoverFramework = null")
-                a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
+                a(href="https://github.com/broadwayinc/getting-started-template-vue" target="_blank")
                     img.icon(src="@/assets/img/icon/vue.png" alt="Vue logo")
                     .content
                         p.big Vue
                         p.small Javascript
             .card(@mouseenter="hoverFramework = 'html'" @mouseleave="hoverFramework = null")
-                a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
+                a(href="https://github.com/broadwayinc/skapi-auth-html-template" target="_blank")
                     img.icon(src="@/assets/img/icon/html.png" alt="Html logo")
                     .content
                         p.big Html
@@ -186,60 +175,46 @@ main
     .dynamo-section.center
         .title.faktum Pricing Plans
 
-        TabMenu(v-model="activeTabs.plan" :tabs="['Monthly', 'Limited']")
+        //- TabMenu(v-model="activeTabs.plan" :tabs="['Monthly', 'Limited']")
 
         .plan-wrap.card-wrap
-            template(v-if="activeTabs.plan === 0")
-                //- .plan
-                    .card
-                        .title Trial
-                        .price
-                            .faktum $19
-                            span /mo
-                        .desc Suits best for hobby use for small projects #[span.wordset or businesses.]
-                        button.final(type="button") Get
-                    ul.provides
-                        li 10K User Accounts
-                        li 4GB Database Storage
-                        li 50GB File Storage
-                .plan
-                    .card
-                        .title Standard 
-                        .price
-                            .faktum $19
-                            span /mo
-                        .desc Suits best for hobby use for small projects #[span.wordset or businesses.]
-                        button.final(type="button") Get
-                    ul.provides
-                        li 10K User Accounts
-                        li User Invitation System
-                        li Website Hosting
-                        li 8GB Database Storage
-                        li 100GB File Storage & Subdomain Hosting
-                        li Automated Emails & Sending Bulk Emails
-                        li 1GB Email Storage
-                .plan
-                    .card
-                        .title Premium 
-                        .price
-                            .faktum $89
-                            span /mo
-                        .desc Empower your business with formcarry, #[span.wordset for big businesses]
-                        button.final(type="button") Get
-                    ul.provides
-                        li Includes all Standard Plan features
-                        li 100K User Accounts
-                        li 100GB Database Storage
-                        li 1TB File Storage & Subdomain Hosting
-                        li 10GB Email Storage
-            template(v-else)
+            .plan
                 .card
-                    .title 🚀 Limited-Time Offer
+                    .title Standard 
                     .price
-                        .faktum $300
-                        span /only-once
-                    .desc Get lifetime access #[span.wordset to the Standard plan] #[span.wordset for just $300—upgrade anytime #[span.wordset as your needs grow.]]
+                        .faktum $19
+                        span /mo
+                    .desc Suits best for hobby use for small projects #[span.wordset or businesses.]
                     button.final(type="button") Get
+                ul.provides
+                    li 10K User Accounts
+                    li User Invitation System
+                    li Website Hosting
+                    li 8GB Database Storage
+                    li 100GB File Storage & Subdomain Hosting
+                    li Automated Emails & Sending Bulk Emails
+                    li 1GB Email Storage
+            .plan
+                .card
+                    .title Premium 
+                    .price
+                        .faktum $89
+                        span /mo
+                    .desc Empower your business with formcarry, #[span.wordset for big businesses]
+                    button.final(type="button") Get
+                ul.provides
+                    li Includes all Standard Plan features
+                    li 100K User Accounts
+                    li 100GB Database Storage
+                    li 1TB File Storage & Subdomain Hosting
+                    li 10GB Email Storage
+            //- .card
+                .title 🚀 Limited-Time Offer
+                .price
+                    .faktum $300
+                    span /only-once
+                .desc Get lifetime access #[span.wordset to the Standard plan] #[span.wordset for just $300—upgrade anytime #[span.wordset as your needs grow.]]
+                button.final(type="button") Get
 
     .dynamo-section.center
         .title.faktum Try Skapi for Free!
@@ -277,6 +252,11 @@ main
 
         button.final(type="button") Get Started
 
+    //- .dynamo-section.center
+        .title.faktum Explore More
+
+    br
+    br
     br
     br
     br

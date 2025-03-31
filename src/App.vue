@@ -7,7 +7,7 @@ footer#footer.new
     //- img(src="@/assets/img/logo/logo-white.svg" style="height:.88rem;")
     .logo(style="display:flex;align-items:center;gap:0.5rem;")
         img.symbol(src="@/assets/img/logo/symbol-logo.png" style="height:.88rem;margin:0")
-        span.faktum.desktop(style="font-size:1rem;") Skapi
+        span.faktum.desktop(style="font-size:1rem;") skapi
     router-link(to="/pp.html" target="_blank") Terms of service • Privacy policy
     span.hideOnMobile BROADWAYINC PTE. LTD. Singapore.
     

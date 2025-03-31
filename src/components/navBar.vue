@@ -9,7 +9,7 @@ nav#navBar(ref="navBar")
                     p.big {{ serviceName }}
             router-link.logo(to="/" v-else)
                 img.symbol(src="@/assets/img/logo/symbol-logo.png" @click="router.push('/')")
-                span.faktum.desktop(style="font-size:1.4rem;") Skapi
+                span.faktum.desktop(style="font-size:1.4rem;") skapi
         .right
             ul.menu-wrap
                 template(v-if="user?.user_id")
