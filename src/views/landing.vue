@@ -21,7 +21,7 @@ main
                 .route 
                     span(style="color:#E37834; margin-right:4px") <>
                     span index.html
-                .copy
+                .copy(@click="copyVscode")
                     svg(height="16" width="16" style="margin-left: 5px;")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-file-copy-fill")
             .body
@@ -37,6 +37,7 @@ main
                         #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
                     #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") body]#[span(style="color:#999") &gt;]
                     #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") html]#[span(style="color:#999") &gt;]
+            .copied Copied! 👏
 
     .dynamo-section.center
         .title.faktum Works Seamlessly
@@ -58,6 +59,9 @@ main
                         span login.html
                     template(v-if="activeTabs.pureHTML === 1")
                         span upload.html
+                .copy(@click="copyVscode")
+                    svg(height="16" width="16" style="margin-left: 5px;")
+                        use(xlink:href="@/assets/img/material-icon.svg#icon-file-copy-fill")
             .body
                 template(v-if="activeTabs.pureHTML === 0")
                     pre.
@@ -82,7 +86,7 @@ main
                             #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "submit" ]#[span(style="color:#9CDCFE") value]=#[span(style="color:#CE9178") "Upload"]#[span(style="color:#999") &gt;]
                         #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
-
+            .copied Copied! 👏
     .dynamo-section.center.wide
         .title.faktum Everything You Need in One API
 
@@ -90,56 +94,63 @@ main
 
         .tab-icon
             .icon-wrap
-                .icon
+                .icon(:class="{'active' : selectedIcon === 'Authentication'}" @click="selectedIcon = 'Authentication'")
                     svg
                         use(xlink:href="@/assets/img/material-icon.svg#icon-encrypted-fill")
-                    //- p Authentication
-                .icon
+                .icon(:class="{'active' : selectedIcon === 'Database'}" @click="selectedIcon = 'Database'")
                     svg
                         use(xlink:href="@/assets/img/material-icon.svg#icon-database-fill")
-                    //- p Database
-                .icon
+                .icon(:class="{'active' : selectedIcon === 'File Storage'}" @click="selectedIcon = 'File Storage'")
                     svg
                         use(xlink:href="@/assets/img/material-icon.svg#icon-cloud-upload-fill")
-                    //- p File Storage
-                .icon
+                .icon(:class="{'active' : selectedIcon === 'CDN'}" @click="selectedIcon = 'CDN'")
                     svg
                         use(xlink:href="@/assets/img/material-icon.svg#icon-public")
-                    //- p CDN
-                .icon
+                .icon(:class="{'active' : selectedIcon === 'Realtime Data'}" @click="selectedIcon = 'Realtime Data'")
                     svg
                         use(xlink:href="@/assets/img/material-icon.svg#icon-wifi-fill")
-                    //- p Realtime Data
-                .icon
+                .icon(:class="{'active' : selectedIcon === 'API Bridge'}" @click="selectedIcon = 'API Bridge'")
                     svg
                         use(xlink:href="@/assets/img/material-icon.svg#icon-graph-fill")
-                    //- p API Bridge
-                .icon
+                .icon(:class="{'active' : selectedIcon === 'Automated Emails'}" @click="selectedIcon = 'Automated Emails'")
                     svg
                         use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
-                    //- p Automated Emails
-                .icon
+                .icon(:class="{'active' : selectedIcon === 'Website Hosting'}" @click="selectedIcon = 'Website Hosting'")
                     svg
                         use(xlink:href="@/assets/img/material-icon.svg#icon-language")
-                    //- p Website Hosting
 
             .icon-content
-                p All fully serverless, requiring zero backend setup or deployment.
+                span.tit.faktum {{ selectedIcon }}
+                span.des {{ selectedIconDesc[selectedIcon] }}
+            
+            //- p(style="margin:0; padding:0; margin-top:1rem") All fully serverless, requiring zero backend setup or deployment.
     
     .dynamo-section.center
+        .change-toggle(:class="{'motion': hoverFramework}")
+            img.skapi(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo")
+            .fade-dot-wrap
+                .dot
+                .dot
+                .dot
+            img(v-if="hoverFramework === null" src="@/assets/img/icon/javascript.png" alt="Javascript logo")
+            img(v-else-if="hoverFramework === 'react'" src="@/assets/img/icon/react.png" alt="React logo")
+            img(v-else-if="hoverFramework === 'angular'" src="@/assets/img/icon/angular.png" alt="Angular logo")
+            img(v-else-if="hoverFramework === 'vue'" src="@/assets/img/icon/vue.png" alt="Vue logo")
+            img(v-else-if="hoverFramework === 'html'" src="@/assets/img/icon/html.png" alt="Html logo")
+
         .title.faktum Built with TypeScript,
         .title.faktum Compatible with Any JS Framework
 
         .desc Skapi is compatible with Vue.js, React, Angular, and more, providing pre-built templates for various frameworks. It also works seamlessly with plain HTML without requiring any dependencies.
 
         .card-wrap
-            //- .icon-card 
+            .card(@mouseenter="hoverFramework = 'react'" @mouseleave="hoverFramework = null")
                 a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
                     img.icon(src="@/assets/img/icon/react.png" alt="React logo")
                     .content
                         p.big React
                         p.small Javascript
-            .card(style="padding: 0.5rem")
+            //- .card(style="padding: 0.5rem")
                 a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
                     .change-toggle
                         img.skapi(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo")
@@ -153,19 +164,19 @@ main
                     .content
                         p.big React
                         p.small Javascript
-            .card
+            .card(@mouseenter="hoverFramework = 'angular'" @mouseleave="hoverFramework = null")
                 a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
                     img.icon(src="@/assets/img/icon/angular.png" alt="Angular logo")
                     .content
                         p.big Angular
                         p.small Javascript
-            .card
+            .card(@mouseenter="hoverFramework = 'vue'" @mouseleave="hoverFramework = null")
                 a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
                     img.icon(src="@/assets/img/icon/vue.png" alt="Vue logo")
                     .content
                         p.big Vue
                         p.small Javascript
-            .card
+            .card(@mouseenter="hoverFramework = 'html'" @mouseleave="hoverFramework = null")
                 a(href="https://github.com/broadwayinc/getting-started-template-react" target="_blank")
                     img.icon(src="@/assets/img/icon/html.png" alt="Html logo")
                     .content
@@ -223,7 +234,7 @@ main
                         li 10GB Email Storage
             template(v-else)
                 .card
-                    .title Limited-Time Offer
+                    .title 🚀 Limited-Time Offer
                     .price
                         .faktum $300
                         span /only-once
@@ -258,6 +269,20 @@ main
                     li 10K User Accounts
                     li 4GB Database Storage
                     li 50GB File Storage
+    
+    .dynamo-section.center.wide
+        .title.faktum Start Building Today!
+
+        .desc Experience the serverless backend development #[strong.wordset 🚀 No servers. No deployment. Just pure HTML & JavaScript.]
+
+        button.final(type="button") Get Started
+
+    br
+    br
+    br
+    br
+    br
+    br
 
 </template>
 
@@ -272,23 +297,43 @@ import TabMenu from '@/components/tab.vue';
 let activeTabs = ref({
     pureHTML: 0,
     plan: 0,
-})
+});
 
-// let tab1 = ref(null);
-// let tab2 = ref(null);
-// let activeMenu = ref(null);
-// let activeTabMenu = ref(null);
+let selectedIcon = ref("Authentication");
 
-// watch(activeMenu, (nv) => {
-//     if (nv) {
-//         activeTabMenu.value.style.width = `${nv.offsetWidth}px`;
-//         activeTabMenu.value.style.left = `${nv.offsetLeft}px`;
-//     }
-// }, { immediate: true });
+let selectedIconDesc = {
+    "Authentication": "Secure, AWS Cognito-based user management",
+    "Database": "Scalable, auto-indexing database",
+    "File Storage": "Reliable, S3-based storage",
+    "CDN": "Deliver content globally with ease",
+    "Realtime Data": "Instant WebRTC and WebSocket implementation",
+    "API Bridge": "Connect external APIs effortlessly",
+    "Automated Emails": "Built-in email automation & sending bulk emails",
+    "Website Hosting": "Easy file & website hosting",
+}
 
-// onMounted(() => {
-//     activeMenu.value = tab1.value;
-// });
+let hoverFramework = ref(null);
+
+let copyVscode = (e) => {
+    // console.log(e.currentTarget)
+    // let allcopy = document.querySelectorAll('.copyMsg');
+    // for (let i = 0; i < allcopy.length; i++) {
+    //     allcopy[i].textContent = 'Copy code';
+    // }
+    let code = e.currentTarget.parentElement.nextElementSibling.querySelector('.body > pre');
+    let doc = document.createElement('textarea');
+    doc.textContent = code.textContent;
+    document.body.append(doc);
+    doc.select();
+    document.execCommand('copy');
+    doc.remove();
+
+    let copied = e.currentTarget.parentElement.parentElement.querySelector('.copied');
+    copied.classList.add('show');
+    setTimeout(() => {
+        copied.classList.remove('show');
+    }, 1000);
+}
 </script>
 
 <style lang="less" scoped>
@@ -338,10 +383,13 @@ let activeTabs = ref({
 }
 
 .vscode {
+    position: relative;
     max-width: 570px;
+    height: 340px;
     margin: 0 auto;
     border-radius: 12px;
     background-color: #181818;
+    overflow: hidden;
 
     .header {
         position: relative;
@@ -393,6 +441,11 @@ let activeTabs = ref({
             bottom: calc(0px - 24px - 0.8rem);
             fill: #fff;
             cursor: pointer;
+            transition: all .3s;
+
+            &:hover {
+                transform: scale(1.1);
+            }
         }
     }
     .body {
@@ -411,6 +464,23 @@ let activeTabs = ref({
             margin: 0;
             padding: 0.8rem 1rem;
             min-height: 44px;
+        }
+    }
+    .copied {
+        position: absolute;
+        background-color: #fff;
+        color: var(--main-color);
+        bottom: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        transition: all .3s;
+        font-size: 0.7rem;
+        padding: 6px 20px;
+        border-radius: 6px;
+        z-index: 9;
+
+        &.show {
+            bottom: 12px;
         }
     }
 }
@@ -439,7 +509,7 @@ let activeTabs = ref({
         flex-grow: 1;
         width: 48%;
         min-width: 250px;
-        border: 1px solid rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.1);
         border-radius: 12px;
         padding: 1rem;
         transition: all .3s;
@@ -448,29 +518,6 @@ let activeTabs = ref({
         &:hover {
             // border-color: var(--main-color);
             box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
-
-            .change-toggle {
-                img {
-                    animation: scaleBounce .5s alternate infinite;
-                }
-                .fade-dot-wrap {
-                    .dot {
-                        animation: loadingFade 1s infinite;
-
-                        &:nth-child(1) {
-                            animation-delay: 0s;
-                        }
-
-                        &:nth-child(2) {
-                            animation-delay: 0.1s;
-                        }
-
-                        &:nth-child(3) {
-                            animation-delay: 0.2s;
-                        }
-                    }
-                }
-            }
         }
 
         &.dark {
@@ -487,35 +534,36 @@ let activeTabs = ref({
             color: #333;
         }
 
-        .change-toggle {
-            // position: relative;
-            display: flex;
-            align-items: center;
-            background-color: rgba(0,0,0,0.03);
-            border-radius: 12px;
-            padding: 0.7rem;
-            gap: 0.8rem;
+        // .change-toggle {
+        //     // position: relative;
+        //     display: flex;
+        //     align-items: center;
+        //     background-color: rgba(0,0,0,0.03);
+        //     border-radius: 12px;
+        //     padding: 0.7rem;
+        //     gap: 0.8rem;
 
-            img {
-                width: 2.5rem;
+        //     img {
+        //         width: 2.5rem;
 
-                &.skapi {
-                    width: 2rem;
-                }
-            }
-            .fade-dot-wrap {
-                .dot {
-                    display: inline-block;
-                    vertical-align: middle;
-                    width: 6px;
-                    height: 6px;
-                    margin: 0 4px;
-                    background: #333;
-                    border-radius: 50%;
-                    opacity: 0.5;
-                }
-            }
-        }
+        //         &.skapi {
+        //             width: 2rem;
+        //         }
+        //     }
+        //     .fade-dot-wrap {
+        //         .dot {
+        //             display: inline-block;
+        //             vertical-align: middle;
+        //             width: 6px;
+        //             height: 6px;
+        //             margin: 0 4px;
+        //             background: #333;
+        //             border-radius: 50%;
+        //             opacity: 0.5;
+        //         }
+        //     }
+        // }
+
         .icon {
             width: 3rem;
             height: 3rem;
@@ -531,6 +579,59 @@ let activeTabs = ref({
                     color: rgba(0,0,0,0.5);
                 }
             }
+        }
+    }
+}
+
+.change-toggle {
+    // position: relative;
+    display: inline-flex;
+    margin-bottom: 1rem;
+    align-items: center;
+    background-color: rgb(247, 249, 252);
+    border-radius: 12px;
+    padding: 0.7rem;
+    gap: 0.8rem;
+
+    &.motion {
+        img {
+            animation: scaleBounce .5s alternate infinite;
+        }
+        .fade-dot-wrap {
+            .dot {
+                animation: loadingFade 1s infinite;
+
+                &:nth-child(1) {
+                    animation-delay: 0s;
+                }
+
+                &:nth-child(2) {
+                    animation-delay: 0.1s;
+                }
+
+                &:nth-child(3) {
+                    animation-delay: 0.2s;
+                }
+            }
+        }
+    }
+    img {
+        width: 2.5rem;
+
+        &.skapi {
+            width: 2rem;
+        }
+    }
+    .fade-dot-wrap {
+        .dot {
+            display: inline-block;
+            vertical-align: middle;
+            width: 6px;
+            height: 6px;
+            margin: 0 4px;
+            background: #333;
+            border-radius: 50%;
+            opacity: 0.5;
         }
     }
 }
@@ -650,7 +751,11 @@ let activeTabs = ref({
     gap: 1rem;
 
     .icon {
-
+        &.active {
+            svg {
+                fill: var(--main-color);
+            }
+        }
     }
     svg {
         width: 2.2rem;
@@ -661,11 +766,29 @@ let activeTabs = ref({
 
         &:hover {
             fill: var(--main-color);
+            transform: scale(1.1);
         }
     }
 }
 
 .icon-content {
-    
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 24px;
+    border: 1px solid #F0F2FA;
+    background: #fff;
+
+    .tit {
+        margin-bottom: 0.5rem;
+        color: var(--main-color);
+        display: block;
+        font-weight: bold;
+    }
+    .des {
+        font-size: 0.9rem;
+        color: #555;
+    }
 }
 </style>
