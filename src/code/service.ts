@@ -170,6 +170,7 @@ export type ServiceObj = {
     subject: string;
     url: string;
   };
+  email_alias?: string; // has value if email alias is registered
 };
 
 type SubscriptionObj = {
@@ -322,7 +323,7 @@ export default class Service {
   //   return await skapi.util.request('admin-signup', Object.assign({ service: this.id, owner: this.owner }, params), { auth: true });
   // }
 
-  registerSenderEmail(params: {
+  async registerSenderEmail(params: {
     email_alias: string;
   }): Promise<"SUCCESS: Sender e-mail has been registered."> {
     let emailAlias: string;
@@ -342,7 +343,9 @@ export default class Service {
       throw 'Email contains special characters.';
     }
 
-    return skapi.util.request(this.admin_private_endpoint + 'register-sender-email', Object.assign({ service: this.id, owner: this.owner }, { email_alias: emailAlias }), { auth: true });
+    let res = await skapi.util.request(this.admin_private_endpoint + 'register-sender-email', Object.assign({ service: this.id, owner: this.owner }, { email_alias: emailAlias }), { auth: true });
+    this.service.email_alias = emailAlias;
+    return res;
   }
 
   registerOpenIDLogger(params: {
