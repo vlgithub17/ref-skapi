@@ -95,7 +95,77 @@ main
 
         .desc Skapi simplifies backend development by bundling essential services into a single JavaScript library, dramatically reducing development time and costs.
 
-        .tab-icon
+        .slide-wrap
+            ul.slide-inner
+                li
+                    .icon
+                        svg
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-encrypted-fill")
+                    .content
+                        .title.faktum Authentication
+                        .desc Secure, AWS Cognito-based user management
+                li
+                    .icon
+                        svg
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-database-fill")
+                    .content
+                        .title.faktum Database
+                        .desc Scalable, auto-indexing database
+                li
+                    .icon
+                        svg
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-cloud-upload-fill")
+                    .content
+                        .title.faktum File Storage
+                        .desc Reliable, S3-based storage
+                li
+                    .icon
+                        svg
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-public")
+                    .content
+                        .title.faktum CDN
+                        .desc Deliver content globally with ease
+                li
+                    .icon
+                        svg
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-wifi-fill")
+                    .content
+                        .title.faktum Realtime Data
+                        .desc Instant WebRTC and WebSocket implementation
+                li
+                    .icon
+                        svg
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-graph-fill")
+                    .content
+                        .title.faktum API Bridge
+                        .desc Connect external APIs effortlessly
+                li
+                    .icon
+                        svg
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
+                    .content
+                        .title.faktum Automated Emails
+                        .desc Built-in email automation & sending bulk emails
+                li
+                    .icon
+                        svg
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-language")
+                    .content
+                        .title.faktum Website Hosting
+                        .desc Easy file & website hosting
+
+        //- .slide-wrap(ref="slideWrap")
+            ul.slide-inner(ref="slideInner")
+                li.slide
+                li.slide
+                li.slide
+                li.slide
+                li.slide
+                li.slide
+                li.slide
+                li.slide
+
+        //- .tab-icon
             .icon-wrap
                 .icon(:class="{'active' : selectedIcon === 'Authentication'}" @click="selectedIcon = 'Authentication'")
                     svg
@@ -126,8 +196,6 @@ main
                 span.tit.faktum {{ selectedIcon }}
                 span.des {{ selectedIconDesc[selectedIcon] }}
             
-            //- p(style="margin:0; padding:0; margin-top:1rem") All fully serverless, requiring zero backend setup or deployment.
-    
     .dynamo-section.center
         .change-toggle(:class="{'motion': hoverFramework}")
             img.skapi(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo")
@@ -224,7 +292,7 @@ main
                 .card
                     .title Trial
                     .price
-                        .faktum $19
+                        .faktum FREE
                         span /mo
                     .desc Suits best for hobby use for small projects #[span.wordset or businesses.]
                     button.final(type="button") Get
@@ -314,6 +382,17 @@ let copyVscode = (e) => {
         copied.classList.remove('show');
     }, 1000);
 }
+
+onMounted(() => {
+    const slideInner = document.querySelector(".slide-inner");
+    const clone = slideInner.cloneNode(true); // 복제본 생성
+
+    document.querySelector(".slide-wrap").appendChild(clone); // 복제본 추가
+    document.querySelector(".slide-inner").offsetWidth + "px"; // 원본, 복제본 위치 지정
+
+    slideInner.classList.add("original");
+    clone.classList.add("clone");
+});
 </script>
 
 <style lang="less" scoped>
@@ -474,6 +553,82 @@ let copyVscode = (e) => {
     0% { opacity: 0; transform:scale(1) }
     50% { opacity: 0.8; transform:scale(1.3) }
     100% { opacity: 0; transform:scale(1) }
+}
+
+@keyframes slide01 { 
+    0% { transform: translateX(0); }
+    50% { transform: translateX(-100%); }
+    50.01% { transform: translateX(100%); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes slide02 { 
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-200%); }
+}
+
+.slide-wrap { 
+    display: flex;
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 300px;
+    overflow: hidden;
+
+    .slide-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-left: 0;
+        gap: 1rem;
+
+        &.original { animation: 50s linear 0s infinite normal forwards running slide01; }
+        &.clone { animation: 50s linear 0s infinite normal none running slide02; }
+
+        li {
+            display: inline-block;
+            list-style: none;
+            width: 220px;
+            height: 250px;
+            // line-height: 220px;
+            // margin-right: 4vw;
+            border: 1px solid #F0F2FA;
+            background-color: #fff;
+            border-radius: 24px;
+            padding: 1rem;
+            text-align: left;
+
+            &:last-child {
+                margin-right: 1rem;
+            }
+            .icon {
+                display: inline-block;
+                border-radius: 50%;
+                border: 1px solid #F0F2FA;
+                padding: 0.5rem;
+                // background-color: #fff;
+                margin-bottom: 1rem;
+                box-shadow: 0px 0px 14px #e4e7f4;
+                cursor: default;
+
+                svg {
+                    width: 2rem;
+                    height: 2rem;
+                    fill: var(--main-color);
+                }
+            }
+            .content {
+                .title {
+                    font-size: 1.2rem;
+                    margin-bottom: 0.5rem;
+                }
+                .desc {
+                    font-size: 0.8rem;
+                    color: #777;
+                }
+            }
+        }
+    }
 }
 
 .card-wrap {
