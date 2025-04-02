@@ -138,12 +138,16 @@ section.infoBox(v-else)
         Code
             pre {{ email_templates[group] }}
 
-        p.
-            * The senders email address should exactly match your current profile email address: #[b.wordset {{ user.email }}]
-            #[br]#[br]
-            For customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
-                
         p Email Alias: #[b.wordset {{ currentService.service.email_alias || currentService.service.service }}@mail.skapi.com]
+        
+        p.
+            The senders email address should exactly match your current profile email address: #[b.wordset {{ user.email }}]
+        
+        p.
+            After sending the email, the new template will show up on the list below. Then you can set the email template by clicking #[b In-Use] icon.
+        
+        p.
+            For more info about customizing the email template, see #[a(href='https://docs.skapi.com/email/email-templates.html' target="_blank") Automated Emails] for more information.
 
         br
 
