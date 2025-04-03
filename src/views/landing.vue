@@ -334,15 +334,6 @@ main
     //- .dynamo-section.center
         .title.faktum Explore More
 
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-
 </template>
 
 <script setup>
@@ -411,8 +402,9 @@ onMounted(() => {
 <style lang="less" scoped>
 .dynamo-section {
     max-width: 1200px;
-    margin: 11rem auto;
-    padding: 0 20px;
+    margin: 0 auto;
+    padding: 6rem 20px;
+    background-color: #fff;
 
     &.center {
         text-align: center;
@@ -677,6 +669,7 @@ onMounted(() => {
         padding: 1rem;
         transition: all .3s;
         cursor: pointer;
+        background-color: #fff;
 
         &:hover {
             // border-color: var(--main-color);
