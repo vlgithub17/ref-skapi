@@ -1181,6 +1181,7 @@ export default class Service {
       let signedParams = Object.assign(
         {
           key: prefix + (f.webkitRelativePath || f.name),
+          size: f.size || 0,
           contentType: f.type || ct,
         },
         getSignedParams
