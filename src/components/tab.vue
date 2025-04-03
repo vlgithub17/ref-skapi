@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps({
 	tabs: {
@@ -20,6 +20,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue']);
+
+let resizeObserver = null; // ResizeObserver를 사용하여 동적 너비 조정 -> active-menu의 크기를 동적으로 조정하기 위함
 
 const activeIndex = ref(0);
 const activeWidth = ref('0px');
@@ -48,7 +50,24 @@ const setActiveMenu = (index) => {
 onMounted(() => {
 	if (itemRefs.length > 0) {
 		setActiveMenu(activeIndex.value);
+
+		// ResizeObserver 생성 및 초기화
+        resizeObserver = new ResizeObserver(() => {
+            setActiveMenu(activeIndex.value);
+        });
+
+        // 모든 탭 요소에 ResizeObserver 연결
+        itemRefs.forEach((item) => {
+            resizeObserver.observe(item);
+        });
 	}
+});
+
+onUnmounted(() => {
+    // 컴포넌트 언마운트 시 ResizeObserver 해제
+    if (resizeObserver) {
+        resizeObserver.disconnect();
+    }
 });
 </script>
 

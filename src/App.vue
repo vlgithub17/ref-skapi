@@ -57,7 +57,7 @@ footer {
         height: unset;
         box-shadow: unset;
         border-radius: 12px;
-        margin: 1rem;
+        margin: 0.5rem;
         padding: 0.5rem;
     }
 

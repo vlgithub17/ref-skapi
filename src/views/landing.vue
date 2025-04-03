@@ -1,6 +1,6 @@
 <template lang="pug">
 main
-    .dynamo-section.main.center
+    .dynamo-section.main.center.wide(style="padding: 11rem 20px")
         //- p(style="color:var(--main-color); font-weight:500; font-size:14px;") BACKEND API
         img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 44px;")
 
@@ -12,7 +12,7 @@ main
 
         p.desc Skapi is a fully serverless backend API that works seamlessly with pure HTML and JavaScript—no complex installations, no backend configurations, and no database management required.
 
-        .vscode
+        .vscode(style="border: 1px solid #2b2b2b")
             .header
                 .circle
                     .cir
@@ -249,10 +249,18 @@ main
             .plan
                 .card
                     .title Standard 
+                    .option 
+                        TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
                     .price
-                        .faktum $19
-                        span /mo
-                    .desc Suits best for hobby use for small projects #[span.wordset or businesses.]
+                        template(v-if="activeTabs.standardPlan === 0") 
+                            .faktum $19
+                            span /mo
+                        template(v-else)
+                            .faktum $300
+                            span /only-once
+                    .desc 
+                        template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use for small projects #[span.wordset or businesses.]
+                        template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
                     button.final(type="button") Get
                 ul.provides
                     li 10K User Accounts
@@ -265,6 +273,8 @@ main
             .plan
                 .card
                     .title Premium 
+                    .option 
+                        TabMenu(v-model="activeTabs.premiumPlan" :tabs="['basic']")
                     .price
                         .faktum $89
                         span /mo
@@ -318,7 +328,8 @@ main
 
         .desc Experience the serverless backend development #[strong.wordset 🚀 No servers. No deployment. Just pure HTML & JavaScript.]
 
-        button.final(type="button") Get Started
+        a(href='https://docs.skapi.com' target='_blank')
+            button.final(type="button") Get Started
 
     //- .dynamo-section.center
         .title.faktum Explore More
@@ -345,6 +356,8 @@ import TabMenu from '@/components/tab.vue';
 let activeTabs = ref({
     pureHTML: 0,
     plan: 0,
+    standardPlan: 0,
+    premiumPlan: 0,
 });
 
 let selectedIcon = ref("Authentication");
@@ -413,9 +426,21 @@ onMounted(() => {
     &.wide {
         max-width:unset;
         background-color:rgb(247, 249, 252);
-        margin: 0 20px;
-        border-radius: 24px;
+        margin: 0 10px;
+        border-radius: 18px;
         padding: 5rem 20px;
+
+        &.main {
+            // margin: 0;
+            margin-top: 10px;
+            background-color: #060A23;
+            // border-radius: 0 0 48px 48px;
+            color: #D9DADD;
+
+            .desc {
+                color: #A6A8B1;
+            }
+        }
     }
 
     &.main {
@@ -425,6 +450,9 @@ onMounted(() => {
         .title {
             font-size: 3rem;
             margin-bottom: 1rem;
+            background: linear-gradient(to right bottom, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     }
 
@@ -529,7 +557,7 @@ onMounted(() => {
         position: absolute;
         background-color: #fff;
         color: var(--main-color);
-        bottom: -30px;
+        bottom: -40px;
         left: 50%;
         transform: translateX(-50%);
         transition: all .3s;
@@ -792,10 +820,14 @@ onMounted(() => {
         // }
     }
     .card {
-        width: 100% !important;
+        width: 100%;
+        cursor: default;
     }
     .title {
         font-size: 1rem;
+    }
+    .option {
+        scale: 0.9;
     }
     .price {
         display: flex;

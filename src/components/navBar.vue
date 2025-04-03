@@ -15,7 +15,7 @@ nav#navBar(ref="navBar")
                 template(v-if="user?.user_id")
                     li.go-github
                         a(href="https://github.com/broadwayinc/skapi-js" target="_blank")
-                            img(src="@/assets/img/icon/icon_github.svg")
+                            img(src="@/assets/img/icon/icon_github.svg" style="filter: invert(1);")
                     li
                         a.ser(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank") Docs
                         
@@ -57,7 +57,7 @@ nav#navBar(ref="navBar")
                 template(v-else)
                     li.go-github
                         a(href="https://github.com/broadwayinc/skapi-js" target="_blank")
-                            img(src="@/assets/img/icon/icon_github.svg")
+                            img(src="@/assets/img/icon/icon_github.svg" style="filter: invert(1);")
                     li
                         a.ser(href="https://docs.skapi.com/introduction/getting-started.html" target="_blank") Docs
                     li
@@ -75,12 +75,12 @@ nav#navBar(ref="navBar")
 
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { onMounted, onBeforeUnmount, ref } from "vue";
+import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { skapi } from "@/main";
 import { serviceMainLoaded, currentService } from '@/views/service/main';
 import { user, customer } from "@/code/user";
 import { showDropDown } from "@/assets/js/event.js";
-import { setAutoHide, removeListener } from "./navBar-autohide.ts";
+import { setAutoHide, removeListener, routeName } from "./navBar-autohide.ts";
 
 const router = useRouter();
 const route = useRoute();
@@ -141,6 +141,19 @@ onBeforeUnmount(() => {
     removeListener();
     window.removeEventListener('serviceChanged', updateServiceName);
 });
+
+watch(() => route.name, (nv, ov) => {
+	if(nv) {
+        routeName.value = typeof nv === 'string' ? nv : '';
+	}
+	// if(nv !== 'home') {
+	// 	document.body.style.setProperty('--nav-position', 'sticky');
+	// 	document.body.style.setProperty('--nav-top', '0px');
+	// } else {
+	// 	document.body.style.setProperty('--nav-position', 'fixed');
+	// 	document.body.style.setProperty('--nav-top', '20px');
+	// }
+}, { immediate: true });
 </script>
 
 <style lang="less" scoped>
@@ -166,17 +179,18 @@ img.symbol.mobile {
 #navBar {
     position: var(--nav-position, fixed);
     left: 0;
-    top: var(--nav-top, 0);
+    top: var(--nav-top, 20);
     z-index: 99999;
     width: 100%;
     display: flex;
     align-items: center;
     fill: #333; // for svg
     justify-content: center;
-    background-color: #fff;
+    // background-color: #fff;
+	// border-radius: 12px;
 
     font-size: 20px;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    // border-bottom: 1px solid rgba(0,0,0,0.1);
 
     .wrap {
         width: 100%;
@@ -186,7 +200,17 @@ img.symbol.mobile {
         gap: 10px;
 
         max-width: 80rem;
-        padding: 20px 16px;
+        padding: 16px 20px;
+		// background-color: #fff;
+		background-color: rgba(255, 255, 255, 0.8);
+		// border: 1px solid rgba(0, 0, 0, 0.05);
+		border: 1.5px solid rgba(255, 255, 255, 0.1);
+		backdrop-filter: blur(20px);
+		border-radius: 12px;
+		// box-shadow: rgba(66, 62, 121, 0.06) 0px 48px 96px -24px;
+		box-shadow: rgba(66, 62, 121, 0.1) 0px 0px 90px -14px;
+		margin: 0 var(--nav-top);
+		border-color: #f7f9fc;
 
         .left {
             // flex-shrink: 0;
@@ -289,7 +313,8 @@ img.symbol.mobile {
                         display: inline-block;
                         width: 1px;
                         height: 20px;
-                        background-color: rgba(255, 255, 255, 0.4);
+                        // background-color: rgba(255, 255, 255, 0.4);
+                        background-color: rgba(0, 0, 0, 0.4);
                         position: absolute;
                         right: -24px;
                     }
@@ -436,5 +461,17 @@ img.symbol.mobile {
             }
         }
     }
+}
+
+@media (max-width: 476px) {
+	#navBar {
+		.wrap {
+			.right {
+				.go-github {
+					display: none;
+				}
+			}
+		}
+	}
 }
 </style>

@@ -1,3 +1,5 @@
+import { ref, watch, type Ref } from "vue";
+
 let navCss: CSSStyleDeclaration;
 let parentEl: HTMLElement | Window | any;
 let scrollOffset = 0;
@@ -6,6 +8,20 @@ let offsetProp = 'pageYOffset';
 let autoHide: any;
 let host: HTMLElement;
 const body = document.body;
+export let routeName: Ref<string> = ref('');
+let navTop = 0;
+
+watch(routeName, (nv) => {
+	if(nv === 'home') {
+		navTop = 20;
+		body.style.setProperty('--nav-position', 'fixed');
+		body.style.setProperty('--nav-top', navTop + 'px');
+	} else {
+		navTop = 10;
+		body.style.setProperty('--nav-position', 'sticky'); // apply css variable
+		body.style.setProperty('--nav-top', navTop + 'px');
+	}
+})
 
 let prep = () => {
     if (autoHide === undefined) {
@@ -62,9 +78,9 @@ let calcNavbarPosition = () => {
                 // if offset is beyond navHeight
                 return -navHeight;
             }
-            if (topOffsetCalc > 0) {
+            if (topOffsetCalc > navTop) {
                 // offset is positive
-                return 0;
+                return navTop;
             }
 
             return topOffsetCalc; // return int range
@@ -90,7 +106,8 @@ export let removeListener = () => {
 let load = () => {
     navCss = window.getComputedStyle(host);
     // get body element
-    body.style.setProperty('--nav-position', 'sticky'); // apply css variable
+
+	// body.style.setProperty('--nav-position', 'sticky'); // apply css variable
 
     if (autoHide) {
         let seekScrollableParent = (el:HTMLElement) => {
