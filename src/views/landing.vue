@@ -658,6 +658,59 @@ onMounted(() => {
     }
 }
 
+.change-toggle {
+    // position: relative;
+    display: inline-flex;
+    margin-bottom: 1rem;
+    align-items: center;
+    background-color: rgb(247, 249, 252);
+    border-radius: 12px;
+    padding: 0.7rem;
+    gap: 0.8rem;
+
+    &.motion {
+        img {
+            animation: scaleBounce .5s alternate infinite;
+        }
+        .fade-dot-wrap {
+            .dot {
+                animation: loadingFade 1s infinite;
+
+                &:nth-child(1) {
+                    animation-delay: 0s;
+                }
+
+                &:nth-child(2) {
+                    animation-delay: 0.1s;
+                }
+
+                &:nth-child(3) {
+                    animation-delay: 0.2s;
+                }
+            }
+        }
+    }
+    img {
+        width: 2.5rem;
+
+        &.skapi {
+            width: 2rem;
+        }
+    }
+    .fade-dot-wrap {
+        .dot {
+            display: inline-block;
+            vertical-align: middle;
+            width: 6px;
+            height: 6px;
+            margin: 0 4px;
+            background: #333;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+    }
+}
+
 .card-wrap {
     max-width: 800px;
     margin: 0 auto;
@@ -713,59 +766,6 @@ onMounted(() => {
                     color: rgba(0,0,0,0.5);
                 }
             }
-        }
-    }
-}
-
-.change-toggle {
-    // position: relative;
-    display: inline-flex;
-    margin-bottom: 1rem;
-    align-items: center;
-    background-color: rgb(247, 249, 252);
-    border-radius: 12px;
-    padding: 0.7rem;
-    gap: 0.8rem;
-
-    &.motion {
-        img {
-            animation: scaleBounce .5s alternate infinite;
-        }
-        .fade-dot-wrap {
-            .dot {
-                animation: loadingFade 1s infinite;
-
-                &:nth-child(1) {
-                    animation-delay: 0s;
-                }
-
-                &:nth-child(2) {
-                    animation-delay: 0.1s;
-                }
-
-                &:nth-child(3) {
-                    animation-delay: 0.2s;
-                }
-            }
-        }
-    }
-    img {
-        width: 2.5rem;
-
-        &.skapi {
-            width: 2rem;
-        }
-    }
-    .fade-dot-wrap {
-        .dot {
-            display: inline-block;
-            vertical-align: middle;
-            width: 6px;
-            height: 6px;
-            margin: 0 4px;
-            background: #333;
-            border-radius: 50%;
-            opacity: 0.5;
         }
     }
 }
