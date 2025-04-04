@@ -9,10 +9,10 @@ export let uploadCount = reactive([0, 0]); // fin / total
 export let uploadProgress: any = reactive({});  // { name: fileName, progress: percent(number) }
 export let serviceFolders: any = {}; // {serviceid: {dirname: {}}}
 
-export let uploadFiles = async (files: File[], callback?: () => void, contentTypeMapping?:{[fname:string]:string}) => {
+export let uploadFiles = async (files: File[], callback?: () => void, contentTypeMapping?: { [fname: string]: string }) => {
     // uploads one by one
     let sd = currentService.service.subdomain;
-    if(!sd) {
+    if (!sd) {
         throw new Error('No subdomain found');
     }
     if (sd && sd[0] === '*' || sd[0] === '+') {
@@ -73,7 +73,7 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                     else {
                         let folder = serviceFolders[currentService.service.subdomain]['!'].pager;
                         if (!folder.list?.['#' + fPathSplit[0]]) {
-                            let obj = Object.assign({}, fileObj, { name: '#' + fPathSplit[0], cnt: 0, size: 0, path: currentService.service.subdomain});
+                            let obj = Object.assign({}, fileObj, { name: '#' + fPathSplit[0], cnt: 0, size: 0, path: currentService.service.subdomain });
                             await folder.insertItems(obj);
                         }
                         else {
@@ -145,18 +145,29 @@ export let uploadFiles = async (files: File[], callback?: () => void, contentTyp
                     }
                 }
             }
+        }).catch(err => {
+            // initialize upload progress
+            uploadCount[0] = 0;
+            uploadCount[1] = 0;
+            uploadProgress.name = '';
+            uploadProgress.progress = 0;
+            if (callback) {
+                callback();
+            }
+            window.alert(err.message); // show error message
+            throw err;
         });
     }
 }
 
-let contentTypeMapping:{[filename:string]: string} = {};
+let contentTypeMapping: { [filename: string]: string } = {};
 
 function traverseFileTree(item: { [key: string]: any }, path = '') {
     return new Promise((resolve) => {
         if (item.isFile) {
             item.file(function (file: { [key: string]: any }) {
                 if (!file.type) {
-                    function getExtensionOfFilename(filename:string) {
+                    function getExtensionOfFilename(filename: string) {
                         var _fileLen = filename.length;
                         var _lastDot = filename.lastIndexOf('.');
                         var _fileExt = filename.substring(_lastDot, _fileLen).toLowerCase();
