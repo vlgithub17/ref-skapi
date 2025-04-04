@@ -1,188 +1,224 @@
 <template lang="pug">
-section.infoBox
-    .titleHead
-        h2 Bulk Email
-        Select(v-model="group" :selectOptions="[{option: 'Newsletter', value: 0}, {option: 'Service Mail', value: 1}]" style='display:inline-block;vertical-align:middle;width:136px')
+section.infoBox(v-if='needsEmailAlias' style='max-width:600px;margin:3rem auto;' :class='{nonClickable: email_is_unverified_or_service_is_disabled}')
+
+    .infoTitle Bulk Email
 
     hr
-    
+
     .error(v-if='!user?.email_verified')
         //- .material-symbols-outlined.notranslate.fill warning
         svg
             use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
         router-link(to="/account-setting") Please verify your email address to modify settings.
+
+    p.
+        You can send bulk emails to your newsletter subscribers.
+        #[br]
+        To proceed, please register your email alias address that will be used to send out the emails.
+
+    p The email alias can only be #[span.wordset alphanumeric and hyphen.]
+
+    br
+
+    form.register(@submit.prevent='registerAlias')
+        .emailAlias
+            input.big(v-model='emailAliasVal' pattern='^[a-z\\d](?:[a-z\\d\\-]{0,61}[a-z\\d])?$' :disabled="registerAliasRunning" placeholder="your-email-alias" required)
+
+        button.final(style='min-width: 124px;' :disabled='registerAliasRunning' :class='{nonClickable: registerAliasRunning}')
+            template(v-if="registerAliasRunning")
+                .loader(style="--loader-color:white; --loader-size:12px")
+            template(v-else)
+                | Register
+
+template(v-else)
+    section.infoBox
+        .titleHead
+            h2 Bulk Email
+            Select(v-model="group" :selectOptions="[{option: 'Newsletter', value: 0}, {option: 'Service Mail', value: 1}]" style='display:inline-block;vertical-align:middle;width:136px')
+
+        hr
         
-    .error(v-else-if='currentService.service.active == 0')
-        //- .material-symbols-outlined.notranslate.fill warning
-        svg
-            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
-        span This service is currently disabled.
+        .error(v-if='!user?.email_verified')
+            //- .material-symbols-outlined.notranslate.fill warning
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
+            router-link(to="/account-setting") Please verify your email address to modify settings.
+            
+        .error(v-else-if='currentService.service.active == 0')
+            //- .material-symbols-outlined.notranslate.fill warning
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
+            span This service is currently disabled.
 
-    .error(v-else-if='currentService.service.active < 0')
-        //- .material-symbols-outlined.notranslate.fill warning
-        svg
-            use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
-        span This service is currently suspended.
+        .error(v-else-if='currentService.service.active < 0')
+            //- .material-symbols-outlined.notranslate.fill warning
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
+            span This service is currently suspended.
 
-    p(style='margin-bottom: 0').
-        You can collect your {{mailType.toLowerCase()}} subscribers by using the following code:
+        p(style='margin-bottom: 0').
+            You can collect your {{mailType.toLowerCase()}} subscribers by using the following code:
 
-    Code(v-if='group === 0')
-        pre.
-            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
-                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") placeholder]=#[span(style="color:#FFED91") "E-Mail address"]#[span(style="color:#999") &gt;]
-                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") {{group ? '"authorized"' : '"public"'}}]#[span(style="color:#999") &gt;]
-                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
-            #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
-    Code(v-if='group === 1')
-        pre.
-            #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
-                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") {{group ? '"authorized"' : '"public"'}}]#[span(style="color:#999") &gt;]
-                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
-            #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
+        Code(v-if='group === 0')
+            pre.
+                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
+                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "email"] #[span(style="color:#44E9FF") placeholder]=#[span(style="color:#FFED91") "E-Mail address"]#[span(style="color:#999") &gt;]
+                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") {{group ? '"authorized"' : '"public"'}}]#[span(style="color:#999") &gt;]
+                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
+                #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
+        Code(v-if='group === 1')
+            pre.
+                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form] #[span(style="color:#44E9FF") onsubmit]=#[span(style="color:#FFED91") "skapi.subscribeNewsletter(event).then(res => alert(res))"]#[span(style="color:#999") &gt;]
+                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") hidden] #[span(style="color:#44E9FF") name]=#[span(style="color:#FFED91") "group"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") {{group ? '"authorized"' : '"public"'}}]#[span(style="color:#999") &gt;]
+                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input] #[span(style="color:#44E9FF") type]=#[span(style="color:#FFED91") "submit"] #[span(style="color:#44E9FF") value]=#[span(style="color:#FFED91") "Subscribe"]#[span(style="color:#999") &gt;]
+                #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
 
-    p(v-if='group === 1') * User must be logged in to subscribe to Service Mail, and the user must have their email verified.
+        p(v-if='group === 1') * User must be logged in to subscribe to Service Mail, and the user must have their email verified.
 
-    br
+        br
 
-    p(style='margin-bottom: 0') Once the users have subscribed to your {{mailType.toLowerCase()}}, they will be able to receive your emails sent to the address #[span.wordset provided below:]
+        p(style='margin-bottom: 0') Once the users have subscribed to your {{mailType.toLowerCase()}}, they will be able to receive your emails sent to the address #[span.wordset provided below:]
 
-    Code
-        pre {{ newsletterEndpoint || '...' }}
+        Code
+            pre {{ newsletterEndpoint || '...' }}
 
-    br
+        br
 
-    p * The senders email address should exactly match your current profile email address: #[b.wordset {{ user.email }}]
+        p * The senders email address should exactly match your current profile email address: #[b.wordset {{ user.email }}]
         
-    p For more information, please refer to the #[a(href="https://docs.skapi.com/email/newsletters.html" target="_blank") documentation]
+        p Email Alias: #[b.wordset {{ currentService.service.email_alias || currentService.service.service }}@mail.skapi.com]
 
-br
+        p For more information, please refer to the #[a(href="https://docs.skapi.com/email/newsletters.html" target="_blank") documentation]
 
-.tableMenu
-    a.iconClick.square(:href="'mailto:' + newsletterEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        //- .material-symbols-outlined.notranslate.fill mail
-        svg.svgIcon
-            use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
-        span &nbsp;&nbsp;Send {{mailType}}
-    .iconClick.square(@click="getPage(true)" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
-        //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
-        svg.svgIcon(:class='{loading:fetching}')
-            use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
-        span &nbsp;&nbsp;Refresh
-
-
-Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
-    template(v-slot:head)
-        tr(:class="{'nonClickable' : fetching}")
-            th(style='width: 250px;')
-                span(@click='toggleSort("subject")')
-                    | Subject
-                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-                    svg.svgIcon(v-if='searchFor === "subject" && ascending' style="fill: black")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
-                    svg.svgIcon(v-if='searchFor === "subject" && !ascending' style="fill: black")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
-                .resizer
-            th(style='width: 120px;')
-                span(@click='toggleSort("timestamp")')
-                    | Sent
-                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-                    svg.svgIcon(v-if='searchFor === "timestamp" && ascending' style="fill: black")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
-                    svg.svgIcon(v-if='searchFor === "timestamp" && !ascending' style="fill: black")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
-                .resizer
-            th(style='width: 120px;')
-                span(@click='toggleSort("read")')
-                    | Reads
-                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "read"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-                    svg.svgIcon(v-if='searchFor === "read" && ascending' style="fill: black")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
-                    svg.svgIcon(v-if='searchFor === "read" && !ascending' style="fill: black")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
-                .resizer
-            th(style='width: 120px;')
-                span(@click='toggleSort("complaint")')
-                    | Complaint
-                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "complaint"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-                    svg.svgIcon(v-if='searchFor === "complaint" && ascending' style="fill: black")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
-                    svg.svgIcon(v-if='searchFor === "complaint" && !ascending' style="fill: black")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
-                .resizer
-            th(style='width: 120px;')
-                span(@click='toggleSort("bounced")')
-                    | Bounced
-                    //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "bounced"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
-                    svg.svgIcon(v-if='searchFor === "bounced" && ascending' style="fill: black")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
-                    svg.svgIcon(v-if='searchFor === "bounced" && !ascending' style="fill: black")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
-            th.center(style="width:60px; padding:0")
-
-    template(v-slot:body)
-        template(v-if="fetching")
-            tr
-                td#loading(colspan="6").
-                    Loading {{mailType}} ... &nbsp;
-                    #[.loader(style="--loader-color:black; --loader-size:12px")]
-            tr(v-for="i in 9")
-                td(colspan="6")
-        template(v-else-if="!listDisplay || listDisplay.length === 0")
-            tr
-                td(colspan="6") No {{mailType}} Sent
-            tr(v-for="i in 9")
-                td(colspan="6")
-        template(v-else)
-            tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
-                td.overflow {{ converter(ns.subject) }}
-                td.overflow {{ dateFormat(ns.timestamp) }}
-                td.overflow {{ ns.read }}
-                td.overflow {{ ns.complaint }}
-                td.overflow {{ ns.bounced }}
-                td.center.buttonWrap(@click.stop)
-                    //- .material-symbols-outlined.notranslate.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
-                    svg.svgIcon.reactiveDanger.clickable.hide(@click.stop="emailToDelete = ns")
-                        use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
-                    
-            tr(v-for="i in (10 - listDisplay.length)")
-                td(colspan="6")
-
-br
-
-.tableMenu(style='display:block;text-align:center;')
-    .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
-        //- .material-symbols-outlined.notranslate.bold chevron_left
-        svg.svgIcon(style="width: 26px; height: 26px")
-            use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
-        span Previous&nbsp;&nbsp;
-    | &nbsp;&nbsp;
-    .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
-        span &nbsp;&nbsp;Next
-        //- .material-symbols-outlined.notranslate.bold chevron_right
-        svg.svgIcon(style="width: 26px; height: 26px")
-            use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
-
-Modal(:open="emailToDelete" @close="emailToDelete=false")
-    h4(style='margin:.5em 0 0;') Delete Email
-
-    hr
-
-    div(style='font-size:.8rem;')
-        p.
-            Are you sure you want to delete email:
-            #[br]
-            "#[b {{ emailToDelete?.subject }}]"?
-            #[br]
-            #[br]
-            This action cannot be undone.
+        br
+        
     br
-    div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
-        div(v-if="deleteMailLoad" style="width:100%; text-align:center")
-            .loader(style="--loader-color:blue; --loader-size:12px")
-        template(v-else)
-            button.noLine.warning(@click="emailToDelete = null") Cancel
-            button.final.warning(@click="deleteEmail(emailToDelete)") Delete
+
+    .tableMenu
+        a.iconClick.square(:href="'mailto:' + newsletterEndpoint" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+            //- .material-symbols-outlined.notranslate.fill mail
+            svg.svgIcon
+                use(xlink:href="@/assets/img/material-icon.svg#icon-mail-fill")
+            span &nbsp;&nbsp;Send {{mailType}}
+        .iconClick.square(@click="getPage(true)" :class="{'nonClickable' : fetching || !user?.email_verified || currentService.service.active <= 0}")
+            //- .material-symbols-outlined.notranslate.fill(:class='{loading:fetching}') refresh
+            svg.svgIcon(:class='{loading:fetching}')
+                use(xlink:href="@/assets/img/material-icon.svg#icon-refresh")
+            span &nbsp;&nbsp;Refresh
+
+
+    Table(:class='{disabled: !user?.email_verified || currentService.service.active <= 0}')
+        template(v-slot:head)
+            tr(:class="{'nonClickable' : fetching}")
+                th(style='width: 250px;')
+                    span(@click='toggleSort("subject")')
+                        | Subject
+                        //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "subject"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                        svg.svgIcon(v-if='searchFor === "subject" && ascending' style="fill: black")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                        svg.svgIcon(v-if='searchFor === "subject" && !ascending' style="fill: black")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
+                    .resizer
+                th(style='width: 120px;')
+                    span(@click='toggleSort("timestamp")')
+                        | Sent
+                        //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "timestamp"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                        svg.svgIcon(v-if='searchFor === "timestamp" && ascending' style="fill: black")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                        svg.svgIcon(v-if='searchFor === "timestamp" && !ascending' style="fill: black")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
+                    .resizer
+                th(style='width: 120px;')
+                    span(@click='toggleSort("read")')
+                        | Reads
+                        //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "read"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                        svg.svgIcon(v-if='searchFor === "read" && ascending' style="fill: black")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                        svg.svgIcon(v-if='searchFor === "read" && !ascending' style="fill: black")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
+                    .resizer
+                th(style='width: 120px;')
+                    span(@click='toggleSort("complaint")')
+                        | Complaint
+                        //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "complaint"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                        svg.svgIcon(v-if='searchFor === "complaint" && ascending' style="fill: black")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                        svg.svgIcon(v-if='searchFor === "complaint" && !ascending' style="fill: black")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
+                    .resizer
+                th(style='width: 120px;')
+                    span(@click='toggleSort("bounced")')
+                        | Bounced
+                        //- span.material-symbols-outlined.notranslate.fill(v-if='searchFor === "bounced"') {{ascending ? 'arrow_drop_down' : 'arrow_drop_up'}}
+                        svg.svgIcon(v-if='searchFor === "bounced" && ascending' style="fill: black")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
+                        svg.svgIcon(v-if='searchFor === "bounced" && !ascending' style="fill: black")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
+                th.center(style="width:60px; padding:0")
+
+        template(v-slot:body)
+            template(v-if="fetching")
+                tr
+                    td#loading(colspan="6").
+                        Loading {{mailType}} ... &nbsp;
+                        #[.loader(style="--loader-color:black; --loader-size:12px")]
+                tr(v-for="i in 9")
+                    td(colspan="6")
+            template(v-else-if="!listDisplay || listDisplay.length === 0")
+                tr
+                    td(colspan="6") No {{mailType}} Sent
+                tr(v-for="i in 9")
+                    td(colspan="6")
+            template(v-else)
+                tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
+                    td.overflow {{ converter(ns.subject) }}
+                    td.overflow {{ dateFormat(ns.timestamp) }}
+                    td.overflow {{ ns.read }}
+                    td.overflow {{ ns.complaint }}
+                    td.overflow {{ ns.bounced }}
+                    td.center.buttonWrap(@click.stop)
+                        //- .material-symbols-outlined.notranslate.fill.clickable.dangerIcon.hide(@click.stop="emailToDelete = ns") delete
+                        svg.svgIcon.reactiveDanger.clickable.hide(@click.stop="emailToDelete = ns")
+                            use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
+                        
+                tr(v-for="i in (10 - listDisplay.length)")
+                    td(colspan="6")
+
+    br
+
+    .tableMenu(style='display:block;text-align:center;')
+        .iconClick.square.arrow(@click="currentPage--;" :class="{'nonClickable': fetching || currentPage <= 1 }")
+            //- .material-symbols-outlined.notranslate.bold chevron_left
+            svg.svgIcon(style="width: 26px; height: 26px")
+                use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-left")
+            span Previous&nbsp;&nbsp;
+        | &nbsp;&nbsp;
+        .iconClick.square.arrow(@click="currentPage++;" :class="{'nonClickable': fetching || endOfList && currentPage >= maxPage }")
+            span &nbsp;&nbsp;Next
+            //- .material-symbols-outlined.notranslate.bold chevron_right
+            svg.svgIcon(style="width: 26px; height: 26px")
+                use(xlink:href="@/assets/img/material-icon.svg#icon-chevron-right")
+
+    Modal(:open="emailToDelete" @close="emailToDelete=false")
+        h4(style='margin:.5em 0 0;') Delete Email
+
+        hr
+
+        div(style='font-size:.8rem;')
+            p.
+                Are you sure you want to delete email:
+                #[br]
+                "#[b {{ emailToDelete?.subject }}]"?
+                #[br]
+                #[br]
+                This action cannot be undone.
+        br
+        div(style='justify-content:space-between;display:flex;align-items:center;min-height:44px;')
+            div(v-if="deleteMailLoad" style="width:100%; text-align:center")
+                .loader(style="--loader-color:blue; --loader-size:12px")
+            template(v-else)
+                button.noLine.warning(@click="emailToDelete = null") Cancel
+                button.final.warning(@click="deleteEmail(emailToDelete)") Delete
 
 </template>
 
@@ -211,6 +247,23 @@ type Newsletter = {
 }
 
 let pager: Pager = null;
+
+let emailAliasVal = ref("");
+let email_is_unverified_or_service_is_disabled = computed(() => !user?.email_verified || currentService.service.active <= 0);
+let registerAliasRunning = ref(false);
+function registerAlias(){
+    registerAliasRunning.value = true;
+    currentService.registerSenderEmail({
+        email_alias: emailAliasVal.value,
+    }).catch(err=>{
+        window.alert(err.message);
+    }).finally(()=>{
+        registerAliasRunning.value = false;
+    });
+}
+let needsEmailAlias = computed(() => {
+    return currentService.service.active > 0 && !currentService.service.email_alias;
+});
 
 // default form input values
 
@@ -547,6 +600,46 @@ thead {
 @media (pointer: coarse) {
     .hide {
         display: block !important;
+    }
+}
+form.register {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: flex-end;
+
+    .emailAlias {
+        display: inline-block;
+        position: relative;
+        height: 44px;
+
+        &::after {
+            content: "@mail.skapi.com";
+            position: absolute;
+            right: 10px;
+            line-height: 44px;
+            color: #999;
+            font-size: 0.8rem;
+            font-weight: 400;
+            pointer-events: none;
+            user-select: none;
+            z-index: 1;
+        }
+
+        input {
+            padding-right: 132px;
+        }
+
+        flex-grow: 1;
+    }
+
+    svg:hover {
+        border-radius: 50%;
+        background-color: rgba(41, 63, 230, 0.1);
+    }
+
+    button {
+        flex-shrink: 0;
     }
 }
 </style>

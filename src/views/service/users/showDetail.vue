@@ -8,7 +8,7 @@
             input(:value='selectedUser?.user_id' name='user_id' hidden)
         .row
             .key(style='font-weight:normal;') ACCESS GROUP:
-            .value {{ selectedUser?.access_group }}
+            .value {{ Math.abs(selectedUser?.access_group || 0) }} {{(selectedUser?.access_group || 0) < 0 ? "(Disabled)" : "" }}
         .row
             .key(style='font-weight:normal;') LAST LOGIN/UPDATE:
             .value {{ new Date(selectedUser?.timestamp).toLocaleString() }}

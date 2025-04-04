@@ -170,6 +170,7 @@ export type ServiceObj = {
     subject: string;
     url: string;
   };
+  email_alias?: string; // has value if email alias is registered
 };
 
 type SubscriptionObj = {
@@ -321,6 +322,31 @@ export default class Service {
   //   // cognito signup process below
   //   return await skapi.util.request('admin-signup', Object.assign({ service: this.id, owner: this.owner }, params), { auth: true });
   // }
+
+  async registerSenderEmail(params: {
+    email_alias: string;
+  }): Promise<"SUCCESS: Sender e-mail has been registered."> {
+    let emailAlias: string;
+
+    if (params && 'email_alias' in params) {
+      emailAlias = params.email_alias;
+    } else {
+      emailAlias = '';
+    }
+
+    if (!emailAlias) {
+      throw 'Email is required.';
+    }
+
+    const specialCharPattern = /[!#$%^&*(),?":{}|<>]/g;
+    if (specialCharPattern.test(emailAlias)) {
+      throw 'Email contains special characters.';
+    }
+
+    let res = await skapi.util.request(this.admin_private_endpoint + 'register-sender-email', Object.assign({ service: this.id, owner: this.owner }, { email_alias: emailAlias }), { auth: true });
+    this.service.email_alias = emailAlias;
+    return res;
+  }
 
   registerOpenIDLogger(params: {
     url: string; // openid token 해석 url
@@ -1155,6 +1181,7 @@ export default class Service {
       let signedParams = Object.assign(
         {
           key: prefix + (f.webkitRelativePath || f.name),
+          size: f.size || 0,
           contentType: f.type || ct,
         },
         getSignedParams
