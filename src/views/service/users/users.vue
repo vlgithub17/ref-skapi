@@ -285,6 +285,7 @@ br
                   :src="'https://flagcdn.com/' + user.locale.toLowerCase() + '.svg'",
                   style="width: 16px; object-fit: contain"
                 )
+              td.overflow(v-else-if="c.key === 'access_group'" :style="{color: user[c.key] < 0 ? 'var(--caution-color)' : null }") {{ Math.abs(user[c.key]) }} {{user[c.key] < 0 ? "(Disabled)" : "" }}
               td.overflow(v-else-if="c.value") {{ user[c.key] || "-" }}
 
         tr(v-for="i in 10 - listDisplay.length")
