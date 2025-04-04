@@ -1,6 +1,6 @@
 <template lang="pug">
 main#serviceList
-    //- section.infoBox
+    section.infoBox
         h2 My Services
 
         hr
@@ -19,20 +19,6 @@ main#serviceList
             button.final(type="submit" style='flex-shrink: 0;') Create
         
         br
-
-    section.section
-        .title.faktum My Services
-        .desc Create a new service to get started.
-
-        .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
-            //- .material-symbols-outlined.notranslate.fill warning
-            svg
-                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
-            router-link(to="/account-setting") Please verify your email address to create services.
-
-        form(@submit.prevent="createService" :class='{disabled: !user?.email_verified}')
-            input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
-            button.final(type="submit" style='width: 100%; margin-top:0.5rem') Create
         
     .tableWrap(style="margin-top:.5rem")
         Table(resizable)
@@ -269,25 +255,6 @@ let getClass = (serviceClass: Service, what: string) => {
 #serviceList {
     max-width: 1200px;
     margin: 8px auto 0;
-}
-
-.section {
-    max-width: 570px;
-    margin: 0 auto;
-    padding: 6rem 20px;
-    text-align: center;
-
-    .title {
-        font-size: 1.4rem;
-        margin-bottom: 1rem;
-        line-height: 1.5;
-    }
-
-    .desc {
-        margin-bottom: 1rem;
-        line-height: 1.9;
-        color: #333;
-    }
 }
 
 // table style below

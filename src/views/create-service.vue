@@ -1,80 +1,20 @@
 <template lang="pug">
+br
+br
+br
+
 main#create
-    //- router-link(to="/my-services")
+    router-link(to="/my-services")
         img(src="@/assets/img/logo/logo.png" style="height: 2rem;")
 
-    //- .bottomLineTitle Create a New Service
+    .bottomLineTitle Create a New Service
 
-    //- p
-    //-     | Choose a plan for your service "
-    //-     span(style='font-weight:500') {{newServiceName}}
-    //-     | "
-
-    .section
-        router-link(to="/my-services")
-            img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 44px;margin-bottom: 0.5rem;")
-        .title.faktum Create a New Service
-        .desc Choose a plan for your service #[span.wordset.newname {{newServiceName}}]
-
-    .plan-wrap.card-wrap
-        .plan
-            .card
-                .title Trial
-                //- .option 
-                    TabMenu(v-model="activeTabs.trialPlan" :tabs="['basic']")
-                .price
-                    .faktum $0
-                    span /mo
-                .desc Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
-                button.final(type="button") Select
-            ul.provides
-                li 10K User Accounts
-                li 4GB Database Storage
-                li 50GB File Storage
-                li.warning Sending bulk emails not included
-                li.warning All user data is deleted every 30 days
-        .plan
-            .card
-                .title Standard 
-                //- .option 
-                    TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
-                .price
-                    template(v-if="activeTabs.standardPlan === 0") 
-                        .faktum $19
-                        span /mo
-                    template(v-else)
-                        .faktum $300
-                        span /only-once
-                .desc 
-                    template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
-                    template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
-                button.final(type="button") Select
-            ul.provides
-                li 10K User Accounts
-                li User Invitation System
-                li Website Hosting
-                li 8GB Database Storage
-                li 100GB File Storage & Subdomain Hosting
-                li Automated Emails & Sending Bulk Emails
-                li 1GB Email Storage
-        .plan
-            .card
-                .title Premium 
-                //- .option 
-                    TabMenu(v-model="activeTabs.premiumPlan" :tabs="['basic']")
-                .price
-                    .faktum $89
-                    span /mo
-                .desc Empower your business with formcarry, #[span.wordset for big businesses]
-                button.final(type="button") Select
-            ul.provides
-                li Includes all Standard Plan features
-                li 100K User Accounts
-                li 100GB Database Storage
-                li 1TB File Storage & Subdomain Hosting
-                li 10GB Email Storage
+    p
+        | Choose a plan for your service "
+        span(style='font-weight:500') {{newServiceName}}
+        | "
     
-    //- section.planWrap(:class="{'disabled' : promiseRunning}")
+    section.planWrap(:class="{'disabled' : promiseRunning}")
         .infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
             .mode Trial Mode
             .price $0
@@ -116,7 +56,7 @@ main#create
 
     br
 
-    //- p(style='font-size: 16px;display: flex;justify-content: center;') Selected Plan:&nbsp; #[b(style='color:var(--main-color)') {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
+    p(style='font-size: 16px;display: flex;justify-content: center;') Selected Plan:&nbsp; #[b(style='color:var(--main-color)') {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
     .inputWrap(@submit.prevent="createService")
         div(v-if="promiseRunning" style="text-align:center")
             .loader(style="--loader-color:blue; --loader-size: 12px")
@@ -135,7 +75,6 @@ import { serviceIdList, serviceList } from '@/views/service-list'
 import { skapi } from '@/main';
 import { customer } from '@/code/user';
 import Service from '@/code/service';
-import TabMenu from '@/components/tab.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -152,11 +91,6 @@ let service = {
 let promiseRunning = ref(false);
 let serviceMode = ref('standard');
 let newServiceName = route.params.name as string;
-let activeTabs = ref({
-    trialPlan: 0,
-    standardPlan: 0,
-    premiumPlan: 0,
-});
 
 let createSubscription = async (ticket_id, service_info) => {
     let resolvedCustomer = await customer;
@@ -224,30 +158,6 @@ let createService = () => {
     margin: 0 auto;
 }
 
-.section {
-    max-width: 570px;
-    margin: 0 auto;
-    padding: 3rem 20px;
-    text-align: center;
-
-    .title {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-        line-height: 1.5;
-    }
-
-    .desc {
-        margin-bottom: 1rem;
-        line-height: 1.9;
-        color: #333;
-    }
-}
-
-.newname {
-    font-weight: bold;
-    color: var(--main-color);
-}
-
 .inputWrap {
     display: flex;
     gap: 8px;
@@ -262,139 +172,92 @@ input {
     flex-grow: 1;
 }
 
-.card-wrap {
-    max-width: 100%;
-    margin: 0 auto;
+.planWrap {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    // text-align: center;
+    justify-content: space-between;
+    gap: 20px;
 
-    .card {
+    .infoBox {
+        width: 280px;
+        padding: 20px;
         flex-grow: 1;
-        width: 48%;
-        min-width: 250px;
-        border: 1px solid rgba(0,0,0,0.1);
-        border-radius: 12px;
-        padding: 1rem;
-        transition: all .3s;
+        user-select: none;
         cursor: pointer;
-        background-color: #fff;
-
+        box-shadow: 0 0 0 4px rgba(0,0,0,0.1) inset;
         &:hover {
-            // border-color: var(--main-color);
-            box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
+            li {
+                &::before {
+                    filter: brightness(0) saturate(100%) invert(12%) sepia(84%) saturate(6348%) hue-rotate(240deg) brightness(96%) contrast(87%);
+                }
+            }
         }
 
-        &.dark {
-            // background-color: var(--main-color);
-            // background: linear-gradient(to right, rgb(11, 53, 218), rgb(172, 250, 5), rgb(172, 250, 5), rgb(11, 53, 218));
-            // color: #fff;
-        }
-        
-        a {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            text-decoration: none;
-            color: #333;
-        }
+        &.checked {
+            background-color: rgba(41, 63, 230, 0.02);
+            box-shadow: 0 0 0 4px var(--main-color) inset !important;
 
-        .icon {
-            width: 3rem;
-            height: 3rem;
-        }
-        .content {
-            text-align: left;
-
-            p {
-                margin: 0;
-
-                &.small {
-                    font-size: 0.8rem;
-                    color: rgba(0,0,0,0.5);
+            li {
+                &::before {
+                    filter: brightness(0) saturate(100%) invert(12%) sepia(84%) saturate(6348%) hue-rotate(240deg) brightness(96%) contrast(87%);
                 }
             }
         }
     }
-}
 
-.plan-wrap {
-    align-items: start;
-
-    .plan {
-        width: 31%;
-        min-width: 250px;
-        flex-grow: 1;
-    }
-    .card {
-        width: 100%;
-        cursor: default;
-    }
-    .title {
-        font-size: 1rem;
-        margin-bottom: 1rem;
-    }
-    .option {
-        position: relative;
-        height: 2rem;
-        margin-bottom: 1rem;
-
-        .tab-menu {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-55%, -50%);
-            scale: 0.9;
-            margin: 0;
-        }
-    }
     .price {
-        display: flex;
-        align-items: baseline;
-        justify-content: center;
-        margin-bottom: 1rem;
-
-        .faktum {
-            font-size: 2.4rem;
-            margin-right: 0.5rem;
-        }
-        span {
-            color: #888
-        }
-    }
-    .desc {
-        margin: 0;
-        line-height: 1.4;
-        font-size: 0.8rem;
-        color: #777;
-        margin-bottom: 1rem;
-    }
-    button {
-        width: 100% !important;
-    }
-}
-
-.provides {
-    li {
         position: relative;
-        list-style: none;
-        text-align: left;
-        margin-bottom: 0.5rem;
-        font-size: 0.8rem;
+        display: inline-block;
+        font-size: 1.6rem;
+        font-weight: 700;
+        padding-top: 1rem;
 
         &::before {
             position: absolute;
-            content: '';
-            left: -1.3rem;
-            top: 0.1rem;
-            background: url('@/assets/img/icon/check.svg') no-repeat;
-            background-size: cover;
-            width: 16px;
-            height: 16px;
-            opacity: 0.8;
+            content: '/mo';
+            right: -2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--black-4);
+        }
+    }
+
+    ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        line-height: 1.4rem;
+
+        li {
+            position: relative;
+            color: rgba(0, 0, 0, 0.60);
+            font-size: 0.8rem;
+            font-weight: 400;
+            padding-left: 24px;
+
+            &::before {
+                position: absolute;
+                content: '';
+                left: 0;
+                top: 0.25rem;
+                background: url('@/assets/img/icon/check.svg') no-repeat;
+                background-size: cover;
+                width: 16px;
+                height: 16px;
+                opacity: 0.8;
+            }
+
+            &.warning {
+                &::before {
+                    background: url('@/assets/img/icon/warning.svg') no-repeat;
+                    background-size: cover;
+                    width: 20px;
+                    height: 20px;
+                    left: -2px;
+                }
+            }
         }
     }
 }
