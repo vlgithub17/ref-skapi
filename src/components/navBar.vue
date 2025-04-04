@@ -235,12 +235,16 @@ img.symbol.mobile {
             }
 
             .router {
+				position: relative;
                 flex-grow: 1;
 
                 p {
                     margin: 0;
                 }
                 .small {
+					position: absolute;
+					left: 0;
+					top: 0;
                     // line-height: 0.7;
                     font-size: 0.7rem;
                     cursor: pointer;
@@ -259,6 +263,7 @@ img.symbol.mobile {
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
+					margin-top: 0.7rem;
                 }
             }
         }
