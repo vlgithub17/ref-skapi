@@ -14,7 +14,7 @@ main
 
         p.desc Skapi is a fully serverless backend API that works seamlessly with pure HTML and JavaScript—no complex installations, no backend configurations, and no database management required.
 
-        .vscode(style="border: 1px solid #2b2b2b")
+        .vscode(style="border: 1px solid #2b2b2b; height: 240px")
             .header
                 .circle
                     .cir
@@ -29,16 +29,11 @@ main
             .body
                 pre.
                     #[span(style="color:#999") &lt;!]#[span(style="color:#33adff") DOCTYPE] #[span(style="color:#44E9FF") html]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") html]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") head]#[span(style="color:#999") &gt;]
-                        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") head]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") body]#[span(style="color:#999") &gt;]
-                        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-                            #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "your_service_id"], #[span(style="color:#FFED91") "your_owner_id"]);
-                        #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") body]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") html]#[span(style="color:#999") &gt;]
+                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
+                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
+                        #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "your_service_id"], #[span(style="color:#FFED91") "your_owner_id"]);
+                    #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
+
             .copied Copied! 👏
 
     .dynamo-section.center
@@ -469,12 +464,15 @@ onMounted(() => {
 
 .vscode {
     position: relative;
-    max-width: 570px;
-    height: 340px;
+    max-width: 640px;
+    height: 360px;
     margin: 0 auto;
     border-radius: 12px;
     background-color: #181818;
     overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
 
     .header {
         position: relative;
@@ -524,7 +522,8 @@ onMounted(() => {
         .copy {
             position: absolute;
             right: 16px;
-            bottom: calc(0px - 24px - 0.8rem);
+            // bottom: calc(0px - 24px - 0.8rem);
+
             fill: #fff;
             cursor: pointer;
             transition: all .3s;
@@ -532,10 +531,21 @@ onMounted(() => {
             &:hover {
                 transform: scale(1.1);
             }
+
+            @media (min-width: 600px) {
+                &::before {
+                    color: #fff;
+                    content: 'copy';
+                    font-size: 0.6rem;
+                    vertical-align: middle;
+                    font-family: monospace;
+                }
+            }
         }
     }
     .body {
-        height: 300px;
+        // height: 300px;
+        flex-grow: 1;
         text-align: left;
         background-color: #1f1f1f;
         border-radius: 0 0 12px 12px;
@@ -615,8 +625,10 @@ onMounted(() => {
         li {
             display: inline-block;
             list-style: none;
-            width: 220px;
-            height: 250px;
+            // width: 220px;
+            // height: 250px;
+            width: 13em;
+            height: 15em;
             // line-height: 220px;
             // margin-right: 4vw;
             border: 1px solid #F0F2FA;
