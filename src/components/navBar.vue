@@ -5,7 +5,7 @@ nav#navBar(ref="navBar")
             template(v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services'")
                 img.symbol(src="@/assets/img/logo/symbol-logo.png" @click="router.push('/')")
                 .router
-                    p.small(@click="router.push('/my-services')") My Services/
+                    span.small(@click="router.push('/my-services')") My Services/
                     p.big {{ serviceName }}
             router-link.logo(to="/" v-else)
                 img.symbol(src="@/assets/img/logo/symbol-logo.png" @click="router.push('/')")
@@ -143,16 +143,16 @@ onBeforeUnmount(() => {
 });
 
 watch(() => route.name, (nv, ov) => {
-	if(nv) {
+    if(nv) {
         routeName.value = typeof nv === 'string' ? nv : '';
-	}
-	// if(nv !== 'home') {
-	// 	document.body.style.setProperty('--nav-position', 'sticky');
-	// 	document.body.style.setProperty('--nav-top', '0px');
-	// } else {
-	// 	document.body.style.setProperty('--nav-position', 'fixed');
-	// 	document.body.style.setProperty('--nav-top', '20px');
-	// }
+    }
+    // if(nv !== 'home') {
+    // 	document.body.style.setProperty('--nav-position', 'sticky');
+    // 	document.body.style.setProperty('--nav-top', '0px');
+    // } else {
+    // 	document.body.style.setProperty('--nav-position', 'fixed');
+    // 	document.body.style.setProperty('--nav-top', '20px');
+    // }
 }, { immediate: true });
 </script>
 
@@ -187,7 +187,7 @@ img.symbol.mobile {
     fill: #333; // for svg
     justify-content: center;
     // background-color: #fff;
-	// border-radius: 12px;
+    // border-radius: 12px;
 
     font-size: 20px;
     // border-bottom: 1px solid rgba(0,0,0,0.1);
@@ -201,23 +201,24 @@ img.symbol.mobile {
 
         max-width: 80rem;
         padding: 16px 20px;
-		// background-color: #fff;
-		background-color: rgba(255, 255, 255, 0.8);
-		// border: 1px solid rgba(0, 0, 0, 0.05);
-		border: 1.5px solid rgba(255, 255, 255, 0.1);
-		backdrop-filter: blur(20px);
-		border-radius: 12px;
-		// box-shadow: rgba(66, 62, 121, 0.06) 0px 48px 96px -24px;
-		box-shadow: rgba(66, 62, 121, 0.1) 0px 0px 90px -14px;
-		margin: 0 var(--nav-top);
-		border-color: #f7f9fc;
+        // background-color: #fff;
+        background-color: rgba(255, 255, 255, 0.8);
+        // border: 1px solid rgba(0, 0, 0, 0.05);
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 12px;
+        // box-shadow: rgba(66, 62, 121, 0.06) 0px 48px 96px -24px;
+        box-shadow: rgba(66, 62, 121, 0.1) 0px 0px 90px -14px;
+        margin: 0 var(--nav-top);
+        border-color: #f7f9fc;
 
         .left {
             // flex-shrink: 0;
             flex-grow: 1;
             display:flex;
+            align-items: center;
             gap:10px;
-            vertical-align: middle;
+            // vertical-align: middle;
 
             .symbol {
                 width:26px;
@@ -240,7 +241,7 @@ img.symbol.mobile {
                     margin: 0;
                 }
                 .small {
-                    line-height: 1.1;
+                    // line-height: 0.7;
                     font-size: 0.7rem;
                     cursor: pointer;
                     white-space: nowrap;
@@ -252,8 +253,8 @@ img.symbol.mobile {
                 }
                 .big {
                     width: 100%;
-                    min-width: 60px;
-                    line-height: 0.9;
+                    // min-width: 60px;
+                    // line-height: 1.2;
                     font-weight: bold;
                     white-space: nowrap;
                     overflow: hidden;
@@ -464,14 +465,14 @@ img.symbol.mobile {
 }
 
 @media (max-width: 476px) {
-	#navBar {
-		.wrap {
-			.right {
-				.go-github {
-					display: none;
-				}
-			}
-		}
-	}
+    #navBar {
+        .wrap {
+            .right {
+                .go-github {
+                    display: none;
+                }
+            }
+        }
+    }
 }
 </style>

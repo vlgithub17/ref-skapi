@@ -1,14 +1,16 @@
 <template lang="pug">
 main
-    .dynamo-section.main.center.wide(style="padding: 11rem 20px")
+    .dynamo-section.main.center.wide
         //- p(style="color:var(--main-color); font-weight:500; font-size:14px;") BACKEND API
         img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 44px;")
 
         br
         br
 
-        .title.faktum Serverless #[span.wordset Backend API]
-        .title.faktum for HTML Frontend
+        .title.faktum 
+            | Serverless #[span.wordset Backend API]
+            br 
+            | for HTML Frontend
 
         p.desc Skapi is a fully serverless backend API that works seamlessly with pure HTML and JavaScript—no complex installations, no backend configurations, and no database management required.
 
@@ -40,8 +42,10 @@ main
             .copied Copied! 👏
 
     .dynamo-section.center
-        .title.faktum Works Seamlessly
-        .title.faktum with Pure HTML
+        .title.faktum 
+            | Works Seamlessly
+            br
+            | with Pure HTML
 
         .desc No need for complex JavaScript just to handle user input—Skapi fully embraces pure HTML forms, making backend interaction as simple as submitting a form.
 
@@ -209,8 +213,10 @@ main
             img(v-else-if="hoverFramework === 'vue'" src="@/assets/img/icon/vue.png" alt="Vue logo")
             img(v-else-if="hoverFramework === 'html'" src="@/assets/img/icon/html.png" alt="Html logo")
 
-        .title.faktum Built with TypeScript,
-        .title.faktum Compatible with Any JS Framework
+        .title.faktum 
+            | Built with TypeScript,
+            br
+            | Compatible #[span.wordset with Any #[span.wordset JS Framework]]
 
         .desc Skapi is compatible with Vue.js, React, Angular, and more, providing pre-built templates for various frameworks. It also works seamlessly with plain HTML without requiring any dependencies.
 
@@ -259,7 +265,7 @@ main
                             .faktum $300
                             span /only-once
                     .desc 
-                        template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use for small projects #[span.wordset or businesses.]
+                        template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
                         template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
                     button.final(type="button") Get
                 ul.provides
@@ -296,7 +302,6 @@ main
 
     .dynamo-section.center
         .title.faktum Try Skapi for Free!
-        .desc We offer a free trial so you can start building today
         .plan-wrap.card-wrap(style="max-width: 400px")
             .plan
                 .card
@@ -304,7 +309,7 @@ main
                     .price
                         .faktum FREE
                         span /mo
-                    .desc Suits best for hobby use for small projects #[span.wordset or businesses.]
+                    .desc Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
                     button.final(type="button") Get
                 ul.provides
                     li 10K User Accounts
@@ -326,7 +331,10 @@ main
     .dynamo-section.center.wide
         .title.faktum Start Building Today!
 
-        .desc Experience the serverless backend development #[strong.wordset 🚀 No servers. No deployment. Just pure HTML & JavaScript.]
+        .desc 
+            | Experience #[span.wordset the serverless backend development.]
+            br
+            | 🚀 No servers. No deployment. #[strong.wordset Just pure HTML & JavaScript.]
 
         a(href='https://docs.skapi.com' target='_blank')
             button.final(type="button") Get Started
@@ -416,17 +424,15 @@ onMounted(() => {
     }
 
     &.wide {
-        max-width:unset;
+        max-width: unset;
         background-color:rgb(247, 249, 252);
         margin: 0 10px;
         border-radius: 18px;
         padding: 5rem 20px;
 
         &.main {
-            // margin: 0;
             margin-top: 10px;
             background-color: #060A23;
-            // border-radius: 0 0 48px 48px;
             color: #D9DADD;
 
             .desc {
@@ -436,8 +442,7 @@ onMounted(() => {
     }
 
     &.main {
-        margin-top: 5rem;
-        margin-bottom: 0;
+        padding: 11rem 20px;
 
         .title {
             font-size: 3rem;
@@ -451,6 +456,7 @@ onMounted(() => {
     .title {
         font-size: 2.4rem;
         margin-bottom: 1rem;
+        line-height: 1.5;
     }
 
     .desc {
@@ -512,6 +518,7 @@ onMounted(() => {
             border-radius: 6px;
             font-size: 14px;
             padding: 4px 0;
+            text-align: center;
         }
 
         .copy {
@@ -659,6 +666,7 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
     gap: 1rem;
+    // text-align: center;
 
     .card {
         flex-grow: 1;
@@ -689,36 +697,6 @@ onMounted(() => {
             text-decoration: none;
             color: #333;
         }
-
-        // .change-toggle {
-        //     // position: relative;
-        //     display: flex;
-        //     align-items: center;
-        //     background-color: rgba(0,0,0,0.03);
-        //     border-radius: 12px;
-        //     padding: 0.7rem;
-        //     gap: 0.8rem;
-
-        //     img {
-        //         width: 2.5rem;
-
-        //         &.skapi {
-        //             width: 2rem;
-        //         }
-        //     }
-        //     .fade-dot-wrap {
-        //         .dot {
-        //             display: inline-block;
-        //             vertical-align: middle;
-        //             width: 6px;
-        //             height: 6px;
-        //             margin: 0 4px;
-        //             background: #333;
-        //             border-radius: 50%;
-        //             opacity: 0.5;
-        //         }
-        //     }
-        // }
 
         .icon {
             width: 3rem;
@@ -793,24 +771,12 @@ onMounted(() => {
 }
 
 .plan-wrap {
-    // max-width: unset;
     align-items: start;
 
     .plan {
-        // width: 48%;
         width: 31%;
         min-width: 250px;
         flex-grow: 1;
-
-        // &.trial {
-        //     width: 48%;
-        //     display: flex;
-        //     flex-wrap: wrap;
-
-        //     .card {
-        //         width: 48% !important;
-        //     }
-        // }
     }
     .card {
         width: 100%;
@@ -820,7 +786,18 @@ onMounted(() => {
         font-size: 1rem;
     }
     .option {
-        scale: 0.9;
+        position: relative;
+        height: 2rem;
+        margin-bottom: 1rem;
+
+        .tab-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-55%, -50%);
+            scale: 0.9;
+            margin: 0;
+        }
     }
     .price {
         display: flex;
@@ -949,6 +926,47 @@ onMounted(() => {
     .des {
         font-size: 0.9rem;
         color: #555;
+    }
+}
+
+@media (max-width: 576px) {
+    .dynamo-section {
+        &.center {
+            text-align: left;
+        }
+        
+        &.main {
+            padding: 6rem 20px;
+
+            .title {
+                font-size: 48px;
+            }
+
+            .symbol {
+                display: none;
+            }
+        }
+
+        .title {
+            line-height: 1.4;
+        }
+    }
+
+    .plan-wrap {
+        .price {
+            justify-content: start;
+        }
+
+        .option {
+            height: 2.3rem;
+
+            .tab-menu {
+                top: unset;
+                left: -8px;
+                // transform: translate(0, 0);
+                transform: unset;
+            }
+        }
     }
 }
 </style>
