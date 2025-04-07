@@ -17,7 +17,7 @@ main#create
         .desc Choose a plan for your service #[span.wordset.newname {{newServiceName}}]
 
     .plan-wrap.card-wrap
-        .plan
+        .plan(:class="{'selected' : serviceMode == 'trial'}")
             .card
                 .title Trial
                 //- .option 
@@ -26,14 +26,17 @@ main#create
                     .faktum $0
                     span /mo
                 .desc Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
-                button.final(type="button") Select
+                button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('trial')") 
+                    template(v-if="serviceMode == 'trial' && promiseRunning")
+                        .loader(style="--loader-color:white; --loader-size: 12px")
+                    template(v-else) Select
             ul.provides
                 li 10K User Accounts
                 li 4GB Database Storage
                 li 50GB File Storage
                 li.warning Sending bulk emails not included
                 li.warning All user data is deleted every 30 days
-        .plan
+        .plan(:class="{'selected' : serviceMode == 'standard'}")
             .card
                 .title Standard 
                 //- .option 
@@ -48,7 +51,10 @@ main#create
                 .desc 
                     template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
                     template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
-                button.final(type="button") Select
+                button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('standard')")
+                    template(v-if="serviceMode == 'standard' && promiseRunning")
+                        .loader(style="--loader-color:white; --loader-size: 12px")
+                    template(v-else) Select
             ul.provides
                 li 10K User Accounts
                 li User Invitation System
@@ -57,7 +63,7 @@ main#create
                 li 100GB File Storage & Subdomain Hosting
                 li Automated Emails & Sending Bulk Emails
                 li 1GB Email Storage
-        .plan
+        .plan(:class="{'selected' : serviceMode == 'premium'}")
             .card
                 .title Premium 
                 //- .option 
@@ -66,7 +72,10 @@ main#create
                     .faktum $89
                     span /mo
                 .desc Empower your business with formcarry, #[span.wordset for big businesses]
-                button.final(type="button") Select
+                button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('premium')")
+                    template(v-if="serviceMode == 'premium' && promiseRunning")
+                        .loader(style="--loader-color:white; --loader-size: 12px")
+                    template(v-else) Select
             ul.provides
                 li Includes all Standard Plan features
                 li 100K User Accounts
@@ -117,7 +126,7 @@ main#create
     br
 
     //- p(style='font-size: 16px;display: flex;justify-content: center;') Selected Plan:&nbsp; #[b(style='color:var(--main-color)') {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
-    .inputWrap(@submit.prevent="createService")
+    //- .inputWrap(@submit.prevent="createService")
         div(v-if="promiseRunning" style="text-align:center")
             .loader(style="--loader-color:blue; --loader-size: 12px")
         template(v-else)
@@ -215,6 +224,11 @@ let createService = () => {
             alert(err.message);
         })
 }
+
+let selectedPlan = (plan: string) => {
+    serviceMode.value = plan;
+    createService();
+}
 </script>
 
 <style scoped lang="less">
@@ -227,7 +241,7 @@ let createService = () => {
 .section {
     max-width: 570px;
     margin: 0 auto;
-    padding: 3rem 20px;
+    padding: 4rem 20px;
     text-align: center;
 
     .title {
@@ -328,6 +342,32 @@ input {
         width: 31%;
         min-width: 250px;
         flex-grow: 1;
+        opacity: 0.5;
+        transition: all .3s;
+
+        &.selected {
+            scale: 1.05;
+            opacity: 1;
+            
+            .card {
+                box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
+            }
+            .provides {
+                li {
+                    // &::before {
+                    // 	background: url('@/assets/img/icon/check.svg') no-repeat;
+                    // 	background-size: cover;
+                    // 	width: 16px;
+                    // 	height: 16px;
+                    // 	opacity: 1;
+                    // }
+                }
+            }
+        }
+
+        &:hover {
+            opacity: 1;
+        }
     }
     .card {
         width: 100%;
