@@ -9,12 +9,85 @@ main#create
 
     .bottomLineTitle Create a New Service
 
-    p
-        | Choose a plan for your service "
-        span(style='font-weight:500') {{newServiceName}}
-        | "
+    //- p
+    //-     | Choose a plan for your service "
+    //-     span(style='font-weight:500') {{newServiceName}}
+    //-     | "
+
+    .section
+        router-link(to="/my-services")
+            img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 44px;margin-bottom: 0.5rem;")
+        .title.faktum Create a New Service
+        .desc Choose a plan for your service #[span.wordset.newname {{newServiceName}}]
+
+    .plan-wrap.card-wrap
+        .plan(:class="{'selected' : serviceMode == 'trial'}")
+            .card
+                .title Trial
+                //- .option 
+                    TabMenu(v-model="activeTabs.trialPlan" :tabs="['basic']")
+                .price
+                    .faktum $0
+                    span /mo
+                .desc Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
+                button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('trial')") 
+                    template(v-if="serviceMode == 'trial' && promiseRunning")
+                        .loader(style="--loader-color:white; --loader-size: 12px")
+                    template(v-else) Select
+            ul.provides
+                li 10K User Accounts
+                li 4GB Database Storage
+                li 50GB File Storage
+                li.warning Sending bulk emails not included
+                li.warning All user data is deleted every 30 days
+        .plan(:class="{'selected' : serviceMode == 'standard'}")
+            .card
+                .title Standard 
+                //- .option 
+                    TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
+                .price
+                    template(v-if="activeTabs.standardPlan === 0") 
+                        .faktum $19
+                        span /mo
+                    template(v-else)
+                        .faktum $300
+                        span /only-once
+                .desc 
+                    template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
+                    template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
+                button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('standard')")
+                    template(v-if="serviceMode == 'standard' && promiseRunning")
+                        .loader(style="--loader-color:white; --loader-size: 12px")
+                    template(v-else) Select
+            ul.provides
+                li 10K User Accounts
+                li User Invitation System
+                li Website Hosting
+                li 8GB Database Storage
+                li 100GB File Storage & Subdomain Hosting
+                li Automated Emails & Sending Bulk Emails
+                li 1GB Email Storage
+        .plan(:class="{'selected' : serviceMode == 'premium'}")
+            .card
+                .title Premium 
+                //- .option 
+                    TabMenu(v-model="activeTabs.premiumPlan" :tabs="['basic']")
+                .price
+                    .faktum $89
+                    span /mo
+                .desc Empower your business with formcarry, #[span.wordset for big businesses]
+                button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('premium')")
+                    template(v-if="serviceMode == 'premium' && promiseRunning")
+                        .loader(style="--loader-color:white; --loader-size: 12px")
+                    template(v-else) Select
+            ul.provides
+                li Includes all Standard Plan features
+                li 100K User Accounts
+                li 100GB Database Storage
+                li 1TB File Storage & Subdomain Hosting
+                li 10GB Email Storage
     
-    section.planWrap(:class="{'disabled' : promiseRunning}")
+    //- section.planWrap(:class="{'disabled' : promiseRunning}")
         .infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
             .mode Trial Mode
             .price $0
@@ -56,8 +129,8 @@ main#create
 
     br
 
-    p(style='font-size: 16px;display: flex;justify-content: center;') Selected Plan:&nbsp; #[b(style='color:var(--main-color)') {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
-    .inputWrap(@submit.prevent="createService")
+    //- p(style='font-size: 16px;display: flex;justify-content: center;') Selected Plan:&nbsp; #[b(style='color:var(--main-color)') {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
+    //- .inputWrap(@submit.prevent="createService")
         div(v-if="promiseRunning" style="text-align:center")
             .loader(style="--loader-color:blue; --loader-size: 12px")
         template(v-else)
@@ -149,6 +222,11 @@ let createService = () => {
             alert(err.message);
         })
 }
+
+let selectedPlan = (plan: string) => {
+    serviceMode.value = plan;
+    createService();
+}
 </script>
 
 <style scoped lang="less">
@@ -156,6 +234,30 @@ let createService = () => {
     max-width: 1000px;
     padding: 0 8px;
     margin: 0 auto;
+}
+
+.section {
+    max-width: 570px;
+    margin: 0 auto;
+    padding: 4rem 20px;
+    text-align: center;
+
+    .title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .desc {
+        margin-bottom: 1rem;
+        line-height: 1.9;
+        color: #333;
+    }
+}
+
+.newname {
+    font-weight: bold;
+    color: var(--main-color);
 }
 
 .inputWrap {
@@ -186,26 +288,86 @@ input {
         cursor: pointer;
         box-shadow: 0 0 0 4px rgba(0,0,0,0.1) inset;
         &:hover {
-            li {
-                &::before {
-                    filter: brightness(0) saturate(100%) invert(12%) sepia(84%) saturate(6348%) hue-rotate(240deg) brightness(96%) contrast(87%);
-                }
-            }
+            // border-color: var(--main-color);
+            box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
         }
 
-        &.checked {
-            background-color: rgba(41, 63, 230, 0.02);
-            box-shadow: 0 0 0 4px var(--main-color) inset !important;
+        &.dark {
+            // background-color: var(--main-color);
+            // background: linear-gradient(to right, rgb(11, 53, 218), rgb(172, 250, 5), rgb(172, 250, 5), rgb(11, 53, 218));
+            // color: #fff;
+        }
+        
+        a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: #333;
+        }
 
-            li {
-                &::before {
-                    filter: brightness(0) saturate(100%) invert(12%) sepia(84%) saturate(6348%) hue-rotate(240deg) brightness(96%) contrast(87%);
+        .icon {
+            width: 3rem;
+            height: 3rem;
+        }
+        .content {
+            text-align: left;
+
+            p {
+                margin: 0;
+
+                &.small {
+                    font-size: 0.8rem;
+                    color: rgba(0,0,0,0.5);
                 }
             }
         }
     }
+}
 
-    .price {
+.plan-wrap {
+    align-items: start;
+
+    .plan {
+        width: 31%;
+        min-width: 250px;
+        flex-grow: 1;
+        opacity: 0.5;
+        transition: all .3s;
+
+        &.selected {
+            scale: 1.05;
+            opacity: 1;
+            
+            .card {
+                box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
+            }
+            .provides {
+                li {
+                    // &::before {
+                    // 	background: url('@/assets/img/icon/check.svg') no-repeat;
+                    // 	background-size: cover;
+                    // 	width: 16px;
+                    // 	height: 16px;
+                    // 	opacity: 1;
+                    // }
+                }
+            }
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+    .card {
+        width: 100%;
+        cursor: default;
+    }
+    .title {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    .option {
         position: relative;
         display: inline-block;
         font-size: 1.6rem;
