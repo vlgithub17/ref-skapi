@@ -12,9 +12,11 @@ main
             br 
             | for HTML Frontend
 
-        p.desc Skapi is a fully serverless backend API that works seamlessly with pure HTML and JavaScript—no complex installations, no backend configurations, and no database management required.
+        p.desc Skapi is a fully serverless backend API that just works seamlessly with #[span.wordset plain HTML and JavaScript] — #[span.wordset no complex installations], #[span.wordset no backend configurations], and no database #[span.wordset management required.]
 
-        .vscode(style="border: 1px solid #2b2b2b")
+        br
+
+        .vscode(style="border: 1px solid #2b2b2b; height: 240px")
             .header
                 .circle
                     .cir
@@ -29,16 +31,11 @@ main
             .body
                 pre.
                     #[span(style="color:#999") &lt;!]#[span(style="color:#33adff") DOCTYPE] #[span(style="color:#44E9FF") html]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") html]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") head]#[span(style="color:#999") &gt;]
-                        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") head]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") body]#[span(style="color:#999") &gt;]
-                        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-                            #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "your_service_id"], #[span(style="color:#FFED91") "your_owner_id"]);
-                        #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") body]#[span(style="color:#999") &gt;]
-                    #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") html]#[span(style="color:#999") &gt;]
+                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
+                    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
+                        #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "your_service_id"], #[span(style="color:#FFED91") "your_owner_id"]);
+                    #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
+
             .copied Copied! 👏
 
     .dynamo-section.center
@@ -47,7 +44,7 @@ main
             br
             | with Pure HTML
 
-        .desc No need for complex JavaScript just to handle user input—Skapi fully embraces pure HTML forms, making backend interaction as simple as submitting a form.
+        .desc No need for complex JavaScript to handle user input data — #[span.wordset Skapi fully] embraces pure HTML forms, making backend interaction as simple as submitting a form.
 
         TabMenu(v-model="activeTabs.pureHTML" :tabs="['User Login', 'Uploading Data & Files']")
 
@@ -84,12 +81,12 @@ main
                     pre.
                         #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form ]#[span(style="color:#9CDCFE") onsubmit]=#[span(style="color:#CE9178") "]
                             #[span(style="color:#CE9178") skapi.postRecord(event, { table: 'my_photos' })]
-                            #[span(style="color:#CE9178") .then(res => alert('Success!') )]
+                            #[span(style="color:#CE9178") .then(res => alert('Photo uploaded!') )]
                         #[span(style="color:#CE9178") "]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "picture" ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "file"]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
                                 Description#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
-                                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "description" ]#[span(style="color:#9CDCFE") placeholder]=#[span(style="color:#CE9178") "Enter description"]#[span(style="color:#999") &gt;]
+                                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "description" ]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "submit" ]#[span(style="color:#9CDCFE") value]=#[span(style="color:#CE9178") "Upload"]#[span(style="color:#999") &gt;]
                         #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
@@ -256,7 +253,7 @@ main
                 .card
                     .title Standard 
                     .option 
-                        TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
+                        TabMenu(v-model="activeTabs.standardPlan" :tabs="['Monthly', 'Perpetual']")
                     .price
                         template(v-if="activeTabs.standardPlan === 0") 
                             .faktum $19
@@ -265,7 +262,7 @@ main
                             .faktum $300
                             span /only-once
                     .desc 
-                        template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
+                        template(v-if="activeTabs.standardPlan === 0") Suits best for small businesses, #[span.wordset MVPs, small projects, etc.]
                         template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
                     button.final(type="button") Get
                 ul.provides
@@ -280,11 +277,17 @@ main
                 .card
                     .title Premium 
                     .option 
-                        TabMenu(v-model="activeTabs.premiumPlan" :tabs="['basic']")
+                        TabMenu(v-model="activeTabs.premiumPlan" :tabs="['Monthly', 'Perpetual']")
                     .price
-                        .faktum $89
-                        span /mo
-                    .desc Empower your business with formcarry, #[span.wordset for big businesses]
+                        template(v-if="activeTabs.premiumPlan === 0") 
+                            .faktum $89
+                            span /mo
+                        template(v-else)
+                            .faktum $1399
+                            span /only-once
+                    .desc
+                        template(v-if="activeTabs.premiumPlan === 0") Suits best for huge projects, #[span.wordset SaaS, social media, etc.]
+                        template(v-else) Get lifetime access to the Premium plan for just $1399—upgrade anytime as your needs grow.
                     button.final(type="button") Get
                 ul.provides
                     li Includes all Standard Plan features
@@ -309,7 +312,7 @@ main
                     .price
                         .faktum FREE
                         span /mo
-                    .desc Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
+                    .desc Best for development and testing
                     button.final(type="button") Get
                 ul.provides
                     li 10K User Accounts
@@ -469,12 +472,15 @@ onMounted(() => {
 
 .vscode {
     position: relative;
-    max-width: 570px;
-    height: 340px;
+    max-width: 640px;
+    height: 360px;
     margin: 0 auto;
     border-radius: 12px;
     background-color: #181818;
     overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
 
     .header {
         position: relative;
@@ -524,7 +530,8 @@ onMounted(() => {
         .copy {
             position: absolute;
             right: 16px;
-            bottom: calc(0px - 24px - 0.8rem);
+            // bottom: calc(0px - 24px - 0.8rem);
+
             fill: #fff;
             cursor: pointer;
             transition: all .3s;
@@ -532,10 +539,21 @@ onMounted(() => {
             &:hover {
                 transform: scale(1.1);
             }
+
+            @media (min-width: 600px) {
+                &::before {
+                    color: #fff;
+                    content: 'copy';
+                    font-size: 0.6rem;
+                    vertical-align: middle;
+                    font-family: monospace;
+                }
+            }
         }
     }
     .body {
-        height: 300px;
+        // height: 300px;
+        flex-grow: 1;
         text-align: left;
         background-color: #1f1f1f;
         border-radius: 0 0 12px 12px;
@@ -615,8 +633,10 @@ onMounted(() => {
         li {
             display: inline-block;
             list-style: none;
-            width: 220px;
-            height: 250px;
+            // width: 220px;
+            // height: 250px;
+            width: 13em;
+            height: 15em;
             // line-height: 220px;
             // margin-right: 4vw;
             border: 1px solid #F0F2FA;

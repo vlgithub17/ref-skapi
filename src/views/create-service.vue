@@ -1,9 +1,13 @@
 <template lang="pug">
+br
+br
+br
+
 main#create
-    //- router-link(to="/my-services")
+    router-link(to="/my-services")
         img(src="@/assets/img/logo/logo.png" style="height: 2rem;")
 
-    //- .bottomLineTitle Create a New Service
+    .bottomLineTitle Create a New Service
 
     //- p
     //-     | Choose a plan for your service "
@@ -144,7 +148,6 @@ import { serviceIdList, serviceList } from '@/views/service-list'
 import { skapi } from '@/main';
 import { customer } from '@/code/user';
 import Service from '@/code/service';
-import TabMenu from '@/components/tab.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -161,11 +164,6 @@ let service = {
 let promiseRunning = ref(false);
 let serviceMode = ref('standard');
 let newServiceName = route.params.name as string;
-let activeTabs = ref({
-    trialPlan: 0,
-    standardPlan: 0,
-    premiumPlan: 0,
-});
 
 let createSubscription = async (ticket_id, service_info) => {
     let resolvedCustomer = await customer;
@@ -276,27 +274,19 @@ input {
     flex-grow: 1;
 }
 
-.card-wrap {
-    max-width: 100%;
-    margin: 0 auto;
+.planWrap {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    // text-align: center;
+    justify-content: space-between;
+    gap: 20px;
 
-    .card {
+    .infoBox {
+        width: 280px;
+        padding: 20px;
         flex-grow: 1;
-        width: 48%;
-        min-width: 250px;
-        border: 1px solid rgba(0,0,0,0.1);
-        border-radius: 12px;
-        padding: 1rem;
-        transition: all .3s;
+        user-select: none;
         cursor: pointer;
-        background-color: #fff;
-
+        box-shadow: 0 0 0 4px rgba(0,0,0,0.1) inset;
         &:hover {
             // border-color: var(--main-color);
             box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
@@ -379,62 +369,57 @@ input {
     }
     .option {
         position: relative;
-        height: 2rem;
-        margin-bottom: 1rem;
-
-        .tab-menu {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-55%, -50%);
-            scale: 0.9;
-            margin: 0;
-        }
-    }
-    .price {
-        display: flex;
-        align-items: baseline;
-        justify-content: center;
-        margin-bottom: 1rem;
-
-        .faktum {
-            font-size: 2.4rem;
-            margin-right: 0.5rem;
-        }
-        span {
-            color: #888
-        }
-    }
-    .desc {
-        margin: 0;
-        line-height: 1.4;
-        font-size: 0.8rem;
-        color: #777;
-        margin-bottom: 1rem;
-    }
-    button {
-        width: 100% !important;
-    }
-}
-
-.provides {
-    li {
-        position: relative;
-        list-style: none;
-        text-align: left;
-        margin-bottom: 0.5rem;
-        font-size: 0.8rem;
+        display: inline-block;
+        font-size: 1.6rem;
+        font-weight: 700;
+        padding-top: 1rem;
 
         &::before {
             position: absolute;
-            content: '';
-            left: -1.3rem;
-            top: 0.1rem;
-            background: url('@/assets/img/icon/check.svg') no-repeat;
-            background-size: cover;
-            width: 16px;
-            height: 16px;
-            opacity: 0.8;
+            content: '/mo';
+            right: -2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--black-4);
+        }
+    }
+
+    ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        line-height: 1.4rem;
+
+        li {
+            position: relative;
+            color: rgba(0, 0, 0, 0.60);
+            font-size: 0.8rem;
+            font-weight: 400;
+            padding-left: 24px;
+
+            &::before {
+                position: absolute;
+                content: '';
+                left: 0;
+                top: 0.25rem;
+                background: url('@/assets/img/icon/check.svg') no-repeat;
+                background-size: cover;
+                width: 16px;
+                height: 16px;
+                opacity: 0.8;
+            }
+
+            &.warning {
+                &::before {
+                    background: url('@/assets/img/icon/warning.svg') no-repeat;
+                    background-size: cover;
+                    width: 20px;
+                    height: 20px;
+                    left: -2px;
+                }
+            }
         }
     }
 }
