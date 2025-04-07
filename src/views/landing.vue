@@ -12,7 +12,9 @@ main
             br 
             | for HTML Frontend
 
-        p.desc Skapi is a fully serverless backend API that works seamlessly with pure HTML and JavaScript—no complex installations, no backend configurations, and no database management required.
+        p.desc Skapi is a fully serverless backend API that just works seamlessly with #[span.wordset plain HTML and JavaScript] — #[span.wordset no complex installations], #[span.wordset no backend configurations], and no database #[span.wordset management required.]
+
+        br
 
         .vscode(style="border: 1px solid #2b2b2b; height: 240px")
             .header
@@ -42,7 +44,7 @@ main
             br
             | with Pure HTML
 
-        .desc No need for complex JavaScript just to handle user input—Skapi fully embraces pure HTML forms, making backend interaction as simple as submitting a form.
+        .desc No need for complex JavaScript to handle user input data — #[span.wordset Skapi fully] embraces pure HTML forms, making backend interaction as simple as submitting a form.
 
         TabMenu(v-model="activeTabs.pureHTML" :tabs="['User Login', 'Uploading Data & Files']")
 
@@ -79,12 +81,12 @@ main
                     pre.
                         #[span(style="color:#999") &lt;]#[span(style="color:#33adff") form ]#[span(style="color:#9CDCFE") onsubmit]=#[span(style="color:#CE9178") "]
                             #[span(style="color:#CE9178") skapi.postRecord(event, { table: 'my_photos' })]
-                            #[span(style="color:#CE9178") .then(res => alert('Success!') )]
+                            #[span(style="color:#CE9178") .then(res => alert('Photo uploaded!') )]
                         #[span(style="color:#CE9178") "]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "picture" ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "file"]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
                                 Description#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
-                                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "description" ]#[span(style="color:#9CDCFE") placeholder]=#[span(style="color:#CE9178") "Enter description"]#[span(style="color:#999") &gt;]
+                                #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "description" ]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
                             #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "submit" ]#[span(style="color:#9CDCFE") value]=#[span(style="color:#CE9178") "Upload"]#[span(style="color:#999") &gt;]
                         #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
@@ -251,7 +253,7 @@ main
                 .card
                     .title Standard 
                     .option 
-                        TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
+                        TabMenu(v-model="activeTabs.standardPlan" :tabs="['Monthly', 'Perpetual']")
                     .price
                         template(v-if="activeTabs.standardPlan === 0") 
                             .faktum $19
@@ -260,7 +262,7 @@ main
                             .faktum $300
                             span /only-once
                     .desc 
-                        template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
+                        template(v-if="activeTabs.standardPlan === 0") Suits best for small businesses, #[span.wordset MVPs, small projects, etc.]
                         template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
                     button.final(type="button") Get
                 ul.provides
@@ -275,11 +277,17 @@ main
                 .card
                     .title Premium 
                     .option 
-                        TabMenu(v-model="activeTabs.premiumPlan" :tabs="['basic']")
+                        TabMenu(v-model="activeTabs.premiumPlan" :tabs="['Monthly', 'Perpetual']")
                     .price
-                        .faktum $89
-                        span /mo
-                    .desc Empower your business with formcarry, #[span.wordset for big businesses]
+                        template(v-if="activeTabs.premiumPlan === 0") 
+                            .faktum $89
+                            span /mo
+                        template(v-else)
+                            .faktum $1399
+                            span /only-once
+                    .desc
+                        template(v-if="activeTabs.premiumPlan === 0") Suits best for huge projects, #[span.wordset SaaS, social media, etc.]
+                        template(v-else) Get lifetime access to the Premium plan for just $1399—upgrade anytime as your needs grow.
                     button.final(type="button") Get
                 ul.provides
                     li Includes all Standard Plan features
@@ -304,7 +312,7 @@ main
                     .price
                         .faktum FREE
                         span /mo
-                    .desc Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
+                    .desc Best for development and testing
                     button.final(type="button") Get
                 ul.provides
                     li 10K User Accounts
