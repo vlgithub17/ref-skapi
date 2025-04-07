@@ -42,7 +42,8 @@
 
 template(v-else)
     .infoBox(:class='{nonClickable: email_is_unverified_or_service_is_disabled || !subdomainReady}')
-        .infoTitle File Hosting&nbsp;&nbsp;
+        //- .infoTitle File Hosting&nbsp;&nbsp;
+        h2 File Hosting
 
         hr
 

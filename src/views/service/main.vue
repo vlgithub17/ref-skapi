@@ -261,7 +261,8 @@ watch(() => route, nv => {
         flex-wrap: wrap;
         // justify-content: space-between;
         gap: 20px;
-        padding: 20px 8px 40px;
+        // padding: 20px 8px 40px;
+        padding: 20px 20px 40px;
         .link {
             // width: calc(50% - 10px);
             flex-grow: 1;
