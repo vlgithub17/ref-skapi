@@ -76,37 +76,44 @@
 // 	}
 // }
 
-import { ServiceObj, SubscriptionObj } from '@/code/service';
 import { type Reactive } from 'vue';
+import { skapi } from '@/main';
+import Service, { ServiceObj, SubscriptionObj } from '@/code/service';
 
-type Service = {
-	id: string;
-	owner: string;
-	admin_private_endpoint: string;
-	record_private_endpoint: string;
-	admin_public_endpoint: string;
-	service: ServiceObj;
-	dateCreated: string;
-	plan: string;
-	planCode: { [key: number]: string }
-	subscription: SubscriptionObj;
-	storageInfo: Reactive<{
+// type Service = {
+// 	id: string;
+// 	owner: string;
+// 	admin_private_endpoint: string;
+// 	record_private_endpoint: string;
+// 	admin_public_endpoint: string;
+// 	service: ServiceObj;
+// 	dateCreated: string;
+// 	plan: string;
+// 	planCode: { [key: number]: string }
+// 	subscription: SubscriptionObj;
+// 	storageInfo: Reactive<{
+// 		cloud: number;
+// 		database: number;
+// 		email: number;
+// 		host: number;
+// 	}>
+
+// 	subscriptionFetched: boolean;
+// 	_orgPlan: string;
+// 	_subsPromise: Promise<SubscriptionObj>
+// 	newsletterSender: Promise<string>[]
+// 	reserved_key: string;
+// }
+
+export class ServiceSpec {
+	service: Service
+	plan: string
+	storage: Reactive<{
 		cloud: number;
 		database: number;
 		email: number;
 		host: number;
 	}>
-
-	subscriptionFetched: boolean;
-	_orgPlan: string;
-	_subsPromise: Promise<SubscriptionObj>
-	newsletterSender: Promise<string>[]
-	reserved_key: string;
-}
-
-class ServiceSpec {
-	service: Service
-	plan: string
 	servicePlans: {
 		[plan: string]: {
 			price: number | string
@@ -198,28 +205,69 @@ class ServiceSpec {
 		email: 0,
 	}
 
-	constructor(service: Service) {
+	constructor(service:Service) {
 		this.service = service;
 		this.plan = this.service.plan;
-		this.dataSize = {
-			users: this.getUserSize(),
-			database: this.getDataSize('database'),
-			file: this.getDataSize('cloud'),
-			subdomain: this.getDataSize('host'),
-			email: this.getDataSize('email'),
+		// this.storage = this.service.storageInfo;
+		// this.dataSize = {
+		// 	users: this.getUserSize(),
+		// 	database: this.getDataSize('database'),
+		// 	file: this.getDataSize('cloud'),
+		// 	subdomain: this.getDataSize('host'),
+		// 	email: this.getDataSize('email'),
+		// }
+		// this.dataPercent = {
+		// 	users: this.getUserSize(true),
+		// 	database: this.getDataSize('database', true),
+		// 	file: this.getDataSize('cloud', true),
+		// 	subdomain: this.getDataSize('host', true),
+		// 	email: this.getDataSize('email', true),
+		// }
+
+		this.getStorage();
+	}
+
+	async getStorage(): Promise<{
+		cloud: number; // cloud storage used
+		database: number; // database size
+		email: number; // email storage used
+		host: number; // host storage used
+	}> {
+		let wait = [];
+	
+		if (this.service.service.subdomain) {
+			let subdomain = this.service.service.subdomain;
+			let pendingSubdomain = subdomain[0] === '+' || subdomain[0] === '*';
+			if (pendingSubdomain) {
+				subdomain = subdomain.slice(1);
+			}
+		
+			// get host storage info
+			wait.push(
+				skapi.util
+				.request(this.service.admin_private_endpoint + 'host-directory', { service: this.service.id, owner: this.service.owner, info: true, dir: subdomain }, { auth: true })
+				.then((r: any) => {
+					this.storage.host = r?.size || 0;
+				})
+			);
 		}
-		this.dataPercent = {
-			users: this.getUserSize(true),
-			database: this.getDataSize('database', true),
-			file: this.getDataSize('cloud', true),
-			subdomain: this.getDataSize('host', true),
-			email: this.getDataSize('email', true),
-		}
+	
+		wait.push(
+		  skapi.util.request(this.service.record_private_endpoint + 'storage-info', { service: this.service.id, owner: this.service.owner }, { auth: true }).then((r) => {
+			this.storage.cloud = r.cloud;
+			this.storage.database = r.database;
+			this.storage.email = r.email;
+		  })
+		);
+	
+		await Promise.all(wait);
+	
+		return this.storage;
 	}
 
 	getUserSize(percent: boolean = false): string | number {
-		if (this.plan === 'Unlimited') {
-            return percent ? 0 : 'Unlimited';
+		if (this.plan === 'Unlimited' && percent) {
+            return 0;
         }
 
 		let users = this.service.service.users;
@@ -230,7 +278,7 @@ class ServiceSpec {
         }
 
 		// Convert to human-readable format
-        const units = ['K', 'M', 'B', 'T'];
+        const units = ['', 'K', 'M', 'B', 'T'];
         let unitIndex = 0;
         let value = users;
 
@@ -244,12 +292,15 @@ class ServiceSpec {
 	}
 
 	getDataSize(type: string, percent: boolean = false): string | number {
-		if (this.plan === 'Unlimited') {
-            return percent ? 0 : 'Unlimited';
+		if (this.plan === 'Unlimited' && percent) {
+            return 0;
         }
 
-        const resource = this.service.storageInfo[type];
+        const resource = this.service?.storageInfo[type];
         const planLimit = this.servicePlans[this.plan].storage[type];
+
+		console.log(this.storage);
+		// console.log({resource});
 
         if (percent) {
             return Math.ceil((resource / planLimit) * 100);

@@ -232,7 +232,7 @@ section.infoBox
 </template>
 
 <script setup lang="ts">
-import { nextTick, reactive, ref, computed } from 'vue';
+import { nextTick, reactive, ref, computed, onMounted } from 'vue';
 import { currentService } from '@/views/service/main';
 import Toggle from '@/components/toggle.vue';
 import Tooltip from '@/components/tooltip.vue';
@@ -240,6 +240,13 @@ import { dateFormat } from '@/code/admin';
 import { getFileSize } from '@/code/admin';
 import { devLog } from '@/code/logger';
 import { user } from '@/code/user';
+import { ServiceSpec } from '@/views/service/service-spec';
+
+onMounted(() => {
+	let spec = new ServiceSpec(currentService);
+
+	console.log('ServiceSpec', spec);
+})
 
 let inputName = '';
 let inputCors = '';
