@@ -23,7 +23,7 @@ main#create
 				//- .option 
 					TabMenu(v-model="activeTabs.trialPlan" :tabs="['basic']")
 				.price
-					.faktum $0
+					.faktum {{ '$' + planSpec['Trial'].price }}
 					span /mo
 				.desc Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
 				button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('trial')") 
@@ -31,11 +31,8 @@ main#create
 						.loader(style="--loader-color:white; --loader-size: 12px")
 					template(v-else) Select
 			ul.provides
-				li 10K User Accounts
-				li 4GB Database Storage
-				li 50GB File Storage
-				li.warning Sending bulk emails not included
-				li.warning All user data is deleted every 30 days
+				li(v-for="(des) in planSpec['Trial'].description") {{ des }}
+				li.warning(v-for="(des) in planSpec['Trial'].description_warning") {{ des }}
 		.plan(:class="{'selected' : serviceMode == 'standard'}")
 			.card
 				.title Standard 
@@ -43,7 +40,7 @@ main#create
 					TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
 				.price
 					template(v-if="activeTabs.standardPlan === 0") 
-						.faktum $19
+						.faktum {{ '$' + planSpec['Standard'].price }}
 						span /mo
 					template(v-else)
 						.faktum $300
@@ -56,20 +53,14 @@ main#create
 						.loader(style="--loader-color:white; --loader-size: 12px")
 					template(v-else) Select
 			ul.provides
-				li 10K User Accounts
-				li User Invitation System
-				li Website Hosting
-				li 8GB Database Storage
-				li 100GB File Storage & Subdomain Hosting
-				li Automated Emails & Sending Bulk Emails
-				li 1GB Email Storage
+				li(v-for="(des) in planSpec['Standard'].description") {{ des }}
 		.plan(:class="{'selected' : serviceMode == 'premium'}")
 			.card
 				.title Premium 
 				//- .option 
 					TabMenu(v-model="activeTabs.premiumPlan" :tabs="['basic']")
 				.price
-					.faktum $89
+					.faktum {{ '$' + planSpec['Premium'].price }}
 					span /mo
 				.desc Empower your business with formcarry, #[span.wordset for big businesses]
 				button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('premium')")
@@ -77,11 +68,7 @@ main#create
 						.loader(style="--loader-color:white; --loader-size: 12px")
 					template(v-else) Select
 			ul.provides
-				li Includes all Standard Plan features
-				li 100K User Accounts
-				li 100GB Database Storage
-				li 1TB File Storage & Subdomain Hosting
-				li 10GB Email Storage
+				li(v-for="(des) in planSpec['Premium'].description") {{ des }}
 	
 	//- section.planWrap(:class="{'disabled' : promiseRunning}")
 		.infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
@@ -144,6 +131,7 @@ import { serviceIdList, serviceList } from '@/views/service-list'
 import { skapi } from '@/main';
 import { customer } from '@/code/user';
 import { planSpec } from "@/views/service/service-spec";
+
 import Service from '@/code/service';
 import TabMenu from '@/components/tab.vue';
 
