@@ -76,7 +76,7 @@
 // 	}
 // }
 
-import { type Reactive } from 'vue';
+import { reactive } from 'vue';
 import { skapi } from '@/main';
 import Service, { ServiceObj, SubscriptionObj } from '@/code/service';
 
@@ -108,12 +108,17 @@ import Service, { ServiceObj, SubscriptionObj } from '@/code/service';
 export class ServiceSpec {
 	service: Service
 	plan: string
-	storage: Reactive<{
+	storage: {
 		cloud: number;
 		database: number;
 		email: number;
 		host: number;
-	}>
+	} = reactive({
+		cloud: null,
+		database: null,
+		email: null,
+		host: null,
+	});
 	servicePlans: {
 		[plan: string]: {
 			price: number | string
@@ -190,41 +195,28 @@ export class ServiceSpec {
 			description: 'Premium Plan',
 		}
 	}
-	dataSize: { [key: string]: string } = {
-		users: '0K',
-		database: '0GB',
-		file: '0GB',
-		subdomain: '0GB',
-		email: '0GB',
-	}
-	dataPercent: { [key: string]: number } = {
+	dataSize: { [key: string]: string } = reactive({
+		users: '',
+		database: '',
+		file: '',
+		subdomain: '',
+		email: '',
+	})
+	dataPercent: { [key: string]: number } = reactive({
 		users: 0,
 		database: 0,
 		file: 0,
 		subdomain: 0,
 		email: 0,
-	}
+	})
 
 	constructor(service:Service) {
 		this.service = service;
 		this.plan = this.service.plan;
-		// this.storage = this.service.storageInfo;
-		// this.dataSize = {
-		// 	users: this.getUserSize(),
-		// 	database: this.getDataSize('database'),
-		// 	file: this.getDataSize('cloud'),
-		// 	subdomain: this.getDataSize('host'),
-		// 	email: this.getDataSize('email'),
-		// }
-		// this.dataPercent = {
-		// 	users: this.getUserSize(true),
-		// 	database: this.getDataSize('database', true),
-		// 	file: this.getDataSize('cloud', true),
-		// 	subdomain: this.getDataSize('host', true),
-		// 	email: this.getDataSize('email', true),
-		// }
 
-		this.getStorage();
+		this.getStorage().then(() => {
+			this.updateDataSizeAndPercent();
+		});
 	}
 
 	async getStorage(): Promise<{
@@ -265,6 +257,23 @@ export class ServiceSpec {
 		return this.storage;
 	}
 
+	updateDataSizeAndPercent() {
+        this.dataSize = {
+            users: this.getUserSize(),
+            database: this.getDataSize('database'),
+            file: this.getDataSize('cloud'),
+            subdomain: this.getDataSize('host'),
+            email: this.getDataSize('email'),
+        };
+        this.dataPercent = {
+            users: this.getUserSize(true),
+            database: this.getDataSize('database', true),
+            file: this.getDataSize('cloud', true),
+            subdomain: this.getDataSize('host', true),
+            email: this.getDataSize('email', true),
+        };
+    }
+
 	getUserSize(percent: boolean = false): string | number {
 		if (this.plan === 'Unlimited' && percent) {
             return 0;
@@ -274,7 +283,7 @@ export class ServiceSpec {
 		let planUserSize = this.servicePlans[this.plan].users as number;
 
 		if (percent) {
-            return ((users / planUserSize) * 100).toFixed(2);
+            return `${((users / planUserSize) * 100).toFixed(2)}%`;
         }
 
 		// Convert to human-readable format
@@ -296,11 +305,8 @@ export class ServiceSpec {
             return 0;
         }
 
-        const resource = this.service?.storageInfo[type];
+        const resource = this.storage[type];
         const planLimit = this.servicePlans[this.plan].storage[type];
-
-		console.log(this.storage);
-		// console.log({resource});
 
         if (percent) {
             return Math.ceil((resource / planLimit) * 100);
@@ -321,6 +327,6 @@ export class ServiceSpec {
         } else if (kb >= 1) {
             return `${kb.toFixed(2)}KB`;
         }
-        return `${resource}Bytes`;
+        return `${resource}bytes`;
 	}
 }
