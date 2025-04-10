@@ -1,65 +1,20 @@
 <template lang="pug">
+br
+br
+br
+
 main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
-    //- router-link(:to="'/my-services/' + serviceId ")
-    //-     img(src="@/assets/img/logo/logo.png" style="height:2em;")
+    router-link(:to="'/my-services/' + serviceId ")
+        img(src="@/assets/img/logo/logo.png" style="height:2em;")
 
-    //- .bottomLineTitle Subscription Plan
+    .bottomLineTitle Subscription Plan
 
-    //- p
-    //-     | Update your subscription plan for service "
-    //-     span(style='font-weight:500') {{ serviceList[serviceId].service.name }}
-    //-     | "
+    p
+        | Update your subscription plan for service "
+        span(style='font-weight:500') {{ serviceList[serviceId].service.name }}
+        | "
         
-    //- p When upgrade/downgrading your subscription plan, the remaining days will be prorated and the amount will be adjusted accordingly on your next payment.
-
-    .section
-        router-link(:to="'/my-services/' + serviceId")
-            img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 44px;margin-bottom: 0.5rem;")
-        .title.faktum Subscription Plan
-        .desc 
-            | Choose a plan for your service 
-            span.wordset.servicename {{serviceList[serviceId].service.name}}
-            br
-            | When upgrade/downgrading your subscription plan, the remaining days will be prorated and the amount will be adjusted accordingly on your next payment.
-
-    //- .plan-wrap.card-wrap
-        .plan(:class="{'selected' : serviceMode == 'standard', 'hovered': hoverPlan == 'standard'}" @mouseover="hoverPlan = 'standard'" @mouseleave="hoverPlan = serviceMode")
-            .card
-                .title Standard 
-                //- .option 
-                    TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
-                .price
-                    template(v-if="activeTabs.standardPlan === 0") 
-                        .faktum {{ '$' + planSpec['Standard'].price.monthly }}
-                        span /mo
-                    template(v-else)
-                        .faktum {{ '$' + planSpec['Standard'].price.perpetual }}
-                        span /only-once
-                .desc 
-                    template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
-                    template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
-                button.final(type="button" :class="{'disabled': promiseRunning || availablePlans[0] === false}" @click="selectedPlan('standard')")
-                    template(v-if="serviceMode == 'standard' && promiseRunning")
-                        .loader(style="--loader-color:white; --loader-size: 12px")
-                    tmeplate(v-else-if="availablePlans[0] === false") Current
-                    template(v-else) Select
-            ul.provides
-                li(v-for="(des) in planSpec['Standard'].description") {{ des }}
-        .plan(:class="{'selected' : serviceMode == 'premium', 'hovered': hoverPlan == 'premium'}" @mouseover="hoverPlan = 'premium'" @mouseleave="hoverPlan = serviceMode")
-            .card
-                .title Premium 
-                //- .option 
-                    TabMenu(v-model="activeTabs.premiumPlan" :tabs="['basic']")
-                .price
-                    .faktum {{ '$' + planSpec['Premium'].price.monthly }}
-                    span /mo
-                .desc Empower your business with formcarry, #[span.wordset for big businesses]
-                button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('premium')")
-                    template(v-if="serviceMode == 'premium' && promiseRunning")
-                        .loader(style="--loader-color:white; --loader-size: 12px")
-                    template(v-else) Select
-            ul.provides
-                li(v-for="(des) in planSpec['Premium'].description") {{ des }}
+    p When upgrade/downgrading your subscription plan, the remaining days will be prorated and the amount will be adjusted accordingly on your next payment.
 
     section
         .planWrap
@@ -163,17 +118,9 @@ import { skapi } from "@/main";
 import { planSpec } from "@/views/service/service-spec";
 
 import Modal from "@/components/modal.vue";
-import TabMenu from '@/components/tab.vue';
 
 const router = useRouter();
 const route = useRoute();
-
-let serviceMode = ref('standard');
-let hoverPlan = ref('standard');
-let activeTabs = ref({
-	standardPlan: 0,
-	premiumPlan: 0,
-});
 
 let serviceId = route.path.split("/")[2];
 let subscrOpt = ref(false);
@@ -338,30 +285,6 @@ let updateSubscription = async (ticket_id) => {
     }
 }
 
-.section {
-    max-width: 570px;
-    margin: 0 auto;
-    padding: 4rem 20px;
-    text-align: center;
-
-    .title {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-        line-height: 1.5;
-    }
-
-    .desc {
-        margin-bottom: 1rem;
-        line-height: 1.9;
-        color: #333;
-    }
-}
-
-.servicename {
-    font-weight: bold;
-    color: var(--main-color);
-}
-
 .mode {
     font-weight: normal;
 }
@@ -370,169 +293,72 @@ let updateSubscription = async (ticket_id) => {
     margin-top: 8px;
 }
 
-.card-wrap {
-    max-width: 100%;
-    margin: 0 auto;
+.planWrap {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    // text-align: center;
+    justify-content: space-between;
+    gap: 20px;
 
-    .card {
+    .infoBox {
+        width: 280px;
+        padding: 20px;
         flex-grow: 1;
-        width: 48%;
-        min-width: 250px;
-        border: 1px solid rgba(0,0,0,0.1);
-        border-radius: 12px;
-        padding: 1rem;
-        transition: all .3s;
-        cursor: pointer;
-        background-color: #fff;
-
-        &:hover {
-            // border-color: var(--main-color);
-            box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
-        }
-
-        &.dark {
-            // background-color: var(--main-color);
-            // background: linear-gradient(to right, rgb(11, 53, 218), rgb(172, 250, 5), rgb(172, 250, 5), rgb(11, 53, 218));
-            // color: #fff;
-        }
-        
-        a {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            text-decoration: none;
-            color: #333;
-        }
-
-        .icon {
-            width: 3rem;
-            height: 3rem;
-        }
-        .content {
-            text-align: left;
-
-            p {
-                margin: 0;
-
-                &.small {
-                    font-size: 0.8rem;
-                    color: rgba(0,0,0,0.5);
-                }
-            }
-        }
+        box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1) inset;
     }
-}
 
-.plan-wrap {
-    max-width: 680px;
-    align-items: start;
-
-    .plan {
-        width: 31%;
-        min-width: 250px;
-        flex-grow: 1;
-        opacity: 0.5;
-        transition: all .3s;
-
-        &.selected {
-            opacity: 1;
-            
-            .card {
-                box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
-            }
-            .provides {
-                li {
-                    // &::before {
-                    // 	background: url('@/assets/img/icon/check.svg') no-repeat;
-                    // 	background-size: cover;
-                    // 	width: 16px;
-                    // 	height: 16px;
-                    // 	opacity: 1;
-                    // }
-                }
-            }
-        }
-
-        &.hovered {
-            scale: 1.05;
-        }
-
-        &:hover {
-            opacity: 1;
-        }
-    }
-    .card {
-        width: 100%;
-        cursor: default;
-    }
-    .title {
-        font-size: 1rem;
-        margin-bottom: 1rem;
-    }
-    .option {
-        position: relative;
-        height: 2rem;
-        margin-bottom: 1rem;
-
-        .tab-menu {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-55%, -50%);
-            scale: 0.9;
-            margin: 0;
-        }
-    }
     .price {
-        display: flex;
-        align-items: baseline;
-        justify-content: center;
-        margin-bottom: 1rem;
-
-        .faktum {
-            font-size: 2.4rem;
-            margin-right: 0.5rem;
-        }
-        span {
-            color: #888
-        }
-    }
-    .desc {
-        margin: 0;
-        line-height: 1.4;
-        font-size: 0.8rem;
-        color: #777;
-        margin-bottom: 1rem;
-    }
-    button {
-        width: 100% !important;
-    }
-}
-
-.provides {
-    li {
         position: relative;
-        list-style: none;
-        text-align: left;
-        margin-bottom: 0.5rem;
-        font-size: 0.8rem;
+        display: inline-block;
+        font-size: 1.6rem;
+        font-weight: 700;
+        padding: 1rem 0;
 
         &::before {
             position: absolute;
-            content: '';
-            left: -1.3rem;
-            top: 0.1rem;
-            background: url('@/assets/img/icon/check.svg') no-repeat;
-            background-size: cover;
-            width: 16px;
-            height: 16px;
-            opacity: 0.8;
+            content: "/mo";
+            right: -2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--black-4);
+        }
+    }
+
+    ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        line-height: 28px;
+
+        li {
+            position: relative;
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 0.8rem;
+            font-weight: 400;
+            padding-left: 24px;
+
+            &::before {
+                position: absolute;
+                content: "";
+                left: 0;
+                top: 6px;
+                background: url("@/assets/img/icon/check.svg") no-repeat;
+                background-size: cover;
+                width: 16px;
+                height: 16px;
+                opacity: 0.8;
+            }
+
+            &.warning {
+                &::before {
+                    background: url("@/assets/img/icon/warning.svg") no-repeat;
+                    background-size: cover;
+                    width: 20px;
+                    height: 20px;
+                    left: -2px;
+                }
+            }
         }
     }
 }

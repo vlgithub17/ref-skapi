@@ -17,7 +17,7 @@ main#create
 		.desc Choose a plan for your service #[span.wordset.newname {{newServiceName}}]
 
 	.plan-wrap.card-wrap
-		.plan(:class="{'selected' : serviceMode == 'trial'}")
+		.plan(:class="{'selected' : serviceMode == 'trial', 'hovered': hoverPlan == 'trial'}" @mouseover="hoverPlan = 'trial'" @mouseleave="hoverPlan = serviceMode")
 			.card
 				.title Trial
 				//- .option 
@@ -33,7 +33,7 @@ main#create
 			ul.provides
 				li(v-for="(des) in planSpec['Trial'].description") {{ des }}
 				li.warning(v-for="(des) in planSpec['Trial'].description_warning") {{ des }}
-		.plan(:class="{'selected' : serviceMode == 'standard'}")
+		.plan(:class="{'selected' : serviceMode == 'standard', 'hovered': hoverPlan == 'standard'}" @mouseover="hoverPlan = 'standard'" @mouseleave="hoverPlan = serviceMode")
 			.card
 				.title Standard 
 				.option 
@@ -54,7 +54,7 @@ main#create
 					template(v-else) Select
 			ul.provides
 				li(v-for="(des) in planSpec['Standard'].description") {{ des }}
-		.plan(:class="{'selected' : serviceMode == 'premium'}")
+		.plan(:class="{'selected' : serviceMode == 'premium', 'hovered': hoverPlan == 'premium'}" @mouseover="hoverPlan = 'premium'" @mouseleave="hoverPlan = serviceMode")
 			.card
 				.title Premium 
 				//- .option 
@@ -69,55 +69,6 @@ main#create
 					template(v-else) Select
 			ul.provides
 				li(v-for="(des) in planSpec['Premium'].description") {{ des }}
-	
-	//- section.planWrap(:class="{'disabled' : promiseRunning}")
-		.infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
-			.mode Trial Mode
-			.price $0
-
-			hr
-
-			ul
-				li 10K User Accounts
-				li 4GB Database Storage
-				li 50GB File Storage
-				li.warning Sending bulk emails not included
-				li.warning All user data is deleted every 30 days
-		.infoBox(:class="{'checked' : serviceMode == 'standard'}" @click="serviceMode='standard'")
-			.mode Standard Mode
-			.price $19
-
-			hr
-
-			ul
-				li 10K User Accounts
-				li User Invitation System
-				li Website Hosting
-				li 8GB Database Storage
-				li 100GB File Storage & Subdomain Hosting
-				li Automated Emails & Sending Bulk Emails
-				li 1GB Email Storage
-		.infoBox(:class="{'checked' : serviceMode == 'premium'}" @click="serviceMode='premium'")
-			.mode Premium Mode
-			.price $89
-
-			hr
-
-			ul
-				li Includes all Standard Plan features
-				li 100K User Accounts
-				li 100GB Database Storage
-				li 1TB File Storage & Subdomain Hosting
-				li 10GB Email Storage
-
-	br
-
-	//- p(style='font-size: 16px;display: flex;justify-content: center;') Selected Plan:&nbsp; #[b(style='color:var(--main-color)') {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}]
-	//- .inputWrap(@submit.prevent="createService")
-		div(v-if="promiseRunning" style="text-align:center")
-			.loader(style="--loader-color:blue; --loader-size: 12px")
-		template(v-else)
-			button.final(type="submit" @click='createService') Create {{serviceMode.charAt(0).toUpperCase() + serviceMode.slice(1)}}
 
 br
 br
@@ -149,6 +100,7 @@ let service = {
 }
 let promiseRunning = ref(false);
 let serviceMode = ref('standard');
+let hoverPlan = ref('standard');
 let newServiceName = route.params.name as string;
 let activeTabs = ref({
 	trialPlan: 0,
@@ -335,7 +287,6 @@ input {
 		transition: all .3s;
 
 		&.selected {
-			scale: 1.05;
 			opacity: 1;
 			
 			.card {
@@ -352,6 +303,10 @@ input {
 					// }
 				}
 			}
+		}
+
+		&.hovered {
+			scale: 1.05;
 		}
 
 		&:hover {
