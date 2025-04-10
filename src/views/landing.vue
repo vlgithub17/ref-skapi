@@ -214,10 +214,10 @@ main
 						TabMenu(v-model="activeTabs.standardPlan" :tabs="['Monthly', 'Perpetual']")
 					.price
 						template(v-if="activeTabs.standardPlan === 0") 
-							.faktum {{ '$' + planSpec['Standard'].price }}
+							.faktum {{ '$' + planSpec['Standard'].price.monthly }}
 							span /mo
 						template(v-else)
-							.faktum $300
+							.faktum {{ '$' + planSpec['Standard'].price.perpetual }}
 							span /only-once
 					.desc 
 						template(v-if="activeTabs.standardPlan === 0") Suits best for small businesses, #[span.wordset MVPs, small projects, etc.]
@@ -232,10 +232,10 @@ main
 						TabMenu(v-model="activeTabs.premiumPlan" :tabs="['Monthly', 'Perpetual']")
 					.price
 						template(v-if="activeTabs.premiumPlan === 0") 
-							.faktum {{ '$' + planSpec['Premium'].price }}
+							.faktum {{ '$' + planSpec['Premium'].price.monthly }}
 							span /mo
 						template(v-else)
-							.faktum $1399
+							.faktum {{ '$' + planSpec['Premium'].price.perpetual }}
 							span /only-once
 					.desc
 						template(v-if="activeTabs.premiumPlan === 0") Suits best for huge projects, #[span.wordset SaaS, social media, etc.]

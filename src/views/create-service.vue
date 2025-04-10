@@ -23,7 +23,7 @@ main#create
 				//- .option 
 					TabMenu(v-model="activeTabs.trialPlan" :tabs="['basic']")
 				.price
-					.faktum {{ '$' + planSpec['Trial'].price }}
+					.faktum {{ '$' + planSpec['Trial'].price.monthly }}
 					span /mo
 				.desc Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
 				button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('trial')") 
@@ -36,14 +36,14 @@ main#create
 		.plan(:class="{'selected' : serviceMode == 'standard'}")
 			.card
 				.title Standard 
-				//- .option 
-					TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
+				.option 
+					//- TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
 				.price
 					template(v-if="activeTabs.standardPlan === 0") 
-						.faktum {{ '$' + planSpec['Standard'].price }}
+						.faktum {{ '$' + planSpec['Standard'].price.monthly }}
 						span /mo
 					template(v-else)
-						.faktum $300
+						.faktum {{ '$' + planSpec['Standard'].price.perpetual }}
 						span /only-once
 				.desc 
 					template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
@@ -60,7 +60,7 @@ main#create
 				//- .option 
 					TabMenu(v-model="activeTabs.premiumPlan" :tabs="['basic']")
 				.price
-					.faktum {{ '$' + planSpec['Premium'].price }}
+					.faktum {{ '$' + planSpec['Premium'].price.monthly }}
 					span /mo
 				.desc Empower your business with formcarry, #[span.wordset for big businesses]
 				button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('premium')")
