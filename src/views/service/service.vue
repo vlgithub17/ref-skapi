@@ -65,41 +65,25 @@ section.infoBox
 
 
     .state 
-        .smallTitle Users 
-        .smallValue {{ getUserUnit(currentService.service.users) }} / 
-            span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 10K
-            span(v-else-if="currentService.plan == 'Premium'") 100K
-            span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+        .smallTitle Users
+        .smallValue {{ currentServiceSpec.dataSize?.users }} / {{ currentServiceSpec.servicePlans[currentService.plan].users }}
 
     .state 
-        .smallTitle Database 
-        .smallValue {{ getFileSize(currentService.storageInfo.database) }} / 
-            span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 4GB
-            span(v-else-if="currentService.plan == 'Premium'") 100GB
-            span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+        .smallTitle Database
+        .smallValue {{ currentServiceSpec.dataSize?.database }} / {{ currentServiceSpec.servicePlans[currentService.plan].storage.database }}
 
     .state 
         .smallTitle File Storage
-        .smallValue {{ getFileSize(currentService.storageInfo.cloud) }} / 
-            span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
-            span(v-else-if="currentService.plan == 'Premium'") 1TB
-            span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+        .smallValue {{ currentServiceSpec.dataSize?.cloud }} / {{ currentServiceSpec.servicePlans[currentService.plan].storage.cloud }}
 
     template(v-if="currentService.plan !== 'Trial'")
         .state 
             .smallTitle File Hosting
-            .smallValue {{ getFileSize(currentService.storageInfo.host) }} / 
-                span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 50GB
-                span(v-else-if="currentService.plan == 'Premium'") 1TB
-                span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
+            .smallValue {{ currentServiceSpec.dataSize?.host }} / {{ currentServiceSpec.servicePlans[currentService.plan].storage.host }}
 
         .state 
             .smallTitle Email Storage
-            .smallValue {{ getFileSize(currentService.storageInfo.email) }} / 
-                span(v-if="currentService.plan == 'Trial' || currentService.plan == 'Standard' || currentService.plan == 'Free Standard'") 1GB
-                span(v-else-if="currentService.plan == 'Premium'") 10GB
-                span(v-else-if="currentService.plan == 'Unlimited'") Unlimited
-
+            .smallValue {{ currentServiceSpec.dataSize?.email }} / {{ currentServiceSpec.servicePlans[currentService.plan].storage.email }}
 
     hr(style='margin-top: 1.5rem;')
 
@@ -232,14 +216,15 @@ section.infoBox
 </template>
 
 <script setup lang="ts">
-import { nextTick, reactive, ref, computed } from 'vue';
+import { nextTick, reactive, ref, computed, onMounted } from 'vue';
 import { currentService } from '@/views/service/main';
-import Toggle from '@/components/toggle.vue';
-import Tooltip from '@/components/tooltip.vue';
 import { dateFormat } from '@/code/admin';
-import { getFileSize } from '@/code/admin';
 import { devLog } from '@/code/logger';
 import { user } from '@/code/user';
+import { currentServiceSpec } from '@/views/service/service-spec';
+
+import Toggle from '@/components/toggle.vue';
+import Tooltip from '@/components/tooltip.vue';
 
 let inputName = '';
 let inputCors = '';
@@ -375,29 +360,6 @@ let changeApiKey = () => {
         currentService.service.api_key = previous;
         throw err;
     });
-}
-
-let getUserUnit = (user: number) => {
-    let units = ['k', 'M', 'B', 'T'];
-    let result = '';
-
-    for (let i = units.length - 1; i >= 0; i--) {
-        let unitValue = Math.pow(10, (i + 1) * 3);
-        if (user >= unitValue) {
-            if (i === 0) {
-                result = user.toString();
-            } else {
-                result = (user / unitValue).toFixed(2) + units[i];
-            }
-            break;
-        }
-    }
-
-    if (result === '') {
-        result = user.toString();
-    }
-
-    return result;
 }
 
 // change prevent_signup
