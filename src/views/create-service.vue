@@ -17,7 +17,7 @@ main#create
     section.planWrap(:class="{'disabled' : promiseRunning}")
         .infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
             .mode Trial Mode
-            .price {{ '$' + planSpec['Trial'].price }}
+            .price {{ '$' + planSpec['Trial'].price.monthly }}
 
             hr
 
@@ -26,7 +26,7 @@ main#create
                 li.warning(v-for="(des) in planSpec['Trial'].description_warning") {{ des }}
         .infoBox(:class="{'checked' : serviceMode == 'standard'}" @click="serviceMode='standard'")
             .mode Standard Mode
-            .price {{ '$' + planSpec['Standard'].price }}
+            .price {{ '$' + planSpec['Standard'].price.monthly }}
 
             hr
 
@@ -34,7 +34,7 @@ main#create
                 li(v-for="(des) in planSpec['Standard'].description") {{ des }}
         .infoBox(:class="{'checked' : serviceMode == 'premium'}" @click="serviceMode='premium'")
             .mode Premium Mode
-            .price {{ '$' + planSpec['Premium'].price }}
+            .price {{ '$' + planSpec['Premium'].price.monthly }}
 
             hr
 
