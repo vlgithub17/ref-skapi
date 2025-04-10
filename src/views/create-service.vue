@@ -17,42 +17,29 @@ main#create
     section.planWrap(:class="{'disabled' : promiseRunning}")
         .infoBox(:class="{'checked' : serviceMode == 'trial'}" @click="serviceMode='trial'")
             .mode Trial Mode
-            .price $0
+            .price {{ '$' + planSpec['Trial'].price }}
 
             hr
 
             ul
-                li 10K User Accounts
-                li 4GB Database Storage
-                li 50GB File Storage
-                li.warning Sending bulk emails not included
-                li.warning All user data is deleted every 30 days
+                li(v-for="(des) in planSpec['Trial'].description") {{ des }}
+                li.warning(v-for="(des) in planSpec['Trial'].description_warning") {{ des }}
         .infoBox(:class="{'checked' : serviceMode == 'standard'}" @click="serviceMode='standard'")
             .mode Standard Mode
-            .price $19
+            .price {{ '$' + planSpec['Standard'].price }}
 
             hr
 
             ul
-                li 10K User Accounts
-                li User Invitation System
-                li Website Hosting
-                li 8GB Database Storage
-                li 100GB File Storage & Subdomain Hosting
-                li Automated Emails & Sending Bulk Emails
-                li 1GB Email Storage
+                li(v-for="(des) in planSpec['Standard'].description") {{ des }}
         .infoBox(:class="{'checked' : serviceMode == 'premium'}" @click="serviceMode='premium'")
             .mode Premium Mode
-            .price $89
+            .price {{ '$' + planSpec['Premium'].price }}
 
             hr
 
             ul
-                li Includes all Standard Plan features
-                li 100K User Accounts
-                li 100GB Database Storage
-                li 1TB File Storage & Subdomain Hosting
-                li 10GB Email Storage
+                li(v-for="(des) in planSpec['Premium'].description") {{ des }}
 
     br
 
@@ -74,6 +61,7 @@ import { ref } from 'vue';
 import { serviceIdList, serviceList } from '@/views/service-list'
 import { skapi } from '@/main';
 import { customer } from '@/code/user';
+import { planSpec } from "@/views/service/service-spec";
 import Service from '@/code/service';
 
 const router = useRouter();

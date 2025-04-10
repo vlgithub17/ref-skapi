@@ -3,6 +3,106 @@ import { skapi } from '@/main';
 import { currentServiceId, currentService } from '@/views/service/main';
 import Service from '@/code/service';
 
+export const planSpec: {
+	[plan: string]: {
+		price: number | string
+		product_price?: { development: string; production: string }
+		users: number | string
+		storage: {
+			database: number | string
+			cloud: number | string
+			host?: number | string
+			email?: number | string
+		}
+		description: string[]
+		description_warning?: string[]
+	}
+} = {
+	'Trial': {
+		price: 0,
+		users: 10000, // 10K
+		storage: {
+			database: 4294967296, // 4GB -> Bytes
+			cloud: 53687091200, // 50GB -> Bytes
+		},
+		description: [
+			'10K User Accounts',
+			'4GB Database Storage',
+			'50GB File Storage'
+		],
+		description_warning: [
+			'Sending bulk emails not included',
+			'All user data is deleted every 30 days'
+		]
+	},
+	'Standard': {
+		price: 19,
+		product_price: {
+			development: 'price_1OUCt6HfHjKTnB39IwJasJEy',
+			production: 'price_1OlIoyHfHjKTnB393KyKOkU5',
+		},
+		users: 10000, // 10K
+		storage: {
+			database: 8589934592, // 8GB -> Bytes
+			cloud: 107374182400, // 100GB -> Bytes
+			host: 107374182400, // 100GB -> Bytes
+			email: 1073741824, // 1GB -> Bytes
+		},
+		description: [
+			'10K User Accounts',
+			'User Invitation System',
+			'Website Hosting',
+			'8GB Database Storage',
+			'100GB File Storage & Subdomain Hosting',
+			'Automated Emails & Sending Bulk Emails',
+			'1GB Email Storage'
+		],
+	},
+	'Free Standard': {
+		price: 19,
+		users: 10000, // 10K
+		storage: {
+			database: 8589934592, // 8GB -> Bytes
+			cloud: 107374182400, // 100GB -> Bytes
+			host: 107374182400, // 100GB -> Bytes
+			email: 1073741824, // 1GB -> Bytes
+		},
+		description: ['Free Standard'],
+	},
+	'Premium': {
+		price: 89,
+		product_price: {
+			development: 'price_1OeZSqHfHjKTnB395Ai9fY4m',
+			production: 'price_1OlIqCHfHjKTnB39wcQVEmyj',
+		},
+		users: 100000, // 100K
+		storage: {
+			database: 107374182400, // 100GB -> Bytes
+			cloud: 1099511627776, // 1TB -> Bytes
+			host: 1099511627776, // 1TB -> Bytes
+			email: 10737418240, // 10GB ->
+		},
+		description: [
+			'Includes all Standard Plan features',
+			'100K User Accounts',
+			'100GB Database Storage',
+			'1TB File Storage & Subdomain Hosting',
+			'10GB Email Storage'
+		],
+	},
+	'Unlimited': {
+		price: 89,
+		users: 'Unlimited',
+		storage: {
+			database: 'Unlimited',
+			cloud: 'Unlimited',
+			host: 'Unlimited',
+			email: 'Unlimited',
+		},
+		description: ['Premium Plan'],
+	}
+}
+
 export const currentServiceSpec: Ref<ServiceSpec | null> = ref(null);
 
 export class ServiceSpec {
@@ -19,82 +119,27 @@ export class ServiceSpec {
 		email: null,
 		host: null,
 	});
-	servicePlans: {
-		[plan: string]: {
-			price: number | string
-			product_price?: { development: string; production: string }
-			users: number | string
-			storage: {
-				database: number | string
-				cloud: number | string
-				host?: number | string
-				email?: number | string
-			}
-			description: string
+	servicePlan: {
+		price: number | string
+		product_price?: { development: string; production: string } | {}
+		users: number | string
+		storage: {
+			database: number | string
+			cloud: number | string
+			host?: number | string
+			email?: number | string
 		}
-	} = {
-		'Trial': {
-			price: 0,
-			users: this.getUserSize(10000), // 10K
-			storage: {
-				database: this.getDataSize(4294967296), // 4GB -> Bytes
-				cloud: this.getDataSize(53687091200), // 50GB -> Bytes
-			},
-			description: 'Trial Plan',
+	} = reactive({
+		price: 0,
+		product_price: {},
+		users: 0,
+		storage: {
+			database: 0,
+			cloud: 0,
+			host: 0,
+			email: 0,
 		},
-		'Standard': {
-			price: 19,
-			product_price: {
-				development: 'price_1OUCt6HfHjKTnB39IwJasJEy',
-				production: 'price_1OlIoyHfHjKTnB393KyKOkU5',
-			},
-			users: this.getUserSize(10000), // 10K
-			storage: {
-				database: this.getDataSize(8589934592), // 8GB -> Bytes
-				cloud: this.getDataSize(107374182400), // 100GB -> Bytes
-				host: this.getDataSize(107374182400), // 100GB -> Bytes
-				email: this.getDataSize(1073741824), // 1GB -> Bytes
-			},
-			description: 'Standard Plan',
-		},
-		'Free Standard': {
-			price: 19,
-			users: this.getUserSize(10000), // 10K
-			storage: {
-				database: this.getDataSize(8589934592), // 8GB -> Bytes
-				cloud: this.getDataSize(107374182400), // 100GB -> Bytes
-				host: this.getDataSize(107374182400), // 100GB -> Bytes
-				email: this.getDataSize(1073741824), // 1GB -> Bytes
-			},
-			description: 'Standard Plan',
-		},
-		'Premium': {
-			price: 89,
-			product_price: {
-				development: 'price_1OeZSqHfHjKTnB395Ai9fY4m',
-				production: 'price_1OlIqCHfHjKTnB39wcQVEmyj',
-			},
-			users: this.getUserSize(100000), // 100K
-			storage: {
-				database: this.getDataSize(107374182400), // 100GB -> Bytes
-				cloud: this.getDataSize(1099511627776), // 1TB -> Bytes
-				host: this.getDataSize(1099511627776), // 1TB -> Bytes
-				email: this.getDataSize(10737418240), // 10GB ->
-			},
-			description: 'Premium Plan',
-		},
-		'Unlimited': {
-			price: 89,
-			users: 'Unlimited',
-			storage: {
-				database: 'Unlimited',
-				cloud: 'Unlimited',
-				host: 'Unlimited',
-				email: 'Unlimited',
-			},
-			description: 'Premium Plan',
-		}
-	}
+	})
 	dataSize: { [key: string]: string } = reactive({
 		users: '',
 		database: '',
@@ -113,6 +158,14 @@ export class ServiceSpec {
 	constructor(service:Service) {
 		this.service = service;
 		this.plan = this.service.plan;
+
+		this.servicePlan.price = planSpec[this.plan].price;
+		this.servicePlan.product_price = planSpec[this.plan]?.product_price || {};
+		this.servicePlan.users = this.plan === 'Unlimited' ? 'Unlimited' : this.getUserSize(planSpec[this.plan].users as number);
+		this.servicePlan.storage.database = this.plan === 'Unlimited' ? 'Unlimited' : this.getDataSize(planSpec[this.plan].storage.database as number);
+		this.servicePlan.storage.cloud = this.plan === 'Unlimited' ? 'Unlimited' : this.getDataSize(planSpec[this.plan].storage.cloud as number);
+		this.servicePlan.storage.host = this.plan === 'Unlimited' ? 'Unlimited' : this.getDataSize(planSpec[this.plan].storage.host as number);
+		this.servicePlan.storage.email = this.plan === 'Unlimited' ? 'Unlimited' : this.getDataSize(planSpec[this.plan].storage.email as number);
 
 		this.getStorage().then(() => {
 			this.updateDataSizeAndPercent();
@@ -192,7 +245,7 @@ export class ServiceSpec {
 		}
 
 		let users = this.service.service.users;
-		let planUserSize = this.servicePlans[this.plan].users as number;
+		let planUserSize = this.servicePlan.users as number;
 
 		return parseFloat(((users / planUserSize) * 100).toFixed(2));
 	}
@@ -223,7 +276,7 @@ export class ServiceSpec {
         }
 
 		const resource = this.storage[type];
-        const planLimit = this.servicePlans[this.plan].storage[type];
+        const planLimit = this.servicePlan.storage[type];
 
 		return Math.ceil((resource / planLimit) * 100);
 	}
@@ -242,3 +295,67 @@ watch(currentServiceId, (nv) => {
 
 	console.log('currentServiceSpec updated:', currentServiceSpec.value);
 }, { immediate: true });
+
+
+
+// 'Trial': {
+// 	price: 0,
+// 	users: this.getUserSize(10000), // 10K
+// 	storage: {
+// 		database: this.getDataSize(4294967296), // 4GB -> Bytes
+// 		cloud: this.getDataSize(53687091200), // 50GB -> Bytes
+// 	},
+// 	description: 'Trial Plan',
+// },
+// 'Standard': {
+// 	price: 19,
+// 	product_price: {
+// 		development: 'price_1OUCt6HfHjKTnB39IwJasJEy',
+// 		production: 'price_1OlIoyHfHjKTnB393KyKOkU5',
+// 	},
+// 	users: this.getUserSize(10000), // 10K
+// 	storage: {
+// 		database: this.getDataSize(8589934592), // 8GB -> Bytes
+// 		cloud: this.getDataSize(107374182400), // 100GB -> Bytes
+// 		host: this.getDataSize(107374182400), // 100GB -> Bytes
+// 		email: this.getDataSize(1073741824), // 1GB -> Bytes
+// 	},
+// 	description: 'Standard Plan',
+// },
+// 'Free Standard': {
+// 	price: 19,
+// 	users: this.getUserSize(10000), // 10K
+// 	storage: {
+// 		database: this.getDataSize(8589934592), // 8GB -> Bytes
+// 		cloud: this.getDataSize(107374182400), // 100GB -> Bytes
+// 		host: this.getDataSize(107374182400), // 100GB -> Bytes
+// 		email: this.getDataSize(1073741824), // 1GB -> Bytes
+// 	},
+// 	description: 'Standard Plan',
+// },
+// 'Premium': {
+// 	price: 89,
+// 	product_price: {
+// 		development: 'price_1OeZSqHfHjKTnB395Ai9fY4m',
+// 		production: 'price_1OlIqCHfHjKTnB39wcQVEmyj',
+// 	},
+// 	users: this.getUserSize(100000), // 100K
+// 	storage: {
+// 		database: this.getDataSize(107374182400), // 100GB -> Bytes
+// 		cloud: this.getDataSize(1099511627776), // 1TB -> Bytes
+// 		host: this.getDataSize(1099511627776), // 1TB -> Bytes
+// 		email: this.getDataSize(10737418240), // 10GB ->
+// 	},
+// 	description: 'Premium Plan',
+// },
+// 'Unlimited': {
+// 	price: 89,
+// 	users: 'Unlimited',
+// 	storage: {
+// 		database: 'Unlimited',
+// 		cloud: 'Unlimited',
+// 		host: 'Unlimited',
+// 		email: 'Unlimited',
+// 	},
+// 	description: 'Premium Plan',
+// }
