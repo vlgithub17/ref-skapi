@@ -24,11 +24,11 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                     small(style='font-weight:300') {{availablePlans[0] === false ? '  (Current Plan)' : ''}}
 
                 template(v-if="availablePlans[0]")
-                    .price {{ '$' + planSpec['Standard'].price }}
+                    .price {{ '$' + planSpec['Standard'].price.monthly }}
                     br
                     button.final(@click="()=>{changeMode='standard';subscrOpt=availablePlans[0];}") {{availablePlans[0]}}
                 template(v-else-if="availablePlans[0] === null")
-                    .price {{ '$' + planSpec['Standard'].price }}
+                    .price {{ '$' + planSpec['Standard'].price.monthly }}
                     br
                     button.final.disabled N/A
 
@@ -43,11 +43,11 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                     small(style='font-weight:300') {{availablePlans[1] === false ? '  (Current Plan)' : ''}}
 
                 template(v-if="availablePlans[1]")
-                    .price {{ '$' + planSpec['Premium'].price }}
+                    .price {{ '$' + planSpec['Premium'].price.monthly }}
                     br
                     button.final(@click="()=>{changeMode='premium';subscrOpt=availablePlans[1];}") {{ availablePlans[1] }}
                 template(v-if="availablePlans[1] === null")
-                    .price {{ '$' + planSpec['Premium'].price }}
+                    .price {{ '$' + planSpec['Premium'].price.monthly }}
                     br
                     button.final.disabled N/A
                 hr

@@ -5,7 +5,11 @@ import Service from '@/code/service';
 
 export const planSpec: {
 	[plan: string]: {
-		price: number | string
+		price: {
+			monthly: number
+			yearly?: number
+			perpetual?: number
+		}
 		product_price?: { development: string; production: string }
 		users: number | string
 		storage: {
@@ -19,7 +23,10 @@ export const planSpec: {
 	}
 } = {
 	'Trial': {
-		price: 0,
+		price: {
+			monthly: 0,
+			yearly: 0,
+		},
 		users: 10000, // 10K
 		storage: {
 			database: 4294967296, // 4GB -> Bytes
@@ -36,7 +43,10 @@ export const planSpec: {
 		]
 	},
 	'Standard': {
-		price: 19,
+		price: {
+			monthly: 19,
+			perpetual: 300,
+		},
 		product_price: {
 			development: 'price_1OUCt6HfHjKTnB39IwJasJEy',
 			production: 'price_1OlIoyHfHjKTnB393KyKOkU5',
@@ -59,7 +69,9 @@ export const planSpec: {
 		],
 	},
 	'Free Standard': {
-		price: 19,
+		price: {
+			monthly: 19,
+		},
 		users: 10000, // 10K
 		storage: {
 			database: 8589934592, // 8GB -> Bytes
@@ -70,7 +82,10 @@ export const planSpec: {
 		description: ['Free Standard'],
 	},
 	'Premium': {
-		price: 89,
+		price: {
+			monthly: 89,
+			perpetual: 1399,
+		},
 		product_price: {
 			development: 'price_1OeZSqHfHjKTnB395Ai9fY4m',
 			production: 'price_1OlIqCHfHjKTnB39wcQVEmyj',
@@ -91,7 +106,9 @@ export const planSpec: {
 		],
 	},
 	'Unlimited': {
-		price: 89,
+		price: {
+			monthly: 89,
+		},
 		users: 'Unlimited',
 		storage: {
 			database: 'Unlimited',
