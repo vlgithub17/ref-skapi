@@ -1,109 +1,9 @@
-// 서비스 plan 별 가격, 용량 등 spec을 정의하는 파일
-// let spec: {
-// 	[plan: string]: {
-// 		price: number | string
-// 		product_price?: { development: string; production: string }
-// 		users: number | string
-// 		storage: {
-// 			database: number | string
-// 			file: number | string
-// 			subdomain?: number | string
-// 			email?: number | string
-// 		}
-// 		description: string
-// 	}
-// } = {
-// 	'Trial': {
-// 		price: 0,
-// 		users: 10000, // 10K
-// 		storage: {
-// 			database: 4294967296, // 4GB -> Bytes
-// 			file: 53687091200, // 50GB -> Bytes
-// 		},
-// 		description: 'Trial Plan'
-// 	},
-// 	'Standard': {
-// 		price: 19,
-// 		product_price: {
-// 			development: 'price_1OUCt6HfHjKTnB39IwJasJEy',
-// 			production: 'price_1OlIoyHfHjKTnB393KyKOkU5',
-// 		},
-// 		users: 10000, // 10K
-// 		storage: {
-// 			database: 8589934592, // 8GB -> Bytes
-// 			file: 107374182400, // 100GB -> Bytes
-// 			subdomain: 107374182400, // 100GB -> Bytes
-// 			email: 1073741824, // 1GB -> Bytes
-// 		},
-// 		description: 'Standard Plan'
-// 	},
-// 	'Free Standard': {
-// 		price: 19,
-// 		users: 10000, // 10K
-// 		storage: {
-// 			database: 8589934592, // 8GB -> Bytes
-// 			file: 107374182400, // 100GB -> Bytes
-// 			subdomain: 107374182400, // 100GB -> Bytes
-// 			email: 1073741824, // 1GB -> Bytes
-// 		},
-// 		description: 'Standard Plan'
-// 	},
-// 	'Premium': {
-// 		price: 89,
-// 		product_price: {
-// 			development: 'price_1OeZSqHfHjKTnB395Ai9fY4m',
-// 			production: 'price_1OlIqCHfHjKTnB39wcQVEmyj',
-// 		},
-// 		users: 100000, // 100K
-// 		storage: {
-// 			database: 107374182400, // 100GB -> Bytes
-// 			file: 1099511627776, // 1TB -> Bytes
-// 			subdomain: 1099511627776, // 1TB -> Bytes
-// 			email: 10737418240, // 10GB -> Bytes
-// 		},
-// 		description: 'Premium Plan'
-// 	},
-// 	'Unlimited': {
-// 		price: 89,
-// 		users: 'Unlimited',
-// 		storage: {
-// 			database: 'Unlimited',
-// 			file: 'Unlimited',
-// 			subdomain: 'Unlimited',
-// 			email: 'Unlimited',
-// 		},
-// 		description: 'Premium Plan'
-// 	}
-// }
-
-import { reactive } from 'vue';
+import { reactive, watch, ref, type Ref } from 'vue';
 import { skapi } from '@/main';
-import Service, { ServiceObj, SubscriptionObj } from '@/code/service';
+import { currentServiceId, currentService } from '@/views/service/main';
+import Service from '@/code/service';
 
-// type Service = {
-// 	id: string;
-// 	owner: string;
-// 	admin_private_endpoint: string;
-// 	record_private_endpoint: string;
-// 	admin_public_endpoint: string;
-// 	service: ServiceObj;
-// 	dateCreated: string;
-// 	plan: string;
-// 	planCode: { [key: number]: string }
-// 	subscription: SubscriptionObj;
-// 	storageInfo: Reactive<{
-// 		cloud: number;
-// 		database: number;
-// 		email: number;
-// 		host: number;
-// 	}>
-
-// 	subscriptionFetched: boolean;
-// 	_orgPlan: string;
-// 	_subsPromise: Promise<SubscriptionObj>
-// 	newsletterSender: Promise<string>[]
-// 	reserved_key: string;
-// }
+export const currentServiceSpec: Ref<ServiceSpec | null> = ref(null);
 
 export class ServiceSpec {
 	service: Service
@@ -126,8 +26,8 @@ export class ServiceSpec {
 			users: number | string
 			storage: {
 				database: number | string
-				file: number | string
-				subdomain?: number | string
+				cloud: number | string
+				host?: number | string
 				email?: number | string
 			}
 			description: string
@@ -135,10 +35,10 @@ export class ServiceSpec {
 	} = {
 		'Trial': {
 			price: 0,
-			users: 10000, // 10K
+			users: this.getUserSize(10000), // 10K
 			storage: {
-				database: 4294967296, // 4GB -> Bytes
-				file: 53687091200, // 50GB -> Bytes
+				database: this.getDataSize(4294967296), // 4GB -> Bytes
+				cloud: this.getDataSize(53687091200), // 50GB -> Bytes
 			},
 			description: 'Trial Plan',
 		},
@@ -148,23 +48,23 @@ export class ServiceSpec {
 				development: 'price_1OUCt6HfHjKTnB39IwJasJEy',
 				production: 'price_1OlIoyHfHjKTnB393KyKOkU5',
 			},
-			users: 10000, // 10K
+			users: this.getUserSize(10000), // 10K
 			storage: {
-				database: 8589934592, // 8GB -> Bytes
-				file: 107374182400, // 100GB -> Bytes
-				subdomain: 107374182400, // 100GB -> Bytes
-				email: 1073741824, // 1GB -> Bytes
+				database: this.getDataSize(8589934592), // 8GB -> Bytes
+				cloud: this.getDataSize(107374182400), // 100GB -> Bytes
+				host: this.getDataSize(107374182400), // 100GB -> Bytes
+				email: this.getDataSize(1073741824), // 1GB -> Bytes
 			},
 			description: 'Standard Plan',
 		},
 		'Free Standard': {
 			price: 19,
-			users: 10000, // 10K
+			users: this.getUserSize(10000), // 10K
 			storage: {
-				database: 8589934592, // 8GB -> Bytes
-				file: 107374182400, // 100GB -> Bytes
-				subdomain: 107374182400, // 100GB -> Bytes
-				email: 1073741824, // 1GB -> Bytes
+				database: this.getDataSize(8589934592), // 8GB -> Bytes
+				cloud: this.getDataSize(107374182400), // 100GB -> Bytes
+				host: this.getDataSize(107374182400), // 100GB -> Bytes
+				email: this.getDataSize(1073741824), // 1GB -> Bytes
 			},
 			description: 'Standard Plan',
 		},
@@ -174,12 +74,12 @@ export class ServiceSpec {
 				development: 'price_1OeZSqHfHjKTnB395Ai9fY4m',
 				production: 'price_1OlIqCHfHjKTnB39wcQVEmyj',
 			},
-			users: 100000, // 100K
+			users: this.getUserSize(100000), // 100K
 			storage: {
-				database: 107374182400, // 100GB -> Bytes
-				file: 1099511627776, // 1TB -> Bytes
-				subdomain: 1099511627776, // 1TB -> Bytes
-				email: 10737418240, // 10GB ->
+				database: this.getDataSize(107374182400), // 100GB -> Bytes
+				cloud: this.getDataSize(1099511627776), // 1TB -> Bytes
+				host: this.getDataSize(1099511627776), // 1TB -> Bytes
+				email: this.getDataSize(10737418240), // 10GB ->
 			},
 			description: 'Premium Plan',
 		},
@@ -188,8 +88,8 @@ export class ServiceSpec {
 			users: 'Unlimited',
 			storage: {
 				database: 'Unlimited',
-				file: 'Unlimited',
-				subdomain: 'Unlimited',
+				cloud: 'Unlimited',
+				host: 'Unlimited',
 				email: 'Unlimited',
 			},
 			description: 'Premium Plan',
@@ -198,15 +98,15 @@ export class ServiceSpec {
 	dataSize: { [key: string]: string } = reactive({
 		users: '',
 		database: '',
-		file: '',
-		subdomain: '',
+		cloud: '',
+		host: '',
 		email: '',
 	})
 	dataPercent: { [key: string]: number } = reactive({
 		users: 0,
 		database: 0,
-		file: 0,
-		subdomain: 0,
+		cloud: 0,
+		host: 0,
 		email: 0,
 	})
 
@@ -258,61 +158,48 @@ export class ServiceSpec {
 	}
 
 	updateDataSizeAndPercent() {
-        this.dataSize = {
-            users: this.getUserSize(),
-            database: this.getDataSize('database'),
-            file: this.getDataSize('cloud'),
-            subdomain: this.getDataSize('host'),
-            email: this.getDataSize('email'),
-        };
-        this.dataPercent = {
-            users: this.getUserSize(true),
-            database: this.getDataSize('database', true),
-            file: this.getDataSize('cloud', true),
-            subdomain: this.getDataSize('host', true),
-            email: this.getDataSize('email', true),
-        };
+		this.dataSize.users = this.getUserSize(this.service.service.users);
+        this.dataSize.database = this.getDataSize(this.storage.database);
+        this.dataSize.cloud = this.getDataSize(this.storage.cloud);
+        this.dataSize.host = this.getDataSize(this.storage.host);
+        this.dataSize.email = this.getDataSize(this.storage.email);
+
+        this.dataPercent.users = this.getUserPercent();
+        this.dataPercent.database = this.getDataPercent('database');
+        this.dataPercent.cloud = this.getDataPercent('cloud');
+        this.dataPercent.host = this.getDataPercent('host');
+        this.dataPercent.email = this.getDataPercent('email');
     }
 
-	getUserSize(percent: boolean = false): string | number {
-		if (this.plan === 'Unlimited' && percent) {
-            return 0;
+	getUserSize(data: number): string {
+		let users = data;
+
+        const units = ['', 'K', 'M', 'B', 'T'];
+        let unitIndex = 0;
+
+        while (users >= 1000 && unitIndex < units.length - 1) {
+            users /= 1000;
+            unitIndex++;
         }
+
+        const formattedValue = users.toFixed(2).replace(/\.00$/, '');
+        return `${formattedValue}${units[unitIndex]}`;
+	}
+
+	getUserPercent(): number {
+		if (this.plan === 'Unlimited') {
+			return 0;
+		}
 
 		let users = this.service.service.users;
 		let planUserSize = this.servicePlans[this.plan].users as number;
 
-		if (percent) {
-            return `${((users / planUserSize) * 100).toFixed(2)}%`;
-        }
-
-		// Convert to human-readable format
-        const units = ['', 'K', 'M', 'B', 'T'];
-        let unitIndex = 0;
-        let value = users;
-
-        while (value >= 1000 && unitIndex < units.length - 1) {
-            value /= 1000;
-            unitIndex++;
-        }
-
-        const formattedValue = value.toFixed(2).replace(/\.00$/, '');
-        return `${formattedValue}${units[unitIndex]}`;
+		return parseFloat(((users / planUserSize) * 100).toFixed(2));
 	}
 
-	getDataSize(type: string, percent: boolean = false): string | number {
-		if (this.plan === 'Unlimited' && percent) {
-            return 0;
-        }
+	getDataSize(data: number): string {
+        const resource = data;
 
-        const resource = this.storage[type];
-        const planLimit = this.servicePlans[this.plan].storage[type];
-
-        if (percent) {
-            return Math.ceil((resource / planLimit) * 100);
-        }
-
-        // Convert bytes to KB, MB, GB, or TB
         const kb = resource / 1024; // Bytes to KB
         const mb = kb / 1024; // KB to MB
         const gb = mb / 1024; // MB to GB
@@ -329,4 +216,29 @@ export class ServiceSpec {
         }
         return `${resource}bytes`;
 	}
+
+	getDataPercent(type: string): number {
+		if (this.plan === 'Unlimited') {
+            return 0;
+        }
+
+		const resource = this.storage[type];
+        const planLimit = this.servicePlans[this.plan].storage[type];
+
+		return Math.ceil((resource / planLimit) * 100);
+	}
 }
+
+watch(currentServiceId, (nv) => {
+	console.log('currentServiceId changed:', nv);
+
+	if (nv && currentService.id === nv) {
+		console.log('currentService updated:', nv, currentService);
+		// 새로운 ServiceSpec 인스턴스 생성
+		currentServiceSpec.value = new ServiceSpec(currentService);
+	} else {
+		currentServiceSpec.value = null;
+	}
+
+	console.log('currentServiceSpec updated:', currentServiceSpec.value);
+}, { immediate: true });
