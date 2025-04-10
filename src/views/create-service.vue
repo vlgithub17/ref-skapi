@@ -143,6 +143,7 @@ import { ref } from 'vue';
 import { serviceIdList, serviceList } from '@/views/service-list'
 import { skapi } from '@/main';
 import { customer } from '@/code/user';
+import { planSpec } from "@/views/service/service-spec";
 import Service from '@/code/service';
 import TabMenu from '@/components/tab.vue';
 

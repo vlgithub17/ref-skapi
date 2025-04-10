@@ -24,45 +24,36 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                     small(style='font-weight:300') {{availablePlans[0] === false ? '  (Current Plan)' : ''}}
 
                 template(v-if="availablePlans[0]")
-                    .price $19
+                    .price {{ '$' + planSpec['Standard'].price }}
                     br
                     button.final(@click="()=>{changeMode='standard';subscrOpt=availablePlans[0];}") {{availablePlans[0]}}
                 template(v-else-if="availablePlans[0] === null")
-                    .price $19
+                    .price {{ '$' + planSpec['Standard'].price }}
                     br
                     button.final.disabled N/A
 
                 hr
 
                 ul
-                    li 10K User Accounts
-                    li User Invitation System
-                    li Website Hosting
-                    li 8GB Database Storage
-                    li 100GB File Storage & Subdomain Hosting
-                    li Automated Emails & Sending Bulk Emails
-                    li 1GB Email Storage
+                    li(v-for="(des) in planSpec['Standard'].description") {{ des }}
+
             .infoBox
                 .mode
                     | Premium
                     small(style='font-weight:300') {{availablePlans[1] === false ? '  (Current Plan)' : ''}}
 
                 template(v-if="availablePlans[1]")
-                    .price $89
+                    .price {{ '$' + planSpec['Premium'].price }}
                     br
                     button.final(@click="()=>{changeMode='premium';subscrOpt=availablePlans[1];}") {{ availablePlans[1] }}
                 template(v-if="availablePlans[1] === null")
-                    .price $89
+                    .price {{ '$' + planSpec['Premium'].price }}
                     br
                     button.final.disabled N/A
                 hr
 
                 ul
-                    li Includes all Standard Plan features
-                    li 100K User Accounts
-                    li 100GB Database Storage
-                    li 1TB File Storage & Subdomain Hosting
-                    li 10GB Email Storage
+                    li(v-for="(des) in planSpec['Premium'].description") {{ des }}
 
     br
 
@@ -122,9 +113,11 @@ br
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { serviceList } from "@/views/service-list";
-import Modal from "@/components/modal.vue";
 import { user, customer } from "@/code/user";
 import { skapi } from "@/main";
+import { planSpec } from "@/views/service/service-spec";
+
+import Modal from "@/components/modal.vue";
 
 const router = useRouter();
 const route = useRoute();

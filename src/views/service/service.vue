@@ -66,24 +66,24 @@ section.infoBox
 
     .state 
         .smallTitle Users
-        .smallValue {{ currentServiceSpec.dataSize?.users }} / {{ currentServiceSpec.servicePlans[currentService.plan].users }}
+        .smallValue {{ currentServiceSpec.dataSize?.users }} / {{ currentServiceSpec.servicePlan.users }}
 
     .state 
         .smallTitle Database
-        .smallValue {{ currentServiceSpec.dataSize?.database }} / {{ currentServiceSpec.servicePlans[currentService.plan].storage.database }}
+        .smallValue {{ currentServiceSpec.dataSize?.database }} / {{ currentServiceSpec.servicePlan.storage.database }}
 
     .state 
         .smallTitle File Storage
-        .smallValue {{ currentServiceSpec.dataSize?.cloud }} / {{ currentServiceSpec.servicePlans[currentService.plan].storage.cloud }}
+        .smallValue {{ currentServiceSpec.dataSize?.cloud }} / {{ currentServiceSpec.servicePlan.storage.cloud }}
 
     template(v-if="currentService.plan !== 'Trial'")
         .state 
             .smallTitle File Hosting
-            .smallValue {{ currentServiceSpec.dataSize?.host }} / {{ currentServiceSpec.servicePlans[currentService.plan].storage.host }}
+            .smallValue {{ currentServiceSpec.dataSize?.host }} / {{ currentServiceSpec.servicePlan.storage.host }}
 
         .state 
             .smallTitle Email Storage
-            .smallValue {{ currentServiceSpec.dataSize?.email }} / {{ currentServiceSpec.servicePlans[currentService.plan].storage.email }}
+            .smallValue {{ currentServiceSpec.dataSize?.email }} / {{ currentServiceSpec.servicePlan.storage.email }}
 
     hr(style='margin-top: 1.5rem;')
 
