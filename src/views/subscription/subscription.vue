@@ -24,7 +24,7 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
             span.wordset the remaining days will be prorated and the amount will be adjusted accordingly on your next payment.
 
     .plan-wrap.card-wrap
-        .plan(:class="{'hovered': hoverPlan == 'standard'}" @mouseover="hoverPlan = 'standard'" @mouseleave="hoverPlan = serviceMode")
+        .plan(:class="{'nohovered': availablePlans[0] === false || availablePlans[0] === null}")
             .card
                 .title Standard 
                 //- .option 
@@ -39,16 +39,16 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                 .desc 
                     template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
                     template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
-                button.final(type="button" :class="{'disabled': promiseRunning || availablePlans[0] === false || availablePlans[0] === null}" @click="selectedPlan('standard')")
-                    template(v-if="serviceMode == 'standard' && promiseRunning")
+                button.final(type="button" :class="{'disabled': promiseRunning || availablePlans[0] === false || availablePlans[0] === null}" @click="()=>{changeMode='standard';subscrOpt=availablePlans[0];}")
+                    template(v-if="changeMode == 'standard' && promiseRunning")
                         .loader(style="--loader-color:white; --loader-size: 12px")
-                    tmeplate(v-else-if="availablePlans[0]") {{ availablePlans[0] }}
-                    tmeplate(v-else-if="availablePlans[0] === false") Current
-                    tmeplate(v-else-if="availablePlans[0] === null") N/A
+                    template(v-else-if="availablePlans[0]") {{ availablePlans[0] }}
+                    template(v-else-if="availablePlans[0] === false") Current
+                    template(v-else-if="availablePlans[0] === null") N/A
                     template(v-else) Select
             ul.provides
                 li(v-for="(des) in planSpec['Standard'].description") {{ des }}
-        .plan(:class="{'hovered': hoverPlan == 'premium'}" @mouseover="hoverPlan = 'premium'" @mouseleave="hoverPlan = serviceMode")
+        .plan(:class="{'nohovered': availablePlans[1] === false || availablePlans[1] === null}")
             .card
                 .title Premium 
                 //- .option 
@@ -57,54 +57,15 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                     .faktum {{ '$' + planSpec['Premium'].price.monthly }}
                     span /mo
                 .desc Empower your business with formcarry, #[span.wordset for big businesses]
-                button.final(type="button" :class="{'disabled': promiseRunning || availablePlans[0] === false || availablePlans[0] === null}" @click="selectedPlan('premium')")
-                    template(v-if="serviceMode == 'premium' && promiseRunning")
+                button.final(type="button" :class="{'disabled': promiseRunning || availablePlans[1] === false || availablePlans[1] === null}" @click="()=>{changeMode='premium';subscrOpt=availablePlans[1];}")
+                    template(v-if="changeMode == 'premium' && promiseRunning")
                         .loader(style="--loader-color:white; --loader-size: 12px")
-                    tmeplate(v-else-if="availablePlans[0]") {{ availablePlans[0] }}
-                    tmeplate(v-else-if="availablePlans[0] === false") Current
-                    tmeplate(v-else-if="availablePlans[0] === null") N/A
+                    template(v-else-if="availablePlans[1]") {{ availablePlans[1] }}
+                    template(v-else-if="availablePlans[1] === false") Current
+                    template(v-else-if="availablePlans[1] === null") N/A
                     template(v-else) Select
             ul.provides
                 li(v-for="(des) in planSpec['Premium'].description") {{ des }}
-
-    //- section
-        .planWrap
-            .infoBox
-                .mode
-                    | Standard
-                    small(style='font-weight:300') {{availablePlans[0] === false ? '  (Current Plan)' : ''}}
-
-                template(v-if="availablePlans[0]")
-                    .price {{ '$' + planSpec['Standard'].price.monthly }}
-                    br
-                    button.final(@click="()=>{changeMode='standard';subscrOpt=availablePlans[0];}") {{availablePlans[0]}}
-                template(v-else-if="availablePlans[0] === null")
-                    .price {{ '$' + planSpec['Standard'].price.monthly }}
-                    br
-                    button.final.disabled N/A
-
-                hr
-
-                ul
-                    li(v-for="(des) in planSpec['Standard'].description") {{ des }}
-
-            .infoBox
-                .mode
-                    | Premium
-                    small(style='font-weight:300') {{availablePlans[1] === false ? '  (Current Plan)' : ''}}
-
-                template(v-if="availablePlans[1]")
-                    .price {{ '$' + planSpec['Premium'].price.monthly }}
-                    br
-                    button.final(@click="()=>{changeMode='premium';subscrOpt=availablePlans[1];}") {{ availablePlans[1] }}
-                template(v-if="availablePlans[1] === null")
-                    .price {{ '$' + planSpec['Premium'].price.monthly }}
-                    br
-                    button.final.disabled N/A
-                hr
-
-                ul
-                    li(v-for="(des) in planSpec['Premium'].description") {{ des }}
 
     br
 
@@ -166,6 +127,7 @@ import { useRoute, useRouter } from "vue-router";
 import { serviceList } from "@/views/service-list";
 import { user, customer } from "@/code/user";
 import { skapi } from "@/main";
+import { currentServiceId, currentService } from '@/views/service/main';
 import { planSpec, currentServiceSpec } from "@/views/service/service-spec";
 
 import Modal from "@/components/modal.vue";
@@ -174,12 +136,6 @@ import TabMenu from '@/components/tab.vue';
 const router = useRouter();
 const route = useRoute();
 
-onMounted(() => {
-    console.log(currentServiceSpec.value)
-})
-
-let serviceMode = ref('standard');
-let hoverPlan = ref('standard');
 let activeTabs = ref({
     standardPlan: 0,
     premiumPlan: 0,
@@ -190,6 +146,15 @@ let subscrOpt = ref(false);
 let promiseRunning = ref(false);
 let changeMode = "";
 let openCancelplan = ref(false);
+
+onMounted(() => {
+    console.log(currentServiceSpec.value)
+    console.log(availablePlans.value)
+    // 구독 변경 페이지로 바로 들어오거나 그 안에서 새로고침할 경우
+    if(currentService === null) {
+        router.push('/my-services/' + serviceId + '/dashboard');
+    }
+})
 
 let availablePlans = computed(() => {
     // true = createSubs
@@ -215,14 +180,14 @@ let availablePlans = computed(() => {
         return [false, "Upgrade"];
     }
     if (serviceList[serviceId]?.service.plan == "Premium") {
-        // let notAvail =
-        //     currentServiceSpec.service.users > 10000 ||
-        //     currentServiceSpec.storage.database > 10000 ||
-        //     currentServiceSpec.storage.cloud > 10000 ||
-        //     currentServiceSpec.storage.host > 10000 ||
-        //     currentServiceSpec.storage.email > 10000
+        let notAvail =
+            currentServiceSpec.value.service.service.users > Number(planSpec['Premium'].users) ||
+            currentServiceSpec.value.storage.database > Number(planSpec['Premium'].storage.database) ||
+            currentServiceSpec.value.storage.cloud > Number(planSpec['Premium'].storage.cloud) ||
+            currentServiceSpec.value.storage.host > Number(planSpec['Premium'].storage.host) ||
+            currentServiceSpec.value.storage.email > Number(planSpec['Premium'].storage.email)
 
-        // return [notAvail ? null : "Downgrade", false];
+        return [notAvail ? null : "Downgrade", false];
     }
 
     return [null, null];
@@ -449,6 +414,16 @@ let updateSubscription = async (ticket_id) => {
         min-width: 250px;
         flex-grow: 1;
         transition: all .3s;
+
+        &.nohovered {
+            &:hover {
+                scale: 1;
+
+                .card {
+                    box-shadow: unset;
+                }
+            }
+        }
             
         &:hover {
             scale: 1.05;

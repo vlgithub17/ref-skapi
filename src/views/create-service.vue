@@ -36,8 +36,8 @@ main#create
 		.plan(:class="{'selected' : serviceMode == 'standard', 'hovered': hoverPlan == 'standard'}" @mouseover="hoverPlan = 'standard'" @mouseleave="hoverPlan = serviceMode")
 			.card
 				.title Standard 
-				.option 
-					//- TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
+				//- .option 
+					TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
 				.price
 					template(v-if="activeTabs.standardPlan === 0") 
 						.faktum {{ '$' + planSpec['Standard'].price.monthly }}
