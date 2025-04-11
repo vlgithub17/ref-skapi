@@ -1,22 +1,23 @@
 <template lang="pug">
 main
-	.dynamo-section.main.center.wide
+	.dynamo-section.main.center.wide.landing-a
 		//- p(style="color:var(--main-color); font-weight:500; font-size:14px;") BACKEND API
-		img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 44px;")
+		img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
 
 		br
 		br
 
-		.title.faktum 
+		.title.faktum
 			| Serverless #[span.wordset Backend API]
 			br 
 			| for HTML Frontend
-
-		p.desc Skapi is a fully serverless backend API that just works seamlessly with #[span.wordset plain HTML and JavaScript] — #[span.wordset no complex installations], #[span.wordset no backend configurations], and no database #[span.wordset management required.]
+		
+		//- p.desc(style='text-shadow: 2px 3px 0px black;') Skapi is a fully serverless backend API that works seamlessly with your #[span.wordset plain HTML and JavaScript] — #[span.wordset no complex installations], #[span.wordset no server configurations], #[span.wordset no database management required.]
+		p.desc(style='text-shadow: 2px 3px 0px black;') Build full-featured web applications faster with Skapi, a zero-setup backend API that runs entirely serverless. #[span.wordset No complex installations], #[span.wordset No server configurations], #[span.wordset No database management required.]
 
 		br
 
-		.vscode(style="border: 1px solid #2b2b2b; height: 240px")
+		.vscode(style="border: 1px solid #2b2b2b; height: 216px; max-width: 816px;")
 			.header
 				.circle
 					.cir
@@ -31,24 +32,31 @@ main
 			.body
 				pre.
 					#[span(style="color:#999") &lt;!]#[span(style="color:#33adff") DOCTYPE] #[span(style="color:#44E9FF") html]#[span(style="color:#999") &gt;]
-					#[span(style="color:#999") &lt;]#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@latest/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
+					#[span(style="color:#999") &lt;]#[span(style="color:#33adff") script] #[span(style="color:#44E9FF") src]=#[span(style="color:#FFED91") "https://cdn.jsdelivr.net/npm/skapi-js@{{npmVersion}}/dist/skapi.js"]#[span(style="color:#999") &gt;&lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
 					#[span(style="color:#999") &lt;]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
-						#[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "your_service_id"], #[span(style="color:#FFED91") "your_owner_id"]);
+					    #[span(style="color:#33adff") const] skapi = #[span(style="color:#33adff") new] Skapi(#[span(style="color:#FFED91") "your_service_id"], #[span(style="color:#FFED91") "your_owner_id"]);
+					    #[span(style="color:grey") // Start building!]
 					#[span(style="color:#999") &lt;/]#[span(style="color:#33adff") script]#[span(style="color:#999") &gt;]
 
 			.copied Copied! 👏
+		br
 
+		small.desc Current Version: {{npmVersion}}
+		
 	.dynamo-section.center
-		.title.faktum 
-			| Works Seamlessly
-			br
-			| with Pure HTML
+		img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
+		br
+		br
+		.title.faktum
+			| Backend Integration Made Simple
 
-		.desc No need for complex JavaScript to handle user input data — #[span.wordset Skapi fully] embraces pure HTML forms, making backend interaction as simple as submitting a form.
+		//- .desc No complex JavaScript. #[.wordset Just simple] &lt;/html&gt;.#[br]Skapi makes file uploads and #[.wordset data submission] as easy as a standard #[.wordset form post.]
+		.desc Skapi makes file uploads and #[.wordset data submission] as easy as a standard #[.wordset form post.] #[.wordset No complex] JavaScript, #[.wordset just plain simple] HTML.
+		br
 
-		TabMenu(v-model="activeTabs.pureHTML" :tabs="['User Login', 'Uploading Data & Files']")
+		TabMenu(v-model="activeTabs.pureHTML" :tabs="['User Login', 'Post Data']" tab-width='120px')
 
-		.vscode
+		.vscode(style=' max-width: 816px;height:340px')
 			.header
 				.circle
 					.cir
@@ -67,34 +75,39 @@ main
 				template(v-if="activeTabs.pureHTML === 0")
 					pre.
 						#[span(style="color:#999") &lt;]#[span(style="color:#33adff") form ]#[span(style="color:#9CDCFE") action]=#[span(style="color:#CE9178") "welcome.html" ]#[span(style="color:#9CDCFE") onsubmit]=#[span(style="color:#CE9178") "skapi.login(event)"]#[span(style="color:#999") &gt;]
-							#[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
-								Email#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
-								#[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "email" ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "email" ]#[span(style="color:#9CDCFE") required]#[span(style="color:#999") &gt;]
-							#[span(style="color:#999") &lt;/]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
-							#[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
-								Password#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
-								#[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "password" ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "password" ]#[span(style="color:#9CDCFE") required]#[span(style="color:#999") &gt;]
-							#[span(style="color:#999") &lt;/]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
-							#[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "submit" ]#[span(style="color:#9CDCFE") value]=#[span(style="color:#CE9178") "Login"]#[span(style="color:#999") &gt;]
+						    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
+						        Email#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
+						        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "email" ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "email" ]#[span(style="color:#9CDCFE") required]#[span(style="color:#999") &gt;]
+						    #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
+						    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
+						        Password#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
+						        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "password" ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "password" ]#[span(style="color:#9CDCFE") required]#[span(style="color:#999") &gt;]
+						    #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
+						    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "submit" ]#[span(style="color:#9CDCFE") value]=#[span(style="color:#CE9178") "Login"]#[span(style="color:#999") &gt;]
 						#[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
 				template(v-if="activeTabs.pureHTML === 1")
 					pre.
 						#[span(style="color:#999") &lt;]#[span(style="color:#33adff") form ]#[span(style="color:#9CDCFE") onsubmit]=#[span(style="color:#CE9178") "]
-							#[span(style="color:#CE9178") skapi.postRecord(event, { table: 'my_photos' })]
-							#[span(style="color:#CE9178") .then(res => alert('Photo uploaded!') )]
-						#[span(style="color:#CE9178") "]#[span(style="color:#999") &gt;]
-							#[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "picture" ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "file"]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
-							#[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
-								Description#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
-								#[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "description" ]#[span(style="color:#999") &gt;]
-							#[span(style="color:#999") &lt;/]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
-							#[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "submit" ]#[span(style="color:#9CDCFE") value]=#[span(style="color:#CE9178") "Upload"]#[span(style="color:#999") &gt;]
+						    #[span(style="color:#CE9178") skapi.postRecord(event, { table: 'my_photos' })]
+						    #[span(style="color:#CE9178") .then(res => alert('Photo uploaded!') )]#[span(style="color:#CE9178") "]#[span(style="color:#999") &gt;]
+						    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "picture" ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "file"]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
+						    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
+						        Description#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
+						        #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "description" ]#[span(style="color:#999") &gt;]
+						    #[span(style="color:#999") &lt;/]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
+						    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "submit" ]#[span(style="color:#9CDCFE") value]=#[span(style="color:#CE9178") "Upload"]#[span(style="color:#999") &gt;]
 						#[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
 			.copied Copied! 👏
-	.dynamo-section.center.wide
-		.title.faktum Everything You Need in One API
+	
+	div(style='padding-bottom:6rem')
+	
+		.dynamo-section.center(style='padding-bottom:2rem;')
+			img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
+			br
+			br
+			.title.faktum Everything #[.wordset You Need] in One API
 
-		.desc Skapi simplifies backend development by bundling essential services into a single JavaScript library, dramatically reducing development time and costs.
+			.desc Skapi simplifies backend development by bundling essential services into a single JavaScript library, dramatically reducing development time and costs.
 
 		.slide-wrap
 			ul.slide-inner
@@ -111,7 +124,7 @@ main
 							use(xlink:href="@/assets/img/material-icon.svg#icon-database-fill")
 					.content
 						.title.faktum Database
-						.desc Scalable, auto-indexing database
+						.desc Scalable, flexible, fast database with auto-indexing feature
 				li
 					.icon
 						svg
@@ -125,7 +138,7 @@ main
 							use(xlink:href="@/assets/img/material-icon.svg#icon-public")
 					.content
 						.title.faktum CDN
-						.desc Deliver content globally with ease
+						.desc Content delivered globally by default
 				li
 					.icon
 						svg
@@ -168,7 +181,7 @@ main
 			img(v-else-if="hoverFramework === 'vue'" src="@/assets/img/icon/vue.png" alt="Vue logo")
 			img(v-else-if="hoverFramework === 'html'" src="@/assets/img/icon/html.png" alt="Html logo")
 
-		.title.faktum 
+		.title.faktum
 			| Built with TypeScript,
 			br
 			| Compatible #[span.wordset with Any #[span.wordset JS Framework]]
@@ -202,6 +215,10 @@ main
 						p.small Html
 
 	.dynamo-section.center
+		img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
+		br
+		br
+
 		.title.faktum Pricing Plans
 
 		//- TabMenu(v-model="activeTabs.plan" :tabs="['Monthly', 'Limited']")
@@ -211,7 +228,7 @@ main
 				.card
 					.title Standard 
 					.option 
-						TabMenu(v-model="activeTabs.standardPlan" :tabs="['Monthly', 'Perpetual']")
+						TabMenu(v-model="activeTabs.standardPlan" :tabs="['Monthly', 'Perpetual']" tab-width='120px')
 					.price
 						template(v-if="activeTabs.standardPlan === 0") 
 							.faktum {{ '$' + planSpec['Standard'].price.monthly }}
@@ -277,7 +294,7 @@ main
 					li 4GB Database Storage
 					li 50GB File Storage
 	
-	.dynamo-section.center.wide
+	.dynamo-section.center.wide(style='background-color:rgb(247, 249, 252);')
 		.title.faktum Start Building Today!
 
 		.desc 
@@ -358,6 +375,29 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
+.dynamo-section.landing-a {
+	// background-image: url(landing-az.jpg);
+	background-image: url(blwv.jpg);
+    background-size: cover;
+	background-blend-mode: difference;
+    background-position: center;
+	.desc {
+		color: white;
+	}
+}
+
+.landing-b {
+	// background-image: url(alpha.jpeg);
+	background-size: cover;
+	// background-position: bottom;
+	// max-width: unset;
+	// background-size: 40px 40px;
+	// background-image: radial-gradient(circle, #000000 1px, rgba(0, 0, 0, 0) 1px);
+	// background-image:
+    // linear-gradient(to right, rgb(222, 222, 222) 1px, transparent 1px),
+    // linear-gradient(to bottom, rgb(222, 222, 222) 1px, transparent 1px);
+	// max-width: unset !important;
+}
 .dynamo-section {
 	max-width: 1200px;
 	margin: 0 auto;
@@ -375,7 +415,6 @@ onMounted(() => {
 
 	&.wide {
 		max-width: unset;
-		background-color:rgb(247, 249, 252);
 		margin: 0 10px;
 		border-radius: 18px;
 		padding: 5rem 20px;
@@ -385,9 +424,9 @@ onMounted(() => {
 			background-color: #060A23;
 			color: #D9DADD;
 
-			.desc {
-				color: #A6A8B1;
-			}
+			// .desc {
+			// 	color: #A6A8B1; // #cacaca; 
+			// }
 		}
 	}
 
@@ -410,7 +449,8 @@ onMounted(() => {
 	}
 
 	.desc {
-		max-width: 570px;
+		// max-width: 570px;
+		max-width: 712px;
 		margin-bottom: 1rem;
 		line-height: 1.9;
 		color: #333;
@@ -420,7 +460,8 @@ onMounted(() => {
 .vscode {
 	position: relative;
 	max-width: 640px;
-	height: 360px;
+	// max-width: 820px;
+	// height: 360px;
 	margin: 0 auto;
 	border-radius: 12px;
 	background-color: #181818;
@@ -564,54 +605,62 @@ onMounted(() => {
 	position: relative;
 	top: 0;
 	left: 0;
-	height: 300px;
-	overflow: hidden;
+	// height: 262px;
+    overflow: hidden;
 
 	.slide-inner {
 		display: flex;
-		align-items: center;
+		// align-items: center;
 		justify-content: space-between;
 		padding-left: 0;
 		gap: 1rem;
-
+		margin: 0;
 		&.original { animation: 50s linear 0s infinite normal forwards running slide01; }
 		&.clone { animation: 50s linear 0s infinite normal none running slide02; }
 
 		li {
 			display: inline-block;
 			list-style: none;
-			// width: 220px;
+			// width: 260px;
+			// height: 260px;
 			// height: 250px;
-			width: 13em;
-			height: 15em;
+			width: 13rem;
+			// height: 13rem;
 			// line-height: 220px;
 			// margin-right: 4vw;
-			border: 1px solid #F0F2FA;
-			background-color: #fff;
-			border-radius: 24px;
-			padding: 1rem;
+			// border: 1px solid rgb(240, 242, 250);
+			// background-color: #fff;
+			// background-color:rgb(247, 249, 252);
+			// border-radius: 24px;
+			// padding: 1rem;
 			text-align: left;
+			// margin: 8px;
+			// box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2);
+
+			// background: linear-gradient(to bottom, #f3f3f3, white);
+
 
 			&:last-child {
 				margin-right: 1rem;
 			}
 			.icon {
 				display: inline-block;
-				border-radius: 50%;
-				border: 1px solid #F0F2FA;
-				padding: 0.5rem;
+				// border-radius: 50%;
+				// border: 1px solid #F0F2FA;
+				// padding: 0.5rem;
 				// background-color: #fff;
-				margin-bottom: 1rem;
-				box-shadow: 0px 0px 14px #e4e7f4;
+				// margin-bottom: 1rem;
+				// box-shadow: 0px 0px 14px #e4e7f4;
 				cursor: default;
 
 				svg {
-					width: 2rem;
-					height: 2rem;
+					width: 3.4rem;
+					height: 3.4rem;
 					fill: var(--main-color);
 				}
 			}
 			.content {
+				margin-top: 1rem;
 				.title {
 					font-size: 1.2rem;
 					margin-bottom: 0.5rem;
@@ -658,11 +707,11 @@ onMounted(() => {
 		}
 	}
 	img {
-		width: 2.5rem;
+		height: 3rem;
 
-		&.skapi {
-			width: 2rem;
-		}
+		// &.skapi {
+		// 	height: 3rem;
+		// }
 	}
 	.fade-dot-wrap {
 		.dot {
@@ -903,8 +952,7 @@ onMounted(() => {
 		}
 		
 		&.main {
-			padding: 6rem 20px;
-
+			padding: 6rem 20px 20px;
 			.title {
 				font-size: 48px;
 			}

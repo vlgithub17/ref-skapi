@@ -1,7 +1,7 @@
 <template lang="pug">
 .tab-menu
 	ul
-		li(v-for="(tab, index) in tabs" :key="index" :ref="setItemRef" @click="selectTab(index)" :class="{ active: activeIndex === index }") {{ tab }}
+		li(v-for="(tab, index) in tabs" :key="index" :style='{width:tabWidth}' :ref="setItemRef" @click="selectTab(index)" :class="{ active: activeIndex === index }") {{ tab }}
 		.active-menu(:style="{ width: activeWidth, left: activeLeft }")
 </template>
 
@@ -17,6 +17,9 @@ const props = defineProps({
 		type: Number,
 		default: 0,
 	},
+    tabWidth: {
+        type: Number
+    }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -92,6 +95,7 @@ onUnmounted(() => {
             font-size: 0.9rem;
             cursor: pointer;
             z-index: 2;
+            text-align: center;
         }
 
         .active-menu {
