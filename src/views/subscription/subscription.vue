@@ -20,10 +20,11 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
             | Choose a plan for your service 
             span.wordset.servicename {{serviceList[serviceId].service.name}}
             br
-            | When upgrade/downgrading your subscription plan, the remaining days will be prorated and the amount will be adjusted accordingly on your next payment.
+            | When upgrade/downgrading your subscription plan, 
+            span.wordset the remaining days will be prorated and the amount will be adjusted accordingly on your next payment.
 
-    //- .plan-wrap.card-wrap
-        .plan(:class="{'selected' : serviceMode == 'standard', 'hovered': hoverPlan == 'standard'}" @mouseover="hoverPlan = 'standard'" @mouseleave="hoverPlan = serviceMode")
+    .plan-wrap.card-wrap
+        .plan(:class="{'hovered': hoverPlan == 'standard'}" @mouseover="hoverPlan = 'standard'" @mouseleave="hoverPlan = serviceMode")
             .card
                 .title Standard 
                 //- .option 
@@ -38,14 +39,16 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                 .desc 
                     template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
                     template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
-                button.final(type="button" :class="{'disabled': promiseRunning || availablePlans[0] === false}" @click="selectedPlan('standard')")
+                button.final(type="button" :class="{'disabled': promiseRunning || availablePlans[0] === false || availablePlans[0] === null}" @click="selectedPlan('standard')")
                     template(v-if="serviceMode == 'standard' && promiseRunning")
                         .loader(style="--loader-color:white; --loader-size: 12px")
+                    tmeplate(v-else-if="availablePlans[0]") {{ availablePlans[0] }}
                     tmeplate(v-else-if="availablePlans[0] === false") Current
+                    tmeplate(v-else-if="availablePlans[0] === null") N/A
                     template(v-else) Select
             ul.provides
                 li(v-for="(des) in planSpec['Standard'].description") {{ des }}
-        .plan(:class="{'selected' : serviceMode == 'premium', 'hovered': hoverPlan == 'premium'}" @mouseover="hoverPlan = 'premium'" @mouseleave="hoverPlan = serviceMode")
+        .plan(:class="{'hovered': hoverPlan == 'premium'}" @mouseover="hoverPlan = 'premium'" @mouseleave="hoverPlan = serviceMode")
             .card
                 .title Premium 
                 //- .option 
@@ -54,14 +57,17 @@ main#subscription(v-if="serviceList[serviceId]?.subscriptionFetched")
                     .faktum {{ '$' + planSpec['Premium'].price.monthly }}
                     span /mo
                 .desc Empower your business with formcarry, #[span.wordset for big businesses]
-                button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('premium')")
+                button.final(type="button" :class="{'disabled': promiseRunning || availablePlans[0] === false || availablePlans[0] === null}" @click="selectedPlan('premium')")
                     template(v-if="serviceMode == 'premium' && promiseRunning")
                         .loader(style="--loader-color:white; --loader-size: 12px")
+                    tmeplate(v-else-if="availablePlans[0]") {{ availablePlans[0] }}
+                    tmeplate(v-else-if="availablePlans[0] === false") Current
+                    tmeplate(v-else-if="availablePlans[0] === null") N/A
                     template(v-else) Select
             ul.provides
                 li(v-for="(des) in planSpec['Premium'].description") {{ des }}
 
-    section
+    //- section
         .planWrap
             .infoBox
                 .mode
@@ -155,12 +161,12 @@ br
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { serviceList } from "@/views/service-list";
 import { user, customer } from "@/code/user";
 import { skapi } from "@/main";
-import { planSpec } from "@/views/service/service-spec";
+import { planSpec, currentServiceSpec } from "@/views/service/service-spec";
 
 import Modal from "@/components/modal.vue";
 import TabMenu from '@/components/tab.vue';
@@ -168,11 +174,15 @@ import TabMenu from '@/components/tab.vue';
 const router = useRouter();
 const route = useRoute();
 
+onMounted(() => {
+    console.log(currentServiceSpec.value)
+})
+
 let serviceMode = ref('standard');
 let hoverPlan = ref('standard');
 let activeTabs = ref({
-	standardPlan: 0,
-	premiumPlan: 0,
+    standardPlan: 0,
+    premiumPlan: 0,
 });
 
 let serviceId = route.path.split("/")[2];
@@ -205,13 +215,14 @@ let availablePlans = computed(() => {
         return [false, "Upgrade"];
     }
     if (serviceList[serviceId]?.service.plan == "Premium") {
-        let notAvail =
-            serviceList[serviceId].service.users > 10000 ||
-            serviceList[serviceId].storageInfo.email > 1073741824 ||
-            serviceList[serviceId].storageInfo.host > 53687091200 ||
-            serviceList[serviceId].storageInfo.cloud > 53687091200 ||
-            serviceList[serviceId].storageInfo.database > 4294967296;
-        return [notAvail ? null : "Downgrade", false];
+        // let notAvail =
+        //     currentServiceSpec.service.users > 10000 ||
+        //     currentServiceSpec.storage.database > 10000 ||
+        //     currentServiceSpec.storage.cloud > 10000 ||
+        //     currentServiceSpec.storage.host > 10000 ||
+        //     currentServiceSpec.storage.email > 10000
+
+        // return [notAvail ? null : "Downgrade", false];
     }
 
     return [null, null];
@@ -437,34 +448,14 @@ let updateSubscription = async (ticket_id) => {
         width: 31%;
         min-width: 250px;
         flex-grow: 1;
-        opacity: 0.5;
         transition: all .3s;
-
-        &.selected {
-            opacity: 1;
             
+        &:hover {
+            scale: 1.05;
+
             .card {
                 box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
             }
-            .provides {
-                li {
-                    // &::before {
-                    // 	background: url('@/assets/img/icon/check.svg') no-repeat;
-                    // 	background-size: cover;
-                    // 	width: 16px;
-                    // 	height: 16px;
-                    // 	opacity: 1;
-                    // }
-                }
-            }
-        }
-
-        &.hovered {
-            scale: 1.05;
-        }
-
-        &:hover {
-            opacity: 1;
         }
     }
     .card {

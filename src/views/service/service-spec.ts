@@ -301,6 +301,7 @@ export class ServiceSpec {
 
 watch(currentServiceId, (nv) => {
 	console.log('currentServiceId changed:', nv);
+	console.log(currentService);
 
 	if (nv && currentService.id === nv) {
 		console.log('currentService updated:', nv, currentService);
