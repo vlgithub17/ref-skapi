@@ -2,7 +2,7 @@
 main
 	.dynamo-section.main.center.wide.landing-a
 		//- p(style="color:var(--main-color); font-weight:500; font-size:14px;") BACKEND API
-		img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
+		//- img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
 
 		br
 		br
@@ -48,10 +48,10 @@ main
 		img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
 		br
 		br
-		.title.faktum
-			| Backend Integration Made Simple
-
-		.desc No complex JavaScript. #[.wordset Just simple] &lt;/html&gt;.#[br]Skapi makes file uploads and #[.wordset data submission] as easy as a standard #[.wordset form post.]
+		//- .title.faktum No complex JavaScript.#[br]Just simple forms.
+		.title.faktum Backend Integration Made Simple
+		.desc Skapi seamlessly integrates with pure HTML, making file uploads and data submission as easy as a standard form post.
+		//- .desc No complex JavaScript. #[.wordset Just simple] &lt;/html&gt;.#[br]Skapi makes file uploads and #[.wordset data submission] as easy as a standard #[.wordset form post.]
 		//- .desc Skapi makes file uploads and #[.wordset data submission] as easy as a standard #[.wordset form post.] #[.wordset No complex] JavaScript, #[.wordset just plain simple] HTML.
 		br
 
@@ -103,12 +103,13 @@ main
 	div(style='padding-bottom:6rem')
 	
 		.dynamo-section.center(style='padding-bottom:2rem;')
-			img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
-			br
-			br
+			//- img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
+			//- br
+			//- br
 			.title.faktum Everything #[.wordset You Need] in One API
 
-			.desc Skapi simplifies backend development by bundling essential services into a single JavaScript library, dramatically reducing development time and costs.
+			//- .desc Skapi simplifies backend development by bundling essential services into a single JavaScript library, dramatically reducing development time and costs.
+			.desc Skapi simplifies backend development by bundling essential services into a single JavaScript library, delivered instantly with zero setup required.
 
 		.slide-wrap
 			ul.slide-inner
