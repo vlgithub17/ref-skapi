@@ -8,7 +8,8 @@ main
 		br
 
 		.title.faktum
-			| Serverless #[span.wordset Backend API]
+			| Zero-Setup Backend API
+			//- | Serverless #[span.wordset Backend API]
 			br 
 			| for HTML Frontend
 		
@@ -50,8 +51,8 @@ main
 		.title.faktum
 			| Backend Integration Made Simple
 
-		//- .desc No complex JavaScript. #[.wordset Just simple] &lt;/html&gt;.#[br]Skapi makes file uploads and #[.wordset data submission] as easy as a standard #[.wordset form post.]
-		.desc Skapi makes file uploads and #[.wordset data submission] as easy as a standard #[.wordset form post.] #[.wordset No complex] JavaScript, #[.wordset just plain simple] HTML.
+		.desc No complex JavaScript. #[.wordset Just simple] &lt;/html&gt;.#[br]Skapi makes file uploads and #[.wordset data submission] as easy as a standard #[.wordset form post.]
+		//- .desc Skapi makes file uploads and #[.wordset data submission] as easy as a standard #[.wordset form post.] #[.wordset No complex] JavaScript, #[.wordset just plain simple] HTML.
 		br
 
 		TabMenu(v-model="activeTabs.pureHTML" :tabs="['User Login', 'Post Data']" tab-width='120px')
