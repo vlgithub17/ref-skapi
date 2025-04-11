@@ -2,7 +2,7 @@
 main
 	.dynamo-section.main.center.wide.landing-a
 		//- p(style="color:var(--main-color); font-weight:500; font-size:14px;") BACKEND API
-		//- img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
+		img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
 
 		br
 		br
@@ -48,9 +48,11 @@ main
 		img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
 		br
 		br
+		.title.faktum Works Seamlessly with Pure HTML
+		.desc Skapi integrates directly with standard HTML form elements, enabling secure file uploads and data submission without requiring additional JavaScript logic or custom event handling.
 		//- .title.faktum No complex JavaScript.#[br]Just simple forms.
-		.title.faktum Backend Integration Made Simple
-		.desc Skapi seamlessly integrates with pure HTML, making file uploads and data submission as easy as a standard form post.
+		//- .title.faktum Works Seamlessly with Pure HTML
+		//- .desc Skapi seamlessly integrates with pure HTML, making file uploads and data submission as easy as a standard form post.
 		//- .desc No complex JavaScript. #[.wordset Just simple] &lt;/html&gt;.#[br]Skapi makes file uploads and #[.wordset data submission] as easy as a standard #[.wordset form post.]
 		//- .desc Skapi makes file uploads and #[.wordset data submission] as easy as a standard #[.wordset form post.] #[.wordset No complex] JavaScript, #[.wordset just plain simple] HTML.
 		br
@@ -100,8 +102,8 @@ main
 						#[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
 			.copied Copied! 👏
 	
-	div(style='padding-bottom:6rem')
-	
+	.allinone
+		//- img.groundgrid(src="/gridflat.jpg" style="width:100%")
 		.dynamo-section.center(style='padding-bottom:2rem;')
 			//- img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
 			//- br
@@ -388,9 +390,26 @@ onMounted(() => {
 	}
 }
 
-.landing-b {
+.allinone {
+	padding-bottom:6rem;
+	position: relative;
+	img {
+		width: 100%;
+		position: absolute;
+		z-index: -1;
+		bottom: 0;
+		opacity: 0.5;
+	}
+
+	.desc {
+		background-color: white;
+	}
+
+	.title {
+		background-color: white;
+	}
 	// background-image: url(alpha.jpeg);
-	background-size: cover;
+	// background-size: cover;
 	// background-position: bottom;
 	// max-width: unset;
 	// background-size: 40px 40px;
@@ -404,7 +423,7 @@ onMounted(() => {
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 6rem 20px;
-	background-color: #fff;
+	// background-color: #fff;
 
 	&.center {
 		text-align: center;
@@ -662,6 +681,7 @@ onMounted(() => {
 				}
 			}
 			.content {
+				background-color: rgba(255,255,255,.7);
 				margin-top: 1rem;
 				.title {
 					font-size: 1.2rem;
