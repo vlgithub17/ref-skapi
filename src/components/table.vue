@@ -115,8 +115,6 @@
             newWidth = 50;
         }
 
-        console.log('newWidth', newWidth);
-
         // 현재 열의 너비만 적용
         currentHeadCol.style.width = `${newWidth}px`;
     };
