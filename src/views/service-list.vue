@@ -296,6 +296,10 @@ tbody tr.serviceRow {
 	&:not(.active):hover {
 		background-color: rgba(41, 63, 230, 0.05);
 		cursor: pointer;
+
+        &::after {
+            background-color: rgba(41, 63, 230, 0.05);
+        }
 	}
 
 	&.active {

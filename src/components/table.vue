@@ -104,21 +104,19 @@
 
         if (currentHeadCol.classList.contains('fixed')) return;
 
+        // 마우스 이동 거리 계산
         pageXMouseMoveDiff = e.pageX - pageXMouseDown;
-        let val = currentHeadColWidth + pageXMouseMoveDiff;
 
-        if (val > 64) {
-            if (thTotal <= headFullWidth) {
-                let nextTh = currentHeadCol.nextElementSibling as HTMLElement;
-                if (nextTh.classList.contains('fixed')) return;
+        // 새로운 너비 계산
+        let newWidth = currentHeadColWidth + pageXMouseMoveDiff;
 
-                let newSiblingWidth = currentSiblingHeadWidth - pageXMouseMoveDiff;
-                if (newSiblingWidth > 64) {
-                    nextTh.style.width = `${newSiblingWidth}px`;
-                }
-            }
-            currentHeadCol.style.width = `${currentHeadColWidth + pageXMouseMoveDiff}px`;
+        // 너비가 음수가 되지 않도록 제한
+        if (newWidth < 0) {
+            newWidth = 0;
         }
+
+        // 현재 열의 너비만 적용
+        currentHeadCol.style.width = `${newWidth}px`;
     };
 
     let setResize = async () => {
@@ -161,8 +159,8 @@
     }
 
     .customTbl {
-        min-width: 100%;
-        width: 0;
+        width: auto; // 테이블 너비는 자동으로 조정
+        min-width: fit-content; // 최소 너비는 내용에 맞춤
         border-collapse: collapse;
         table-layout: fixed;
 
@@ -175,11 +173,27 @@
         thead {
             background-color: #f0f0f0;
             text-align: left;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            // border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
 
+            
             tr {
+                position: relative;
                 height: 60px;
+
+                &::after {
+                    content: '';
+                    display: block;
+                    height: 100%; // 높이는 최소화
+                    background-color: #f0f0f0;
+                    // border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                    box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+                    min-width: 100vw; // 화면 너비만큼 확장
+                    position: absolute;
+                    top: 0;
+                    right: -100vw;
+                    z-index: -1; // 테이블 뒤쪽으로 배치
+                }
             }
 
             th {
@@ -244,9 +258,24 @@
             background-color: #fff;
 
             tr {
+                position: relative;
                 height: 60px;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                // border-bottom: 1px solid rgba(0, 0, 0, 0.05);
                 box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+
+                &::after {
+                    content: '';
+                    display: block;
+                    height: 100%; // 높이는 최소화
+                    background-color: #fff;
+                    // border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                    box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+                    min-width: 100vw; // 화면 너비만큼 확장
+                    position: absolute;
+                    top: 0;
+                    right: -100vw;
+                    z-index: -1; // 테이블 뒤쪽으로 배치
+                }
             }
 
             td {
