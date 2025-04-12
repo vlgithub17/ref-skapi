@@ -721,11 +721,19 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
             @media (pointer: fine) {
                 &:not(.active):hover {
                     background-color: rgba(41, 63, 230, 0.05);
+
+                    &::after {
+                        background-color: rgba(41, 63, 230, 0.05);
+                    }
                 }
             }
 
             &.active {
                 background-color: rgba(41, 63, 230, 0.1);
+
+                &::after {
+                    background-color: rgba(41, 63, 230, 0.1);
+                }
             }
 
             &:hover {

@@ -304,6 +304,10 @@ tbody tr.serviceRow {
 
 	&.active {
 		background-color: rgba(41, 63, 230, 0.10);
+
+        &::after {
+            background-color: rgba(41, 63, 230, 0.10);
+        }
 	}
 }
 

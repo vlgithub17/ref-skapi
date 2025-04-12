@@ -111,9 +111,11 @@
         let newWidth = currentHeadColWidth + pageXMouseMoveDiff;
 
         // 너비가 음수가 되지 않도록 제한
-        if (newWidth < 0) {
-            newWidth = 0;
+        if (newWidth < 50) {
+            newWidth = 50;
         }
+
+        console.log('newWidth', newWidth);
 
         // 현재 열의 너비만 적용
         currentHeadCol.style.width = `${newWidth}px`;
@@ -191,7 +193,7 @@
                     min-width: 100vw; // 화면 너비만큼 확장
                     position: absolute;
                     top: 0;
-                    right: -100vw;
+                    left: 0;
                     z-index: -1; // 테이블 뒤쪽으로 배치
                 }
             }
@@ -273,7 +275,7 @@
                     min-width: 100vw; // 화면 너비만큼 확장
                     position: absolute;
                     top: 0;
-                    right: -100vw;
+                    left: 0;
                     z-index: -1; // 테이블 뒤쪽으로 배치
                 }
             }
