@@ -21,8 +21,8 @@ main#serviceList
 		br
 
 	section.section
-		.title.faktum My Services
-		.desc Create a new service to get started.
+		.title.faktum Create a New Service
+		.desc Enter a new service name below and hit create.
 
 		.error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
 			//- .material-symbols-outlined.notranslate.fill warning
@@ -31,7 +31,7 @@ main#serviceList
 			router-link(to="/account-setting") Please verify your email address to create services.
 
 		form(@submit.prevent="createService" :class='{disabled: !user?.email_verified}')
-			input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
+			input.big(placeholder="Your new service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
 			button.final(type="submit" style='width: 100%; margin-top:0.5rem') Create
 		
 	.tableWrap(style="margin-top:.5rem")

@@ -14,7 +14,7 @@ main
 			| for HTML Frontend
 		
 		//- p.desc(style='text-shadow: 2px 3px 0px black;') Skapi is a fully serverless backend API that works seamlessly with your #[span.wordset plain HTML and JavaScript] — #[span.wordset no complex installations], #[span.wordset no server configurations], #[span.wordset no database management required.]
-		p.desc(style='text-shadow: 2px 3px 0px black;') Build full-featured web applications faster with Skapi, a zero-setup backend API that runs entirely serverless. #[span.wordset No complex installations], #[span.wordset No server configurations], #[span.wordset No database management required.]
+		p.desc(style='text-shadow: 2px 3px 0px black;') #[b(style='color:white') Skapi] is a zero-setup backend API that runs entirely serverless.#[br]Build full-featured web applications faster with #[b(style='color:white') Skapi] - #[span.wordset No complex installations], #[span.wordset No server configurations], #[span.wordset No database management required.]
 
 		br
 
@@ -49,7 +49,7 @@ main
 		br
 		br
 		.title.faktum Works Seamlessly with Pure HTML
-		.desc Skapi integrates directly with standard HTML form elements, enabling secure file uploads and data submission without requiring additional JavaScript logic or custom event handling.
+		.desc Integrate instantly with standard HTML form elements, enabling secure file uploads and data submission without requiring additional JavaScript or custom #[.wordset event handling.]
 		//- .title.faktum No complex JavaScript.#[br]Just simple forms.
 		//- .title.faktum Works Seamlessly with Pure HTML
 		//- .desc Skapi seamlessly integrates with pure HTML, making file uploads and data submission as easy as a standard form post.
@@ -92,7 +92,8 @@ main
 					pre.
 						#[span(style="color:#999") &lt;]#[span(style="color:#33adff") form ]#[span(style="color:#9CDCFE") onsubmit]=#[span(style="color:#CE9178") "]
 						    #[span(style="color:#CE9178") skapi.postRecord(event, { table: 'my_photos' })]
-						    #[span(style="color:#CE9178") .then(res => alert('Photo uploaded!') )]#[span(style="color:#CE9178") "]#[span(style="color:#999") &gt;]
+						    	#[span(style="color:#CE9178") .then(res => alert('Photo uploaded!') )]
+						#[span(style="color:#CE9178") "]#[span(style="color:#999") &gt;]
 						    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") input ]#[span(style="color:#9CDCFE") name]=#[span(style="color:#CE9178") "picture" ]#[span(style="color:#9CDCFE") type]=#[span(style="color:#CE9178") "file"]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
 						    #[span(style="color:#999") &lt;]#[span(style="color:#33adff") label]#[span(style="color:#999") &gt;]
 						        Description#[span(style="color:#999") &lt;]#[span(style="color:#33adff") br]#[span(style="color:#999") &gt;]
@@ -102,16 +103,18 @@ main
 						#[span(style="color:#999") &lt;/]#[span(style="color:#33adff") form]#[span(style="color:#999") &gt;]
 			.copied Copied! 👏
 	
-	.allinone
+	.dynamo-section.center.everything(style='max-width: unset')
 		//- img.groundgrid(src="/gridflat.jpg" style="width:100%")
-		.dynamo-section.center(style='padding-bottom:2rem;')
-			//- img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
-			//- br
-			//- br
-			.title.faktum Everything #[.wordset You Need] in One API
+		//- .dynamo-section.center(style='padding-bottom:1rem;')
+		img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
+		br
+		br
+		.title.faktum Everything #[.wordset You Need] in One API
 
-			//- .desc Skapi simplifies backend development by bundling essential services into a single JavaScript library, dramatically reducing development time and costs.
-			.desc Skapi simplifies backend development by bundling essential services into a single JavaScript library, delivered instantly with zero setup required.
+		//- .desc Skapi simplifies backend development by bundling essential services into a single JavaScript library, dramatically reducing development time and costs.
+		.desc #[b Skapi] simplifies backend development by bundling essential services into a single JavaScript library, delivered instantly with zero setup.#[br]Explore more in our #[a(href='https://docs.skapi.com' target='_blank') Documentation]
+
+		br
 
 		.slide-wrap
 			ul.slide-inner
@@ -156,7 +159,7 @@ main
 							use(xlink:href="@/assets/img/material-icon.svg#icon-graph-fill")
 					.content
 						.title.faktum API Bridge
-						.desc Connect external APIs effortlessly
+						.desc Connect 3rd party APIs effortlessly
 				li
 					.icon
 						svg
@@ -170,11 +173,11 @@ main
 							use(xlink:href="@/assets/img/material-icon.svg#icon-language")
 					.content
 						.title.faktum Website Hosting
-						.desc Easy file & website hosting
+						.desc Easy hosting for files & websites
 			
 	.dynamo-section.center
 		.change-toggle(:class="{'motion': hoverFramework}")
-			img.skapi(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo")
+			img.skapi(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style='filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));')
 			.fade-dot-wrap
 				.dot
 				.dot
@@ -190,7 +193,7 @@ main
 			br
 			| Compatible #[span.wordset with Any #[span.wordset JS Framework]]
 
-		.desc Skapi is compatible with Vue.js, React, Angular, and more, providing pre-built templates for various frameworks. It also works seamlessly with plain HTML without requiring any dependencies.
+		.desc #[b Skapi] is compatible with Vue.js, React, Angular, and more, providing pre-built templates for various frameworks. It also works seamlessly with plain HTML without requiring any dependencies.
 
 		.card-wrap
 			.card(@mouseenter="hoverFramework = 'react'" @mouseleave="hoverFramework = null")
@@ -218,7 +221,11 @@ main
 						p.big Html
 						p.small Html
 
-	.dynamo-section.center
+		br
+
+		.desc Need more support? Visit our #[a(href='https://github.com/broadwayinc/skapi-js' target='_blank') Github]
+
+	.dynamo-section.center(style='padding-bottom: 0;')
 		img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
 		br
 		br
@@ -227,11 +234,16 @@ main
 
 		//- TabMenu(v-model="activeTabs.plan" :tabs="['Monthly', 'Limited']")
 
+		b.desc 🎉 Early Adopter Special – For a limited time, we’re offering exclusive pricing, including a one-time lifetime purchase option. #[.wordset Don’t miss] your chance to lock in these benefits forever!
+
+		br
+		br
+
 		.plan-wrap.card-wrap
 			.plan
 				.card
 					.title Standard 
-					.option 
+					//.option 
 						TabMenu(v-model="activeTabs.standardPlan" :tabs="['Monthly', 'Perpetual']" tab-width='120px')
 					.price
 						template(v-if="activeTabs.standardPlan === 0") 
@@ -243,14 +255,15 @@ main
 					.desc 
 						template(v-if="activeTabs.standardPlan === 0") Suits best for small businesses, #[span.wordset MVPs, small projects, etc.]
 						template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
-					button.final(type="button") Get
+					router-link(:to="user?.user_id ? '/my-services' : '/signup'")
+						button.final(type="button") Get
 				ul.provides
 					li(v-for="(des) in planSpec['Standard'].description") {{ des }}
 			.plan
 				.card
 					.title Premium 
-					.option 
-						TabMenu(v-model="activeTabs.premiumPlan" :tabs="['Monthly', 'Perpetual']")
+					//.option 
+						TabMenu(v-model="activeTabs.premiumPlan" :tabs="['Monthly', 'Perpetual']" tab-width='120px')
 					.price
 						template(v-if="activeTabs.premiumPlan === 0") 
 							.faktum {{ '$' + planSpec['Premium'].price.monthly }}
@@ -259,9 +272,10 @@ main
 							.faktum {{ '$' + planSpec['Premium'].price.perpetual }}
 							span /only-once
 					.desc
-						template(v-if="activeTabs.premiumPlan === 0") Suits best for huge projects, #[span.wordset SaaS, social media, etc.]
+						template(v-if="activeTabs.premiumPlan === 0") Suits best for huge projects, #[span.wordset SaaS, social media, AI application etc.]
 						template(v-else) Get lifetime access to the Premium plan for just $1399—upgrade anytime as your needs grow.
-					button.final(type="button") Get
+					router-link(:to="user?.user_id ? '/my-services' : '/signup'")
+						button.final(type="button") Get
 				ul.provides
 					li(v-for="(des) in planSpec['Premium'].description") {{ des }}
 			//- .card
@@ -274,6 +288,9 @@ main
 
 	.dynamo-section.center
 		.title.faktum Try Skapi for Free!
+
+		.desc Get started with #[b Skapi] at no cost. Our free trial includes the same storage limits as the Standard plan, with a 2-week data retention period—perfect for testing and prototyping.
+
 		.plan-wrap.card-wrap(style="max-width: 400px")
 			.plan
 				.card
@@ -281,10 +298,14 @@ main
 					.price
 						.faktum FREE
 						span /mo
-					.desc Best for development and testing
-					button.final(type="button") Get
+					.desc Best for testing and prototyping
+					router-link(:to="user?.user_id ? '/my-services' : '/signup'")
+						button.final(type="button") Get
 				ul.provides
 					li(v-for="(des) in planSpec['Trial'].description") {{ des }}
+				ul.warning
+					li(v-for="(des) in planSpec['Trial'].description_warning")
+						b {{ des }}
 		//- .trial-card
 			.left
 				.title Trial
@@ -299,14 +320,20 @@ main
 					li 50GB File Storage
 	
 	.dynamo-section.center.wide(style='background-color:rgb(247, 249, 252);')
+		img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 3rem;")
+
+		br
+		br
 		.title.faktum Start Building Today!
 
 		.desc 
-			| Experience #[span.wordset the serverless backend development.]
+			| Experience the serverless #[span.wordset web development.]
 			br
 			| 🚀 No servers. No deployment. #[strong.wordset Just pure HTML & JavaScript.]
 
-		a(href='https://docs.skapi.com' target='_blank')
+		template(v-if="user?.user_id")
+			button.final(type="button" @click="$router.push('/my-services')") Go to My Services
+		router-link(v-else to="/signup")
 			button.final(type="button") Get Started
 
 	//- .dynamo-section.center
@@ -367,18 +394,22 @@ let copyVscode = (e) => {
 }
 
 onMounted(() => {
-	const slideInner = document.querySelector(".slide-inner");
-	const clone = slideInner.cloneNode(true); // 복제본 생성
+	let slideInner = document.querySelector(".slide-inner");
+	let slideWrap = document.querySelector(".slide-wrap");
+	let clone1 = slideInner.cloneNode(true); // 복제본 생성
+	let clone2 = slideInner.cloneNode(true); // 복제본 생성
 
-	document.querySelector(".slide-wrap").appendChild(clone); // 복제본 추가
-	document.querySelector(".slide-inner").offsetWidth + "px"; // 원본, 복제본 위치 지정
+	slideWrap.appendChild(clone1); // 복제본 추가
+	slideWrap.appendChild(clone2); // 복제본 추가
+	// document.querySelector(".slide-inner").offsetWidth + "px"; // 원본, 복제본 위치 지정
 
-	slideInner.classList.add("original");
-	clone.classList.add("clone");
+	// slideInner.classList.add("original");
+	// clone.classList.add("clone");
 });
 </script>
 
 <style lang="less" scoped>
+
 .dynamo-section.landing-a {
 	// background-image: url(landing-az.jpg);
 	background-image: url(blwv.jpg);
@@ -393,6 +424,8 @@ onMounted(() => {
 .allinone {
 	padding-bottom:6rem;
 	position: relative;
+	
+    overflow: hidden;
 	img {
 		width: 100%;
 		position: absolute;
@@ -401,13 +434,13 @@ onMounted(() => {
 		opacity: 0.5;
 	}
 
-	.desc {
-		background-color: white;
-	}
+	// .desc {
+	// 	background-color: white;
+	// }
 
-	.title {
-		background-color: white;
-	}
+	// .title {
+	// 	background-color: white;
+	// }
 	// background-image: url(alpha.jpeg);
 	// background-size: cover;
 	// background-position: bottom;
@@ -418,6 +451,14 @@ onMounted(() => {
     // linear-gradient(to right, rgb(222, 222, 222) 1px, transparent 1px),
     // linear-gradient(to bottom, rgb(222, 222, 222) 1px, transparent 1px);
 	// max-width: unset !important;
+}
+main {
+	background-color: #fafafa;
+}
+.everything {
+	position: relative;overflow: hidden;	
+	// background-color: rgb(247, 249, 252);
+	// background-image: url(landing-ae.jpg);
 }
 .dynamo-section {
 	max-width: 1200px;
@@ -452,14 +493,15 @@ onMounted(() => {
 	}
 
 	&.main {
-		padding: 11rem 20px;
+		padding: 11rem 20px 8rem;
 
 		.title {
 			font-size: 3rem;
 			margin-bottom: 1rem;
-			background: linear-gradient(to right bottom, #fff, #ccc);
-			-webkit-background-clip: text;
-			-webkit-text-fill-color: transparent;
+			color: white;
+			// background: linear-gradient(to right bottom, #fff, #ccc);
+			// -webkit-background-clip: text;
+			// -webkit-text-fill-color: transparent;
 		}
 	}
 
@@ -467,6 +509,7 @@ onMounted(() => {
 		font-size: 2.4rem;
 		margin-bottom: 1rem;
 		line-height: 1.5;
+		text-shadow: 1px 2px rgba(0, 0, 0, 0.15);
 	}
 
 	.desc {
@@ -474,7 +517,8 @@ onMounted(() => {
 		max-width: 712px;
 		margin-bottom: 1rem;
 		line-height: 1.9;
-		color: #333;
+		// color: #333;
+		color: #000;
 	}
 }
 
@@ -611,33 +655,42 @@ onMounted(() => {
 
 @keyframes slide01 { 
 	0% { transform: translateX(0); }
-	50% { transform: translateX(-100%); }
-	50.01% { transform: translateX(100%); }
-	100% { transform: translateX(0); }
+	// // 50% { transform: translateX(-100%); }
+	// // 50.01% { transform: translateX(100%); }
+	100% { transform: translateX(-100%); }
+	// 0% { left: 0; }
+	// 100% { left: -100%; }
 }
 
-@keyframes slide02 { 
-	0% { transform: translateX(0); }
-	100% { transform: translateX(-200%); }
-}
+// @keyframes slide02 { 
+// 	0% { transform: translateX(0); }
+// 	100% { transform: translateX(-200%); }
+// }
 
 .slide-wrap { 
 	display: flex;
 	position: relative;
 	top: 0;
-	left: 0;
+	// left: 0;
 	// height: 262px;
-    overflow: hidden;
+
 
 	.slide-inner {
+		// position: absolute;
 		display: flex;
 		// align-items: center;
 		justify-content: space-between;
 		padding-left: 0;
-		gap: 1rem;
+		// gap: 1rem;
 		margin: 0;
-		&.original { animation: 50s linear 0s infinite normal forwards running slide01; }
-		&.clone { animation: 50s linear 0s infinite normal none running slide02; }
+		// &.original { animation: 50s linear 0s infinite normal forwards running slide01; }
+		// &.clone { animation: 50s linear 0s infinite normal none running slide02; }
+
+
+		// &:hover {
+		// 	animation-play-state: paused;
+		// }
+		animation: 14s linear 0s infinite normal forwards running slide01;
 
 		li {
 			display: inline-block;
@@ -645,7 +698,7 @@ onMounted(() => {
 			// width: 260px;
 			// height: 260px;
 			// height: 250px;
-			width: 13rem;
+			width: 12rem;
 			// height: 13rem;
 			// line-height: 220px;
 			// margin-right: 4vw;
@@ -653,7 +706,7 @@ onMounted(() => {
 			// background-color: #fff;
 			// background-color:rgb(247, 249, 252);
 			// border-radius: 24px;
-			// padding: 1rem;
+			padding: 0 1rem;
 			text-align: left;
 			// margin: 8px;
 			// box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2);
@@ -675,21 +728,25 @@ onMounted(() => {
 				cursor: default;
 
 				svg {
-					width: 3.4rem;
-					height: 3.4rem;
-					fill: var(--main-color);
+					// width: 3rem;
+					// height: 3rem;
+					width: 2rem;
+					height: 2rem;
+					// fill: var(--main-color);
+					filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
 				}
 			}
 			.content {
-				background-color: rgba(255,255,255,.7);
+				// background-color: rgba(255,255,255,.7);
 				margin-top: 1rem;
 				.title {
-					font-size: 1.2rem;
+					font-size: 1rem;
 					margin-bottom: 0.5rem;
 				}
 				.desc {
 					font-size: 0.8rem;
 					color: #777;
+					line-height: 1.25;
 				}
 			}
 		}
@@ -701,7 +758,7 @@ onMounted(() => {
 	display: inline-flex;
 	margin-bottom: 1rem;
 	align-items: center;
-	background-color: rgb(247, 249, 252);
+	// background-color: rgb(247, 249, 252);
 	border-radius: 12px;
 	padding: 0.7rem;
 	gap: 0.8rem;
@@ -763,7 +820,7 @@ onMounted(() => {
 		flex-grow: 1;
 		width: 48%;
 		min-width: 250px;
-		border: 1px solid rgba(0,0,0,0.1);
+		border: 1px solid rgba(0,0,0,0.2);
 		border-radius: 12px;
 		padding: 1rem;
 		transition: all .3s;
@@ -883,7 +940,27 @@ onMounted(() => {
 		}
 	}
 }
+.warning {
+	li {
+		position: relative;
+		list-style: none;
+		text-align: left;
+		margin-bottom: 0.5rem;
+		font-size: 0.8rem;
 
+		&::before {
+			position: absolute;
+			content: '';
+			left: -1.3rem;
+			top: 0.1rem;
+			background: url('@/assets/img/icon/warning.svg') no-repeat;
+			background-size: cover;
+			width: 16px;
+			height: 16px;
+			opacity: 0.8;
+		}
+	}
+}
 .trial-card {
 	display: flex;
 	flex-wrap: wrap;
@@ -966,7 +1043,9 @@ onMounted(() => {
 		color: #555;
 	}
 }
-
+.symbol {
+	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
+}
 @media (max-width: 576px) {
 	.dynamo-section {
 		&.center {

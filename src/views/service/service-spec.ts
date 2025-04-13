@@ -29,17 +29,17 @@ export const planSpec: {
 		},
 		users: 10000, // 10K
 		storage: {
-			database: 4294967296, // 4GB -> Bytes
-			cloud: 53687091200, // 50GB -> Bytes
+			database: 8589934592, // 8GB -> Bytes
+			cloud: 107374182400, // 100GB -> Bytes
 		},
 		description: [
 			'10K User Accounts',
-			'4GB Database Storage',
-			'50GB File Storage'
+			'8GB Database Storage',
+			'100GB File Storage',
+			'Automated Emails',
 		],
 		description_warning: [
-			'Sending bulk emails not included',
-			'All user data is deleted every 30 days'
+			'All user data is deleted every 14 days'
 		]
 	},
 	'Standard': {
