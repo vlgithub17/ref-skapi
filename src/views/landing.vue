@@ -234,7 +234,8 @@ main
 
 		//- TabMenu(v-model="activeTabs.plan" :tabs="['Monthly', 'Limited']")
 
-		b.desc 🎉 Early Adopter Special – For a limited time, we’re offering exclusive pricing, including a one-time lifetime purchase option. #[.wordset Don’t miss] your chance to lock in these benefits forever!
+		// b.desc 🎉 Early Adopter Special – For a limited time, we’re offering exclusive pricing, including a one-time lifetime purchase option. #[.wordset Don’t miss] your chance to lock in these benefits forever!
+		b.desc 🎉 Early Adopter Special – For a limited time, we’re offering exclusive pricing. #[.wordset Don’t miss] your chance to lock in these benefits forever!
 
 		br
 		br
