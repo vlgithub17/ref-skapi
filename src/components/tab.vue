@@ -1,7 +1,7 @@
 <template lang="pug">
 .tab-menu
 	ul
-		li(v-for="(tab, index) in tabs" :key="index" :ref="setItemRef" @click="selectTab(index)" :class="{ active: activeIndex === index }") {{ tab }}
+		li(v-for="(tab, index) in tabs" :key="index" :style='{width:tabWidth}' :ref="setItemRef" @click="selectTab(index)" :class="{ active: activeIndex === index }") {{ tab }}
 		.active-menu(:style="{ width: activeWidth, left: activeLeft }")
 </template>
 
@@ -17,6 +17,9 @@ const props = defineProps({
 		type: Number,
 		default: 0,
 	},
+    tabWidth: {
+        type: String,
+    }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -74,8 +77,8 @@ onUnmounted(() => {
 <style scoped lang="less">
 .tab-menu {
 	margin-bottom: 1rem;
-	
     ul {
+        box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.2);
         position: relative;
         display: inline-flex;
         align-items: center;
@@ -92,6 +95,7 @@ onUnmounted(() => {
             font-size: 0.9rem;
             cursor: pointer;
             z-index: 2;
+            text-align: center;
         }
 
         .active-menu {
@@ -100,7 +104,8 @@ onUnmounted(() => {
             height: calc(100% - 8px);
             border-radius: 20px;
             background-color: rgb(255, 255, 255);
-            box-shadow: rgba(113, 116, 152, 0.1) 0px 18px 31px, rgba(113, 116, 152, 0.067) 0px 8px 16.2244px, rgba(113, 116, 152, 0.05) 0px 8px 8.46625px;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+            // box-shadow: rgba(113, 116, 152, 0.1) 0px 18px 31px, rgba(113, 116, 152, 0.067) 0px 8px 16.2244px, rgba(113, 116, 152, 0.05) 0px 8px 8.46625px;
             transition: left 200ms cubic-bezier(0.6, 0.6, 0, 1), 350ms cubic-bezier(0.6, 0.6, 0, 1);
         }
     }

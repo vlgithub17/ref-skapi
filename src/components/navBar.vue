@@ -208,7 +208,8 @@ img.symbol.mobile {
         backdrop-filter: blur(20px);
         border-radius: 12px;
         // box-shadow: rgba(66, 62, 121, 0.06) 0px 48px 96px -24px;
-        box-shadow: rgba(66, 62, 121, 0.1) 0px 0px 90px -14px;
+        // box-shadow: rgba(66, 62, 121, 0.1) 0px 0px 90px -14px;
+        box-shadow: rgba(66, 62, 121, 0.25) 0px 0px 90px -14px;
         margin: 0 var(--nav-top);
         border-color: #f7f9fc;
 

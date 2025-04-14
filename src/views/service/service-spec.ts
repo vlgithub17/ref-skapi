@@ -29,17 +29,17 @@ export const planSpec: {
 		},
 		users: 10000, // 10K
 		storage: {
-			database: 4294967296, // 4GB -> Bytes
-			cloud: 53687091200, // 50GB -> Bytes
+			database: 8589934592, // 8GB -> Bytes
+			cloud: 107374182400, // 100GB -> Bytes
 		},
 		description: [
 			'10K User Accounts',
-			'4GB Database Storage',
-			'50GB File Storage'
+			'8GB Database Storage',
+			'100GB File Storage',
+			'Automated Emails',
 		],
 		description_warning: [
-			'Sending bulk emails not included',
-			'All user data is deleted every 30 days'
+			'All user data is deleted every 14 days'
 		]
 	},
 	'Standard': {
@@ -131,10 +131,10 @@ export class ServiceSpec {
 		email: number;
 		host: number;
 	} = reactive({
-		cloud: null,
-		database: null,
-		email: null,
-		host: null,
+		cloud: 0,
+		database: 0,
+		email: 0,
+		host: 0,
 	});
 	servicePlan: {
 		price: number | string
@@ -164,7 +164,7 @@ export class ServiceSpec {
 		host: '',
 		email: '',
 	})
-	dataPercent: { [key: string]: number } = reactive({
+	dataPercent: { [key: string]: number | string } = reactive({
 		users: 0,
 		database: 0,
 		cloud: 0,
@@ -256,13 +256,13 @@ export class ServiceSpec {
         return `${formattedValue}${units[unitIndex]}`;
 	}
 
-	getUserPercent(): number {
+	getUserPercent(): number | string {
 		if (this.plan === 'Unlimited') {
-			return 0;
+			return 'Unlimited';
 		}
 
 		let users = this.service.service.users;
-		let planUserSize = this.servicePlan.users as number;
+		let planUserSize = planSpec[this.plan].users as number;
 
 		return parseFloat(((users / planUserSize) * 100).toFixed(2));
 	}
@@ -287,13 +287,19 @@ export class ServiceSpec {
         return `${resource}bytes`;
 	}
 
-	getDataPercent(type: string): number {
+	getDataPercent(type: string): number | string {
 		if (this.plan === 'Unlimited') {
-            return 0;
+            return 'Unlimited';
         }
 
 		const resource = this.storage[type];
-        const planLimit = this.servicePlan.storage[type];
+        const planLimit = planSpec[this.plan].storage[type];
+
+        if(!planLimit) {
+            return 'N/A';
+        }
+
+        // console.log(resource, planLimit);
 
 		return Math.ceil((resource / planLimit) * 100);
 	}
