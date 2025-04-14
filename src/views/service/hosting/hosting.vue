@@ -861,6 +861,10 @@ template(v-else)
     tbody {
         tr:first-child {
             background-color: rgba(0, 0, 255, 0.02);
+
+            &::after {
+                background-color: rgba(0, 0, 255, 0.02);
+            }
         }
 
         tr {
@@ -919,11 +923,19 @@ template(v-else)
                 &:not(.active):hover {
                     background-color: rgba(41, 63, 230, 0.05);
                     // cursor: pointer;
+
+                    &::after {
+                        background-color: rgba(41, 63, 230, 0.05);
+                    }
                 }
             }
 
             &.active {
                 background-color: rgba(41, 63, 230, 0.10);
+
+                &::after {
+                    background-color: rgba(41, 63, 230, 0.10);
+                }
             }
 
             &:hover {

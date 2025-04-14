@@ -188,14 +188,22 @@ let getClass = (service: ServiceSpec, what: string) => {
 // table style below
 
 tbody tr.serviceRow {
-    &:not(.active):hover {
-        background-color: rgba(41, 63, 230, 0.05);
-        cursor: pointer;
-    }
+	&:not(.active):hover {
+		background-color: rgba(41, 63, 230, 0.05);
+		cursor: pointer;
 
-    &.active {
-        background-color: rgba(41, 63, 230, 0.10);
-    }
+        &::after {
+            background-color: rgba(41, 63, 230, 0.05);
+        }
+	}
+
+	&.active {
+		background-color: rgba(41, 63, 230, 0.10);
+
+        &::after {
+            background-color: rgba(41, 63, 230, 0.10);
+        }
+	}
 }
 
 td {
