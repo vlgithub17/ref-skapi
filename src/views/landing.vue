@@ -413,7 +413,7 @@ onMounted(() => {
 
 .dynamo-section.landing-a {
 	// background-image: url(landing-az.jpg);
-	background-image: url(blwv.jpg);
+	background-image: url(/blwv.jpg);
     background-size: cover;
 	background-blend-mode: difference;
     background-position: center;
