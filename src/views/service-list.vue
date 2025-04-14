@@ -2,13 +2,29 @@
 main#serviceList
     //- section.infoBox
         h2 My Services
+    //- section.infoBox
+        h2 My Services
 
+        hr
+        
+        br
         hr
         
         br
 
         p Create a new service to get started.
+        p Create a new service to get started.
 
+        .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
+            //- .material-symbols-outlined.notranslate.fill warning
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
+            router-link(to="/account-setting") Please verify your email address to create services.
+        form(@submit.prevent="createService" style='display: flex;gap: 8px;width: 480px;max-width: 100%;' :class='{disabled: !user?.email_verified}')
+            input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
+            button.final(type="submit" style='flex-shrink: 0;') Create
+        
+        br
         .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
             //- .material-symbols-outlined.notranslate.fill warning
             svg
@@ -23,7 +39,15 @@ main#serviceList
     section.section
         .title.faktum My Services
         .desc Create a new service to get started.
+    section.section
+        .title.faktum My Services
+        .desc Create a new service to get started.
 
+        .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
+            //- .material-symbols-outlined.notranslate.fill warning
+            svg
+                use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
+            router-link(to="/account-setting") Please verify your email address to create services.
         .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
             //- .material-symbols-outlined.notranslate.fill warning
             svg
@@ -61,7 +85,45 @@ main#serviceList
                         .resizer
                     th.th.overflow(style="width:144px;")
                         | Email
+        form(@submit.prevent="createService" :class='{disabled: !user?.email_verified}')
+            input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
+            button.final(type="submit" style='width: 100%; margin-top:0.5rem') Create
+        
+    .tableWrap(style="margin-top:.5rem")
+        Table(resizable)
+            template(v-slot:head)
+                tr
+                    th.th.overflow(style="width:166px;")
+                        | Service Name
+                        .resizer
+                    th.th.overflow(style="width:150px;")
+                        | Plan
+                        .resizer
+                    th.th.overflow(style="width:120px;")
+                        | State
+                        .resizer
+                    th.th.overflow(style="width:144px;")
+                        | Users
+                        .resizer
+                    th.th.overflow(style="width:144px;")
+                        | Database
+                        .resizer
+                    th.th.overflow(style="width:144px;")
+                        | File Storage
+                        .resizer
+                    th.th.overflow(style="width:144px;")
+                        | File Hosting
+                        .resizer
+                    th.th.overflow(style="width:144px;")
+                        | Email
 
+            template(v-slot:body)
+                tr(v-if="fetchingServiceList")
+                    td(colspan="8").
+                        Loading ... &nbsp;
+                        #[.loader(style="--loader-color:black; --loader-size:12px")]
+                tr(v-else-if="!Object.keys(serviceIdList).length")
+                    td(colspan="8") You have no services yet.
             template(v-slot:body)
                 tr(v-if="fetchingServiceList")
                     td(colspan="8").
@@ -106,6 +168,8 @@ main#serviceList
 
     br
     br
+    br
+    br
 </template>
 
 <script setup lang="ts">
@@ -121,6 +185,7 @@ const router = useRouter();
 
 let goServiceDashboard = (service: { [key: string]: any }) => {
     router.push('/my-services/' + service.id);
+    router.push('/my-services/' + service.id);
 }
 
 let newServiceName = ref('')
@@ -128,7 +193,13 @@ let createService = ()=>{
     let regex = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g;
     if (newServiceName.value.match(regex)) {
         alert('Special characters are not allowed');
+    let regex = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g;
+    if (newServiceName.value.match(regex)) {
+        alert('Special characters are not allowed');
 
+        return
+    }
+    router.push('/create/' + newServiceName.value);
         return
     }
     router.push('/create/' + newServiceName.value);
@@ -164,9 +235,15 @@ let getClass = (service: ServiceSpec, what: string) => {
 #serviceList {
     max-width: 1200px;
     margin: 8px auto 0;
+    max-width: 1200px;
+    margin: 8px auto 0;
 }
 
 .section {
+    max-width: 570px;
+    margin: 0 auto;
+    padding: 6rem 20px;
+    text-align: center;
     max-width: 570px;
     margin: 0 auto;
     padding: 6rem 20px;
@@ -177,7 +254,17 @@ let getClass = (service: ServiceSpec, what: string) => {
         margin-bottom: 1rem;
         line-height: 1.5;
     }
+    .title {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
 
+    .desc {
+        margin-bottom: 1rem;
+        line-height: 1.9;
+        color: #333;
+    }
     .desc {
         margin-bottom: 1rem;
         line-height: 1.9;
@@ -214,7 +301,17 @@ td {
         box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, 0.15) inset;
         color: #fff;
         font-weight: bold;
+    .percent {
+        display: inline-block;
+        padding: 3px 12px;
+        border-radius: 4px;
+        box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, 0.15) inset;
+        color: #fff;
+        font-weight: bold;
 
+        &.green {
+            background-color: #52D687;
+        }
         &.green {
             background-color: #52D687;
         }
@@ -222,7 +319,13 @@ td {
         &.orange {
             background-color: #FCA642;
         }
+        &.orange {
+            background-color: #FCA642;
+        }
 
+        &.red {
+            background-color: var(--caution-color);
+        }
         &.red {
             background-color: var(--caution-color);
         }
@@ -230,7 +333,14 @@ td {
         &.purple {
             background-color: #B881FF;
         }
+        &.purple {
+            background-color: #B881FF;
+        }
 
+        &.grey {
+            background-color: #ccc;
+        }
+    }
         &.grey {
             background-color: #ccc;
         }
