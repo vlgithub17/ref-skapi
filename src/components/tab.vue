@@ -18,7 +18,7 @@ const props = defineProps({
 		default: 0,
 	},
     tabWidth: {
-        type: Number
+        type: String,
     }
 });
 

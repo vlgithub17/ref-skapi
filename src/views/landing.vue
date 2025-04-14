@@ -243,7 +243,7 @@ main
 			.plan
 				.card
 					.title Standard 
-					//.option 
+					//- .option 
 						TabMenu(v-model="activeTabs.standardPlan" :tabs="['Monthly', 'Perpetual']" tab-width='120px')
 					.price
 						template(v-if="activeTabs.standardPlan === 0") 
@@ -262,7 +262,7 @@ main
 			.plan
 				.card
 					.title Premium 
-					//.option 
+					//- .option 
 						TabMenu(v-model="activeTabs.premiumPlan" :tabs="['Monthly', 'Perpetual']" tab-width='120px')
 					.price
 						template(v-if="activeTabs.premiumPlan === 0") 
