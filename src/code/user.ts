@@ -1,6 +1,7 @@
 import { reactive, ref } from "vue";
 import { skapi } from "@/main";
-import { fetchingServiceList, serviceList, serviceIdList } from '@/views/service-list';
+import { ServiceSpec } from "@/views/service/service-spec";
+import { fetchingServiceList, serviceList, serviceIdList, serviceSpecList } from '@/views/service-list';
 import Service, { type PublicUser } from "./service";
 
 export let user: { [key: string]: any } = reactive({});
@@ -81,6 +82,9 @@ export let userLoginCallback = (userIncoming: any) => {
             for (let k in serviceList) {
                 delete serviceList[k];
             }
+            for (let k in serviceSpecList) {
+                delete serviceSpecList[k];
+            }
 
             fetchingServiceList.value = true;
 
@@ -100,6 +104,7 @@ export let userLoginCallback = (userIncoming: any) => {
                             if (serviceObj) {
                                 // can be null if service is deleted
                                 serviceList[serviceId] = serviceObj;
+                                serviceSpecList[serviceId] = new ServiceSpec(serviceObj);
                                 fetchingServiceList.value = false; // when one of the service is loaded, set fetchingServiceList to false
                             }
                         })
@@ -120,6 +125,9 @@ export let userLoginCallback = (userIncoming: any) => {
         }
         for (let k in serviceList) {
             delete serviceList[k];
+        }
+        for (let k in serviceSpecList) {
+            delete serviceSpecList[k];
         }
         fetchingServiceList.value = false;
     }
