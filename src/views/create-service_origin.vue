@@ -14,21 +14,9 @@ main#create
 		router-link(to="/my-services")
 			img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 44px;margin-bottom: 0.5rem;")
 		.title.faktum Create a New Service
-		//- .desc 
-			template(v-if="step === 1") Enter a name for your new service.
-			template(v-if="step === 2") Choose a plan for your service #[span.wordset.newname {{newServiceName}}]
+		.desc Choose a plan for your service #[span.wordset.newname {{newServiceName}}]
 
-		.step-wrap
-			.step.activated(@click="step = 1")
-				span Create Service
-			.step(:class="{'activated' : step === 2, 'disabled' : !newServiceName}" @click="step = 2")
-				span Choose Plan
-
-	.form(v-if="step === 1")
-		input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
-		button.final(type="button" :class="{'disabled': !newServiceName}" @click="step++") Next
-
-	.plan-wrap.card-wrap(v-else-if="step === 2")
+	.plan-wrap.card-wrap
 		.plan(:class="{'selected' : serviceMode == 'trial', 'hovered': hoverPlan == 'trial'}" @mouseover="hoverPlan = 'trial'" @mouseleave="hoverPlan = serviceMode")
 			.card
 				.title Trial
@@ -113,14 +101,12 @@ let service = {
 let promiseRunning = ref(false);
 let serviceMode = ref('standard');
 let hoverPlan = ref('standard');
-// let newServiceName = route.params.name as string;
-let newServiceName = ref('');
+let newServiceName = route.params.name as string;
 let activeTabs = ref({
 	trialPlan: 0,
 	standardPlan: 0,
 	premiumPlan: 0,
 });
-let step = ref(1);
 
 let createSubscription = async (ticket_id, service_info) => {
 	let resolvedCustomer = await customer;
@@ -210,80 +196,6 @@ let selectedPlan = (plan: string) => {
 		line-height: 1.9;
 		color: #333;
 	}
-}
-
-.step-wrap {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 10rem;
-	margin: 3rem 0;
-
-	.step {
-		position: relative;
-		width: 10px;
-		height: 10px;
-		border-radius: 50%;
-		background-color: #fff;
-		border: 2px solid var(--main-color);
-		cursor: pointer;
-
-		span {
-			position: absolute;
-			top: -25px;
-			left: 50%;
-			transform: translateX(-50%);
-			font-size: 0.8rem;
-			white-space: nowrap;
-			color: #aaa;
-		}
-
-		&::after {
-			position: absolute;
-			content: '';
-			top: 50%;
-			right: calc(-10rem - 2px);
-			transform: translateY(-50%);
-			width: calc(10rem + 2px);
-			height: 2px;
-			background-color: #ccc;
-			z-index: -1;
-		}
-
-		&:last-child {
-			&::after {
-				display: none;
-			}
-		}
-
-		&.activated {
-			background-color: var(--main-color);
-			border-color: var(--main-color);
-
-			&::after {
-				background-color: var(--main-color);
-			}
-
-			span {
-				color: var(--main-color);
-			}
-		}
-
-		&.disabled {
-			cursor: default;
-			pointer-events: none;
-		}
-	}
-}
-
-.form {
-	max-width: 570px;
-	margin: 0 auto;
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: center;
-	gap: 1rem;
 }
 
 .newname {

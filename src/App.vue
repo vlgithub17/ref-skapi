@@ -1,5 +1,5 @@
 <template lang="pug">
-div(style='min-height: calc(100vh - 1px - var(--footer-height, 0));' :style='{"--footer-height": footerHeight+"px"}')
+div(style='min-height: calc(100vh - 21px - var(--footer-height, 0));' :style='{"--footer-height": footerHeight+"px"}')
     //- router-view(v-if='route.name === "home" || loaded')
     router-view(v-if='connected')
 
@@ -27,6 +27,7 @@ onMounted(() => {
     // this is to make footer stick to bottom
     // get footer height
     footerHeight.value = document.getElementById('footer').offsetHeight.toString(); // number
+	console.log('footerHeight', footerHeight.value);
     // detect window width change
     window.addEventListener('resize', () => {
         window.requestAnimationFrame(() => {

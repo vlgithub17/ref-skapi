@@ -148,145 +148,194 @@
 
 </script>
 <style lang="less">
-    .customTbl.resizable>thead>tr>th>.resizer {
-        cursor: col-resize;
-    }
+.customTbl.resizable>thead>tr>th>.resizer {
+	cursor: col-resize;
+}
 
-    .tableWrap {
-        position: relative;
-        overflow-x: auto;
-        box-sizing: border-box;
-    }
+.tableWrap {
+	position: relative;
+	overflow-x: auto;
+	overflow-y: hidden;
+	box-sizing: border-box;
+	border-radius: 10px;
+	border: 1px solid #f2f2f4;
+}
 
-    .customTbl {
-        width: auto; // 테이블 너비는 자동으로 조정
-        min-width: fit-content; // 최소 너비는 내용에 맞춤
-        border-collapse: collapse;
-        table-layout: fixed;
+.customTbl {
+	width: auto; // 테이블 너비는 자동으로 조정
+	min-width: fit-content; // 최소 너비는 내용에 맞춤
+	border-collapse: collapse;
+	table-layout: fixed;
 
-        .overflow {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+	.overflow {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
 
-        thead {
-            background-color: #f0f0f0;
-            text-align: left;
-            // border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+	thead {
+		// background-color: #f0f0f0;
+		background-color: #f9f9f9;
+		text-align: left;
+		// border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		// box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
 
-            
-            tr {
-                position: relative;
-                height: 60px;
+		
+		tr {
+			position: relative;
+			height: 60px;
 
-                &::after {
-                    content: '';
-                    display: block;
-                    height: 100%; // 높이는 최소화
-                    background-color: #f0f0f0;
-                    // border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-                    box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
-                    min-width: 100vw; // 화면 너비만큼 확장
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    z-index: -1; // 테이블 뒤쪽으로 배치
-                }
-            }
+			&::before {
+				position: absolute;
+				content: '';
+				display: block;
+				height: 100%; // 높이는 최소화
+				background-color: #f9f9f9;
+				min-width: 100vw; // 화면 너비만큼 확장
+				top: 0;
+				left: 0;
+				z-index: -1; // 테이블 뒤쪽으로 배치
+			}
+			&::after {
+				position: absolute;
+				content: '';
+				display: block;
+				background-color: rgba(0, 0, 0, 0.1);
+				min-width: 100vw; // 화면 너비만큼 확장
+				height: 1px;
+				bottom: -0.5px;
+				left: 0;
+				// z-index: -1; // 테이블 뒤쪽으로 배치
+			}
+		}
 
-            th {
-                position: relative;
-                font-size: 0.7rem;
-                font-weight: 500;
-                padding: 0 20px;
-                white-space: nowrap;
-                user-select: none;
+		th {
+			position: relative;
+			font-size: 0.7rem;
+			font-weight: 500;
+			padding: 0 20px;
+			white-space: nowrap;
+			user-select: none;
 
-                span {
-                    display: inline-block;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                    overflow: hidden;
-                    max-width: 100%;
-                }
+			span {
+				display: inline-block;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				max-width: 100%;
+			}
 
-                // overflow: hidden;
-                text-overflow: ellipsis;
+			// overflow: hidden;
+			text-overflow: ellipsis;
 
-                &.center {
-                    text-align: center;
-                }
+			&.center {
+				text-align: center;
+			}
 
-                &:last-child {
-                    .resizer {
-                        display: none;
-                    }
-                }
+			&:last-child {
+				background-color: transparent !important;
 
-                .resizer {
-                    position: absolute;
-                    top: 50%;
-                    right: -6px;
-                    transform: translateY(-50%);
-                    width: 12px; // enough width for user to grab
-                    // border-left: 5px solid transparent;
-                    // border-right: 5px solid transparent;
-                    border-left: 4px solid transparent;
-                    border-right: 12px solid transparent;
+				.resizer {
+					display: none;
+				}
+			}
 
-                    &::before {
-                        content: '';
-                        display: block;
-                        height: 100%;
-                        width: 2px;
-                        background-color: rgba(0, 0, 0, 0.1);
-                    }
+			&:hover {
+				background-color: #eeeeee;
 
-                    height: 20px;
+				.resizer {
+					display: block;
+				}
+			}
 
-                    &.contrast {
-                        background-color: #fff !important;
-                    }
-                }
-            }
-        }
+			.resizer {
+				position: absolute;
+				// top: 50%;
+				top: 0px;
+				right: -9px;
+				// transform: translateY(-50%);
+				width: 12px; // enough width for user to grab
+				// border-left: 5px solid transparent;
+				// border-right: 5px solid transparent;
+				border-left: 4px solid transparent;
+				border-right: 12px solid transparent;
+				display: none;
 
-        tbody {
-            overflow-y: auto;
-            background-color: #fff;
+				&::before {
+					content: '';
+					display: block;
+					height: 100%;
+					width: 2px;
+					background-color: rgba(0, 0, 0, 0.2);
+				}
 
-            tr {
-                position: relative;
-                height: 60px;
-                // border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-                box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+				height: 20px;
 
-                &::after {
-                    content: '';
-                    display: block;
-                    height: 100%; // 높이는 최소화
-                    background-color: #fff;
-                    // border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-                    box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
-                    min-width: 100vw; // 화면 너비만큼 확장
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    z-index: -1; // 테이블 뒤쪽으로 배치
-                }
-            }
+				&.contrast {
+					background-color: #fff !important;
+				}
+			}
+		}
+	}
 
-            td {
-                position: relative;
-                padding: 0 1rem;
-                font-size: 0.8rem;
+	tbody {
+		overflow-y: auto;
+		background-color: #fff;
 
-                &.center {
-                    text-align: center;
-                }
-            }
-        }
-    }
+		tr {
+			position: relative;
+			height: 60px;
+			// border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+			// box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+
+			&::before {
+				position: absolute;
+				content: '';
+				display: block;
+				height: 100%; // 높이는 최소화
+				background-color: #fff;
+				min-width: 100vw; // 화면 너비만큼 확장
+				top: 0;
+				left: 0;
+				z-index: -1; // 테이블 뒤쪽으로 배치
+			}
+			&::after {
+				position: absolute;
+				content: '';
+				display: block;
+				background-color: rgba(0, 0, 0, 0.05);
+				min-width: 100vw; // 화면 너비만큼 확장
+				height: 1px;
+				bottom: -1.5px;
+				left: 0;
+				// z-index: -1; // 테이블 뒤쪽으로 배치
+			}
+			// &::after {
+			// 	content: '';
+			// 	display: block;
+			// 	height: 100%; // 높이는 최소화
+			// 	background-color: rgba(0, 0, 0, 0.05);
+			// 	// border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+			// 	// box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
+			// 	min-width: 100vw; // 화면 너비만큼 확장
+			// 	position: absolute;
+			// 	// top: 0;
+			// 	bottom: -1.5px;
+			// 	left: 0;
+			// 	height: 1px;
+			// 	z-index: -1; // 테이블 뒤쪽으로 배치
+			// }
+		}
+
+		td {
+			position: relative;
+			padding: 0 1rem;
+			font-size: 0.8rem;
+
+			&.center {
+				text-align: center;
+			}
+		}
+	}
+}
 </style>

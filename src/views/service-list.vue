@@ -22,18 +22,33 @@ main#serviceList
 
 	section.section
 		.title.faktum My Services
-		.desc Create a new service to get started.
+		//- .desc Create a new service to get started.
 
-		.error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
+		.iconbutton(@click="router.push('/create')")
+			svg.svgIcon
+				use(xlink:href="@/assets/img/material-icon.svg#icon-add") 
+			span &nbsp;&nbsp;Create New Service
+
+		//- button.final(type="button" @click="router.push('/create')") Create New Service
+
+		//- .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
 			//- .material-symbols-outlined.notranslate.fill warning
 			svg
 				use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
 			router-link(to="/account-setting") Please verify your email address to create services.
 
-		form(@submit.prevent="createService" :class='{disabled: !user?.email_verified}')
+		//- form(@submit.prevent="createService" :class='{disabled: !user?.email_verified}')
 			input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
 			button.final(type="submit" style='width: 100%; margin-top:0.5rem') Create
-		
+	
+
+	//- .tableMenu
+		.pageName My Services
+		//- button.final(type="button" @click="router.push('/create')") Create New Service
+		.iconbutton(@click="router.push('/create')")
+			svg.svgIcon
+				use(xlink:href="@/assets/img/material-icon.svg#icon-add") 
+			span &nbsp;&nbsp;Create New Service
 	.tableWrap(style="margin-top:.5rem")
 		Table(resizable)
 			template(v-slot:head)
@@ -173,7 +188,8 @@ let getClass = (service: ServiceSpec, what: string) => {
 	text-align: center;
 
 	.title {
-		font-size: 1.4rem;
+		// font-size: 1.4rem;
+		font-size: 2.4rem;
 		margin-bottom: 1rem;
 		line-height: 1.5;
 	}
@@ -181,7 +197,38 @@ let getClass = (service: ServiceSpec, what: string) => {
 	.desc {
 		margin-bottom: 1rem;
 		line-height: 1.9;
-		color: #333;
+		color: #000;
+	}
+}
+
+.tableMenu {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 5rem;
+	padding: 0 10px;
+
+	.pageName {
+		font-size: 1.4rem;
+		font-weight: 500;
+	}
+}
+
+.iconbutton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--main-color);
+	color: #fff;
+	font-weight: 500;
+  	font-size: 0.8rem;
+	border-radius: 12px;
+	padding: 0.6rem 1.2rem;
+
+	svg {
+		width: 20px;
+		height: 20px;
+		fill: #fff;
 	}
 }
 
@@ -192,7 +239,7 @@ tbody tr.serviceRow {
 		background-color: rgba(41, 63, 230, 0.05);
 		cursor: pointer;
 
-		&::after {
+		&::before {
 			background-color: rgba(41, 63, 230, 0.05);
 		}
 	}
@@ -200,7 +247,7 @@ tbody tr.serviceRow {
 	&.active {
 		background-color: rgba(41, 63, 230, 0.10);
 
-		&::after {
+		&::before {
 			background-color: rgba(41, 63, 230, 0.10);
 		}
 	}
@@ -208,31 +255,75 @@ tbody tr.serviceRow {
 
 td {
 	.percent {
+		position: relative;
 		display: inline-block;
-		padding: 3px 12px;
-		border-radius: 4px;
-		box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, 0.15) inset;
+		padding: 3px 12px 3px 24px;
+		border-radius: 8px;
+		// box-shadow: 0px -1px 1px 0px rgba(0, 0, 0, 0.15) inset;
+		border: 1px solid rgba(0, 0, 0, 0.15);
 		color: #fff;
-		font-weight: bold;
+		font-size: 0.7rem;
+		font-weight: 500;
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 11px;
+			transform: translateY(-50%);
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background-color: #000;
+		}
 
 		&.green {
-			background-color: #52D687;
+			color: #52D687;
+			border-color: #52D687;
+			background-color: #52d6870e;
+
+			&::before {
+				background-color: #52D687;
+			}
 		}
 
 		&.orange {
-			background-color: #FCA642;
+			color: #FCA642;
+			border-color: #FCA642;
+			background-color: #FCA6420e;
+
+			&::before {
+				background-color: #FCA642;
+			}
 		}
 
 		&.red {
-			background-color: var(--caution-color);
+			border-color: var(--caution-color);
+
+			&::before {
+				background-color: var(--caution-color);
+			}
 		}
 
 		&.purple {
-			background-color: #B881FF;
+			color: #B881FF;
+			border-color: #B881FF;
+			background-color: #B881FF0e;
+
+			&::before {
+				background-color: #B881FF;
+			}
 		}
 
 		&.grey {
-			background-color: #ccc;
+			padding: 3px 12px;
+			color: #bbb;
+			border-color: #bbb;
+			background-color: #cccccc0e;
+
+			&::before {
+				display: none;
+			}
 		}
 	}
 }
