@@ -8,143 +8,163 @@
             slot(name='body')
 </template>
 <script setup lang="ts">
-    import { ref, onMounted, nextTick, useSlots, onBeforeUnmount } from 'vue';
-    let { resizable } = defineProps({
-        resizable: Boolean
-    });
+import { ref, onMounted, nextTick, useSlots, onBeforeUnmount } from 'vue';
+let { resizable } = defineProps({
+	resizable: Boolean
+});
 
-    let thead = ref(null);
-    let slots = useSlots();
+let thead = ref(null);
+let slots = useSlots();
 
-    let observer: MutationObserver = null;
-    let resizers_arr: Element[] = [];
-    let full = ref(null);
-    let removeSetup = () => {
-        resizers_arr.forEach((resizer) => {
-            resizer.removeEventListener('mousedown', mousedown);
-        });
-        document.removeEventListener('mousemove', mouseMoveHandler);
-        document.removeEventListener('mouseup', mouseup);
-    }
+let observer: MutationObserver = null;
+let resizers_arr: Element[] = [];
+let full = ref(null);
+let removeSetup = () => {
+	resizers_arr.forEach((resizer) => {
+		resizer.removeEventListener('mousedown', mousedown);
+	});
+	document.removeEventListener('mousemove', mouseMoveHandler);
+	document.removeEventListener('mouseup', mouseup);
+}
 
-    let headFullWidth = 0;
+let headFullWidth = 0;
+let fakeWidth = ref(0);
 
-    if (resizable) {
-        onMounted(async () => {
-            // Check if slot is rendered
+if (resizable) {
+	onMounted(async () => {
+		// Check if slot is rendered
 
-            if (slots.head) {
-                if (resizable) {
-                    await setResize();
+		if (slots.head) {
+			if (resizable) {
+				await setResize();
 
-                    // Create a MutationObserver to watch for changes in the 'thead' element
-                    observer = new MutationObserver((mutationsList) => {
-                        for (let mutation of mutationsList) {
-                            type MutationType = 'childList' | 'attributes';
-                            let type = mutation.type as MutationType;
+				// Create a MutationObserver to watch for changes in the 'thead' element
+				observer = new MutationObserver((mutationsList) => {
+					for (let mutation of mutationsList) {
+						type MutationType = 'childList' | 'attributes';
+						let type = mutation.type as MutationType;
 
-                            if (type === 'childList') {
-                                setResize();
-                            }
-                            // if (mutation.type === 'attributes') {
-                            //     console.log('The ' + mutation.attributeName + ' attribute was modified.');
-                            // }
-                        }
-                    });
+						if (type === 'childList') {
+							setResize();
+						}
+						// if (mutation.type === 'attributes') {
+						//     console.log('The ' + mutation.attributeName + ' attribute was modified.');
+						// }
+					}
+				});
 
-                    // Start observing the 'thead' element for configured mutations
-                    observer.observe(thead.value, {
-                        // attributes: true,
-                        childList: true,
-                        subtree: true
-                    });
-                }
-            }
-        });
-        onBeforeUnmount(() => {
-            removeSetup();
-            if (observer) {
-                observer.disconnect();
-            }
-        });
-    }
+				// Start observing the 'thead' element for configured mutations
+				observer.observe(thead.value, {
+					// attributes: true,
+					childList: true,
+					subtree: true
+				});
+			}
+		}
+	});
+	onBeforeUnmount(() => {
+		removeSetup();
+		if (observer) {
+			observer.disconnect();
+		}
+	});
+}
 
-    let currentHeadCol: HTMLElement = null;
-    let pageXMouseDown = 0;
-    let pageXMouseMoveDiff = 0;
-    let currentHeadColWidth = 0;
+let currentHeadCol: HTMLElement = null;
+let pageXMouseDown = 0;
+let pageXMouseMoveDiff = 0;
+let currentHeadColWidth = 0;
 
-    let thTotal = 0;
-    let currentSiblingHeadWidth = 0;
+let thTotal = 0;
+let currentSiblingHeadWidth = 0;
 
-    let mousedown = (e: MouseEvent) => {
-        let el = thead.value;
+let mousedown = (e: MouseEvent) => {
+	let el = thead.value;
 
-        thTotal = parseFloat(window.getComputedStyle(el).width);
+	thTotal = parseFloat(window.getComputedStyle(el).width);
 
-        pageXMouseDown = e.pageX;
-        let currentTarget = e.currentTarget as HTMLElement;
-        currentHeadCol = currentTarget.parentNode as HTMLElement;
-        currentHeadColWidth = parseFloat(window.getComputedStyle(currentHeadCol).width);
-        if (isNaN(currentHeadColWidth)) {
-            return;
-        }
-        currentSiblingHeadWidth = parseFloat(window.getComputedStyle(currentHeadCol.nextElementSibling as HTMLElement).width);
-    };
+	pageXMouseDown = e.pageX;
+	let currentTarget = e.currentTarget as HTMLElement;
+	currentHeadCol = currentTarget.parentNode as HTMLElement;
+	currentHeadColWidth = parseFloat(window.getComputedStyle(currentHeadCol).width);
+	if (isNaN(currentHeadColWidth)) {
+		return;
+	}
+	currentSiblingHeadWidth = parseFloat(window.getComputedStyle(currentHeadCol.nextElementSibling as HTMLElement).width);
+};
 
-    let mouseup = () => {
-        currentHeadCol = null;
-        pageXMouseDown = pageXMouseMoveDiff;
-    };
+let mouseup = () => {
+	currentHeadCol = null;
+	pageXMouseDown = pageXMouseMoveDiff;
+};
 
-    let mouseMoveHandler = (e) => {
-        if (!currentHeadCol) {
-            return;
-        }
+let mouseMoveHandler = (e) => {
+	if (!currentHeadCol) {
+		return;
+	}
 
-        if (currentHeadCol.classList.contains('fixed')) return;
+	if (currentHeadCol.classList.contains('fixed')) return;
 
-        // 마우스 이동 거리 계산
-        pageXMouseMoveDiff = e.pageX - pageXMouseDown;
+	// 마우스 이동 거리 계산
+	pageXMouseMoveDiff = e.pageX - pageXMouseDown;
 
-        // 새로운 너비 계산
-        let newWidth = currentHeadColWidth + pageXMouseMoveDiff;
+	// 새로운 너비 계산
+	let newWidth = currentHeadColWidth + pageXMouseMoveDiff;
 
-        // 너비가 음수가 되지 않도록 제한
-        if (newWidth < 50) {
-            newWidth = 50;
-        }
+	// 너비가 음수가 되지 않도록 제한
+	if (newWidth < 50) {
+		newWidth = 50;
+	}
 
-        // 현재 열의 너비만 적용
-        currentHeadCol.style.width = `${newWidth}px`;
-    };
+	// 현재 열의 너비만 적용
+	currentHeadCol.style.width = `${newWidth}px`;
 
-    let setResize = async () => {
-        // - initiallize start
-        removeSetup();
-        await nextTick();
-        headFullWidth = parseFloat(window.getComputedStyle(full.value).width);
+	// .tableWrap 의 너비 가져오기
+	let tableWrapWidth = parseFloat(window.getComputedStyle(full.value).width);
+	// customTbl 의 너비 가져오기
+	let customTblWidth = parseFloat(window.getComputedStyle(full.value.querySelector('.customTbl')).width);
+	// customTbl 의 너비가 .tableWrap 의 너비보다 작으면
+	if (customTblWidth < tableWrapWidth) {
+		// 차이 값 만큼 fakeWidth 값 설정
+		fakeWidth.value = tableWrapWidth - customTblWidth;
+		// customTblWidth 의 가상요소 너비를 fakeWidth 값으로 설정
+		document.body.style.setProperty('--fakeWidth', `${fakeWidth.value}px`);
+	}
+};
 
-        let el = thead.value;
-        let th = el.querySelectorAll('th');
+let setResize = async () => {
+	// - initiallize start
+	removeSetup();
+	await nextTick();
+	headFullWidth = parseFloat(window.getComputedStyle(full.value).width);
 
-        for (let i = 0; i < th.length - 1; i++) {
-            if (th[i].classList.contains('fixed')) continue;
-            let style = window.getComputedStyle(th[i]);
-            th[i].style.width = style.width;
-        }
+	let tableWrapWidth = parseFloat(window.getComputedStyle(full.value).width);
+	let customTblWidth = parseFloat(window.getComputedStyle(full.value.querySelector('.customTbl')).width);
+	if (customTblWidth < tableWrapWidth) {
+		fakeWidth.value = tableWrapWidth - customTblWidth;
+		document.body.style.setProperty('--fakeWidth', `${fakeWidth.value}px`);
+	}
 
-        resizers_arr = [];
-        // - initiallize end
+	let el = thead.value;
+	let th = el.querySelectorAll('th');
 
-        let resizers = el.querySelectorAll('th > .resizer:not(.fixed)');
-        for (let i = 0; i < resizers.length; i++) {
-            (resizers[i] as HTMLElement).addEventListener('mousedown', mousedown);
-            resizers_arr.push(resizers[i]);
-        }
-        document.addEventListener('mousemove', mouseMoveHandler);
-        document.addEventListener('mouseup', mouseup);
-    }
+	for (let i = 0; i < th.length - 1; i++) {
+		if (th[i].classList.contains('fixed')) continue;
+		let style = window.getComputedStyle(th[i]);
+		th[i].style.width = style.width;
+	}
+
+	resizers_arr = [];
+	// - initiallize end
+
+	let resizers = el.querySelectorAll('th > .resizer:not(.fixed)');
+	for (let i = 0; i < resizers.length; i++) {
+		(resizers[i] as HTMLElement).addEventListener('mousedown', mousedown);
+		resizers_arr.push(resizers[i]);
+	}
+	document.addEventListener('mousemove', mouseMoveHandler);
+	document.addEventListener('mouseup', mouseup);
+}
 
 </script>
 <style lang="less">
@@ -177,7 +197,7 @@
 		// background-color: #f0f0f0;
 		background-color: #f9f9f9;
 		text-align: left;
-		// border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 		// box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
 
 		
@@ -191,20 +211,20 @@
 				display: block;
 				height: 100%; // 높이는 최소화
 				background-color: #f9f9f9;
-				min-width: 100vw; // 화면 너비만큼 확장
+				min-width: var(--fakeWidth); // 화면 너비만큼 확장
 				top: 0;
-				left: 0;
+				right: calc(var(--fakeWidth) * -1);
 				z-index: -1; // 테이블 뒤쪽으로 배치
 			}
 			&::after {
 				position: absolute;
 				content: '';
 				display: block;
-				background-color: rgba(0, 0, 0, 0.1);
-				min-width: 100vw; // 화면 너비만큼 확장
+				background-color: rgba(0, 0, 0, 0.05);
+				min-width: var(--fakeWidth); // 화면 너비만큼 확장
 				height: 1px;
 				bottom: -0.5px;
-				left: 0;
+				right: calc(var(--fakeWidth) * -1);
 				// z-index: -1; // 테이블 뒤쪽으로 배치
 			}
 		}
@@ -285,7 +305,7 @@
 		tr {
 			position: relative;
 			height: 60px;
-			// border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+			border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 			// box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
 
 			&::before {
@@ -294,9 +314,9 @@
 				display: block;
 				height: 100%; // 높이는 최소화
 				background-color: #fff;
-				min-width: 100vw; // 화면 너비만큼 확장
+				min-width: var(--fakeWidth); // 화면 너비만큼 확장
 				top: 0;
-				left: 0;
+				right: calc(var(--fakeWidth) * -1);
 				z-index: -1; // 테이블 뒤쪽으로 배치
 			}
 			&::after {
@@ -304,27 +324,16 @@
 				content: '';
 				display: block;
 				background-color: rgba(0, 0, 0, 0.05);
-				min-width: 100vw; // 화면 너비만큼 확장
+				min-width: var(--fakeWidth); // 화면 너비만큼 확장
 				height: 1px;
 				bottom: -1.5px;
-				left: 0;
+				right: calc(var(--fakeWidth) * -1);
 				// z-index: -1; // 테이블 뒤쪽으로 배치
 			}
-			// &::after {
-			// 	content: '';
-			// 	display: block;
-			// 	height: 100%; // 높이는 최소화
-			// 	background-color: rgba(0, 0, 0, 0.05);
-			// 	// border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-			// 	// box-shadow: inset 0 -3px 3px -3px rgba(0, 0, 0, 0.2);
-			// 	min-width: 100vw; // 화면 너비만큼 확장
-			// 	position: absolute;
-			// 	// top: 0;
-			// 	bottom: -1.5px;
-			// 	left: 0;
-			// 	height: 1px;
-			// 	z-index: -1; // 테이블 뒤쪽으로 배치
-			// }
+
+			&:last-child {
+				border-bottom: none;
+			}
 		}
 
 		td {

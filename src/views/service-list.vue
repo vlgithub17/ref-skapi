@@ -49,75 +49,75 @@ main#serviceList
 			svg.svgIcon
 				use(xlink:href="@/assets/img/material-icon.svg#icon-add") 
 			span &nbsp;&nbsp;Create New Service
-	.tableWrap(style="margin-top:.5rem")
-		Table(resizable)
-			template(v-slot:head)
-				tr
-					th.th.overflow(style="width:166px;")
-						| Service Name
-						.resizer
-					th.th.overflow(style="width:150px;")
-						| Plan
-						.resizer
-					th.th.overflow(style="width:120px;")
-						| State
-						.resizer
-					th.th.overflow(style="width:144px;")
-						| Users
-						.resizer
-					th.th.overflow(style="width:144px;")
-						| Database
-						.resizer
-					th.th.overflow(style="width:144px;")
-						| File Storage
-						.resizer
-					th.th.overflow(style="width:144px;")
-						| File Hosting
-						.resizer
-					th.th.overflow(style="width:144px;")
-						| Email
 
-			template(v-slot:body)
-				tr(v-if="fetchingServiceList")
-					td(colspan="8").
-						Loading ... &nbsp;
-						#[.loader(style="--loader-color:black; --loader-size:12px")]
-				tr(v-else-if="!Object.keys(serviceIdList).length")
-					td(colspan="8") You have no services yet.
+	Table(resizable)
+		template(v-slot:head)
+			tr
+				th.th.overflow(style="width:166px;")
+					| Service Name
+					.resizer
+				th.th.overflow(style="width:150px;")
+					| Plan
+					.resizer
+				th.th.overflow(style="width:120px;")
+					| State
+					.resizer
+				th.th.overflow(style="width:144px;")
+					| Users
+					.resizer
+				th.th.overflow(style="width:144px;")
+					| Database
+					.resizer
+				th.th.overflow(style="width:144px;")
+					| File Storage
+					.resizer
+				th.th.overflow(style="width:144px;")
+					| File Hosting
+					.resizer
+				th.th.overflow(style="width:144px;")
+					| Email
 
-				template(v-else v-for="id in serviceIdList")
-					tr.serviceRow(v-if="serviceList[id]" @click="() => goServiceDashboard(serviceList[id])" @mousedown="(e) => e.currentTarget.classList.add('active')" @mouseleave="(e) => e.currentTarget.classList.remove('active')")
-						td.overflow {{ serviceList[id].service.name }}
-						td.overflow(style="white-space:nowrap")
-							// plans
-							.state(v-if="serviceList[id].service.subs_id && !serviceList[id].subscription")
-								.loader(style="--loader-color:black; --loader-size:12px")
-							span(v-else :style="{fontWeight: serviceList[id].service.plan === 'Canceled' ? 'normal' : null, color: serviceList[id].service.plan === 'Canceled' ? 'var(--caution-color)' : null}") {{ serviceList[id].service.plan || serviceList[id].plan }}
-						td.overflow
-							// active state
-							.state(v-if="serviceList[id].service.active > 0" style="color:var(--text-green);font-weight:normal;") Running
-							.state(v-else-if="serviceList[id].service.active == 0") Disabled
-							.state(v-else-if="serviceList[id].service.suspended" style='color:var(--caution-color);font-weight:normal') Suspended
-							.state(v-else) -
-						td.overflow
-							// users
-							.percent(:class="getClass(serviceSpecList[id], 'users')") {{ serviceSpecList[id]?.plan === 'Unlimited' ? 'Unlimited' : serviceSpecList[id]?.dataSize?.users + '/' + serviceSpecList[id]?.servicePlan?.users }}
+		template(v-slot:body)
+			tr(v-if="fetchingServiceList")
+				td(colspan="8").
+					Loading ... &nbsp;
+					#[.loader(style="--loader-color:black; --loader-size:12px")]
+			tr(v-else-if="!Object.keys(serviceIdList).length")
+				td(colspan="8") You have no services yet.
 
-						td.overflow
-							// database
-							.percent(:class="getClass(serviceSpecList[id], 'database')") {{ typeof(serviceSpecList[id]?.dataPercent?.database) === 'string' ? serviceSpecList[id]?.dataPercent?.database : serviceSpecList[id]?.dataPercent?.database + '%' }}
+			template(v-else v-for="id in serviceIdList")
+				tr.serviceRow(v-if="serviceList[id]" @click="() => goServiceDashboard(serviceList[id])" @mousedown="(e) => e.currentTarget.classList.add('active')" @mouseleave="(e) => e.currentTarget.classList.remove('active')")
+					td.overflow {{ serviceList[id].service.name }}
+					td.overflow(style="white-space:nowrap")
+						// plans
+						.state(v-if="serviceList[id].service.subs_id && !serviceList[id].subscription")
+							.loader(style="--loader-color:black; --loader-size:12px")
+						span(v-else :style="{fontWeight: serviceList[id].service.plan === 'Canceled' ? 'normal' : null, color: serviceList[id].service.plan === 'Canceled' ? 'var(--caution-color)' : null}") {{ serviceList[id].service.plan || serviceList[id].plan }}
+					td.overflow
+						// active state
+						.state(v-if="serviceList[id].service.active > 0" style="color:var(--text-green);font-weight:normal;") Running
+						.state(v-else-if="serviceList[id].service.active == 0") Disabled
+						.state(v-else-if="serviceList[id].service.suspended" style='color:var(--caution-color);font-weight:normal') Suspended
+						.state(v-else) -
+					td.overflow
+						// users
+						.percent(:class="getClass(serviceSpecList[id], 'users')") {{ serviceSpecList[id]?.plan === 'Unlimited' ? 'Unlimited' : serviceSpecList[id]?.dataSize?.users + '/' + serviceSpecList[id]?.servicePlan?.users }}
 
-						td.overflow
-							// cloud storage
-							.percent(:class="getClass(serviceSpecList[id], 'cloud')") {{ typeof(serviceSpecList[id]?.dataPercent?.cloud) === 'string' ? serviceSpecList[id]?.dataPercent?.cloud : serviceSpecList[id]?.dataPercent?.cloud + '%' }}
+					td.overflow
+						// database
+						.percent(:class="getClass(serviceSpecList[id], 'database')") {{ typeof(serviceSpecList[id]?.dataPercent?.database) === 'string' ? serviceSpecList[id]?.dataPercent?.database : serviceSpecList[id]?.dataPercent?.database + '%' }}
 
-						td.overflow
-							// host storage
-							.percent(:class="getClass(serviceSpecList[id], 'host')") {{ typeof(serviceSpecList[id]?.dataPercent?.host) === 'string' ? serviceSpecList[id]?.dataPercent?.host : serviceSpecList[id]?.dataPercent?.host + '%' }}
+					td.overflow
+						// cloud storage
+						.percent(:class="getClass(serviceSpecList[id], 'cloud')") {{ typeof(serviceSpecList[id]?.dataPercent?.cloud) === 'string' ? serviceSpecList[id]?.dataPercent?.cloud : serviceSpecList[id]?.dataPercent?.cloud + '%' }}
 
-						td.overflow
-							// email storage
-							.percent(:class="getClass(serviceSpecList[id], 'email')") {{ typeof(serviceSpecList[id]?.dataPercent?.email) === 'string' ? serviceSpecList[id]?.dataPercent?.email : serviceSpecList[id]?.dataPercent?.email + '%' }}
+					td.overflow
+						// host storage
+						.percent(:class="getClass(serviceSpecList[id], 'host')") {{ typeof(serviceSpecList[id]?.dataPercent?.host) === 'string' ? serviceSpecList[id]?.dataPercent?.host : serviceSpecList[id]?.dataPercent?.host + '%' }}
+
+					td.overflow
+						// email storage
+						.percent(:class="getClass(serviceSpecList[id], 'email')") {{ typeof(serviceSpecList[id]?.dataPercent?.email) === 'string' ? serviceSpecList[id]?.dataPercent?.email : serviceSpecList[id]?.dataPercent?.email + '%' }}
 
 	br
 	br
@@ -224,6 +224,7 @@ let getClass = (service: ServiceSpec, what: string) => {
   	font-size: 0.8rem;
 	border-radius: 12px;
 	padding: 0.6rem 1.2rem;
+	cursor: pointer;
 
 	svg {
 		width: 20px;

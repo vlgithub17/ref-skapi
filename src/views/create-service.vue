@@ -1,15 +1,5 @@
 <template lang="pug">
 main#create
-	//- router-link(to="/my-services")
-		img(src="@/assets/img/logo/logo.png" style="height: 2rem;")
-
-	//- .bottomLineTitle Create a New Service
-
-	//- p
-	//-     | Choose a plan for your service "
-	//-     span(style='font-weight:500') {{newServiceName}}
-	//-     | "
-
 	.section
 		router-link(to="/my-services")
 			img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 44px;margin-bottom: 0.5rem;")
@@ -18,17 +8,32 @@ main#create
 			template(v-if="step === 1") Enter a name for your new service.
 			template(v-if="step === 2") Choose a plan for your service #[span.wordset.newname {{newServiceName}}]
 
-		.step-wrap
-			.step.activated(@click="step = 1")
-				span Create Service
-			.step(:class="{'activated' : step === 2, 'disabled' : !newServiceName}" @click="step = 2")
-				span Choose Plan
+	//- .step-wrap
+		.step.activated(@click="step = 1")
+			.icon
+				svg
+					use(xlink:href="@/assets/img/material-icon.svg#icon-edit")
+			.detail
+				p Step 1/2
+				p Create Service
+		.step(:class="{'activated' : step === 2, 'disabled' : !newServiceName}" @click="step = 2")
+			span Choose Plan
 
-	.form(v-if="step === 1")
-		input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
-		button.final(type="button" :class="{'disabled': !newServiceName}" @click="step++") Next
+	//- .step-wrap
+	//- 	.step.activated(@click="step = 1")
+	//- 		span Create Service
+	//- 	.step(:class="{'activated' : step === 2, 'disabled' : !newServiceName}" @click="step = 2")
+	//- 		span Choose Plan
 
-	.plan-wrap.card-wrap(v-else-if="step === 2")
+	//- .form(v-if="step === 1")
+	//- 	.infoValue(style="flex-grow:1")
+	//- 		.smallTitle Service Name
+	//- 		input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName" style="width: 100%;")
+	//- 	//- div.inputWrap
+	//- 	//- 	.smallTitle Service Name
+	//- 	button.final(type="button" :class="{'disabled': !newServiceName}" @click="step++") Next
+
+	//- .plan-wrap.card-wrap(v-else-if="step === 2")
 		.plan(:class="{'selected' : serviceMode == 'trial', 'hovered': hoverPlan == 'trial'}" @mouseover="hoverPlan = 'trial'" @mouseleave="hoverPlan = serviceMode")
 			.card
 				.title Trial
@@ -196,7 +201,7 @@ let selectedPlan = (plan: string) => {
 .section {
 	max-width: 570px;
 	margin: 0 auto;
-	padding: 4rem 20px;
+	padding: 4rem 20px 1rem;
 	text-align: center;
 
 	.title {
@@ -212,76 +217,82 @@ let selectedPlan = (plan: string) => {
 	}
 }
 
-.step-wrap {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 10rem;
-	margin: 3rem 0;
-
-	.step {
-		position: relative;
-		width: 10px;
-		height: 10px;
-		border-radius: 50%;
-		background-color: #fff;
-		border: 2px solid var(--main-color);
-		cursor: pointer;
-
-		span {
-			position: absolute;
-			top: -25px;
-			left: 50%;
-			transform: translateX(-50%);
-			font-size: 0.8rem;
-			white-space: nowrap;
-			color: #aaa;
-		}
-
-		&::after {
-			position: absolute;
-			content: '';
-			top: 50%;
-			right: calc(-10rem - 2px);
-			transform: translateY(-50%);
-			width: calc(10rem + 2px);
-			height: 2px;
-			background-color: #ccc;
-			z-index: -1;
-		}
-
-		&:last-child {
-			&::after {
-				display: none;
-			}
-		}
-
-		&.activated {
-			background-color: var(--main-color);
-			border-color: var(--main-color);
-
-			&::after {
-				background-color: var(--main-color);
-			}
-
-			span {
-				color: var(--main-color);
-			}
-		}
-
-		&.disabled {
-			cursor: default;
-			pointer-events: none;
-		}
-	}
+.smallTitle {
+	font-size: 0.8rem;
+	color: #333;
+	margin-bottom: 0.5rem;
 }
+
+// .step-wrap {
+// 	display: flex;
+// 	align-items: center;
+// 	justify-content: center;
+// 	gap: 10rem;
+// 	margin: 3rem 0;
+
+// 	.step {
+// 		position: relative;
+// 		width: 10px;
+// 		height: 10px;
+// 		border-radius: 50%;
+// 		background-color: #fff;
+// 		border: 2px solid var(--main-color);
+// 		cursor: pointer;
+
+// 		span {
+// 			position: absolute;
+// 			top: -25px;
+// 			left: 50%;
+// 			transform: translateX(-50%);
+// 			font-size: 0.8rem;
+// 			white-space: nowrap;
+// 			color: #aaa;
+// 		}
+
+// 		&::after {
+// 			position: absolute;
+// 			content: '';
+// 			top: 50%;
+// 			right: calc(-10rem - 2px);
+// 			transform: translateY(-50%);
+// 			width: calc(10rem + 2px);
+// 			height: 2px;
+// 			background-color: #ccc;
+// 			z-index: -1;
+// 		}
+
+// 		&:last-child {
+// 			&::after {
+// 				display: none;
+// 			}
+// 		}
+
+// 		&.activated {
+// 			background-color: var(--main-color);
+// 			border-color: var(--main-color);
+
+// 			&::after {
+// 				background-color: var(--main-color);
+// 			}
+
+// 			span {
+// 				color: var(--main-color);
+// 			}
+// 		}
+
+// 		&.disabled {
+// 			cursor: default;
+// 			pointer-events: none;
+// 		}
+// 	}
+// }
 
 .form {
 	max-width: 570px;
 	margin: 0 auto;
 	display: flex;
 	flex-wrap: wrap;
-	align-items: center;
+	align-items: flex-end;
 	justify-content: center;
 	gap: 1rem;
 }
