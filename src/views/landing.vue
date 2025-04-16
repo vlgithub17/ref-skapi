@@ -174,7 +174,7 @@ main
 					.content
 						.title.faktum Website Hosting
 						.desc Easy hosting for files & websites
-			
+
 	.dynamo-section.center
 		.change-toggle(:class="{'motion': hoverFramework}")
 			img.skapi(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style='filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));')
@@ -234,7 +234,8 @@ main
 
 		//- TabMenu(v-model="activeTabs.plan" :tabs="['Monthly', 'Limited']")
 
-		b.desc 🎉 Early Adopter Special – For a limited time, we’re offering exclusive pricing, including a one-time lifetime purchase option. #[.wordset Don’t miss] your chance to lock in these benefits forever!
+		// b.desc 🎉 Early Adopter Special – For a limited time, we’re offering exclusive pricing, including a one-time lifetime purchase option. #[.wordset Don’t miss] your chance to lock in these benefits forever!
+		b.desc 🎉 Early Adopter Special – For a limited time, we’re offering exclusive pricing. #[.wordset Don’t miss] your chance to lock in these benefits forever!
 
 		br
 		br
@@ -412,7 +413,7 @@ onMounted(() => {
 
 .dynamo-section.landing-a {
 	// background-image: url(landing-az.jpg);
-	background-image: url(blwv.jpg);
+	background-image: url(/blwv.jpg);
     background-size: cover;
 	background-blend-mode: difference;
     background-position: center;
@@ -518,7 +519,7 @@ main {
 		margin-bottom: 1rem;
 		line-height: 1.9;
 		// color: #333;
-		color: #000;
+		color: #333;
 	}
 }
 
@@ -693,6 +694,26 @@ main {
 		animation: 14s linear 0s infinite normal forwards running slide01;
 
 		li {
+			position: relative;
+			&::before {
+				content: '';
+				display: block;
+				position: absolute;
+				width: 99%;
+				height: 100%;
+				left: -.1rem;
+				top: -.5rem;
+				// background-color: red;
+				z-index: -1;
+				transform: skewX(-4deg);
+				// background-color: #fff;
+				// background-color: #f3f3f3;
+				// background-color: #fafafa;
+				// background-color: rgb(247, 249, 252);
+				// border-radius: 24px;
+				// background: linear-gradient(180deg, rgb(20 99 255 / 10%), rgb(20 99 255 / 2%));
+			}
+
 			display: inline-block;
 			list-style: none;
 			// width: 260px;
@@ -714,9 +735,9 @@ main {
 			// background: linear-gradient(to bottom, #f3f3f3, white);
 
 
-			&:last-child {
-				margin-right: 1rem;
-			}
+			// &:last-child {
+			// 	margin-right: 1rem;
+			// }
 			.icon {
 				display: inline-block;
 				// border-radius: 50%;
@@ -742,6 +763,7 @@ main {
 				.title {
 					font-size: 1rem;
 					margin-bottom: 0.5rem;
+					text-shadow: none;
 				}
 				.desc {
 					font-size: 0.8rem;
@@ -832,11 +854,11 @@ main {
 			box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
 		}
 
-		&.dark {
-			// background-color: var(--main-color);
-			// background: linear-gradient(to right, rgb(11, 53, 218), rgb(172, 250, 5), rgb(172, 250, 5), rgb(11, 53, 218));
-			// color: #fff;
-		}
+		// &.dark {
+		// 	// background-color: var(--main-color);
+		// 	// background: linear-gradient(to right, rgb(11, 53, 218), rgb(172, 250, 5), rgb(172, 250, 5), rgb(11, 53, 218));
+		// 	// color: #fff;
+		// }
 		
 		a {
 			display: flex;
