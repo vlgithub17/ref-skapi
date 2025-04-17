@@ -260,7 +260,8 @@ export default class Service {
     2: 'Standard',
     3: 'Premium',
     50: 'Unlimited',
-    51: 'Free Standard',
+    51: 'Standard (Perpetual License)',
+    52: 'Premium (Perpetual License)',
   };
   subscription: SubscriptionObj;
   storageInfo: {
