@@ -108,11 +108,40 @@ let activeTabs = ref({
 	premiumPlan: 0,
 });
 
-let createSubscription = async (ticket_id, service_info) => {
+let createSubscription = async (ticket_id, service_info, isPerpetual=false) => {
 	let resolvedCustomer = await customer;
 	let product = JSON.parse(import.meta.env.VITE_PRODUCT);
 	let customer_id = resolvedCustomer.id;
 	let currentUrl = window.location;
+
+	let data = {
+		client_reference_id: service_info.owner,
+		customer: customer_id,
+		'customer_update[name]': 'auto',
+		'customer_update[address]': 'auto',
+
+		cancel_url: currentUrl.origin + '/my-services',
+		"line_items[0][quantity]": 1,
+		'line_items[0][price]': product[ticket_id],
+		"success_url": currentUrl.origin + '/my-services/' + service_info.id,
+		'tax_id_collection[enabled]': true,
+	}
+
+	if (isPerpetual) {
+		Object.assign(data, {
+			'metadata[service]': service_info.id,
+			'metadata[owner]': service_info.owner,
+			'metadata[price]': product[ticket_id],
+			'mode': 'payment',
+		})
+	} else {
+		Object.assign(data,{
+			'subscription_data[metadata][service]': service_info.id,
+			'subscription_data[metadata][owner]': service_info.owner,
+			'mode': 'subscription',
+			'subscription_data[description]': 'Subscription plan for service ID: "' + service_info.id + '"',
+		})
+	}
 
 	let response = await skapi.clientSecretRequest({
 		clientSecretName: 'stripe_test',
@@ -122,21 +151,7 @@ let createSubscription = async (ticket_id, service_info) => {
 			Authorization: 'Bearer $CLIENT_SECRET',
 			'Content-Type': 'application/x-www-form-urlencoded'
 		},
-		data: {
-			client_reference_id: service_info.owner,
-			customer: customer_id,
-			'customer_update[name]': 'auto',
-			'customer_update[address]': 'auto',
-			'subscription_data[metadata][service]': service_info.id,
-			'subscription_data[metadata][owner]': service_info.owner,
-			'mode': 'subscription',
-			'subscription_data[description]': 'Subscription plan for service ID: "' + service_info.id + '"',
-			cancel_url: currentUrl.origin + '/my-services',
-			"line_items[0][quantity]": 1,
-			'line_items[0][price]': product[ticket_id],
-			"success_url": currentUrl.origin + '/my-services/' + service_info.id,
-			'tax_id_collection[enabled]': true,
-		}
+		data	
 	});
 	if (response.error) {
 		alert(response.error.message);
