@@ -3,13 +3,16 @@ import { skapi } from '@/main';
 import { currentServiceId, currentService } from '@/views/service/main';
 import Service from '@/code/service';
 
+let product_price_code = JSON.parse(import.meta.env.VITE_PRODUCT);
+
 export const planSpec: {
 	[plan: string]: {
-		price: {
-			monthly: number
-			yearly?: number
-			perpetual?: number
-		}
+		// price: {
+		// 	monthly: number
+		// 	yearly?: number
+		// 	perpetual?: number
+		// }
+		price: number
 		product_price?: { development: string; production: string }
 		users: number | string
 		storage: {
@@ -23,10 +26,11 @@ export const planSpec: {
 	}
 } = {
 	'Trial': {
-		price: {
-			monthly: 0,
-			yearly: 0,
-		},
+		// price: {
+		// 	monthly: 0,
+		// 	yearly: 0,
+		// },
+		price: 0,
 		users: 10000, // 10K
 		storage: {
 			database: 8589934592, // 8GB -> Bytes
@@ -43,14 +47,12 @@ export const planSpec: {
 		]
 	},
 	'Standard': {
-		price: {
-			monthly: 19,
-			perpetual: 300,
-		},
-		product_price: {
-			development: 'price_1OUCt6HfHjKTnB39IwJasJEy',
-			production: 'price_1OlIoyHfHjKTnB393KyKOkU5',
-		},
+		// price: {
+		// 	monthly: 19,
+		// 	perpetual: 300,
+		// },
+		price: 19,
+		product_price: product_price_code['standard'],
 		users: 10000, // 10K
 		storage: {
 			database: 8589934592, // 8GB -> Bytes
@@ -68,10 +70,12 @@ export const planSpec: {
 			'1GB Email Storage'
 		],
 	},
-	'Free Standard': {
-		price: {
-			monthly: 19,
-		},
+	'Standard (Perpetual License)': {
+		// price: {
+		// 	monthly: 19,
+		// },
+		price: 300,
+		product_price: product_price_code['standard-perpetual'],
 		users: 10000, // 10K
 		storage: {
 			database: 8589934592, // 8GB -> Bytes
@@ -79,17 +83,37 @@ export const planSpec: {
 			host: 107374182400, // 100GB -> Bytes
 			email: 1073741824, // 1GB -> Bytes
 		},
-		description: ['Free Standard'],
+		description: ['Standard-Perpetual'],
 	},
 	'Premium': {
-		price: {
-			monthly: 89,
-			perpetual: 1399,
+		// price: {
+		// 	monthly: 89,
+		// 	perpetual: 1399,
+		// },
+		price: 89,
+		product_price: product_price_code['premium'],
+		users: 100000, // 100K
+		storage: {
+			database: 107374182400, // 100GB -> Bytes
+			cloud: 1099511627776, // 1TB -> Bytes
+			host: 1099511627776, // 1TB -> Bytes
+			email: 10737418240, // 10GB ->
 		},
-		product_price: {
-			development: 'price_1OeZSqHfHjKTnB395Ai9fY4m',
-			production: 'price_1OlIqCHfHjKTnB39wcQVEmyj',
-		},
+		description: [
+			'Includes all Standard Plan features',
+			'100K User Accounts',
+			'100GB Database Storage',
+			'1TB File Storage & Subdomain Hosting',
+			'10GB Email Storage'
+		],
+	},
+	'Premium (Perpetual License)': {
+		// price: {
+		// 	monthly: 89,
+		// 	perpetual: 1399,
+		// },
+		price: 1399,
+		product_price: product_price_code['premium-perpetual'],
 		users: 100000, // 100K
 		storage: {
 			database: 107374182400, // 100GB -> Bytes
@@ -106,9 +130,10 @@ export const planSpec: {
 		],
 	},
 	'Unlimited': {
-		price: {
-			monthly: 89,
-		},
+		// price: {
+		// 	monthly: 89,
+		// },
+		price: 89,
 		users: 'Unlimited',
 		storage: {
 			database: 'Unlimited',

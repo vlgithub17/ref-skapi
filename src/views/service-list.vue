@@ -134,6 +134,8 @@ import { ServiceSpec } from './service/service-spec';
 
 const router = useRouter();
 
+console.log('serviceList', serviceList);
+
 let goServiceDashboard = (service: { [key: string]: any }) => {
 	router.push('/my-services/' + service.id);
 }
@@ -152,7 +154,11 @@ let createService = ()=>{
 let getClass = (service: ServiceSpec, what: string) => {
 	let percentage: number | string;
 
-	if(service.plan === 'Unlimited') {
+	if (!service) {
+		return 'grey';
+	}
+
+	if(service?.plan === 'Unlimited') {
 		return 'purple';
 	}
 
