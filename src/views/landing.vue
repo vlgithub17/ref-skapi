@@ -244,14 +244,14 @@ main
 			.plan
 				.card
 					.title Standard 
-					//- .option 
+					.option 
 						TabMenu(v-model="activeTabs.standardPlan" :tabs="['Monthly', 'Perpetual']" tab-width='120px')
 					.price
 						template(v-if="activeTabs.standardPlan === 0") 
-							.faktum {{ '$' + planSpec['Standard'].price.monthly }}
+							.faktum {{ '$' + planSpec['Standard'].price }}
 							span /mo
 						template(v-else)
-							.faktum {{ '$' + planSpec['Standard'].price.perpetual }}
+							.faktum {{ '$' + planSpec['Standard (Perpetual License)'].price }}
 							span /only-once
 					.desc 
 						template(v-if="activeTabs.standardPlan === 0") Suits best for small businesses, #[span.wordset MVPs, small projects, etc.]
@@ -263,14 +263,14 @@ main
 			.plan
 				.card
 					.title Premium 
-					//- .option 
+					.option 
 						TabMenu(v-model="activeTabs.premiumPlan" :tabs="['Monthly', 'Perpetual']" tab-width='120px')
 					.price
 						template(v-if="activeTabs.premiumPlan === 0") 
-							.faktum {{ '$' + planSpec['Premium'].price.monthly }}
+							.faktum {{ '$' + planSpec['Premium'].price }}
 							span /mo
 						template(v-else)
-							.faktum {{ '$' + planSpec['Premium'].price.perpetual }}
+							.faktum {{ '$' + planSpec['Premium (Perpetual License)'].price }}
 							span /only-once
 					.desc
 						template(v-if="activeTabs.premiumPlan === 0") Suits best for huge projects, #[span.wordset SaaS, social media, AI application etc.]
