@@ -1,5 +1,5 @@
 <template lang="pug">
-div(style='min-height: calc(100vh - 21px - var(--footer-height, 0));' :style='{"--footer-height": footerHeight+"px"}')
+div(style='min-height: calc(100vh - 1rem - 1px - var(--footer-height, 0));' :style='{"--footer-height": footerHeight+"px"}')
     //- router-view(v-if='route.name === "home" || loaded')
     router-view(v-if='connected')
 

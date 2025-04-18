@@ -1,6 +1,20 @@
 <template lang="pug">
 main#create
-	.section
+	.step-wrap
+		router-link(to="/my-services")
+			img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo")
+			span service-list
+
+		span >
+		
+		.route(@click="step = 1") create service
+
+		template(v-if="step === 2") 
+			span > 
+
+			.route choose plan
+
+	//- .section
 		router-link(to="/my-services")
 			img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 44px;margin-bottom: 0.5rem;")
 		.title.faktum Create a New Service
@@ -25,22 +39,22 @@ main#create
 	//- 	.step(:class="{'activated' : step === 2, 'disabled' : !newServiceName}" @click="step = 2")
 	//- 		span Choose Plan
 
-	//- .form(v-if="step === 1")
-	//- 	.infoValue(style="flex-grow:1")
-	//- 		.smallTitle Service Name
-	//- 		input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName" style="width: 100%;")
-	//- 	//- div.inputWrap
-	//- 	//- 	.smallTitle Service Name
-	//- 	button.final(type="button" :class="{'disabled': !newServiceName}" @click="step++") Next
+	.form(v-if="step === 1")
+		.infoValue(style="flex-grow:1")
+			.smallTitle Service Name
+			input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName" style="width: 100%;")
+		//- div.inputWrap
+		//- 	.smallTitle Service Name
+		button.final(type="button" :class="{'disabled': !newServiceName}" @click="step++") Next
 
-	//- .plan-wrap.card-wrap(v-else-if="step === 2")
-		.plan(:class="{'selected' : serviceMode == 'trial', 'hovered': hoverPlan == 'trial'}" @mouseover="hoverPlan = 'trial'" @mouseleave="hoverPlan = serviceMode")
+	.plan-wrap.card-wrap(v-else-if="step === 2")
+		.plan(:class="{'selected' : serviceMode == 'trial' && promiseRunning, 'disabled' : serviceMode !== 'trial' && promiseRunning}")
 			.card
 				.title Trial
 				//- .option 
 					TabMenu(v-model="activeTabs.trialPlan" :tabs="['basic']")
 				.price
-					.faktum {{ '$' + planSpec['Trial'].price.monthly }}
+					.faktum {{ '$' + planSpec['Trial'].price }}
 					span /mo
 				.desc Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
 				button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('trial')") 
@@ -50,17 +64,17 @@ main#create
 			ul.provides
 				li(v-for="(des) in planSpec['Trial'].description") {{ des }}
 				li.warning(v-for="(des) in planSpec['Trial'].description_warning") {{ des }}
-		.plan(:class="{'selected' : serviceMode == 'standard', 'hovered': hoverPlan == 'standard'}" @mouseover="hoverPlan = 'standard'" @mouseleave="hoverPlan = serviceMode")
+		.plan(:class="{'selected' : serviceMode == 'standard' && promiseRunning, 'disabled' : serviceMode !== 'standard' && promiseRunning}")
 			.card
 				.title Standard 
-				//- .option 
-					TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'limited']")
+				.option 
+					TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'perpetual']")
 				.price
 					template(v-if="activeTabs.standardPlan === 0") 
-						.faktum {{ '$' + planSpec['Standard'].price.monthly }}
+						.faktum {{ '$' + planSpec['Standard'].price }}
 						span /mo
 					template(v-else)
-						.faktum {{ '$' + planSpec['Standard'].price.perpetual }}
+						.faktum {{ '$' + planSpec['Standard (Perpetual License)'].price }}
 						span /only-once
 				.desc 
 					template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
@@ -71,14 +85,18 @@ main#create
 					template(v-else) Select
 			ul.provides
 				li(v-for="(des) in planSpec['Standard'].description") {{ des }}
-		.plan(:class="{'selected' : serviceMode == 'premium', 'hovered': hoverPlan == 'premium'}" @mouseover="hoverPlan = 'premium'" @mouseleave="hoverPlan = serviceMode")
+		.plan(:class="{'selected' : serviceMode == 'premium' && promiseRunning, 'disabled' : serviceMode !== 'premium' && promiseRunning}")
 			.card
 				.title Premium 
-				//- .option 
-					TabMenu(v-model="activeTabs.premiumPlan" :tabs="['basic']")
+				.option 
+					TabMenu(v-model="activeTabs.premiumPlan" :tabs="['basic', 'perpetual']")
 				.price
-					.faktum {{ '$' + planSpec['Premium'].price.monthly }}
-					span /mo
+					template(v-if="activeTabs.premiumPlan === 0") 
+						.faktum {{ '$' + planSpec['Premium'].price }}
+						span /mo
+					template(v-else)
+						.faktum {{ '$' + planSpec['Premium (Perpetual License)'].price }}
+						span /only-once
 				.desc Empower your business with formcarry, #[span.wordset for big businesses]
 				button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('premium')")
 					template(v-if="serviceMode == 'premium' && promiseRunning")
@@ -211,6 +229,7 @@ let selectedPlan = (plan: string) => {
 	max-width: 1000px;
 	padding: 0 8px;
 	margin: 0 auto;
+	padding-top: 10px;
 }
 
 .section {
@@ -236,6 +255,50 @@ let selectedPlan = (plan: string) => {
 	font-size: 0.8rem;
 	color: #333;
 	margin-bottom: 0.5rem;
+}
+
+.step-wrap {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 1rem;
+	font-size: 0.8rem;
+	font-weight: 500;
+
+	// max-width: 80rem;
+    padding: 16px 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    box-shadow: rgba(66, 62, 121, 0.25) 0px 0px 90px -14px;
+    // margin: 0 var(--nav-top);
+    border-color: #f7f9fc;
+
+	a {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: #000;
+		// display: inline-block;
+		// vertical-align: middle;
+
+		img {
+			// display: inline-block;
+			height: 20px;
+		}
+		span {
+			// vertical-align: top;
+		}
+	}
+
+	.route {
+		cursor: pointer;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
 }
 
 // .step-wrap {
@@ -303,7 +366,13 @@ let selectedPlan = (plan: string) => {
 // }
 
 .form {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 	max-width: 570px;
+	width: 100%;
+	padding: 0 20px;
 	margin: 0 auto;
 	display: flex;
 	flex-wrap: wrap;
@@ -392,39 +461,25 @@ input {
 
 .plan-wrap {
 	align-items: start;
+	padding-top: 60px;
 
 	.plan {
 		width: 31%;
 		min-width: 250px;
 		flex-grow: 1;
-		opacity: 0.5;
 		transition: all .3s;
 
 		&.selected {
-			opacity: 1;
+			scale: 1.05;
 			
 			.card {
 				box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
 			}
-			.provides {
-				li {
-					// &::before {
-					// 	background: url('@/assets/img/icon/check.svg') no-repeat;
-					// 	background-size: cover;
-					// 	width: 16px;
-					// 	height: 16px;
-					// 	opacity: 1;
-					// }
-				}
-			}
 		}
-
-		&.hovered {
-			scale: 1.05;
-		}
-
-		&:hover {
-			opacity: 1;
+		&.disabled {
+			opacity: 0.5;
+			pointer-events: none;
+			cursor: default;
 		}
 	}
 	.card {
