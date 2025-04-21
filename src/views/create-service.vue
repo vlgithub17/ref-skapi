@@ -223,12 +223,11 @@ let selectedPlan = (plan: string) => {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 1rem;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 500;
 
     // max-width: 80rem;
-    padding: 16px 20px;
+    padding: 1rem;
     background-color: rgba(255, 255, 255, 0.8);
     border: 1.5px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
@@ -242,15 +241,9 @@ let selectedPlan = (plan: string) => {
         align-items: center;
         gap: 8px;
         color: #000;
-        // display: inline-block;
-        // vertical-align: middle;
 
         img {
-            // display: inline-block;
-            height: 20px;
-        }
-        span {
-            // vertical-align: top;
+            height: 30px;
         }
     }
 
@@ -448,6 +441,15 @@ input {
     }
     .plan-wrap {
         padding-top: 20px;
+
+        .plan {
+            &:hover, &.selected {
+                scale: 1;
+            }
+            &.disabled {
+                scale: 0.95;
+            }
+        }
     }
 }
 </style>
