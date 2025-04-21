@@ -1,109 +1,82 @@
 <template lang="pug">
 main#create
-	.step-wrap
-		router-link(to="/my-services")
-			img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo")
-			span service-list
+    .step-wrap
+        router-link(to="/my-services")
+            img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo")
+            span.list service-list
 
-		span >
-		
-		.route(@click="step = 1") create service
+        span >
+        
+        .route(@click="step = 1") create service
 
-		template(v-if="step === 2") 
-			span > 
+        template(v-if="step === 2") 
+            span > 
 
-			.route choose plan
+            .route choose plan
 
-	//- .section
-		router-link(to="/my-services")
-			img.symbol(src="@/assets/img/logo/symbol-logo.png" alt="Skapi logo" style="height: 44px;margin-bottom: 0.5rem;")
-		.title.faktum Create a New Service
-		//- .desc 
-			template(v-if="step === 1") Enter a name for your new service.
-			template(v-if="step === 2") Choose a plan for your service #[span.wordset.newname {{newServiceName}}]
+    .form(v-if="step === 1")
+        .infoValue(style="flex-grow:1")
+            .smallTitle Service Name
+            input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName" style="width: 100%;")
+        button.final(type="button" :class="{'disabled': !newServiceName}" @click="step++") Next
 
-	//- .step-wrap
-		.step.activated(@click="step = 1")
-			.icon
-				svg
-					use(xlink:href="@/assets/img/material-icon.svg#icon-edit")
-			.detail
-				p Step 1/2
-				p Create Service
-		.step(:class="{'activated' : step === 2, 'disabled' : !newServiceName}" @click="step = 2")
-			span Choose Plan
-
-	//- .step-wrap
-	//- 	.step.activated(@click="step = 1")
-	//- 		span Create Service
-	//- 	.step(:class="{'activated' : step === 2, 'disabled' : !newServiceName}" @click="step = 2")
-	//- 		span Choose Plan
-
-	.form(v-if="step === 1")
-		.infoValue(style="flex-grow:1")
-			.smallTitle Service Name
-			input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName" style="width: 100%;")
-		//- div.inputWrap
-		//- 	.smallTitle Service Name
-		button.final(type="button" :class="{'disabled': !newServiceName}" @click="step++") Next
-
-	.plan-wrap.card-wrap(v-else-if="step === 2")
-		.plan(:class="{'selected' : serviceMode == 'trial' && promiseRunning, 'disabled' : serviceMode !== 'trial' && promiseRunning}")
-			.card
-				.title Trial
-				//- .option 
-					TabMenu(v-model="activeTabs.trialPlan" :tabs="['basic']")
-				.price
-					.faktum {{ '$' + planSpec['Trial'].price }}
-					span /mo
-				.desc Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
-				button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('trial')") 
-					template(v-if="serviceMode == 'trial' && promiseRunning")
-						.loader(style="--loader-color:white; --loader-size: 12px")
-					template(v-else) Select
-			ul.provides
-				li(v-for="(des) in planSpec['Trial'].description") {{ des }}
-				li.warning(v-for="(des) in planSpec['Trial'].description_warning") {{ des }}
-		.plan(:class="{'selected' : serviceMode == 'standard' && promiseRunning, 'disabled' : serviceMode !== 'standard' && promiseRunning}")
-			.card
-				.title Standard 
-				.option 
-					TabMenu(v-model="activeTabs.standardPlan" :tabs="['basic', 'perpetual']")
-				.price
-					template(v-if="activeTabs.standardPlan === 0") 
-						.faktum {{ '$' + planSpec['Standard'].price }}
-						span /mo
-					template(v-else)
-						.faktum {{ '$' + planSpec['Standard (Perpetual License)'].price }}
-						span /only-once
-				.desc 
-					template(v-if="activeTabs.standardPlan === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
-					template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
-				button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('standard')")
-					template(v-if="serviceMode == 'standard' && promiseRunning")
-						.loader(style="--loader-color:white; --loader-size: 12px")
-					template(v-else) Select
-			ul.provides
-				li(v-for="(des) in planSpec['Standard'].description") {{ des }}
-		.plan(:class="{'selected' : serviceMode == 'premium' && promiseRunning, 'disabled' : serviceMode !== 'premium' && promiseRunning}")
-			.card
-				.title Premium 
-				.option 
-					TabMenu(v-model="activeTabs.premiumPlan" :tabs="['basic', 'perpetual']")
-				.price
-					template(v-if="activeTabs.premiumPlan === 0") 
-						.faktum {{ '$' + planSpec['Premium'].price }}
-						span /mo
-					template(v-else)
-						.faktum {{ '$' + planSpec['Premium (Perpetual License)'].price }}
-						span /only-once
-				.desc Empower your business with formcarry, #[span.wordset for big businesses]
-				button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('premium')")
-					template(v-if="serviceMode == 'premium' && promiseRunning")
-						.loader(style="--loader-color:white; --loader-size: 12px")
-					template(v-else) Select
-			ul.provides
-				li(v-for="(des) in planSpec['Premium'].description") {{ des }}
+    .plan-wrap.card-wrap(v-else-if="step === 2")
+        .plan(:class="{'selected' : serviceMode == 'trial' && promiseRunning, 'disabled' : serviceMode !== 'trial' && promiseRunning}")
+            .card
+                .title Trial
+                .option 
+                    TabMenu(v-model="activeTabs.trial" :tabs="['basic']")
+                .price
+                    .faktum {{ '$' + planSpec['Trial'].price }}
+                    span /mo
+                .desc Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
+                button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('trial')") 
+                    template(v-if="serviceMode == 'trial' && promiseRunning")
+                        .loader(style="--loader-color:white; --loader-size: 12px")
+                    template(v-else) Select
+            ul.provides
+                li(v-for="(des) in planSpec['Trial'].description") {{ des }}
+                li.warning(v-for="(des) in planSpec['Trial'].description_warning") {{ des }}
+        .plan(:class="{'selected' : (serviceMode == 'standard' || serviceMode == 'standard-perpetual') && promiseRunning, 'disabled' : (serviceMode !== 'standard' && serviceMode !== 'standard-perpetual') && promiseRunning}")
+            .card
+                .title Standard 
+                .option 
+                    TabMenu(v-model="activeTabs.standard" :tabs="['basic', 'perpetual']")
+                .price
+                    template(v-if="activeTabs.standard === 0") 
+                        .faktum {{ '$' + planSpec['Standard'].price }}
+                        span /mo
+                    template(v-else)
+                        .faktum {{ '$' + planSpec['Standard (Perpetual License)'].price }}
+                        span /only-once
+                .desc 
+                    template(v-if="activeTabs.standard === 0") Suits best for hobby use #[span.wordset for small projects #[span.wordset or businesses.]]
+                    template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
+                button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('standard')")
+                    template(v-if="(serviceMode == 'standard' || serviceMode == 'standard-perpetual') && promiseRunning")
+                        .loader(style="--loader-color:white; --loader-size: 12px")
+                    template(v-else) Select
+            ul.provides
+                li(v-for="(des) in planSpec['Standard'].description") {{ des }}
+        .plan(:class="{'selected' : (serviceMode == 'premium' || serviceMode == 'premium-perpetual') && promiseRunning, 'disabled' : (serviceMode !== 'premium' && serviceMode !== 'premium-perpetual') && promiseRunning}")
+            .card
+                .title Premium 
+                .option 
+                    TabMenu(v-model="activeTabs.premium" :tabs="['basic', 'perpetual']")
+                .price
+                    template(v-if="activeTabs.premium === 0") 
+                        .faktum {{ '$' + planSpec['Premium'].price }}
+                        span /mo
+                    template(v-else)
+                        .faktum {{ '$' + planSpec['Premium (Perpetual License)'].price }}
+                        span /only-once
+                .desc Empower your business with formcarry, #[span.wordset for big businesses]
+                button.final(type="button" :class="{'disabled': promiseRunning}" @click="selectedPlan('premium')")
+                    template(v-if="(serviceMode == 'premium' || serviceMode == 'premium-perpetual') && promiseRunning")
+                        .loader(style="--loader-color:white; --loader-size: 12px")
+                    template(v-else) Select
+            ul.provides
+                li(v-for="(des) in planSpec['Premium'].description") {{ des }}
 
 br
 br
@@ -125,147 +98,136 @@ const router = useRouter();
 const route = useRoute();
 
 let service = {
-	active: 1,
-	name: 'service name',
-	cors: 'service cors',
-	timestamp: 1709102706561,
-	group: 1,
-	service: 'ap226E8TXhYtbcXRgi5D',
-	users: 10
+    active: 1,
+    name: 'service name',
+    cors: 'service cors',
+    timestamp: 1709102706561,
+    group: 1,
+    service: 'ap226E8TXhYtbcXRgi5D',
+    users: 10
 }
 let promiseRunning = ref(false);
 let serviceMode = ref('standard');
-let hoverPlan = ref('standard');
-// let newServiceName = route.params.name as string;
 let newServiceName = ref('');
 let activeTabs = ref({
-	trialPlan: 0,
-	standardPlan: 0,
-	premiumPlan: 0,
+    trial: 0,
+    standard: 0,
+    premium: 0,
 });
 let step = ref(1);
 
 let createSubscription = async (ticket_id, service_info, isPerpetual=false) => {
-	let resolvedCustomer = await customer;
-	let product = JSON.parse(import.meta.env.VITE_PRODUCT);
-	let customer_id = resolvedCustomer.id;
-	let currentUrl = window.location;
+    if(serviceMode.value.includes('perpetual')) {
+        isPerpetual = true;
+    }
 
-	let data = {
-		client_reference_id: service_info.owner,
-		customer: customer_id,
-		'customer_update[name]': 'auto',
-		'customer_update[address]': 'auto',
+    let resolvedCustomer = await customer;
+    let product = JSON.parse(import.meta.env.VITE_PRODUCT);
+    let customer_id = resolvedCustomer.id;
+    let currentUrl = window.location;
 
-		cancel_url: currentUrl.origin + '/my-services',
-		"line_items[0][quantity]": 1,
-		'line_items[0][price]': product[ticket_id],
-		"success_url": currentUrl.origin + '/my-services/' + service_info.id,
-		'tax_id_collection[enabled]': true,
-	}
+    let data = {
+        client_reference_id: service_info.owner,
+        customer: customer_id,
+        'customer_update[name]': 'auto',
+        'customer_update[address]': 'auto',
 
-	if (isPerpetual) {
-		Object.assign(data, {
-			'metadata[service]': service_info.id,
-			'metadata[owner]': service_info.owner,
-			'metadata[price]': product[ticket_id],
-			'mode': 'payment',
-		})
-	} else {
-		Object.assign(data,{
-			'subscription_data[metadata][service]': service_info.id,
-			'subscription_data[metadata][owner]': service_info.owner,
-			'mode': 'subscription',
-			'subscription_data[description]': 'Subscription plan for service ID: "' + service_info.id + '"',
-		})
-	}
+        cancel_url: currentUrl.origin + '/my-services',
+        "line_items[0][quantity]": 1,
+        'line_items[0][price]': product[ticket_id],
+        "success_url": currentUrl.origin + '/my-services/' + service_info.id,
+        'tax_id_collection[enabled]': true,
+    }
 
-	let response = await skapi.clientSecretRequest({
-		clientSecretName: 'stripe_test',
-		url: 'https://api.stripe.com/v1/checkout/sessions',
-		method: 'POST',
-		headers: {
-			Authorization: 'Bearer $CLIENT_SECRET',
-			'Content-Type': 'application/x-www-form-urlencoded'
-		},
-		data	
-	});
-	if (response.error) {
-		alert(response.error.message);
-		return;
-	}
+    if (isPerpetual) {
+        Object.assign(data, {
+            'metadata[service]': service_info.id,
+            'metadata[owner]': service_info.owner,
+            'metadata[price]': product[ticket_id],
+            'mode': 'payment',
+        })
+    } else {
+        Object.assign(data,{
+            'subscription_data[metadata][service]': service_info.id,
+            'subscription_data[metadata][owner]': service_info.owner,
+            'mode': 'subscription',
+            'subscription_data[description]': 'Subscription plan for service ID: "' + service_info.id + '"',
+        })
+    }
 
-	window.location = response.url;
+    let response = await skapi.clientSecretRequest({
+        clientSecretName: 'stripe_test',
+        url: 'https://api.stripe.com/v1/checkout/sessions',
+        method: 'POST',
+        headers: {
+            Authorization: 'Bearer $CLIENT_SECRET',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data	
+    });
+    if (response.error) {
+        alert(response.error.message);
+        return;
+    }
+
+    window.location = response.url;
 }
 
 let createService = () => {
-	promiseRunning.value = true;
+    promiseRunning.value = true;
 
-	Service.create({ name: newServiceName })
-		.then(async (s) => {
-			if (serviceMode.value == 'trial') {
-				serviceIdList.push(s.id);
-				serviceList[s.id] = s;
-				location.href = '/my-services/' + s.id;
-			} else {
-				let service_info = s;
-				let ticket_id = serviceMode.value;
-				await createSubscription(ticket_id, service_info);
-			}
-		}).catch(err => {
-			promiseRunning.value = false;
-			alert(err.message);
-		})
+    Service.create({ name: newServiceName.value })
+        .then(async (s) => {
+            if (serviceMode.value == 'trial') {
+                serviceIdList.push(s.id);
+                serviceList[s.id] = s;
+                location.href = '/my-services/' + s.id;
+            } else {
+                let service_info = s;
+                let ticket_id = serviceMode.value;
+                await createSubscription(ticket_id, service_info);
+            }
+        }).catch(err => {
+            promiseRunning.value = false;
+            alert(err.message);
+        })
 }
 
 let selectedPlan = (plan: string) => {
-	serviceMode.value = plan;
-	createService();
+    if(plan !== 'trial') {
+        if (activeTabs.value[plan] == 1) {
+            plan = plan + '-perpetual';
+        }
+    }
+
+    serviceMode.value = plan;
+    createService();
 }
 </script>
 
 <style scoped lang="less">
 #create {
-	max-width: 1000px;
-	padding: 0 8px;
-	margin: 0 auto;
-	padding-top: 10px;
-}
-
-.section {
-	max-width: 570px;
-	margin: 0 auto;
-	padding: 4rem 20px 1rem;
-	text-align: center;
-
-	.title {
-		font-size: 2rem;
-		margin-bottom: 1rem;
-		line-height: 1.5;
-	}
-
-	.desc {
-		margin-bottom: 1rem;
-		line-height: 1.9;
-		color: #333;
-	}
+    max-width: 1000px;
+    padding: 0 8px;
+    margin: 0 auto;
+    padding-top: 10px;
 }
 
 .smallTitle {
-	font-size: 0.8rem;
-	color: #333;
-	margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    color: #333;
+    margin-bottom: 0.5rem;
 }
 
 .step-wrap {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	padding: 1rem;
-	font-size: 0.8rem;
-	font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
 
-	// max-width: 80rem;
+    // max-width: 80rem;
     padding: 16px 20px;
     background-color: rgba(255, 255, 255, 0.8);
     border: 1.5px solid rgba(255, 255, 255, 0.1);
@@ -275,286 +237,217 @@ let selectedPlan = (plan: string) => {
     // margin: 0 var(--nav-top);
     border-color: #f7f9fc;
 
-	a {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		color: #000;
-		// display: inline-block;
-		// vertical-align: middle;
+    a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #000;
+        // display: inline-block;
+        // vertical-align: middle;
 
-		img {
-			// display: inline-block;
-			height: 20px;
-		}
-		span {
-			// vertical-align: top;
-		}
-	}
+        img {
+            // display: inline-block;
+            height: 20px;
+        }
+        span {
+            // vertical-align: top;
+        }
+    }
 
-	.route {
-		cursor: pointer;
+    .route {
+        cursor: pointer;
 
-		&:hover {
-			text-decoration: underline;
-		}
-	}
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }
-
-// .step-wrap {
-// 	display: flex;
-// 	align-items: center;
-// 	justify-content: center;
-// 	gap: 10rem;
-// 	margin: 3rem 0;
-
-// 	.step {
-// 		position: relative;
-// 		width: 10px;
-// 		height: 10px;
-// 		border-radius: 50%;
-// 		background-color: #fff;
-// 		border: 2px solid var(--main-color);
-// 		cursor: pointer;
-
-// 		span {
-// 			position: absolute;
-// 			top: -25px;
-// 			left: 50%;
-// 			transform: translateX(-50%);
-// 			font-size: 0.8rem;
-// 			white-space: nowrap;
-// 			color: #aaa;
-// 		}
-
-// 		&::after {
-// 			position: absolute;
-// 			content: '';
-// 			top: 50%;
-// 			right: calc(-10rem - 2px);
-// 			transform: translateY(-50%);
-// 			width: calc(10rem + 2px);
-// 			height: 2px;
-// 			background-color: #ccc;
-// 			z-index: -1;
-// 		}
-
-// 		&:last-child {
-// 			&::after {
-// 				display: none;
-// 			}
-// 		}
-
-// 		&.activated {
-// 			background-color: var(--main-color);
-// 			border-color: var(--main-color);
-
-// 			&::after {
-// 				background-color: var(--main-color);
-// 			}
-
-// 			span {
-// 				color: var(--main-color);
-// 			}
-// 		}
-
-// 		&.disabled {
-// 			cursor: default;
-// 			pointer-events: none;
-// 		}
-// 	}
-// }
 
 .form {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	max-width: 570px;
-	width: 100%;
-	padding: 0 20px;
-	margin: 0 auto;
-	display: flex;
-	flex-wrap: wrap;
-	align-items: flex-end;
-	justify-content: center;
-	gap: 1rem;
-}
-
-.newname {
-	font-weight: bold;
-	color: var(--main-color);
-}
-
-.inputWrap {
-	display: flex;
-	gap: 8px;
-	margin-top: 8px;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: center;
+    max-width: 570px;
+    width: 100%;
+    height: calc((100vh - var(--footer-height) - 50px) / 2);
+    padding: 0 20px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1rem;
 }
 
 input {
-	width: unset;
-	flex-grow: 1;
+    width: unset;
+    flex-grow: 1;
 }
 
 .card-wrap {
-	max-width: 100%;
-	margin: 0 auto;
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: center;
-	gap: 1rem;
-	// text-align: center;
+    max-width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    // text-align: center;
 
-	.card {
-		flex-grow: 1;
-		width: 48%;
-		min-width: 250px;
-		border: 1px solid rgba(0,0,0,0.1);
-		border-radius: 12px;
-		padding: 1rem;
-		transition: all .3s;
-		cursor: pointer;
-		background-color: #fff;
+    .card {
+        flex-grow: 1;
+        width: 48%;
+        min-width: 250px;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 12px;
+        padding: 1rem;
+        transition: all .3s;
+        cursor: pointer;
+        background-color: #fff;
 
-		&:hover {
-			// border-color: var(--main-color);
-			box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
-		}
+        &:hover {
+            // border-color: var(--main-color);
+            box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
+        }
+        
+        a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: #333;
+        }
 
-		&.dark {
-			// background-color: var(--main-color);
-			// background: linear-gradient(to right, rgb(11, 53, 218), rgb(172, 250, 5), rgb(172, 250, 5), rgb(11, 53, 218));
-			// color: #fff;
-		}
-		
-		a {
-			display: flex;
-			align-items: center;
-			gap: 1rem;
-			text-decoration: none;
-			color: #333;
-		}
+        .icon {
+            width: 3rem;
+            height: 3rem;
+        }
+        .content {
+            text-align: left;
 
-		.icon {
-			width: 3rem;
-			height: 3rem;
-		}
-		.content {
-			text-align: left;
+            p {
+                margin: 0;
 
-			p {
-				margin: 0;
-
-				&.small {
-					font-size: 0.8rem;
-					color: rgba(0,0,0,0.5);
-				}
-			}
-		}
-	}
+                &.small {
+                    font-size: 0.8rem;
+                    color: rgba(0,0,0,0.5);
+                }
+            }
+        }
+    }
 }
 
 .plan-wrap {
-	align-items: start;
-	padding-top: 60px;
+    align-items: start;
+    padding-top: 7rem;
 
-	.plan {
-		width: 31%;
-		min-width: 250px;
-		flex-grow: 1;
-		transition: all .3s;
+    .plan {
+        width: 31%;
+        min-width: 250px;
+        flex-grow: 1;
+        transition: all .3s;
+        scale: 1;
 
-		&.selected {
-			scale: 1.05;
-			
-			.card {
-				box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
-			}
-		}
-		&.disabled {
-			opacity: 0.5;
-			pointer-events: none;
-			cursor: default;
-		}
-	}
-	.card {
-		width: 100%;
-		cursor: default;
-	}
-	.title {
-		font-size: 1rem;
-		margin-bottom: 1rem;
-	}
-	.option {
-		position: relative;
-		height: 2rem;
-		margin-bottom: 1rem;
+        &.selected {
+            scale: 1.05;
+            
+            .card {
+                box-shadow: 1px 1px 10px rgba(0,0,0, 0.05);
+            }
+        }
+        &.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: default;
+        }
+        &:hover {
+            scale: 1.05;
+        }
+    }
+    .card {
+        width: 100%;
+        cursor: default;
+    }
+    .title {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    .option {
+        position: relative;
+        height: 2rem;
+        margin-bottom: 1rem;
 
-		.tab-menu {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-55%, -50%);
-			scale: 0.9;
-			margin: 0;
-		}
-	}
-	.price {
-		display: flex;
-		align-items: baseline;
-		justify-content: center;
-		margin-bottom: 1rem;
+        .tab-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-55%, -50%);
+            scale: 0.9;
+            margin: 0;
+        }
+    }
+    .price {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        margin-bottom: 1rem;
 
-		.faktum {
-			font-size: 2.4rem;
-			margin-right: 0.5rem;
-		}
-		span {
-			color: #888
-		}
-	}
-	.desc {
-		margin: 0;
-		line-height: 1.4;
-		font-size: 0.8rem;
-		color: #777;
-		margin-bottom: 1rem;
-	}
-	button {
-		width: 100% !important;
-	}
+        .faktum {
+            font-size: 2.4rem;
+            margin-right: 0.5rem;
+        }
+        span {
+            color: #888
+        }
+    }
+    .desc {
+        margin: 0;
+        line-height: 1.4;
+        font-size: 0.8rem;
+        color: #777;
+        margin-bottom: 1rem;
+    }
+    button {
+        width: 100% !important;
+    }
 }
 
 .provides {
-	li {
-		position: relative;
-		list-style: none;
-		text-align: left;
-		margin-bottom: 0.5rem;
-		font-size: 0.8rem;
+    li {
+        position: relative;
+        list-style: none;
+        text-align: left;
+        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
 
-		&::before {
-			position: absolute;
-			content: '';
-			left: -1.3rem;
-			top: 0.1rem;
-			background: url('@/assets/img/icon/check.svg') no-repeat;
-			background-size: cover;
-			width: 16px;
-			height: 16px;
-			opacity: 0.8;
-		}
-	}
+        &::before {
+            position: absolute;
+            content: '';
+            left: -1.3rem;
+            top: 0.1rem;
+            background: url('@/assets/img/icon/check.svg') no-repeat;
+            background-size: cover;
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+        }
+    }
 }
 
-@media (max-width: 480px) {
-	button {
-		width: 100%;
-	}
+@media (max-width: 576px) {
+    .step-wrap {
+        .list {
+            display: none;
+        }
+    }
+    .form {
+        height: unset;
+        padding: 0 10px;
+        padding-top: 20px;
+
+        button {
+            width: 100%;
+        }
+    }
+    .plan-wrap {
+        padding-top: 20px;
+    }
 }
 </style>
