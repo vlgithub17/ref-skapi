@@ -18,7 +18,8 @@ main
 
 		br
 
-		.vscode(style="border: 1px solid #2b2b2b; height: 216px; max-width: 816px;")
+		// calc 이용하는 이유: 브라우져 zoom에 따라 스크롤이 생길 수 있음
+		.vscode(style="border: 1px solid #2b2b2b; height: calc(216px + 1rem); max-width: calc(816px + 1rem);")
 			.header
 				.circle
 					.cir
@@ -59,7 +60,7 @@ main
 
 		TabMenu(v-model="activeTabs.pureHTML" :tabs="['User Login', 'Post Data']" tab-width='120px')
 
-		.vscode(style=' max-width: 816px;height:340px')
+		.vscode(style=' max-width: calc(816px + 1rem);height:calc(330px + 1rem);')
 			.header
 				.circle
 					.cir

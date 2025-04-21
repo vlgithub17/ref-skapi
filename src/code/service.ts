@@ -392,7 +392,7 @@ export default class Service {
   }
 
   async updateUserAttribute(
-    form: SubmitEvent | UserAttributes & UserProfilePublicSettings & { email: string },
+    form: SubmitEvent | UserAttributes & UserProfilePublicSettings & { user_id: string },
   ): Promise<{ [key: string]: any }> {
     let attributes = skapi.util.extractFormData(form).data;
 
