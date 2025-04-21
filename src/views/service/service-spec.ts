@@ -137,7 +137,11 @@ export class ServiceSpec {
 		host: 0,
 	});
 	servicePlan: {
-		price: number | string
+		price: {
+			monthly: number
+			yearly?: number
+			perpetual?: number
+		};
 		product_price?: { development: string; production: string } | {}
 		users: number | string
 		storage: {
@@ -147,7 +151,7 @@ export class ServiceSpec {
 			email?: number | string
 		}
 	} = reactive({
-		price: 0,
+		price: null,
 		product_price: {},
 		users: 0,
 		storage: {
