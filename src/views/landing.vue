@@ -257,7 +257,7 @@ main
 					.desc 
 						template(v-if="activeTabs.standardPlan === 0") Suits best for small businesses, #[span.wordset MVPs, small projects, etc.]
 						template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
-					router-link(:to="user?.user_id ? '/my-services' : '/signup'")
+					router-link(:to="user?.user_id ? '/create' : '/signup'")
 						button.final(type="button") Get
 				ul.provides
 					li(v-for="(des) in planSpec['Standard'].description") {{ des }}
@@ -276,7 +276,7 @@ main
 					.desc
 						template(v-if="activeTabs.premiumPlan === 0") Suits best for huge projects, #[span.wordset SaaS, social media, AI application etc.]
 						template(v-else) Get lifetime access to the Premium plan for just $1399—upgrade anytime as your needs grow.
-					router-link(:to="user?.user_id ? '/my-services' : '/signup'")
+					router-link(:to="user?.user_id ? '/create' : '/signup'")
 						button.final(type="button") Get
 				ul.provides
 					li(v-for="(des) in planSpec['Premium'].description") {{ des }}
@@ -301,7 +301,7 @@ main
 						.faktum FREE
 						span /mo
 					.desc Best for testing and prototyping
-					router-link(:to="user?.user_id ? '/my-services' : '/signup'")
+					router-link(:to="user?.user_id ? '/create' : '/signup'")
 						button.final(type="button") Get
 				ul.provides
 					li(v-for="(des) in planSpec['Trial'].description") {{ des }}
