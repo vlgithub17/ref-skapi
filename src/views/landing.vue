@@ -257,7 +257,7 @@ main
 					.desc 
 						template(v-if="activeTabs.standardPlan === 0") Suits best for small businesses, #[span.wordset MVPs, small projects, etc.]
 						template(v-else) Get lifetime access to the Standard plan for just $300—upgrade anytime as your needs grow.
-					router-link(:to="user?.user_id ? '/create' : '/signup'")
+					router-link(:to="user?.user_id ? '/create' : { path: '/signup', query: { suc_redirect: '/create' } }")
 						button.final(type="button") Get
 				ul.provides
 					li(v-for="(des) in planSpec['Standard'].description") {{ des }}

@@ -14,7 +14,7 @@ br
     br
     
     div(style="display:block;text-align:center")
-        button.final(@click="router.push('/login')") Login
+        button.final(@click="router.push({path: '/login', query: {suc_redirect: routeQuery} })") Login
 br
 br
 br
@@ -22,9 +22,12 @@ br
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
+import { onMounted } from 'vue';
 
 const router = useRouter();
 const route = useRoute();
+
+let routeQuery = route.query?.suc_redirect;
 </script>
 
 <style scoped lang="less">

@@ -92,7 +92,7 @@ br
 import { useRoute, useRouter } from 'vue-router';
 import { skapi } from '@/main'
 import { user } from '@/code/user'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import Checkbox from '@/components/checkbox.vue';
 const router = useRouter();
 const route = useRoute();
@@ -107,6 +107,10 @@ let form = ref({
     password: '',
     password_confirm: '',
     subscribe: true,
+});
+let routeQuery = route.query;
+onMounted(() => {
+	console.log({routeQuery})
 });
 
 let validatePassword = () => {
@@ -128,6 +132,10 @@ let signup = (e) => {
         signup_confirmation: '/success',
         email_subscription: form.value.subscribe
     }
+
+	if(routeQuery?.suc_redirect) {
+		options.signup_confirmation = options.signup_confirmation + '?suc_redirect=' + routeQuery.suc_redirect
+	}
 
     skapi.signup(params, options).then(res => {
         router.push({ path: '/confirmation', query: { email: form.value.email } })

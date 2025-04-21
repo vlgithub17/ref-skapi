@@ -115,7 +115,11 @@ let login = (e) => {
         for(let k in u) {
             user[k] = u[k];
         }
-        router.push('/my-services');
+		if(route.query?.suc_redirect) {
+			router.push(route.query?.suc_redirect);
+		} else {
+			router.push('/my-services');
+		}
     }).catch(err => {
         for (let k in user) {
             delete user[k];
