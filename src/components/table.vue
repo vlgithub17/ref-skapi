@@ -165,11 +165,14 @@ let setResize = async () => {
 	let el = thead.value;
 	let th = el.querySelectorAll('th');
 
-	for (let i = 0; i < th.length - 1; i++) {
-		if (th[i].classList.contains('fixed')) continue;
-		let style = window.getComputedStyle(th[i]);
-		th[i].style.width = style.width;
-	}
+	// 마지막 th 에 last 클래스 추가
+	th[th.length - 1].classList.add('last');
+
+	// for (let i = 0; i < th.length - 1; i++) {
+	// 	if (th[i].classList.contains('fixed')) continue;
+	// 	let style = window.getComputedStyle(th[i]);
+	// 	th[i].style.width = style.width;
+	// }
 
 	resizers_arr = [];
 	// - initiallize end
@@ -269,11 +272,11 @@ let setResize = async () => {
 				text-align: center;
 			}
 
-			&:last-child {
+			&.last {
 				background-color: transparent !important;
 
 				.resizer {
-					display: none;
+					display: none !important;
 				}
 			}
 
@@ -285,7 +288,7 @@ let setResize = async () => {
 				}
 			}
 
-			&.nohover {
+			&.nohover, &.fixed {
 				&:hover {
 					background-color: #f9f9f9 !important;
 	
