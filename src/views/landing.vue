@@ -276,7 +276,7 @@ main
 					.desc
 						template(v-if="activeTabs.premiumPlan === 0") Suits best for huge projects, #[span.wordset SaaS, social media, AI application etc.]
 						template(v-else) Get lifetime access to the Premium plan for just $1399—upgrade anytime as your needs grow.
-					router-link(:to="user?.user_id ? '/create' : '/signup'")
+					router-link(:to="user?.user_id ? '/create' : { path: '/signup', query: { suc_redirect: '/create' } }")
 						button.final(type="button") Get
 				ul.provides
 					li(v-for="(des) in planSpec['Premium'].description") {{ des }}
