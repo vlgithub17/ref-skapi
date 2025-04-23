@@ -80,6 +80,16 @@ let currentSiblingHeadWidth = 0;
 
 let mousedown = (e: MouseEvent) => {
 	let el = thead.value;
+	let ths = el.querySelectorAll('th');
+	let th = (e.currentTarget as HTMLElement).parentElement;
+
+	for (let i = 0; i < ths.length; i++) {
+		if (ths[i] === th) {
+			ths[i].classList.add('hovered');
+		} else {
+			ths[i].classList.add('nohover');
+		}
+	}
 
 	thTotal = parseFloat(window.getComputedStyle(el).width);
 
@@ -96,6 +106,13 @@ let mousedown = (e: MouseEvent) => {
 let mouseup = () => {
 	currentHeadCol = null;
 	pageXMouseDown = pageXMouseMoveDiff;
+	if (thead.value) {
+		let th = thead.value.querySelectorAll('th');
+		for (let i = 0; i < th.length; i++) {
+			th[i].classList.remove('hovered');
+			th[i].classList.remove('nohover');
+		}
+	}
 };
 
 let mouseMoveHandler = (e) => {
@@ -260,11 +277,21 @@ let setResize = async () => {
 				}
 			}
 
-			&:hover {
+			&.hovered, &:hover {
 				background-color: #eeeeee;
 
 				.resizer {
 					display: block;
+				}
+			}
+
+			&.nohover {
+				&:hover {
+					background-color: #f9f9f9 !important;
+	
+					.resizer {
+						display: none;
+					}
 				}
 			}
 

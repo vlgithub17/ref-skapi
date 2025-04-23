@@ -1,50 +1,8 @@
 <template lang="pug">
 main#serviceList
-	//- section.infoBox
-		h2 My Services
-
-		hr
-		
-		br
-
-		p Create a new service to get started.
-
-		.error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
-			//- .material-symbols-outlined.notranslate.fill warning
-			svg
-				use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
-			router-link(to="/account-setting") Please verify your email address to create services.
-		form(@submit.prevent="createService" style='display: flex;gap: 8px;width: 480px;max-width: 100%;' :class='{disabled: !user?.email_verified}')
-			input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
-			button.final(type="submit" style='flex-shrink: 0;') Create
-		
-		br
-
 	section.section
 		.title.faktum My Services
-		//- .desc Create a new service to get started.
 
-		.iconbutton(@click="router.push('/create')")
-			svg.svgIcon
-				use(xlink:href="@/assets/img/material-icon.svg#icon-add") 
-			span &nbsp;&nbsp;Create New Service
-
-		//- button.final(type="button" @click="router.push('/create')") Create New Service
-
-		//- .error(v-if='!user?.email_verified' style='margin-bottom: 4px;')
-			//- .material-symbols-outlined.notranslate.fill warning
-			svg
-				use(xlink:href="@/assets/img/material-icon.svg#icon-warning-fill")
-			router-link(to="/account-setting") Please verify your email address to create services.
-
-		//- form(@submit.prevent="createService" :class='{disabled: !user?.email_verified}')
-			input.big(placeholder="New service name (Max 40 chars)" maxlength="40" required v-model="newServiceName")
-			button.final(type="submit" style='width: 100%; margin-top:0.5rem') Create
-	
-
-	//- .tableMenu
-		.pageName My Services
-		//- button.final(type="button" @click="router.push('/create')") Create New Service
 		.iconbutton(@click="router.push('/create')")
 			svg.svgIcon
 				use(xlink:href="@/assets/img/material-icon.svg#icon-add") 
