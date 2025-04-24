@@ -131,6 +131,9 @@ let mousedown = (e: MouseEvent) => {
 	pageXMouseDown = e.pageX;
 	let currentTarget = e.currentTarget as HTMLElement;
 	currentHeadCol = currentTarget.parentNode as HTMLElement;
+	if (!currentHeadCol) {
+		return;
+	}
 	currentHeadColWidth = parseFloat(window.getComputedStyle(currentHeadCol).width);
 	if (isNaN(currentHeadColWidth)) {
 		return;
