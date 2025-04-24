@@ -90,11 +90,11 @@ const resizeObserver = new ResizeObserver((entries) => {
         }
 
         // 디버깅 로그 출력
-        console.log({
-            tableWrapWidth,
-            customTblWidth,
-            fakeWidth: parseFloat(document.body.style.getPropertyValue('--fakeWidth'))
-        });
+        // console.log({
+        //     tableWrapWidth,
+        //     customTblWidth,
+        //     fakeWidth: parseFloat(document.body.style.getPropertyValue('--fakeWidth'))
+        // });
     }
 });
 
