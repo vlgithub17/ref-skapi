@@ -230,7 +230,7 @@ template(v-else)
                         td(colspan="3") Drag and drop files here
 
                 template(v-else)
-                    tr(:class='{nsrow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
+                    tr(:class='{hoverRow:currentDirectory}' @click='currentDirectory = currentDirectory.split("/").length === 1 ? "" : currentDirectory.split("/").slice(0, -1).join("/")')
                         td
                             svg.svgIcon.black()
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-folder-open-fill")
@@ -238,7 +238,7 @@ template(v-else)
                         td(colspan="3")
                             | {{hostUrl}}/{{ currentDirectory ? currentDirectory + '/' : '' }}
                 
-                tr.nsrow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = setNewDir(ns) }')
+                tr.hoverRow(v-for="(ns, i) in listDisplay" @click='()=>{ns.name[0] != "#" ? openFile(ns) : currentDirectory = setNewDir(ns) }')
                     td
                         Checkbox(@click.stop :modelValue="!!checked?.[ns?.name]" @update:modelValue="(value) => { if (value) checked[ns?.name] = value; else delete checked[ns?.name]; }")
 
@@ -862,7 +862,7 @@ template(v-else)
         tr:first-child {
             background-color: rgba(0, 0, 255, 0.02);
 
-            &::after {
+            &::before {
                 background-color: rgba(0, 0, 255, 0.02);
             }
         }
@@ -914,42 +914,6 @@ template(v-else)
     }
 
     // table style below
-
-    tbody {
-        tr.nsrow {
-            @media (pointer: fine) {
-
-                // only for mouse pointer devices
-                &:not(.active):hover {
-                    background-color: rgba(41, 63, 230, 0.05);
-                    // cursor: pointer;
-
-                    &::after {
-                        background-color: rgba(41, 63, 230, 0.05);
-                    }
-                }
-            }
-
-            &.active {
-                background-color: rgba(41, 63, 230, 0.10);
-
-                &::after {
-                    background-color: rgba(41, 63, 230, 0.10);
-                }
-            }
-
-            &:hover {
-                .hide {
-                    display: block;
-                }
-            }
-
-            .hide {
-                display: none;
-            }
-        }
-    }
-
     thead {
         th {
             &>span {

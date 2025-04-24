@@ -170,7 +170,7 @@ template(v-else)
                 tr(v-for="i in 9")
                     td(colspan="6")
             template(v-else)
-                tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
+                tr.hoverRow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
                     td.overflow {{ converter(ns.subject) }}
                     td.overflow {{ dateFormat(ns.timestamp) }}
                     td.overflow {{ ns.read }}
@@ -544,42 +544,6 @@ let converter = (html: string, parsed: boolean, inv: boolean) => {
 
 <style lang="less" scoped>
 // table style below
-
-tbody {
-    tr.nsrow {
-        @media (pointer: fine) {
-
-            // only for mouse pointer devices
-            &:not(.active):hover {
-                background-color: rgba(41, 63, 230, 0.05);
-                cursor: pointer;
-
-                &::after {
-                    background-color: rgba(41, 63, 230, 0.05);
-                }
-            }
-        }
-
-        &.active {
-            background-color: rgba(41, 63, 230, 0.10);
-
-            &::after {
-                background-color: rgba(41, 63, 230, 0.10);
-            }
-        }
-
-        &:hover {
-            .hide {
-                display: block;
-            }
-        }
-
-        .hide {
-            display: none;
-        }
-    }
-}
-
 thead {
     th {
         &>span {

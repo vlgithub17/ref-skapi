@@ -92,22 +92,23 @@ form.table-form(@submit.prevent :class='{disabled: !user?.email_verified || curr
     Table
         template(v-slot:head)
             tr
-                th.center(style="width:48px; padding:0")
+                th.center.fixed(style="width:48px")
                     //- .material-symbols-outlined.notranslate lock
                     //- svg.svgIcon(style="fill: black;")
                         use(xlink:href="@/assets/img/material-icon.svg#icon-lock")
                     .resizer
-                th(style="width:26%")
+                th(style="width:200px")
                     | Name
                     .resizer
-                th
+                th(style="width:400px")
                     | $CLIENT_SECRET
-                    //- .resizer
-                th.center(style="width:66px; padding:0")
+                    .resizer
+                th.center(style="width:66px")
+                    .resizer
 
         template(v-slot:body)
             tr(v-if="!client_key.length") 
-                td(colspan=4) No Client Secret Key
+                td(colspan=4 style="padding-left:20px") No Client Secret Key
             tr(v-for="(key, index) in client_key")
                 template(v-if="editMode && key.edit || addMode && key.edit")
                     td.center 
@@ -146,7 +147,7 @@ form.table-form(@submit.prevent :class='{disabled: !user?.email_verified || curr
                             svg.svgIcon.reactive.clickable.hide(@click="editKey(key)")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-edit-fill")
                             //- .material-symbols-outlined.notranslate.fill.clickable.icon.hide(@click="deleteClientKey = key.name;deleteIndex = index;") delete
-                            svg.svgIcon.reactive.clickable.hide(@click="deleteClientKey = key.name;deleteIndex = index;")
+                            svg.svgIcon.reactive.clickable.hide(@click="deleteClientKey = !!key.name;deleteIndex = index;")
                                 use(xlink:href="@/assets/img/material-icon.svg#icon-delete-fill")
 
 Modal(:open="deleteClientKey" @close="deleteClientKey=false")
@@ -321,7 +322,7 @@ let saveKey = async (key) => {
 
     .table-tootlip {
         position: absolute;
-        left: 11px;
+        left: 18px;
         top: 17px;
         z-index: 999;
     }

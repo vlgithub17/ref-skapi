@@ -1,6 +1,6 @@
 <template lang="pug">
 .tableWrap(ref='full')
-    table.customTbl(ref='table' :class='{resizable}' :style='{width: resizable ? "0" : "100%"}')
+    table.customTbl(ref='table' :class='{resizable}' style="width:0")
         thead(ref="thead")
             slot(name="head")
 
@@ -69,6 +69,41 @@ if (resizable) {
 		}
 	});
 }
+
+// ResizeObserver 인스턴스 생성
+const resizeObserver = new ResizeObserver((entries) => {
+    for (let entry of entries) {
+        // tableWrapWidth 계산
+        let tableWrapWidth = entry.contentRect.width;
+
+        // customTblWidth 계산
+        let customTbl = entry.target.querySelector('.customTbl');
+        if (!customTbl) return; // .customTbl 요소가 없는 경우 처리
+        let customTblWidth = customTbl.getBoundingClientRect().width;
+
+        // fakeWidth 계산 및 적용
+        if (customTblWidth < tableWrapWidth) {
+            let fakeWidth = tableWrapWidth - customTblWidth;
+            document.body.style.setProperty('--fakeWidth', `${fakeWidth}px`);
+        } else {
+            document.body.style.setProperty('--fakeWidth', '0px'); // fakeWidth 초기화
+        }
+
+        // 디버깅 로그 출력
+        console.log({
+            tableWrapWidth,
+            customTblWidth,
+            fakeWidth: parseFloat(document.body.style.getPropertyValue('--fakeWidth'))
+        });
+    }
+});
+
+// full.value 요소를 관찰 대상으로 등록
+onMounted(() => {
+	if (full.value) {
+		resizeObserver.observe(full.value);
+	}
+});
 
 let currentHeadCol: HTMLElement = null;
 let pageXMouseDown = 0;
@@ -155,12 +190,12 @@ let setResize = async () => {
 	await nextTick();
 	headFullWidth = parseFloat(window.getComputedStyle(full.value).width);
 
-	let tableWrapWidth = parseFloat(window.getComputedStyle(full.value).width);
-	let customTblWidth = parseFloat(window.getComputedStyle(full.value.querySelector('.customTbl')).width);
-	if (customTblWidth < tableWrapWidth) {
-		fakeWidth.value = tableWrapWidth - customTblWidth;
-		document.body.style.setProperty('--fakeWidth', `${fakeWidth.value}px`);
-	}
+	// let tableWrapWidth = parseFloat(window.getComputedStyle(full.value).width);
+	// let customTblWidth = parseFloat(window.getComputedStyle(full.value.querySelector('.customTbl')).width);
+	// if (customTblWidth < tableWrapWidth) {
+	// 	fakeWidth.value = tableWrapWidth - customTblWidth;
+	// 	document.body.style.setProperty('--fakeWidth', `${fakeWidth.value + 10}px`);
+	// }
 
 	let el = thead.value;
 	let th = el.querySelectorAll('th');
@@ -206,6 +241,20 @@ let setResize = async () => {
 	min-width: fit-content; // 최소 너비는 내용에 맞춤
 	border-collapse: collapse;
 	table-layout: fixed;
+
+	&.resizable {
+		thead {
+			th {
+				&.hovered, &:hover {
+					background-color: #eeeeee;
+
+					.resizer {
+						display: block;
+					}
+				}
+			}
+		}
+	}
 
 	.overflow {
 		white-space: nowrap;
@@ -277,14 +326,6 @@ let setResize = async () => {
 
 				.resizer {
 					display: none !important;
-				}
-			}
-
-			&.hovered, &:hover {
-				background-color: #eeeeee;
-
-				.resizer {
-					display: block;
 				}
 			}
 
@@ -363,6 +404,25 @@ let setResize = async () => {
 
 			&:last-child {
 				border-bottom: none;
+			}
+
+			&.hoverRow {
+				&:not(.active):hover {
+					background-color: rgba(41, 63, 230, 0.05);
+					cursor: pointer;
+	
+					&::before {
+						background-color: rgba(41, 63, 230, 0.05);
+					}
+				}
+	
+				&.active {
+					background-color: rgba(41, 63, 230, 0.10);
+	
+					&::before {
+						background-color: rgba(41, 63, 230, 0.10);
+					}
+				}
 			}
 		}
 

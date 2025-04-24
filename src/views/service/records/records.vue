@@ -129,7 +129,7 @@ hr
                 tr(v-for="i in 9")
                     td(:colspan="colspan")
             template(v-else)
-                tr.nsrow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=rc")
+                tr.hoverRow(v-for="(rc, i) in listDisplay" @click="showDetail=true; selectedRecord=rc")
                     td
                         Checkbox(@click.stop
                             :modelValue="!!checked?.[rc?.record_id]"
@@ -717,36 +717,6 @@ Modal(:open="openDeleteRecords" @close="openDeleteRecords=false")
     }
 
     tbody {
-        tr.nsrow {
-            @media (pointer: fine) {
-                &:not(.active):hover {
-                    background-color: rgba(41, 63, 230, 0.05);
-
-                    &::after {
-                        background-color: rgba(41, 63, 230, 0.05);
-                    }
-                }
-            }
-
-            &.active {
-                background-color: rgba(41, 63, 230, 0.1);
-
-                &::after {
-                    background-color: rgba(41, 63, 230, 0.1);
-                }
-            }
-
-            &:hover {
-                .hide {
-                    display: block;
-                }
-            }
-
-            .hide {
-                display: none;
-            }
-        }
-
         td {
             .click {
                 position: relative;

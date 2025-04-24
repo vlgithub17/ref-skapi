@@ -267,7 +267,7 @@ br
         tr(v-for="i in 9")
           td(:colspan="colspan")
       template(v-else)
-        tr.nsrow(v-for="(user, index) in listDisplay" @click="showDetail=true; selectedUser=user")
+        tr.hoverRow(v-for="(user, index) in listDisplay" @click="showDetail=true; selectedUser=user")
           td
             Checkbox(
               @click.stop
@@ -1695,36 +1695,6 @@ Modal(:open="successGrantAccess", @close="successGrantAccess = false")
   }
 
   tbody {
-    tr.nsrow {
-      @media (pointer: fine) {
-        &:not(.active):hover {
-          background-color: rgba(41, 63, 230, 0.05);
-
-          &::after {
-            background-color: rgba(41, 63, 230, 0.05);
-          }
-        }
-      }
-
-      &.active {
-        background-color: rgba(41, 63, 230, 0.1);
-
-        &::after {
-            background-color: rgba(41, 63, 230, 0.05);
-        }
-      }
-
-      &:hover {
-        .hide {
-          display: block;
-        }
-      }
-
-      .hide {
-        display: none;
-      }
-    }
-
     td {
       .click {
         position: relative;

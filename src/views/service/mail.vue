@@ -190,7 +190,7 @@ template(v-if='!needsEmailAlias')
                 th(style="width:66px; padding:0;text-align:center;")
                     span In-Use
                     .resizer
-                th
+                th(style="width:400px;")
                     span(@click='toggleSort("subject")')
                         | Subject
                         svg.svgIcon(v-if='searchFor === "subject" && ascending' style="fill: black")
@@ -198,13 +198,14 @@ template(v-if='!needsEmailAlias')
                         svg.svgIcon(v-if='searchFor === "subject" && !ascending' style="fill: black")
                             use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
                     .resizer
-                th
+                th(style="width:160px;")
                     span(@click='toggleSort("timestamp")')
                         | Date
                         svg.svgIcon(v-if='searchFor === "timestamp" && ascending' style="fill: black")
                             use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-down")
                         svg.svgIcon(v-if='searchFor === "timestamp" && !ascending' style="fill: black")
                             use(xlink:href="@/assets/img/material-icon.svg#icon-arrow-drop-up")
+                    .resizer
                 th(style="width:66px; padding:0")
 
         template(v-slot:body)
@@ -221,7 +222,7 @@ template(v-if='!needsEmailAlias')
                 tr(v-for="i in 9")
                     td(colspan="4")
             template(v-else)
-                tr.nsrow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
+                tr.hoverRow(v-for="ns in listDisplay" @click='openNewsletter(ns.url)')
                     td.overflow
                         template(v-if='currentService.service?.["template_" + group]?.url === ns.url')
                             svg.svgIcon.black
@@ -802,41 +803,6 @@ li {
 }
 
 // table style below
-
-tbody {
-    tr.nsrow {
-        @media (pointer: fine) {
-            // only for mouse pointer devices
-            &:not(.active):hover {
-                background-color: rgba(41, 63, 230, 0.05);
-                // cursor: pointer;
-
-                &::after {
-                    background-color: rgba(41, 63, 230, 0.05);
-                }
-            }
-        }
-
-        &.active {
-            background-color: rgba(41, 63, 230, 0.1);
-
-            &::after {
-                background-color: rgba(41, 63, 230, 0.1);
-            }
-        }
-
-        &:hover {
-            .hide {
-                display: block;
-            }
-        }
-
-        .hide {
-            display: none;
-        }
-    }
-}
-
 thead {
     th {
         & > span {

@@ -44,7 +44,7 @@ main#serviceList
 				td(colspan="8") You have no services yet.
 
 			template(v-else v-for="id in serviceIdList")
-				tr.serviceRow(v-if="serviceList[id]" @click="() => goServiceDashboard(serviceList[id])" @mousedown="(e) => e.currentTarget.classList.add('active')" @mouseleave="(e) => e.currentTarget.classList.remove('active')")
+				tr.hoverRow(v-if="serviceList[id]" @click="() => goServiceDashboard(serviceList[id])" @mousedown="(e) => e.currentTarget.classList.add('active')" @mouseleave="(e) => e.currentTarget.classList.remove('active')")
 					td.overflow {{ serviceList[id].service.name }}
 					td.overflow(style="white-space:nowrap")
 						// plans
@@ -198,25 +198,6 @@ let getClass = (service: ServiceSpec, what: string) => {
 }
 
 // table style below
-
-tbody tr.serviceRow {
-	&:not(.active):hover {
-		background-color: rgba(41, 63, 230, 0.05);
-		cursor: pointer;
-
-		&::before {
-			background-color: rgba(41, 63, 230, 0.05);
-		}
-	}
-
-	&.active {
-		background-color: rgba(41, 63, 230, 0.10);
-
-		&::before {
-			background-color: rgba(41, 63, 230, 0.10);
-		}
-	}
-}
 
 td {
 	.percent {
