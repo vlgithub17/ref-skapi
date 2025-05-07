@@ -2,7 +2,7 @@
 nav#navBar(ref="navBar")
     .wrap
         .left
-            template(v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services'")
+            template(v-if="route.name != 'home' && user?.user_id && route.path !== '/my-services' && route.path !== '/account-setting'")
                 img.symbol(src="@/assets/img/logo/symbol-logo.png" @click="router.push('/')")
                 .router
                     span.small(@click="router.push('/my-services')") My Services/
@@ -115,7 +115,7 @@ let openBillingPage = async () => {
         })
         .then((response) => {
             window.location = response.url;
-            setTimeout(function(){
+            setTimeout(function () {
                 running.value = false;
             }, 3000);
         });
@@ -143,7 +143,7 @@ onBeforeUnmount(() => {
 });
 
 watch(() => route.name, (nv, ov) => {
-    if(nv) {
+    if (nv) {
         routeName.value = typeof nv === 'string' ? nv : '';
     }
     // if(nv !== 'home') {
@@ -216,36 +216,37 @@ img.symbol.mobile {
         .left {
             // flex-shrink: 0;
             flex-grow: 1;
-            display:flex;
+            display: flex;
             align-items: center;
-            gap:10px;
+            gap: 10px;
             // vertical-align: middle;
 
             .symbol {
-                width:26px;
-                cursor:pointer;
-                vertical-align:top;
-                image-orientation:none;
+                width: 26px;
+                cursor: pointer;
+                vertical-align: top;
+                image-orientation: none;
             }
 
             .logo {
                 display: flex;
-                gap:10px;
+                gap: 10px;
                 color: #000;
                 text-decoration: none;
             }
 
             .router {
-				position: relative;
+                position: relative;
                 flex-grow: 1;
 
                 p {
                     margin: 0;
                 }
+
                 .small {
-					position: absolute;
-					left: 0;
-					top: 0;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
                     // line-height: 0.7;
                     font-size: 0.7rem;
                     cursor: pointer;
@@ -256,6 +257,7 @@ img.symbol.mobile {
                         text-decoration: underline;
                     }
                 }
+
                 .big {
                     width: 100%;
                     // min-width: 60px;
@@ -264,7 +266,7 @@ img.symbol.mobile {
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
-					margin-top: 0.7rem;
+                    margin-top: 0.7rem;
                 }
             }
         }
@@ -331,14 +333,15 @@ img.symbol.mobile {
 
         @media all and (pointer: fine) {
             .prof:hover {
-                & > .material-symbols-outlined:first-child {
+                &>.material-symbols-outlined:first-child {
                     box-shadow: inset 0px 0px 0 4px rgba(255, 255, 255, 0.5);
                     border-radius: 50%;
                 }
             }
-            .prof > svg:hover {
-              box-shadow: inset 0px 0px 0 4px rgba(255, 255, 255, 0.5);
-              border-radius: 50%;
+
+            .prof>svg:hover {
+                box-shadow: inset 0px 0px 0 4px rgba(255, 255, 255, 0.5);
+                border-radius: 50%;
             }
         }
 
@@ -443,6 +446,7 @@ img.symbol.mobile {
                     }
                 }
             }
+
             .right {
                 ul {
                     gap: 0.9rem;
