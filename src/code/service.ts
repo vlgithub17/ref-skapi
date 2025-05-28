@@ -1298,6 +1298,50 @@ export default class Service {
     return dirList;
   }
 
+
+  // -------------------------------- vivians area --------------------------------
+
+  async registerNewsletterGroup(
+    params: {
+        group: string;
+        restriction: number;
+    }
+): Promise<string> {  
+  Object.assign(params, { service: this.id, owner: this.owner });
+
+    // await this.__connection;
+
+    // let params = validator.Params(
+    //     form || {},
+    //     {
+    //         group: (v: string) => {
+    //             if (typeof v !== 'string' || v.length > 20 || !/^[a-zA-Z0-9]+$/.test(v)) {
+    //                 throw new SkapiError('"group" should be an alphanumeric string without spaces and less than 20 characters.', { code: 'INVALID_PARAMETER' });
+    //             }
+    //             return v;
+    //         },
+    //         restriction: (v: number) => {
+    //             if (typeof v !== 'number' || v < 0 || v > 99) {
+    //                 throw new SkapiError('"restriction" should be a number between 0 and 99.', { code: 'INVALID_PARAMETER' });
+    //             }
+    //             return v;
+    //         }
+    //     },
+    //     ['group', 'restriction']
+    // );
+
+    return skapi.util.request(this.admin_private_endpoint + 'register-newsletter-group', params, { auth: true });
+}
+
+async newsletterGroupEndpoint() {
+    let response = await skapi.util.request(this.admin_private_endpoint + 'newsletter-group-endpoint', { service: this.id, owner: this.owner }, { auth: true });
+
+    return response
+}
+
+
+  // ------------------------------- vivians area -------------------
+
   //////////////////////////////////////////////////////////////////////////////
   static async create(params: { name: string }) {
     if (!params?.name) throw new Error('Invalid service name.');
